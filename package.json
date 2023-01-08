@@ -1,0 +1,53 @@
+{
+  "name": "@cosmology/connect-chain",
+  "version": "0.14.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.7.3",
+    "@babel/core": "^7.20.12",
+    "@chakra-ui/icons": "2.0.15",
+    "@chakra-ui/react": "2.4.3",
+    "@chakra-ui/styled-system": "^2.5.1",
+    "@chakra-ui/system": "^2.3.7",
+    "@cosmjs/amino": "^0.29.5",
+    "@cosmjs/cosmwasm-stargate": "0.29.5",
+    "@cosmjs/proto-signing": "^0.29.5",
+    "@cosmjs/stargate": "0.29.5",
+    "@cosmos-kit/core": "0.27.14",
+    "@cosmos-kit/cosmostation": "0.14.15",
+    "@cosmos-kit/cosmostation-extension": "^0.14.15",
+    "@cosmos-kit/cosmostation-mobile": "^0.14.15",
+    "@cosmos-kit/keplr": "0.32.15",
+    "@cosmos-kit/leap": "0.13.15",
+    "@cosmos-kit/leap-extension": "^0.13.15",
+    "@cosmos-kit/react": "0.27.9",
+    "@cosmos-kit/vectis": "^0.14.15",
+    "@cosmos-kit/vectis-extension": "^0.14.15",
+    "@emotion/react": "11.10.5",
+    "@emotion/styled": "11.10.5",
+    "chain-registry": "1.6.0",
+    "framer-motion": "8.2.4",
+    "graphql": "^16.6.0",
+    "next": "13.1.1",
+    "prop-types": "^15.8.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-icons": "4.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "18.11.18",
+    "@types/react": "18.0.26",
+    "@types/react-dom": "18.0.10",
+    "cosmjs-types": "^0.6.1",
+    "eslint": "8.31.0",
+    "eslint-config-next": "13.1.1",
+    "sass": "^1.57.1",
+    "typescript": "4.9.4"
+  }
+}
