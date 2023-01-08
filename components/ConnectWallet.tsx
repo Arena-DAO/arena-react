@@ -130,7 +130,7 @@ const ConnectWalletButton = ({
   );
 };
 
-export default function () {
+export default function ConnectWallet() {
   const { openView } = useChain(process.env.NEXT_PUBLIC_CHAIN!);
 
   return (

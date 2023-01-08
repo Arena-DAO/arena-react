@@ -87,6 +87,7 @@ export default function Home() {
         mx="auto"
         py="3"
         src="/main_trophy.jpg"
+        alt=""
         maxW={{ md: "75%", lg: "60%" }}
       />
       <Box mt={10}>

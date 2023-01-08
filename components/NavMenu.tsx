@@ -42,7 +42,7 @@ export default function NavMenu() {
         Home
       </NavItem>
       <NavItem icon={BsPeopleFill} href="/daos">
-        DAO's
+        DAO&apos;s
       </NavItem>
     </VStack>
   );
