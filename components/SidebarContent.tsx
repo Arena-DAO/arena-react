@@ -26,6 +26,7 @@ export default function SidebarContent({ ...rest }: FlexProps) {
       overflowY="auto"
       color="inherit"
       borderRightWidth="1px"
+      backgroundColor={useColorModeValue("gray.200", "inherit")}
       w="60"
       {...rest}
     >

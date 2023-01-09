@@ -16,15 +16,9 @@ import ErrorBoundary from "../components/ErrorBoundary";
 import { getConstantineAssets, getConstantineChain } from "../config/archway";
 import { getMorpheusAssets, getMorpheusChain } from "../config/desmos";
 import DesmosProvider from "../components/DesmosProvider";
+import theme from "./theme";
 
 function CreateCosmosApp({ Component, pageProps }: AppProps) {
-  const theme = extendTheme(baseTheme, {
-    colors: {
-      primary: baseTheme.colors.purple,
-      secondary: baseTheme.colors.yellow,
-    },
-  });
-
   return (
     <ChakraProvider theme={theme}>
       <ChainProvider

@@ -3,7 +3,6 @@ import {
   Drawer,
   DrawerContent,
   DrawerOverlay,
-  useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
 import SidebarContent from "./SidebarContent";
@@ -17,8 +16,6 @@ export default function Layout({ children }: React.PropsWithChildren<{}>) {
     <Box as="section" minH="100vh">
       <Head>
         <title>Agon Protocol</title>
-        <meta name="description" content="Decentralized Competition" />
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       <SidebarContent
         display={{
