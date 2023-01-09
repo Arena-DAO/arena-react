@@ -16,7 +16,7 @@ import ErrorBoundary from "../components/ErrorBoundary";
 import { getConstantineAssets, getConstantineChain } from "../config/archway";
 import { getMorpheusAssets, getMorpheusChain } from "../config/desmos";
 import DesmosProvider from "../components/DesmosProvider";
-import theme from "./theme";
+import theme from "../config/theme";
 
 function CreateCosmosApp({ Component, pageProps }: AppProps) {
   return (
