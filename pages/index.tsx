@@ -9,7 +9,6 @@ import {
   Image,
   useColorModeValue,
 } from "@chakra-ui/react";
-import Head from "next/head";
 import { PropsWithChildren } from "react";
 import { BsCurrencyBitcoin, BsLightningFill } from "react-icons/bs";
 import { FaBalanceScale } from "react-icons/fa";
@@ -61,9 +60,6 @@ function Feature(props: FeatureProps) {
 export default function Home() {
   return (
     <Container maxW="5xl" py={10}>
-      <Head>
-        <title>Agon Protocol</title>
-      </Head>
       <Heading
         as="h1"
         fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
