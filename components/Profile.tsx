@@ -58,7 +58,7 @@ export default function Profile() {
         ) : (
           <Link
             className="text-decoration-none"
-            href="https://x.forbole.com/"
+            href="https://go-find.me/"
             isExternal
           >
             <MenuItem>Create Profile</MenuItem>

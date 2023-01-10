@@ -59,7 +59,7 @@ function Feature(props: FeatureProps) {
 
 export default function Home() {
   return (
-    <Container maxW="5xl" py={10}>
+    <Container maxW="5xl" pb={10}>
       <Heading
         as="h1"
         fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}

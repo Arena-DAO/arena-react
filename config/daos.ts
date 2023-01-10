@@ -3,6 +3,7 @@ export class DAOItem {
   title: string;
   children?: DAOItem[];
   addrs?: string[];
+  img?: string | undefined;
 
   constructor(url: string, title: string) {
     this.url = url;
@@ -31,43 +32,45 @@ export const DAORoot: DAOItem = {
   children: [
     {
       url: "gaming",
+      img: "/category_images/gaming.jpg",
       title: "Gaming",
       children: [
         {
           url: "fortnite",
           title: "Fortnite",
-          addrs: ["x", "y", "z"],
+          img: "/category_images/fortnite.webp",
         },
         {
           url: "overwatch-2",
+          img: "/category_images/overwatch-2.webp",
           title: "Overwatch 2",
-          addrs: ["x", "y", "z"],
         },
         {
           url: "call-of-duty",
           title: "Call of Duty",
-          addrs: ["x", "y", "z"],
+          img: "/category_images/call-of-duty.webp",
         },
       ],
     },
     {
       url: "sports",
       title: "Sports",
+      img: "/category_images/sports.jpg",
       children: [
         {
           url: "soccer",
           title: "Soccer",
-          addrs: ["x", "y", "z"],
+          img: "/category_images/soccer.jpg",
         },
         {
           url: "tennis",
           title: "Tennis",
-          addrs: ["x", "y", "z"],
+          img: "/category_images/tennis.jpg",
         },
         {
           url: "basketball",
           title: "Basketball",
-          addrs: ["x", "y", "z"],
+          img: "/category_images/basketball.jpg",
         },
       ],
     },

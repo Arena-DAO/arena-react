@@ -46,7 +46,9 @@ export default function TopNav({ onOpen, ...rest }: TopNavProps) {
         aria-label="Menu"
         icon={<FiMenu />}
       />
-      <Logo display={{ base: "inline-flex", md: "none" }}>Logo</Logo>
+      <Logo display={{ base: "none", sm: "inline-flex", md: "none" }}>
+        Logo
+      </Logo>
       <HStack spacing={{ base: "0", md: "3" }}>
         <Button
           variant="ghost"
