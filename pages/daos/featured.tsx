@@ -2,21 +2,18 @@ import {
   Box,
   Container,
   Heading,
-  Link,
   Image,
   Text,
-  useColorModeValue,
   SimpleGrid,
   Flex,
-  chakra,
   Spacer,
   Button,
 } from "@chakra-ui/react";
-import { DAOMap, DAORoot } from "../config/daos";
+import { DAOMap, DAORoot } from "../../config/daos";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
 
-export default function DAOs() {
+export default function FeaturedDAOs() {
   const router = useRouter();
   const { id } = router.query;
   const daoItem = id ? DAOMap.get(id as string) ?? DAORoot : DAORoot;
@@ -87,7 +84,7 @@ export default function DAOs() {
                   }}
                 >
                   <Spacer />
-                  <NextLink href={"/daos?id=" + x.url}>
+                  <NextLink href={"/daos/featured?id=" + x.url}>
                     <Button
                       colorScheme="secondary"
                       fontWeight="bold"

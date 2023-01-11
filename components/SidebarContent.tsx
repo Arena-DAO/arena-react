@@ -1,5 +1,6 @@
 import {
   Box,
+  BoxProps,
   Flex,
   FlexProps,
   HStack,
@@ -12,7 +13,34 @@ import NavMenu from "./NavMenu";
 import { BsDiscord, BsGithub, BsTwitter } from "react-icons/bs";
 import Logo from "./Logo";
 
-export default function SidebarContent({ ...rest }: FlexProps) {
+export default function SidebarContent({ ...props }: BoxProps) {
+  return (
+    <Box
+      as="nav"
+      pos="fixed"
+      top="0"
+      left="0"
+      zIndex="sticky"
+      h="full"
+      pb="10"
+      overflowX="hidden"
+      overflowY="auto"
+      bg="white"
+      _dark={{
+        bg: "gray.800",
+      }}
+      color="inherit"
+      borderRightWidth="1px"
+      w="60"
+      {...props}
+    >
+      <Flex px="4" py="5" align="center">
+        <Logo />
+      </Flex>
+      <NavMenu />
+    </Box>
+  );
+
   return (
     <Box
       as="nav"
