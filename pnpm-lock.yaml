@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@apollo/client': ^3.7.5
   '@babel/core': ^7.20.12
+  '@chain-registry/types': ^0.14.0
   '@chakra-ui/icons': 2.0.17
   '@chakra-ui/react': 2.4.9
   '@chakra-ui/styled-system': ^2.5.1
@@ -52,6 +53,7 @@ specifiers:
 dependencies:
   '@apollo/client': 3.7.5_gdcq4dv6opitr3wbfwyjmanyra
   '@babel/core': 7.20.12
+  '@chain-registry/types': 0.14.0
   '@chakra-ui/icons': 2.0.17_i3shekjw4uogiqsyudihvyzi2i
   '@chakra-ui/react': 2.4.9_uee6ed5bxuzftcjxqdeijj4uxm
   '@chakra-ui/styled-system': 2.5.1

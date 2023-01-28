@@ -7,7 +7,6 @@ import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { wallets as vectisWallets } from "@cosmos-kit/vectis";
 import { chains, assets } from "chain-registry";
 import MainLayout from "../components/MainLayout";
-import { getConstantineAssets, getConstantineChain } from "../config/archway";
 import { getMorpheusAssets, getMorpheusChain } from "../config/desmos";
 import DesmosProvider from "../components/DesmosProvider";
 import theme from "../config/theme";
@@ -27,8 +26,8 @@ function CreateCosmosApp({ Component, pageProps }: AppProps) {
   return (
     <SaasProvider theme={theme} linkComponent={Link} onError={onError}>
       <ChainProvider
-        chains={[...chains, getMorpheusChain(), getConstantineChain()]}
-        assetLists={[...assets, getConstantineAssets(), getMorpheusAssets()]}
+        chains={[...chains, getMorpheusChain()]}
+        assetLists={[...assets, getMorpheusAssets()]}
         wallets={[
           ...keplrWallets,
           ...cosmostationWallets,
