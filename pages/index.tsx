@@ -62,6 +62,7 @@ export default function Home() {
     <Container maxW="5xl" pb={10}>
       <Heading
         as="h1"
+        className="holographic"
         fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
         fontWeight="extrabold"
         mb={3}

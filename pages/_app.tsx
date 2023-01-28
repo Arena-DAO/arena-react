@@ -1,23 +1,31 @@
 import "../styles/app.scss";
 import type { AppProps } from "next/app";
 import { ChainProvider } from "@cosmos-kit/react";
-import { ChakraProvider } from "@chakra-ui/react";
 import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as cosmostationWallets } from "@cosmos-kit/cosmostation";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { wallets as vectisWallets } from "@cosmos-kit/vectis";
 import { chains, assets } from "chain-registry";
-import Layout from "../components/MainLayout";
-import ErrorBoundary from "../components/ErrorBoundary";
+import MainLayout from "../components/MainLayout";
 import { getConstantineAssets, getConstantineChain } from "../config/archway";
 import { getMorpheusAssets, getMorpheusChain } from "../config/desmos";
 import DesmosProvider from "../components/DesmosProvider";
 import theme from "../config/theme";
 import React from "react";
+import { EmptyState, SaasProvider, ErrorBoundary } from "@saas-ui/react";
+import NextLink, { LinkProps } from "next/link";
+
+const Link: React.FC<LinkProps> = (props) => {
+  return <NextLink {...props} legacyBehavior />;
+};
 
 function CreateCosmosApp({ Component, pageProps }: AppProps) {
+  const onError = React.useCallback((error: Error) => {
+    console.log(error);
+  }, []);
+
   return (
-    <ChakraProvider theme={theme}>
+    <SaasProvider theme={theme} linkComponent={Link} onError={onError}>
       <ChainProvider
         chains={[...chains, getMorpheusChain(), getConstantineChain()]}
         assetLists={[...assets, getConstantineAssets(), getMorpheusAssets()]}
@@ -29,14 +37,16 @@ function CreateCosmosApp({ Component, pageProps }: AppProps) {
         ]}
       >
         <DesmosProvider>
-          <Layout>
-            <ErrorBoundary>
+          <MainLayout>
+            <ErrorBoundary
+              errorComponent={<EmptyState title="Oops an error has occurred" />}
+            >
               <Component {...pageProps} />
             </ErrorBoundary>
-          </Layout>
+          </MainLayout>
         </DesmosProvider>
       </ChainProvider>
-    </ChakraProvider>
+    </SaasProvider>
   );
 }
 

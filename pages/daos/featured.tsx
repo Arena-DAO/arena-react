@@ -9,7 +9,7 @@ import {
   Spacer,
   Button,
 } from "@chakra-ui/react";
-import { DAOMap, DAORoot } from "../../config/daos";
+import { DAOMap, DAORoot } from "config/daos";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
 
@@ -22,6 +22,7 @@ export default function FeaturedDAOs() {
     <Container maxW="5x1" pb={10}>
       <Heading
         as="h1"
+        className="holographic"
         fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
         fontWeight="extrabold"
         textAlign="center"
@@ -31,6 +32,7 @@ export default function FeaturedDAOs() {
       {daoItem.children && (
         <Heading
           as="h2"
+          className="holographic"
           fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
           fontWeight="extrabold"
           mb={3}
@@ -70,7 +72,12 @@ export default function FeaturedDAOs() {
                 rounded="base"
                 overflow="hidden"
               >
-                <Heading py={2} textAlign="center" fontWeight="bold">
+                <Heading
+                  py={2}
+                  textAlign="center"
+                  className="holographic"
+                  fontWeight="bold"
+                >
                   {x.title}
                 </Heading>
                 <Flex
@@ -103,6 +110,7 @@ export default function FeaturedDAOs() {
         <Heading
           mt="5"
           as="h2"
+          className="holographic"
           fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
           fontWeight="extrabold"
           mb={3}

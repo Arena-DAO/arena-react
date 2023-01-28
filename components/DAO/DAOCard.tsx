@@ -1,7 +1,7 @@
 import { useChain } from "@cosmos-kit/react";
 import { PropsWithChildren, useEffect, useRef, useState } from "react";
-import { DaoCoreQueryClient } from "../../ts-codegen/DaoCore.client";
-import { DumpStateResponse } from "../../ts-codegen/DaoCore.types";
+import { DaoCoreQueryClient } from "../../ts-codegen/dao/DaoCore.client";
+import { DumpStateResponse } from "../../ts-codegen/dao/DaoCore.types";
 
 interface DAOCardProps extends PropsWithChildren {
   addr: string;

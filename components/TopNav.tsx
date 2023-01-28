@@ -1,55 +1,23 @@
-import {
-  Flex,
-  FlexProps,
-  HStack,
-  IconButton,
-  Icon,
-  Button,
-  useColorMode,
-  Spacer,
-} from "@chakra-ui/react";
-import { FiMenu } from "react-icons/fi";
+import { HStack, Icon, Button, useColorMode, Flex } from "@chakra-ui/react";
 import { BsFillMoonStarsFill, BsFillSunFill } from "react-icons/bs";
-import Logo from "./Logo";
 import ConnectWallet from "./ConnectWallet";
 import { useChain } from "@cosmos-kit/react";
 import Profile from "./Profile";
 
-interface TopNavProps extends FlexProps {
-  onOpen: () => void;
-}
-export default function TopNav({ onOpen, ...rest }: TopNavProps) {
+export default function TopNav() {
   const chain = useChain(process.env.NEXT_PUBLIC_CHAIN!);
   const { colorMode, toggleColorMode } = useColorMode();
+
   return (
     <Flex
-      align="center"
-      justify="space-between"
-      w="full"
-      px="4"
-      bg="white"
-      _dark={{
-        bg: "gray.800",
-      }}
+      as="header"
       borderBottomWidth="1px"
-      color="inherit"
-      h="14"
-      {...rest}
+      py="2"
+      px="4"
+      position="sticky"
+      top="0"
     >
-      <Spacer display={{ base: "none", md: "inline-flex" }} />
-      <IconButton
-        display={{
-          base: "inline-flex",
-          md: "none",
-        }}
-        onClick={onOpen}
-        aria-label="Menu"
-        icon={<FiMenu />}
-      />
-      <Logo display={{ base: "none", sm: "inline-flex", md: "none" }}>
-        Logo
-      </Logo>
-      <HStack spacing={{ base: "0", md: "3" }}>
+      <HStack spacing={{ base: "1", md: "3" }} ml="auto">
         <Button
           variant="ghost"
           aria-label="toggle color"
