@@ -1,42 +1,25 @@
 import {
-  AutoForm,
   FormLayout,
   Form,
   ArrayField,
-  ArrayFieldContainer,
-  ArrayFieldRows,
-  ArrayFieldRowContainer,
-  ArrayFieldRowFields,
-  ArrayFieldAddButton,
-  ArrayFieldRemoveButton,
-  useArrayFieldContext,
-  useArrayFieldRowContext,
-  useArrayFieldAddButton,
-  useArrayFieldRemoveButton,
-  FormStepper,
-  StepForm,
-  useForm,
   SubmitButton,
   Field,
   Card,
-  CardHeader,
-  CardBody,
-  CardTitle,
-  Button,
-  CardFooter,
   DisplayIf,
 } from "@saas-ui/react";
 import { yupResolver } from "@saas-ui/forms/yup";
+import { toBinary } from "cosmwasm";
 import {
-  Duration,
-  PercentageThreshold,
+  CosmosMsgForEmpty,
   InstantiateMsg as ProposalMultipleInstantiateMsg,
 } from "ts-codegen/dao/DaoProposalMultiple.types";
+import { ExecuteMsg, ProposalModuleStatus } from "ts-codegen/dao/DaoCore.types";
 import {
-  InstantiateMsg as AgonCoreInstantiateMsg,
-  ModuleInstantiateInfo,
-  Ruleset,
-} from "ts-codegen/agon/AgonCore.types";
+  DaoCoreClient,
+  DaoCoreQueryClient,
+} from "ts-codegen/dao/DaoCore.client";
+import { DaoProposalSingleClient } from "ts-codegen/dao/DaoProposalSingle.client";
+import { InstantiateMsg as AgonCoreInstantiateMsg } from "ts-codegen/agon/AgonCore.types";
 import * as Yup from "yup";
 import {
   Heading,
@@ -48,8 +31,19 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import React from "react";
+import { useChain } from "@cosmos-kit/react";
+
+interface AgonForm {
+  dao: string;
+  allow_revoting: boolean;
+  close_proposal_on_execution_failure: boolean;
+  max_voting_period: number;
+  max_voting_period_units: string;
+  min_voting_period: number;
+}
 
 export default function EnableAgon() {
+  const chain = useChain(process.env.NEXT_PUBLIC_CHAIN!);
   const schema = Yup.object().shape({
     dao: Yup.string().required().label("DAO"),
     allow_revoting: Yup.bool().label("Allow Revoting"),
@@ -98,8 +92,96 @@ export default function EnableAgon() {
       .label("Rulesets"),
     //competition_modules_instantiate_info: [] as ModuleInstantiateInfo[],
   });
-  const onSubmit = async (params: any) => {
-    console.log(params);
+  interface AgonParams extends Yup.InferType<typeof schema> {}
+  const onSubmit = async (params: AgonParams) => {
+    let msg: CosmosMsgForEmpty = {
+      wasm: {
+        execute: {
+          contract_addr: params.dao,
+          funds: [],
+          msg: toBinary({
+            update_proposal_modules: {
+              to_add: [
+                {
+                  code_id: parseInt(process.env.NEXT_PUBLIC_CODE_ID_PROPOSAL!),
+                  label: "Agon Proposal Module",
+                  msg: toBinary({
+                    allow_revoting: params.allow_revoting,
+                    close_proposal_on_execution_failure:
+                      params.close_proposal_on_execution_failure,
+                    max_voting_period:
+                      params.max_voting_period_units == "Time"
+                        ? { time: params.max_voting_period }
+                        : { height: params.max_voting_period },
+                    min_voting_period: params.min_voting_period
+                      ? params.min_voting_period_units == "Time"
+                        ? { time: params.min_voting_period }
+                        : { height: params.min_voting_period }
+                      : null,
+                    only_members_execute: params.only_members_execute,
+                    voting_strategy: {
+                      single_choice: { quorum: params.voting_threshold },
+                    },
+                    pre_propose_info: {
+                      module_may_propose: {
+                        info: {
+                          code_id: parseInt(
+                            process.env.NEXT_PUBLIC_CODE_ID_AGON_CORE!
+                          ),
+                          label: "Agon Core",
+                          msg: toBinary({
+                            competition_modules_instantiate_info: [],
+                            dao: params.dao,
+                            rulesets:
+                              params.rulesets?.map((x) => {
+                                return {
+                                  description: x.description,
+                                  enabled: true,
+                                  rules: x.rules?.map((y) => {
+                                    return y.rule;
+                                  }),
+                                };
+                              }) ?? [],
+                          } as AgonCoreInstantiateMsg),
+                        },
+                      },
+                    },
+                  } as ProposalMultipleInstantiateMsg),
+                },
+              ],
+              to_disable: [],
+            },
+          } as ExecuteMsg),
+        },
+      },
+    };
+
+    //query proposal modules for a single proposal module
+    const cosmwasmClient = await chain.getSigningCosmWasmClient();
+    const daoClient = new DaoCoreQueryClient(cosmwasmClient, params.dao);
+    const proposalModules = await daoClient.activeProposalModules({});
+    for (const proposalModule of proposalModules) {
+      const proposalClient = new DaoProposalSingleClient(
+        cosmwasmClient,
+        chain.address!,
+        proposalModule.address
+      );
+
+      const creationPolicy: any = await proposalClient.proposalCreationPolicy();
+      console.log(creationPolicy);
+      if (
+        creationPolicy.anyone == undefined ||
+        creationPolicy.module.addr != chain.address!
+      )
+        continue;
+
+      await proposalClient.propose({
+        title: "Enable the Agon Proposal Module",
+        description:
+          "Allow decentralized competition to be handled through this DAO!",
+        msgs: [msg],
+      });
+    }
   };
   return (
     <Container pb={10} centerContent maxW="4x1">
@@ -118,14 +200,14 @@ export default function EnableAgon() {
       <Card>
         <Form
           resolver={yupResolver(schema)}
-          onSubmit={() => Promise.resolve()}
+          onSubmit={onSubmit}
           m="4"
           defaultValues={{
             max_voting_period: 64800,
             max_voting_period_units: "Time",
             min_voting_period_units: "Time",
             voting_threshold: "Majority",
-            voting_threshold_percentage: "33",
+            voting_threshold_percentage: 33,
           }}
         >
           <FormLayout>
