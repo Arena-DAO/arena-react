@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@apollo/client": "^3.7.5",
+    "@apollo/client": "^3.7.6",
     "@babel/core": "^7.20.12",
     "@chain-registry/types": "^0.14.0",
     "@chakra-ui/icons": "2.0.17",
@@ -39,7 +39,7 @@
     "chain-registry": "1.6.1",
     "cosmwasm": "^1.1.1",
     "csstype": "^3.1.1",
-    "framer-motion": "8.5.5",
+    "framer-motion": "9.0.0",
     "graphql": "^16.6.0",
     "i18next": "^22.4.9",
     "next": "13.1.6",
@@ -57,7 +57,7 @@
     "cosmjs-types": "^0.6.1",
     "eslint": "8.33.0",
     "eslint-config-next": "13.1.6",
-    "sass": "^1.57.1",
+    "sass": "^1.58.0",
     "typescript": "4.9.5"
   }
 }

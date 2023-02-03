@@ -91,7 +91,7 @@ export default function FeaturedDAOs() {
                   }}
                 >
                   <Spacer />
-                  <NextLink href={"/daos/featured?id=" + x.url}>
+                  <NextLink href={"/featured?id=" + x.url}>
                     <Button
                       colorScheme="secondary"
                       fontWeight="bold"

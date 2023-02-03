@@ -1,6 +1,5 @@
-import { BsPeopleFill } from "react-icons/bs";
-import { FiHome } from "react-icons/fi";
-import { NavGroup, NavItem, SidebarSection } from "@saas-ui/sidebar";
+import { FiHome, FiPlus, FiStar } from "react-icons/fi";
+import { NavItem, SidebarSection } from "@saas-ui/sidebar";
 
 export default function NavMenu() {
   return (
@@ -8,10 +7,12 @@ export default function NavMenu() {
       <NavItem icon={<FiHome />} href="/">
         Home
       </NavItem>
-      <NavGroup icon={<BsPeopleFill />} title="DAO's" isCollapsible>
-        <NavItem href="/daos/featured">Featured</NavItem>
-        <NavItem href="/daos/enable">Enable Agon</NavItem>
-      </NavGroup>
+      <NavItem icon={<FiStar />} href="/featured">
+        Featured DAO's
+      </NavItem>
+      <NavItem icon={<FiPlus />} href="/enable">
+        Enable Agon
+      </NavItem>
     </SidebarSection>
   );
 }
