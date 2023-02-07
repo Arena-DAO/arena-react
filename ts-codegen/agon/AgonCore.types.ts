@@ -4,6 +4,20 @@
 * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
 */
 
+export type Uint128 = string;
+export type DepositToken = {
+  token: {
+    denom: UncheckedDenom;
+  };
+} | {
+  voting_module_token: {};
+};
+export type UncheckedDenom = {
+  native: string;
+} | {
+  cw20: string;
+};
+export type DepositRefundPolicy = "always" | "only_passed" | "never";
 export type Admin = {
   address: {
     addr: string;
@@ -12,10 +26,21 @@ export type Admin = {
   core_module: {};
 };
 export type Binary = string;
+export type Decimal = string;
 export interface InstantiateMsg {
+  deposit_info?: UncheckedDepositInfo | null;
+  extension: InstantiateExt;
+  open_proposal_submission: boolean;
+}
+export interface UncheckedDepositInfo {
+  amount: Uint128;
+  denom: DepositToken;
+  refund_policy: DepositRefundPolicy;
+}
+export interface InstantiateExt {
   competition_modules_instantiate_info: ModuleInstantiateInfo[];
-  dao: string;
   rulesets: Ruleset[];
+  tax: Decimal;
 }
 export interface ModuleInstantiateInfo {
   admin?: Admin | null;
@@ -25,13 +50,44 @@ export interface ModuleInstantiateInfo {
 }
 export interface Ruleset {
   description: string;
-  enabled: boolean;
+  id: Uint128;
   rules: string[];
 }
 export type ExecuteMsg = {
+  propose: {
+    msg: Empty;
+  };
+} | {
+  update_config: {
+    deposit_info?: UncheckedDepositInfo | null;
+    open_proposal_submission: boolean;
+  };
+} | {
+  withdraw: {
+    denom?: UncheckedDenom | null;
+  };
+} | {
+  extension: {
+    msg: ExecuteExt;
+  };
+} | {
+  add_proposal_submitted_hook: {
+    address: string;
+  };
+} | {
+  remove_proposal_submitted_hook: {
+    address: string;
+  };
+} | {
+  proposal_completed_hook: {
+    new_status: Status;
+    proposal_id: number;
+  };
+};
+export type ExecuteExt = {
   update_competition_modules: {
     to_add: ModuleInstantiateInfo[];
-    to_disable: string[];
+    to_remove: string[];
   };
 } | {
   jail_wager: {
@@ -57,8 +113,11 @@ export type ExecuteMsg = {
     to_add: Ruleset[];
     to_disable: Uint128[];
   };
+} | {
+  update_tax: {
+    tax: Decimal;
+  };
 };
-export type Uint128 = string;
 export type Expiration = {
   at_height: number;
 } | {
@@ -82,6 +141,10 @@ export type WagerDAO = {
     addr: string;
   };
 };
+export type Status = "open" | "rejected" | "passed" | "executed" | "closed" | "execution_failed";
+export interface Empty {
+  [k: string]: unknown;
+}
 export interface MemberBalance {
   balances: GenericTokenBalance[];
   member: string;
@@ -97,17 +160,33 @@ export interface MemberShare {
   shares: Uint128;
 }
 export type QueryMsg = {
+  proposal_module: {};
+} | {
+  dao: {};
+} | {
+  config: {};
+} | {
+  deposit_info: {
+    proposal_id: number;
+  };
+} | {
+  proposal_submitted_hooks: {};
+} | {
+  query_extension: {
+    msg: QueryExt;
+  };
+};
+export type QueryExt = {
   competition_modules: {
     limit?: number | null;
     start_after?: string | null;
   };
 } | {
   rulesets: {
+    description?: string | null;
     limit?: number | null;
-    start_after?: number | null;
+    skip?: number | null;
   };
-} | {
-  d_a_o: {};
 } | {
   tax: {
     height?: number | null;
@@ -115,13 +194,24 @@ export type QueryMsg = {
 } | {
   dump_state: {};
 };
-export interface MigrateMsg {}
-export type ArrayOfCompetitionModule = CompetitionModule[];
-export interface CompetitionModule {
-  addr: Addr;
+export type CheckedDenom = {
+  native: string;
+} | {
+  cw20: Addr;
+};
+export interface Config {
+  deposit_info?: CheckedDepositInfo | null;
+  open_proposal_submission: boolean;
 }
-export interface DumpStateResponse {
-  competition_modules: CompetitionModule[];
+export interface CheckedDepositInfo {
+  amount: Uint128;
+  denom: CheckedDenom;
+  refund_policy: DepositRefundPolicy;
 }
-export type ArrayOfRuleset = Ruleset[];
-export type Decimal = string;
+export interface DepositInfoResponse {
+  deposit_info?: CheckedDepositInfo | null;
+  proposer: Addr;
+}
+export interface HooksResponse {
+  hooks: string[];
+}

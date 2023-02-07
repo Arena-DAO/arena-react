@@ -19,7 +19,10 @@ import {
   DaoCoreQueryClient,
 } from "ts-codegen/dao/DaoCore.client";
 import { DaoProposalSingleClient } from "ts-codegen/dao/DaoProposalSingle.client";
-import { InstantiateMsg as AgonCoreInstantiateMsg } from "ts-codegen/agon/AgonCore.types";
+import {
+  InstantiateMsg as AgonCoreInstantiateMsg,
+  InstantiateExt,
+} from "ts-codegen/agon/AgonCore.types";
 import * as Yup from "yup";
 import {
   Heading,
@@ -75,6 +78,7 @@ export default function EnableAgon() {
       .min(0)
       .max(100)
       .label("Percentage"),
+    tax: Yup.number().positive().required().min(0).max(1).label("Tax"),
     rulesets: Yup.array()
       .of(
         Yup.object().shape({
@@ -130,18 +134,21 @@ export default function EnableAgon() {
                           ),
                           label: "Agon Core",
                           msg: toBinary({
-                            competition_modules_instantiate_info: [],
-                            dao: params.dao,
-                            rulesets:
-                              params.rulesets?.map((x) => {
-                                return {
-                                  description: x.description,
-                                  enabled: true,
-                                  rules: x.rules?.map((y) => {
-                                    return y.rule;
-                                  }),
-                                };
-                              }) ?? [],
+                            open_proposal_submission: false,
+                            extension: {
+                              competition_modules_instantiate_info: [],
+                              rulesets:
+                                params.rulesets?.map((x) => {
+                                  return {
+                                    id: "0",
+                                    description: x.description,
+                                    rules: x.rules?.map((y) => {
+                                      return y.rule;
+                                    }),
+                                  };
+                                }) ?? [],
+                              tax: params.tax.toString(),
+                            } as InstantiateExt,
                           } as AgonCoreInstantiateMsg),
                         },
                       },
@@ -155,6 +162,20 @@ export default function EnableAgon() {
         },
       },
     };
+    /* {
+                            competition_modules_instantiate_info: [],
+                            dao: params.dao,
+                            rulesets:
+                              params.rulesets?.map((x) => {
+                                return {
+                                  description: x.description,
+                                  enabled: true,
+                                  rules: x.rules?.map((y) => {
+                                    return y.rule;
+                                  }),
+                                };
+                              }) ?? [],
+                          }  */
 
     //query proposal modules for a single proposal module
     const cosmwasmClient = await chain.getSigningCosmWasmClient();
@@ -208,6 +229,7 @@ export default function EnableAgon() {
             min_voting_period_units: "Time",
             voting_threshold: "Majority",
             voting_threshold_percentage: 33,
+            tax: 0.15,
           }}
         >
           <FormLayout>
@@ -242,11 +264,14 @@ export default function EnableAgon() {
                 options={[{ value: "Time" }, { value: "Height" }]}
               />
             </FormLayout>
-            <Field
-              type="switch"
-              name="only_members_execute"
-              label="Only Members Execute"
-            />
+            <FormLayout columns={2}>
+              <Field name="tax" label="Tax" />
+              <Field
+                type="switch"
+                name="only_members_execute"
+                label="Only Members Execute"
+              />
+            </FormLayout>
             <FormLayout columns={2}>
               <Field
                 type="select"

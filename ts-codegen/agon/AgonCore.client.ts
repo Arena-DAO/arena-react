@@ -6,30 +6,23 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { Admin, Binary, InstantiateMsg, ModuleInstantiateInfo, Ruleset, ExecuteMsg, Uint128, Expiration, Timestamp, Uint64, Addr, GenericTokenType, WagerDAO, MemberBalance, GenericTokenBalance, MemberShare, QueryMsg, MigrateMsg, ArrayOfCompetitionModule, CompetitionModule, DumpStateResponse, ArrayOfRuleset, Decimal } from "./AgonCore.types";
+import { Uint128, DepositToken, UncheckedDenom, DepositRefundPolicy, Admin, Binary, Decimal, InstantiateMsg, UncheckedDepositInfo, InstantiateExt, ModuleInstantiateInfo, Ruleset, ExecuteMsg, ExecuteExt, Expiration, Timestamp, Uint64, Addr, GenericTokenType, WagerDAO, Status, Empty, MemberBalance, GenericTokenBalance, MemberShare, QueryMsg, QueryExt, CheckedDenom, Config, CheckedDepositInfo, DepositInfoResponse, HooksResponse } from "./AgonCore.types";
 export interface AgonCoreReadOnlyInterface {
   contractAddress: string;
-  competitionModules: ({
-    limit,
-    startAfter
+  proposalModule: () => Promise<Addr>;
+  dao: () => Promise<Addr>;
+  config: () => Promise<Config>;
+  depositInfo: ({
+    proposalId
   }: {
-    limit?: number;
-    startAfter?: string;
-  }) => Promise<ArrayOfCompetitionModule>;
-  rulesets: ({
-    limit,
-    startAfter
+    proposalId: number;
+  }) => Promise<DepositInfoResponse>;
+  proposalSubmittedHooks: () => Promise<HooksResponse>;
+  queryExtension: ({
+    msg
   }: {
-    limit?: number;
-    startAfter?: number;
-  }) => Promise<ArrayOfRuleset>;
-  dAO: () => Promise<Addr>;
-  tax: ({
-    height
-  }: {
-    height?: number;
-  }) => Promise<Decimal>;
-  dumpState: () => Promise<DumpStateResponse>;
+    msg: QueryExt;
+  }) => Promise<Binary>;
 }
 export class AgonCoreQueryClient implements AgonCoreReadOnlyInterface {
   client: CosmWasmClient;
@@ -38,108 +31,98 @@ export class AgonCoreQueryClient implements AgonCoreReadOnlyInterface {
   constructor(client: CosmWasmClient, contractAddress: string) {
     this.client = client;
     this.contractAddress = contractAddress;
-    this.competitionModules = this.competitionModules.bind(this);
-    this.rulesets = this.rulesets.bind(this);
-    this.dAO = this.dAO.bind(this);
-    this.tax = this.tax.bind(this);
-    this.dumpState = this.dumpState.bind(this);
+    this.proposalModule = this.proposalModule.bind(this);
+    this.dao = this.dao.bind(this);
+    this.config = this.config.bind(this);
+    this.depositInfo = this.depositInfo.bind(this);
+    this.proposalSubmittedHooks = this.proposalSubmittedHooks.bind(this);
+    this.queryExtension = this.queryExtension.bind(this);
   }
 
-  competitionModules = async ({
-    limit,
-    startAfter
-  }: {
-    limit?: number;
-    startAfter?: string;
-  }): Promise<ArrayOfCompetitionModule> => {
+  proposalModule = async (): Promise<Addr> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      competition_modules: {
-        limit,
-        start_after: startAfter
+      proposal_module: {}
+    });
+  };
+  dao = async (): Promise<Addr> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      dao: {}
+    });
+  };
+  config = async (): Promise<Config> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      config: {}
+    });
+  };
+  depositInfo = async ({
+    proposalId
+  }: {
+    proposalId: number;
+  }): Promise<DepositInfoResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      deposit_info: {
+        proposal_id: proposalId
       }
     });
   };
-  rulesets = async ({
-    limit,
-    startAfter
+  proposalSubmittedHooks = async (): Promise<HooksResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      proposal_submitted_hooks: {}
+    });
+  };
+  queryExtension = async ({
+    msg
   }: {
-    limit?: number;
-    startAfter?: number;
-  }): Promise<ArrayOfRuleset> => {
+    msg: QueryExt;
+  }): Promise<Binary> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      rulesets: {
-        limit,
-        start_after: startAfter
+      query_extension: {
+        msg
       }
-    });
-  };
-  dAO = async (): Promise<Addr> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      d_a_o: {}
-    });
-  };
-  tax = async ({
-    height
-  }: {
-    height?: number;
-  }): Promise<Decimal> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      tax: {
-        height
-      }
-    });
-  };
-  dumpState = async (): Promise<DumpStateResponse> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      dump_state: {}
     });
   };
 }
 export interface AgonCoreInterface extends AgonCoreReadOnlyInterface {
   contractAddress: string;
   sender: string;
-  updateCompetitionModules: ({
-    toAdd,
-    toDisable
+  propose: ({
+    msg
   }: {
-    toAdd: ModuleInstantiateInfo[];
-    toDisable: string[];
+    msg: Empty;
   }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
-  jailWager: ({
-    id
+  updateConfig: ({
+    depositInfo,
+    openProposalSubmission
   }: {
-    id: Uint128;
+    depositInfo?: UncheckedDepositInfo;
+    openProposalSubmission: boolean;
   }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
-  createWager: ({
-    escrowCodeId,
-    expiration,
-    rules,
-    ruleset,
-    stake,
-    wagerAmount,
-    wagerDao
+  withdraw: ({
+    denom
   }: {
-    escrowCodeId: number;
-    expiration: Expiration;
-    rules: string[];
-    ruleset?: Uint128;
-    stake: MemberBalance[];
-    wagerAmount: MemberBalance[];
-    wagerDao: WagerDAO;
+    denom?: UncheckedDenom;
   }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
-  handleWager: ({
-    distribution,
-    id
+  extension: ({
+    msg
   }: {
-    distribution?: MemberShare[];
-    id: Uint128;
+    msg: ExecuteExt;
   }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
-  updateRulesets: ({
-    toAdd,
-    toDisable
+  addProposalSubmittedHook: ({
+    address
   }: {
-    toAdd: Ruleset[];
-    toDisable: Uint128[];
+    address: string;
+  }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
+  removeProposalSubmittedHook: ({
+    address
+  }: {
+    address: string;
+  }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
+  proposalCompletedHook: ({
+    newStatus,
+    proposalId
+  }: {
+    newStatus: Status;
+    proposalId: number;
   }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
 }
 export class AgonCoreClient extends AgonCoreQueryClient implements AgonCoreInterface {
@@ -152,92 +135,95 @@ export class AgonCoreClient extends AgonCoreQueryClient implements AgonCoreInter
     this.client = client;
     this.sender = sender;
     this.contractAddress = contractAddress;
-    this.updateCompetitionModules = this.updateCompetitionModules.bind(this);
-    this.jailWager = this.jailWager.bind(this);
-    this.createWager = this.createWager.bind(this);
-    this.handleWager = this.handleWager.bind(this);
-    this.updateRulesets = this.updateRulesets.bind(this);
+    this.propose = this.propose.bind(this);
+    this.updateConfig = this.updateConfig.bind(this);
+    this.withdraw = this.withdraw.bind(this);
+    this.extension = this.extension.bind(this);
+    this.addProposalSubmittedHook = this.addProposalSubmittedHook.bind(this);
+    this.removeProposalSubmittedHook = this.removeProposalSubmittedHook.bind(this);
+    this.proposalCompletedHook = this.proposalCompletedHook.bind(this);
   }
 
-  updateCompetitionModules = async ({
-    toAdd,
-    toDisable
+  propose = async ({
+    msg
   }: {
-    toAdd: ModuleInstantiateInfo[];
-    toDisable: string[];
+    msg: Empty;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      update_competition_modules: {
-        to_add: toAdd,
-        to_disable: toDisable
+      propose: {
+        msg
       }
     }, fee, memo, funds);
   };
-  jailWager = async ({
-    id
+  updateConfig = async ({
+    depositInfo,
+    openProposalSubmission
   }: {
-    id: Uint128;
+    depositInfo?: UncheckedDepositInfo;
+    openProposalSubmission: boolean;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      jail_wager: {
-        id
+      update_config: {
+        deposit_info: depositInfo,
+        open_proposal_submission: openProposalSubmission
       }
     }, fee, memo, funds);
   };
-  createWager = async ({
-    escrowCodeId,
-    expiration,
-    rules,
-    ruleset,
-    stake,
-    wagerAmount,
-    wagerDao
+  withdraw = async ({
+    denom
   }: {
-    escrowCodeId: number;
-    expiration: Expiration;
-    rules: string[];
-    ruleset?: Uint128;
-    stake: MemberBalance[];
-    wagerAmount: MemberBalance[];
-    wagerDao: WagerDAO;
+    denom?: UncheckedDenom;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      create_wager: {
-        escrow_code_id: escrowCodeId,
-        expiration,
-        rules,
-        ruleset,
-        stake,
-        wager_amount: wagerAmount,
-        wager_dao: wagerDao
+      withdraw: {
+        denom
       }
     }, fee, memo, funds);
   };
-  handleWager = async ({
-    distribution,
-    id
+  extension = async ({
+    msg
   }: {
-    distribution?: MemberShare[];
-    id: Uint128;
+    msg: ExecuteExt;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      handle_wager: {
-        distribution,
-        id
+      extension: {
+        msg
       }
     }, fee, memo, funds);
   };
-  updateRulesets = async ({
-    toAdd,
-    toDisable
+  addProposalSubmittedHook = async ({
+    address
   }: {
-    toAdd: Ruleset[];
-    toDisable: Uint128[];
+    address: string;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      update_rulesets: {
-        to_add: toAdd,
-        to_disable: toDisable
+      add_proposal_submitted_hook: {
+        address
+      }
+    }, fee, memo, funds);
+  };
+  removeProposalSubmittedHook = async ({
+    address
+  }: {
+    address: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      remove_proposal_submitted_hook: {
+        address
+      }
+    }, fee, memo, funds);
+  };
+  proposalCompletedHook = async ({
+    newStatus,
+    proposalId
+  }: {
+    newStatus: Status;
+    proposalId: number;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      proposal_completed_hook: {
+        new_status: newStatus,
+        proposal_id: proposalId
       }
     }, fee, memo, funds);
   };
