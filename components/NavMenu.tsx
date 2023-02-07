@@ -8,7 +8,7 @@ export default function NavMenu() {
         Home
       </NavItem>
       <NavItem icon={<FiStar />} href="/featured">
-        Featured DAO's
+        Featured DAO&apos;s
       </NavItem>
       <NavItem icon={<FiPlus />} href="/enable">
         Enable Agon

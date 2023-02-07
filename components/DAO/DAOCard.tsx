@@ -34,7 +34,7 @@ export default async function DAOCard({ addr }: DAOCardProps) {
     }
 
     queryDAO();
-  }, []);
+  }, [addr, chain]);
 
   if (!DAOState) {
     return <></>;
