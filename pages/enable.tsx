@@ -162,20 +162,6 @@ export default function EnableAgon() {
         },
       },
     };
-    /* {
-                            competition_modules_instantiate_info: [],
-                            dao: params.dao,
-                            rulesets:
-                              params.rulesets?.map((x) => {
-                                return {
-                                  description: x.description,
-                                  enabled: true,
-                                  rules: x.rules?.map((y) => {
-                                    return y.rule;
-                                  }),
-                                };
-                              }) ?? [],
-                          }  */
 
     //query proposal modules for a single proposal module
     const cosmwasmClient = await chain.getSigningCosmWasmClient();
@@ -219,38 +205,33 @@ export default function EnableAgon() {
         Use this form to create a proposal enabling Agon Protocol on your DAO!
       </Text>
       <Card>
-        <Form
-          resolver={yupResolver(schema)}
-          onSubmit={onSubmit}
-          m="4"
-          defaultValues={{
-            max_voting_period: 64800,
-            max_voting_period_units: "Time",
-            min_voting_period_units: "Time",
-            voting_threshold: "Majority",
-            voting_threshold_percentage: 33,
-            tax: 0.15,
-          }}
-        >
+        <Form resolver={yupResolver(schema)} onSubmit={onSubmit} m="4">
           <FormLayout>
             <Field name="dao" label="DAO" />
             <FormLayout columns={2}>
               <Field
                 type="switch"
                 name="allow_revoting"
+                value={1}
                 label="Allow Revoting"
               />
               <Field
                 type="switch"
                 name="close_proposal_on_execution_failure"
+                value={1}
                 label="Close Proposal on Execution Failure"
               />
             </FormLayout>
             <FormLayout templateColumns="auto 25%">
-              <Field name="max_voting_period" label="Max Voting Period" />
+              <Field
+                name="max_voting_period"
+                defaultValue={64800}
+                label="Max Voting Period"
+              />
               <Field
                 type="select"
                 name="max_voting_period_units"
+                defaultValue="Time"
                 label="Units"
                 options={[{ value: "Time" }, { value: "Height" }]}
               />
@@ -260,12 +241,13 @@ export default function EnableAgon() {
               <Field
                 type="select"
                 name="min_voting_period_units"
+                defaultValue="Time"
                 label="Units"
                 options={[{ value: "Time" }, { value: "Height" }]}
               />
             </FormLayout>
             <FormLayout columns={2}>
-              <Field name="tax" label="Tax" />
+              <Field name="tax" defaultValue={0.15} label="Tax" />
               <Field
                 type="switch"
                 name="only_members_execute"
@@ -276,6 +258,7 @@ export default function EnableAgon() {
               <Field
                 type="select"
                 name="voting_threshold"
+                defaultValue={"Majority"}
                 label="Voting Threshold"
                 options={[{ value: "Majority" }, { value: "Percentage" }]}
               />
