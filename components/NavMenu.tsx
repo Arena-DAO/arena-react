@@ -1,5 +1,6 @@
 import { FiHome, FiPlus, FiStar } from "react-icons/fi";
 import { NavItem, SidebarSection } from "@saas-ui/sidebar";
+import { BsPeopleFill } from "react-icons/bs";
 
 export default function NavMenu() {
   return (
@@ -13,6 +14,7 @@ export default function NavMenu() {
       <NavItem icon={<FiPlus />} href="/enable">
         Enable Agon
       </NavItem>
+      <NavItem icon={<BsPeopleFill />}>Teams</NavItem>
     </SidebarSection>
   );
 }

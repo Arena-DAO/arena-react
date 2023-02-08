@@ -13,11 +13,8 @@ import {
   CosmosMsgForEmpty,
   InstantiateMsg as ProposalMultipleInstantiateMsg,
 } from "ts-codegen/dao/DaoProposalMultiple.types";
-import { ExecuteMsg, ProposalModuleStatus } from "ts-codegen/dao/DaoCore.types";
-import {
-  DaoCoreClient,
-  DaoCoreQueryClient,
-} from "ts-codegen/dao/DaoCore.client";
+import { ExecuteMsg } from "ts-codegen/dao/DaoCore.types";
+import { DaoCoreQueryClient } from "ts-codegen/dao/DaoCore.client";
 import { DaoProposalSingleClient } from "ts-codegen/dao/DaoProposalSingle.client";
 import {
   InstantiateMsg as AgonCoreInstantiateMsg,
@@ -31,19 +28,12 @@ import {
   Grid,
   Text,
   GridItem,
+  Box,
 } from "@chakra-ui/react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import React from "react";
 import { useChain } from "@cosmos-kit/react";
-
-interface AgonForm {
-  dao: string;
-  allow_revoting: boolean;
-  close_proposal_on_execution_failure: boolean;
-  max_voting_period: number;
-  max_voting_period_units: string;
-  min_voting_period: number;
-}
+import { FiPercent } from "react-icons/fi";
 
 export default function EnableAgon() {
   const chain = useChain(process.env.NEXT_PUBLIC_CHAIN!);
@@ -77,8 +67,12 @@ export default function EnableAgon() {
       .nullable()
       .min(0)
       .max(100)
+      .when("voting_threshold", {
+        is: "Percentage",
+        then: Yup.number().required(),
+      })
       .label("Percentage"),
-    tax: Yup.number().positive().required().min(0).max(1).label("Tax"),
+    tax: Yup.number().positive().required().min(0).max(100).label("Tax"),
     rulesets: Yup.array()
       .of(
         Yup.object().shape({
@@ -107,7 +101,9 @@ export default function EnableAgon() {
             update_proposal_modules: {
               to_add: [
                 {
-                  code_id: parseInt(process.env.NEXT_PUBLIC_CODE_ID_PROPOSAL!),
+                  code_id: parseInt(
+                    process.env.NEXT_PUBLIC_CODE_ID_PROPOSAL_MULTIPLE!
+                  ),
                   label: "Agon Proposal Module",
                   msg: toBinary({
                     allow_revoting: params.allow_revoting,
@@ -191,7 +187,7 @@ export default function EnableAgon() {
     }
   };
   return (
-    <Container pb={10} centerContent maxW="4x1">
+    <Container pb={10} centerContent maxW="70ch">
       <Heading
         as="h1"
         className="holographic"
@@ -247,7 +243,17 @@ export default function EnableAgon() {
               />
             </FormLayout>
             <FormLayout columns={2}>
-              <Field name="tax" defaultValue={0.15} label="Tax" />
+              <Field
+                name="tax"
+                defaultValue={15}
+                label="Tax"
+                textAlign="right"
+                rightAddon={
+                  <Box my="auto">
+                    <FiPercent />{" "}
+                  </Box>
+                }
+              />
               <Field
                 type="switch"
                 name="only_members_execute"
@@ -266,7 +272,16 @@ export default function EnableAgon() {
                 name="voting_threshold"
                 condition={(x) => x == "Percentage"}
               >
-                <Field name="voting_threshold_percentage" label="Percentage" />
+                <Field
+                  name="voting_threshold_percentage"
+                  label="Percentage"
+                  textAlign="right"
+                  rightAddon={
+                    <Box my="auto">
+                      <FiPercent />{" "}
+                    </Box>
+                  }
+                />
               </DisplayIf>
             </FormLayout>
             <ArrayField name="rulesets" label="Rulesets">
