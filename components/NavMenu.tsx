@@ -14,7 +14,9 @@ export default function NavMenu() {
       <NavItem icon={<FiPlus />} href="/enable">
         Enable Agon
       </NavItem>
-      <NavItem icon={<BsPeopleFill />}>Teams</NavItem>
+      <NavItem icon={<BsPeopleFill />} href="/teams">
+        Teams
+      </NavItem>
     </SidebarSection>
   );
 }

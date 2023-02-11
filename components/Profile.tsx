@@ -64,7 +64,7 @@ export default function Profile() {
             <MenuItem>Create Profile</MenuItem>
           </Link>
         )}
-        <MenuItem onClick={(e) => chain.openView()}>Manage Wallet</MenuItem>
+        <MenuItem onClick={chain.openView}>Manage Wallet</MenuItem>
       </MenuList>
     </Menu>
   );

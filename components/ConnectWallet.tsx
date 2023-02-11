@@ -1,5 +1,11 @@
 import React, { MouseEventHandler, ReactNode } from "react";
-import { Button, Icon, Text, Center, useColorMode } from "@chakra-ui/react";
+import {
+  Button,
+  Icon,
+  Text,
+  Center,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import { IconType } from "react-icons";
 import { RiWallet3Fill } from "react-icons/ri";
 import { useChain } from "@cosmos-kit/react";
@@ -14,15 +20,6 @@ type ConnectWalletType = {
   onClickConnectBtn?: MouseEventHandler<HTMLButtonElement>;
 };
 
-function handleChangeColorModeValue(
-  colorMode: string,
-  light: string,
-  dark: string
-) {
-  if (colorMode === "light") return light;
-  if (colorMode === "dark") return dark;
-}
-
 const ConnectWalletButton = ({
   buttonText,
   isLoading,
@@ -31,8 +28,6 @@ const ConnectWalletButton = ({
   rightIcon,
   onClickConnectBtn,
 }: ConnectWalletType) => {
-  const { colorMode } = useColorMode();
-
   return (
     <Button
       p={2.5}
@@ -45,73 +40,57 @@ const ConnectWalletButton = ({
       fontSize="lg"
       isLoading={isLoading}
       isDisabled={isDisabled}
-      bg={handleChangeColorModeValue(colorMode, "primary.500", "primary.400")}
+      bg={useColorModeValue("primary.500", "primary.400")}
       color="white"
       _hover={{
-        bg: handleChangeColorModeValue(colorMode, "primary.400", "primary.500"),
+        bg: useColorModeValue("primary.400", "primary.500"),
       }}
       _active={{
         bg: "primary.50",
-        color: handleChangeColorModeValue(
-          colorMode,
-          "primary.500",
-          "primary.400"
-        ),
+        color: useColorModeValue("primary.500", "primary.400"),
         boxShadow: "none",
       }}
       _focus={{ boxShadow: "0 0 0 2px #929CE4" }}
       _loading={{
         h: 12,
         opacity: 0.8,
-        bg: handleChangeColorModeValue(colorMode, "primary.500", "primary.400"),
+        bg: useColorModeValue("primary.500", "primary.400"),
         color: "white",
         cursor: "progress",
         _hover: {
-          bg: handleChangeColorModeValue(
-            colorMode,
-            "primary.500",
-            "primary.400"
-          ),
+          bg: useColorModeValue("primary.500", "primary.400"),
           color: "white",
           boxShadow: "none",
         },
         _active: {
-          bg: handleChangeColorModeValue(
-            colorMode,
-            "primary.500",
-            "primary.400"
-          ),
+          bg: useColorModeValue("primary.500", "primary.400"),
           color: "white",
           boxShadow: "none",
         },
         _focus: {
-          bg: handleChangeColorModeValue(
-            colorMode,
-            "primary.500",
-            "primary.400"
-          ),
+          bg: useColorModeValue("primary.500", "primary.400"),
           color: "white",
           boxShadow: "none",
         },
       }}
       _disabled={{
         opacity: 0.8,
-        bg: handleChangeColorModeValue(colorMode, "gray.50", "gray.700"),
-        color: handleChangeColorModeValue(colorMode, "gray.400", "gray.500"),
+        bg: useColorModeValue("gray.50", "gray.700"),
+        color: useColorModeValue("gray.400", "gray.500"),
         cursor: "not-allowed",
         _hover: {
-          bg: handleChangeColorModeValue(colorMode, "gray.50", "gray.700"),
-          color: handleChangeColorModeValue(colorMode, "gray.400", "gray.500"),
+          bg: useColorModeValue("gray.50", "gray.700"),
+          color: useColorModeValue("gray.400", "gray.500"),
           boxShadow: "none",
         },
         _active: {
-          bg: handleChangeColorModeValue(colorMode, "gray.50", "gray.700"),
-          color: handleChangeColorModeValue(colorMode, "gray.400", "gray.500"),
+          bg: useColorModeValue("gray.50", "gray.700"),
+          color: useColorModeValue("gray.400", "gray.500"),
           boxShadow: "none",
         },
         _focus: {
-          bg: handleChangeColorModeValue(colorMode, "gray.50", "gray.700"),
-          color: handleChangeColorModeValue(colorMode, "gray.400", "gray.500"),
+          bg: useColorModeValue("gray.50", "gray.700"),
+          color: useColorModeValue("gray.400", "gray.500"),
           boxShadow: "none",
         },
       }}

@@ -6,31 +6,23 @@ import {
   Field,
   Card,
   DisplayIf,
+  Divider,
 } from "@saas-ui/react";
 import { yupResolver } from "@saas-ui/forms/yup";
 import { toBinary } from "cosmwasm";
 import {
   CosmosMsgForEmpty,
   InstantiateMsg as ProposalMultipleInstantiateMsg,
-} from "ts-codegen/dao/DaoProposalMultiple.types";
-import { ExecuteMsg } from "ts-codegen/dao/DaoCore.types";
-import { DaoCoreQueryClient } from "ts-codegen/dao/DaoCore.client";
-import { DaoProposalSingleClient } from "ts-codegen/dao/DaoProposalSingle.client";
+} from "@dao/DaoProposalMultiple.types";
+import { ExecuteMsg } from "@dao/DaoCore.types";
+import { DaoCoreQueryClient } from "@dao/DaoCore.client";
+import { DaoProposalSingleClient } from "@dao/DaoProposalSingle.client";
 import {
   InstantiateMsg as AgonCoreInstantiateMsg,
   InstantiateExt,
-} from "ts-codegen/agon/AgonCore.types";
+} from "@agon/AgonCore.types";
 import * as Yup from "yup";
-import {
-  Heading,
-  SimpleGrid,
-  Container,
-  Grid,
-  Text,
-  GridItem,
-  Box,
-} from "@chakra-ui/react";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Heading, Container, Text, Box } from "@chakra-ui/react";
 import React from "react";
 import { useChain } from "@cosmos-kit/react";
 import { FiPercent } from "react-icons/fi";
@@ -40,9 +32,9 @@ export default function EnableAgon() {
   const schema = Yup.object().shape({
     dao: Yup.string().required().label("DAO"),
     allow_revoting: Yup.bool().label("Allow Revoting"),
-    close_proposal_on_execution_failure: Yup.bool().label(
-      "Close Proposal on Execution Failure"
-    ),
+    close_proposal_on_execution_failure: Yup.bool()
+      .default(true)
+      .label("Close Proposal on Execution Failure"),
     max_voting_period: Yup.number()
       .integer()
       .positive()
@@ -69,7 +61,7 @@ export default function EnableAgon() {
       .max(100)
       .when("voting_threshold", {
         is: "Percentage",
-        then: Yup.number().required(),
+        then: (x) => x.required(),
       })
       .label("Percentage"),
     tax: Yup.number().positive().required().min(0).max(100).label("Tax"),
@@ -208,13 +200,13 @@ export default function EnableAgon() {
               <Field
                 type="switch"
                 name="allow_revoting"
-                value={1}
+                defaultChecked={true}
                 label="Allow Revoting"
               />
               <Field
                 type="switch"
                 name="close_proposal_on_execution_failure"
-                value={1}
+                defaultChecked={true}
                 label="Close Proposal on Execution Failure"
               />
             </FormLayout>
@@ -285,6 +277,7 @@ export default function EnableAgon() {
               </DisplayIf>
             </FormLayout>
             <ArrayField name="rulesets" label="Rulesets">
+              <Divider />
               <Field
                 type="textarea"
                 name="description"

@@ -1,5 +1,5 @@
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
-import { useChain, useManager } from "@cosmos-kit/react";
+import { useManager } from "@cosmos-kit/react";
 import { PropsWithChildren } from "react";
 
 export default function DesmosProvider({ children }: PropsWithChildren) {
@@ -11,7 +11,7 @@ export default function DesmosProvider({ children }: PropsWithChildren) {
   ];
 
   const gql = manager.getChainRecord(process.env.NEXT_PUBLIC_DESMOS!).chain
-    .apis!.gql![0].address;
+    .apis!.gql![0]!.address;
 
   const client = new ApolloClient({
     uri: gql,

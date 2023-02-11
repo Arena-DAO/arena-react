@@ -19,13 +19,12 @@ export default function FeaturedDAOs() {
   const daoItem = id ? DAOMap.get(id as string) ?? DAORoot : DAORoot;
 
   return (
-    <Container maxW="5x1" pb={10}>
+    <Container centerContent pb={10} maxW="150ch">
       <Heading
         as="h1"
         className="holographic"
         fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
         fontWeight="extrabold"
-        textAlign="center"
       >
         {daoItem.title}
       </Heading>
@@ -36,7 +35,6 @@ export default function FeaturedDAOs() {
           fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
           fontWeight="extrabold"
           mb={3}
-          textAlign="center"
         >
           Categories
         </Heading>
@@ -57,7 +55,6 @@ export default function FeaturedDAOs() {
                 rounded="base"
                 shadow="base"
                 bgSize="cover"
-                bgPos="center"
                 src={x.img ? x.img : "/default_trophy.jpg"}
                 alt="category image"
               />
@@ -81,7 +78,6 @@ export default function FeaturedDAOs() {
                   {x.title}
                 </Heading>
                 <Flex
-                  alignItems="center"
                   justifyContent="space-between"
                   py={2}
                   px={3}
@@ -114,7 +110,6 @@ export default function FeaturedDAOs() {
           fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
           fontWeight="extrabold"
           mb={3}
-          textAlign="center"
         >
           DAO&apos;s
         </Heading>

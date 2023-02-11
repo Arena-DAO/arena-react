@@ -59,16 +59,15 @@ function Feature(props: FeatureProps) {
 
 export default function Home() {
   return (
-    <Container maxW="5xl" pb={10}>
+    <Container maxW="150ch" centerContent pb={10}>
       <Heading
         as="h1"
         className="holographic"
         fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
         fontWeight="extrabold"
         mb={3}
-        textAlign="center"
       >
-        Welcome to the future of{" "}
+        Welcome to the future of&nbsp;
         <Box
           as="span"
           color={useColorModeValue("secondary.600", "secondary.400")}
