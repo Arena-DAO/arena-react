@@ -6,20 +6,23 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { Addr, Uint128, GenericTokenType, InstantiateMsg, MemberBalance, GenericTokenBalance, ExecuteMsg, Binary, CompetitionState, Cw20ReceiveMsg, Cw721ReceiveMsg, CwCompetitionResultMsg, MemberShare, CwCompetitionStateChangedMsg, QueryMsg, MigrateMsg, ArrayOfGenericTokenBalance } from "./AgonEscrow.types";
+import { Uint128, DepositToken, UncheckedDenom, DepositRefundPolicy, Admin, Binary, Decimal, InstantiateMsg, UncheckedDepositInfo, InstantiateExt, ModuleInstantiateInfo, Ruleset, ExecuteMsg, ExecuteExt, Expiration, Timestamp, Uint64, Addr, GenericTokenType, WagerDAO, Status, Empty, MemberBalance, GenericTokenBalance, MemberShare, QueryMsg, QueryExt, CheckedDenom, Config, CheckedDepositInfo, DepositInfoResponse, HooksResponse } from "./AgonEscrow.types";
 export interface AgonEscrowReadOnlyInterface {
   contractAddress: string;
-  balance: ({
-    member
+  proposalModule: () => Promise<Addr>;
+  dao: () => Promise<Addr>;
+  config: () => Promise<Config>;
+  depositInfo: ({
+    proposalId
   }: {
-    member: string;
-  }) => Promise<ArrayOfGenericTokenBalance>;
-  due: ({
-    member
+    proposalId: number;
+  }) => Promise<DepositInfoResponse>;
+  proposalSubmittedHooks: () => Promise<HooksResponse>;
+  queryExtension: ({
+    msg
   }: {
-    member: string;
-  }) => Promise<ArrayOfGenericTokenBalance>;
-  total: () => Promise<ArrayOfGenericTokenBalance>;
+    msg: QueryExt;
+  }) => Promise<Binary>;
 }
 export class AgonEscrowQueryClient implements AgonEscrowReadOnlyInterface {
   client: CosmWasmClient;
@@ -28,73 +31,98 @@ export class AgonEscrowQueryClient implements AgonEscrowReadOnlyInterface {
   constructor(client: CosmWasmClient, contractAddress: string) {
     this.client = client;
     this.contractAddress = contractAddress;
-    this.balance = this.balance.bind(this);
-    this.due = this.due.bind(this);
-    this.total = this.total.bind(this);
+    this.proposalModule = this.proposalModule.bind(this);
+    this.dao = this.dao.bind(this);
+    this.config = this.config.bind(this);
+    this.depositInfo = this.depositInfo.bind(this);
+    this.proposalSubmittedHooks = this.proposalSubmittedHooks.bind(this);
+    this.queryExtension = this.queryExtension.bind(this);
   }
 
-  balance = async ({
-    member
-  }: {
-    member: string;
-  }): Promise<ArrayOfGenericTokenBalance> => {
+  proposalModule = async (): Promise<Addr> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      balance: {
-        member
+      proposal_module: {}
+    });
+  };
+  dao = async (): Promise<Addr> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      dao: {}
+    });
+  };
+  config = async (): Promise<Config> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      config: {}
+    });
+  };
+  depositInfo = async ({
+    proposalId
+  }: {
+    proposalId: number;
+  }): Promise<DepositInfoResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      deposit_info: {
+        proposal_id: proposalId
       }
     });
   };
-  due = async ({
-    member
-  }: {
-    member: string;
-  }): Promise<ArrayOfGenericTokenBalance> => {
+  proposalSubmittedHooks = async (): Promise<HooksResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      due: {
-        member
-      }
+      proposal_submitted_hooks: {}
     });
   };
-  total = async (): Promise<ArrayOfGenericTokenBalance> => {
+  queryExtension = async ({
+    msg
+  }: {
+    msg: QueryExt;
+  }): Promise<Binary> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      total: {}
+      query_extension: {
+        msg
+      }
     });
   };
 }
 export interface AgonEscrowInterface extends AgonEscrowReadOnlyInterface {
   contractAddress: string;
   sender: string;
-  refund: (fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
-  receiveNative: (fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
-  receive: ({
-    amount,
-    msg,
-    sender
+  propose: ({
+    msg
   }: {
-    amount: Uint128;
-    msg: Binary;
-    sender: string;
+    msg: Empty;
   }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
-  receiveNft: ({
-    msg,
-    sender,
-    tokenId
+  updateConfig: ({
+    depositInfo,
+    openProposalSubmission
   }: {
-    msg: Binary;
-    sender: string;
-    tokenId: string;
+    depositInfo?: UncheckedDepositInfo;
+    openProposalSubmission: boolean;
   }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
-  handleCompetitionResult: ({
-    distribution
+  withdraw: ({
+    denom
   }: {
-    distribution?: MemberShare[];
+    denom?: UncheckedDenom;
   }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
-  handleCompetitionStateChanged: ({
-    newState,
-    oldState
+  extension: ({
+    msg
   }: {
-    newState: CompetitionState;
-    oldState: CompetitionState;
+    msg: ExecuteExt;
+  }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
+  addProposalSubmittedHook: ({
+    address
+  }: {
+    address: string;
+  }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
+  removeProposalSubmittedHook: ({
+    address
+  }: {
+    address: string;
+  }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
+  proposalCompletedHook: ({
+    newStatus,
+    proposalId
+  }: {
+    newStatus: Status;
+    proposalId: number;
   }, fee?: number | StdFee | "auto", memo?: string, funds?: Coin[]) => Promise<ExecuteResult>;
 }
 export class AgonEscrowClient extends AgonEscrowQueryClient implements AgonEscrowInterface {
@@ -107,80 +135,95 @@ export class AgonEscrowClient extends AgonEscrowQueryClient implements AgonEscro
     this.client = client;
     this.sender = sender;
     this.contractAddress = contractAddress;
-    this.refund = this.refund.bind(this);
-    this.receiveNative = this.receiveNative.bind(this);
-    this.receive = this.receive.bind(this);
-    this.receiveNft = this.receiveNft.bind(this);
-    this.handleCompetitionResult = this.handleCompetitionResult.bind(this);
-    this.handleCompetitionStateChanged = this.handleCompetitionStateChanged.bind(this);
+    this.propose = this.propose.bind(this);
+    this.updateConfig = this.updateConfig.bind(this);
+    this.withdraw = this.withdraw.bind(this);
+    this.extension = this.extension.bind(this);
+    this.addProposalSubmittedHook = this.addProposalSubmittedHook.bind(this);
+    this.removeProposalSubmittedHook = this.removeProposalSubmittedHook.bind(this);
+    this.proposalCompletedHook = this.proposalCompletedHook.bind(this);
   }
 
-  refund = async (fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
-    return await this.client.execute(this.sender, this.contractAddress, {
-      refund: {}
-    }, fee, memo, funds);
-  };
-  receiveNative = async (fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
-    return await this.client.execute(this.sender, this.contractAddress, {
-      receive_native: {}
-    }, fee, memo, funds);
-  };
-  receive = async ({
-    amount,
-    msg,
-    sender
+  propose = async ({
+    msg
   }: {
-    amount: Uint128;
-    msg: Binary;
-    sender: string;
+    msg: Empty;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      receive: {
-        amount,
-        msg,
-        sender
+      propose: {
+        msg
       }
     }, fee, memo, funds);
   };
-  receiveNft = async ({
-    msg,
-    sender,
-    tokenId
+  updateConfig = async ({
+    depositInfo,
+    openProposalSubmission
   }: {
-    msg: Binary;
-    sender: string;
-    tokenId: string;
+    depositInfo?: UncheckedDepositInfo;
+    openProposalSubmission: boolean;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      receive_nft: {
-        msg,
-        sender,
-        token_id: tokenId
+      update_config: {
+        deposit_info: depositInfo,
+        open_proposal_submission: openProposalSubmission
       }
     }, fee, memo, funds);
   };
-  handleCompetitionResult = async ({
-    distribution
+  withdraw = async ({
+    denom
   }: {
-    distribution?: MemberShare[];
+    denom?: UncheckedDenom;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      handle_competition_result: {
-        distribution
+      withdraw: {
+        denom
       }
     }, fee, memo, funds);
   };
-  handleCompetitionStateChanged = async ({
-    newState,
-    oldState
+  extension = async ({
+    msg
   }: {
-    newState: CompetitionState;
-    oldState: CompetitionState;
+    msg: ExecuteExt;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      handle_competition_state_changed: {
-        new_state: newState,
-        old_state: oldState
+      extension: {
+        msg
+      }
+    }, fee, memo, funds);
+  };
+  addProposalSubmittedHook = async ({
+    address
+  }: {
+    address: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      add_proposal_submitted_hook: {
+        address
+      }
+    }, fee, memo, funds);
+  };
+  removeProposalSubmittedHook = async ({
+    address
+  }: {
+    address: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      remove_proposal_submitted_hook: {
+        address
+      }
+    }, fee, memo, funds);
+  };
+  proposalCompletedHook = async ({
+    newStatus,
+    proposalId
+  }: {
+    newStatus: Status;
+    proposalId: number;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      proposal_completed_hook: {
+        new_status: newStatus,
+        proposal_id: proposalId
       }
     }, fee, memo, funds);
   };

@@ -1,5 +1,5 @@
 import { Box } from "@chakra-ui/react";
-import SidebarContent from "./SidebarContent";
+import Sidebar from "./Sidebar";
 import TopNav from "./TopNav";
 import { AppShell } from "@saas-ui/react";
 import { PropsWithChildren } from "react";
@@ -7,7 +7,7 @@ import Head from "next/head";
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
-    <AppShell sidebar={<SidebarContent />}>
+    <AppShell sidebar={<Sidebar />}>
       <Head>
         <title>Agon Protocol</title>
       </Head>

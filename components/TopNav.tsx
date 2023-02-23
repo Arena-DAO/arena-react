@@ -16,11 +16,13 @@ export default function TopNav() {
       px="4"
       position="sticky"
       top="0"
+      minH="4rem"
     >
       <HStack spacing={{ base: "1", md: "3" }} ml="auto">
         <Button
           variant="ghost"
           aria-label="toggle color"
+          colorScheme="inherit"
           onClick={toggleColorMode}
         >
           <Icon

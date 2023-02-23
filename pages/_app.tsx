@@ -2,9 +2,7 @@ import "../styles/app.scss";
 import type { AppProps } from "next/app";
 import { ChainProvider } from "@cosmos-kit/react";
 import { wallets as keplrWallets } from "@cosmos-kit/keplr";
-import { wallets as cosmostationWallets } from "@cosmos-kit/cosmostation";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
-import { wallets as vectisWallets } from "@cosmos-kit/vectis";
 import { chains, assets } from "chain-registry";
 import MainLayout from "../components/MainLayout";
 import { getMorpheusAssets, getMorpheusChain } from "../config/desmos";
@@ -18,7 +16,7 @@ const Link: React.FC<LinkProps> = (props) => {
   return <NextLink {...props} legacyBehavior />;
 };
 
-function CreateCosmosApp({ Component, pageProps }: AppProps) {
+export default function CreateCosmosApp({ Component, pageProps }: AppProps) {
   const onError = React.useCallback((error: Error) => {
     console.log(error);
   }, []);
@@ -28,12 +26,8 @@ function CreateCosmosApp({ Component, pageProps }: AppProps) {
       <ChainProvider
         chains={[...chains, getMorpheusChain()]}
         assetLists={[...assets, getMorpheusAssets()]}
-        wallets={[
-          ...keplrWallets,
-          ...cosmostationWallets,
-          ...leapWallets,
-          ...vectisWallets,
-        ]}
+        wallets={[...keplrWallets, ...leapWallets]}
+        modalTheme={theme}
       >
         <DesmosProvider>
           <MainLayout>
@@ -48,5 +42,3 @@ function CreateCosmosApp({ Component, pageProps }: AppProps) {
     </SaasProvider>
   );
 }
-
-export default CreateCosmosApp;

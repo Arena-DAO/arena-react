@@ -33,6 +33,7 @@ export default function Profile() {
     <Menu>
       <MenuButton
         as={IconButton}
+        colorScheme="inherit"
         aria-label="Profile"
         icon={
           hasDesmosProfile ? (

@@ -7,12 +7,16 @@ import {
 } from "@chakra-ui/react";
 import { BsDiscord, BsGithub, BsTwitter } from "react-icons/bs";
 import Logo from "./Logo";
-import { Sidebar, SidebarSection, SidebarToggleButton } from "@saas-ui/sidebar";
+import {
+  Sidebar as SaasSidebar,
+  SidebarSection,
+  SidebarToggleButton,
+} from "@saas-ui/sidebar";
 import NavMenu from "./NavMenu";
 
-export default function SidebarContent() {
+export default function Sidebar() {
   return (
-    <Sidebar>
+    <SaasSidebar bg="none">
       <SidebarToggleButton />
       <SidebarSection alignItems="center">
         <Logo />
@@ -23,7 +27,6 @@ export default function SidebarContent() {
           <Link href="https://twitter.com/AgonProtocol" isExternal>
             <IconButton
               aria-label={"twitter"}
-              color={useColorModeValue("primary.500", "primary.400")}
               icon={<BsTwitter />}
               size="lg"
               bgColor={"transparent"}
@@ -33,7 +36,6 @@ export default function SidebarContent() {
             <IconButton
               aria-label={"discord"}
               icon={<BsDiscord />}
-              color={useColorModeValue("primary.500", "primary.400")}
               size="lg"
               bgColor="transparent"
             ></IconButton>
@@ -42,13 +44,12 @@ export default function SidebarContent() {
             <IconButton
               aria-label={"github"}
               icon={<BsGithub />}
-              color={useColorModeValue("primary.500", "primary.400")}
               size="lg"
               bgColor="transparent"
             ></IconButton>
           </Link>
         </HStack>
       </Box>
-    </Sidebar>
+    </SaasSidebar>
   );
 }

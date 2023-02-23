@@ -4,13 +4,146 @@
 * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
 */
 
-export type Addr = string;
 export type Uint128 = string;
-export type GenericTokenType = "native" | "cw20" | "cw721";
+export type DepositToken = {
+  token: {
+    denom: UncheckedDenom;
+  };
+} | {
+  voting_module_token: {};
+};
+export type UncheckedDenom = {
+  native: string;
+} | {
+  cw20: string;
+};
+export type DepositRefundPolicy = "always" | "only_passed" | "never";
+export type Admin = {
+  address: {
+    addr: string;
+  };
+} | {
+  core_module: {};
+};
+export type Binary = string;
+export type Decimal = string;
 export interface InstantiateMsg {
-  arbiter?: string | null;
-  due: MemberBalance[];
-  stake: MemberBalance[];
+  deposit_info?: UncheckedDepositInfo | null;
+  extension: InstantiateExt;
+  open_proposal_submission: boolean;
+}
+export interface UncheckedDepositInfo {
+  amount: Uint128;
+  denom: DepositToken;
+  refund_policy: DepositRefundPolicy;
+}
+export interface InstantiateExt {
+  competition_modules_instantiate_info: ModuleInstantiateInfo[];
+  rulesets: Ruleset[];
+  tax: Decimal;
+}
+export interface ModuleInstantiateInfo {
+  admin?: Admin | null;
+  code_id: number;
+  label: string;
+  msg: Binary;
+}
+export interface Ruleset {
+  description: string;
+  id: Uint128;
+  rules: string[];
+}
+export type ExecuteMsg = {
+  propose: {
+    msg: Empty;
+  };
+} | {
+  update_config: {
+    deposit_info?: UncheckedDepositInfo | null;
+    open_proposal_submission: boolean;
+  };
+} | {
+  withdraw: {
+    denom?: UncheckedDenom | null;
+  };
+} | {
+  extension: {
+    msg: ExecuteExt;
+  };
+} | {
+  add_proposal_submitted_hook: {
+    address: string;
+  };
+} | {
+  remove_proposal_submitted_hook: {
+    address: string;
+  };
+} | {
+  proposal_completed_hook: {
+    new_status: Status;
+    proposal_id: number;
+  };
+};
+export type ExecuteExt = {
+  update_competition_modules: {
+    to_add: ModuleInstantiateInfo[];
+    to_remove: string[];
+  };
+} | {
+  jail_wager: {
+    id: Uint128;
+  };
+} | {
+  create_wager: {
+    escrow_code_id: number;
+    expiration: Expiration;
+    rules: string[];
+    ruleset?: Uint128 | null;
+    stake: MemberBalance[];
+    wager_amount: MemberBalance[];
+    wager_dao: WagerDAO;
+  };
+} | {
+  handle_wager: {
+    distribution?: MemberShare[] | null;
+    id: Uint128;
+  };
+} | {
+  update_rulesets: {
+    to_add: Ruleset[];
+    to_disable: Uint128[];
+  };
+} | {
+  update_tax: {
+    tax: Decimal;
+  };
+};
+export type Expiration = {
+  at_height: number;
+} | {
+  at_time: Timestamp;
+} | {
+  never: {};
+};
+export type Timestamp = Uint64;
+export type Uint64 = string;
+export type Addr = string;
+export type GenericTokenType = "native" | "cw20" | "cw721";
+export type WagerDAO = {
+  new: {
+    dao_code_id: number;
+    group_code_id: number;
+    members: string[];
+    proposal_code_id: number;
+  };
+} | {
+  existing: {
+    addr: string;
+  };
+};
+export type Status = "open" | "rejected" | "passed" | "executed" | "closed" | "execution_failed";
+export interface Empty {
+  [k: string]: unknown;
 }
 export interface MemberBalance {
   balances: GenericTokenBalance[];
@@ -22,52 +155,63 @@ export interface GenericTokenBalance {
   denom?: string | null;
   token_type: GenericTokenType;
 }
-export type ExecuteMsg = {
-  refund: {};
-} | {
-  receive_native: {};
-} | {
-  receive: Cw20ReceiveMsg;
-} | {
-  receive_nft: Cw721ReceiveMsg;
-} | {
-  handle_competition_result: CwCompetitionResultMsg;
-} | {
-  handle_competition_state_changed: CwCompetitionStateChangedMsg;
-};
-export type Binary = string;
-export type CompetitionState = "pending" | "staged" | "active" | "inactive";
-export interface Cw20ReceiveMsg {
-  amount: Uint128;
-  msg: Binary;
-  sender: string;
-}
-export interface Cw721ReceiveMsg {
-  msg: Binary;
-  sender: string;
-  token_id: string;
-}
-export interface CwCompetitionResultMsg {
-  distribution?: MemberShare[] | null;
-}
 export interface MemberShare {
   addr: string;
   shares: Uint128;
 }
-export interface CwCompetitionStateChangedMsg {
-  new_state: CompetitionState;
-  old_state: CompetitionState;
-}
 export type QueryMsg = {
-  balance: {
-    member: string;
+  proposal_module: {};
+} | {
+  dao: {};
+} | {
+  config: {};
+} | {
+  deposit_info: {
+    proposal_id: number;
   };
 } | {
-  due: {
-    member: string;
-  };
+  proposal_submitted_hooks: {};
 } | {
-  total: {};
+  query_extension: {
+    msg: QueryExt;
+  };
 };
-export interface MigrateMsg {}
-export type ArrayOfGenericTokenBalance = GenericTokenBalance[];
+export type QueryExt = {
+  competition_modules: {
+    limit?: number | null;
+    start_after?: string | null;
+  };
+} | {
+  rulesets: {
+    description?: string | null;
+    limit?: number | null;
+    skip?: number | null;
+  };
+} | {
+  tax: {
+    height?: number | null;
+  };
+} | {
+  dump_state: {};
+};
+export type CheckedDenom = {
+  native: string;
+} | {
+  cw20: Addr;
+};
+export interface Config {
+  deposit_info?: CheckedDepositInfo | null;
+  open_proposal_submission: boolean;
+}
+export interface CheckedDepositInfo {
+  amount: Uint128;
+  denom: CheckedDenom;
+  refund_policy: DepositRefundPolicy;
+}
+export interface DepositInfoResponse {
+  deposit_info?: CheckedDepositInfo | null;
+  proposer: Addr;
+}
+export interface HooksResponse {
+  hooks: string[];
+}

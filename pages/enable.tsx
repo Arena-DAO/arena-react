@@ -192,7 +192,7 @@ export default function EnableAgon() {
       <Text fontWeight="bold" mb={3} textAlign="center">
         Use this form to create a proposal enabling Agon Protocol on your DAO!
       </Text>
-      <Card>
+      <Card w="100%">
         <Form resolver={yupResolver(schema)} onSubmit={onSubmit} m="4">
           <FormLayout>
             <Field name="dao" label="DAO" />

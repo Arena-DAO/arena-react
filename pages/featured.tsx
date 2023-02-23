@@ -9,7 +9,7 @@ import {
   Spacer,
   Button,
 } from "@chakra-ui/react";
-import { DAOMap, DAORoot } from "config/daos";
+import { DAOMap, DAORoot } from "@config/daos";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
 
