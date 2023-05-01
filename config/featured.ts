@@ -1,6 +1,6 @@
 export class DAOItem {
   url: string;
-  title: string;
+  title?: string;
   children?: DAOItem[];
   addrs?: string[];
   img?: string | undefined;
@@ -28,7 +28,6 @@ function mapDAOItem(map: Map<string, DAOItem>, daoItem: DAOItem) {
 
 export const DAORoot: DAOItem = {
   url: "",
-  title: "Main",
   children: [
     {
       url: "gaming",

@@ -1,14 +1,3 @@
-import {
-  FormLayout,
-  Form,
-  ArrayField,
-  SubmitButton,
-  Field,
-  Card,
-  DisplayIf,
-  Divider,
-} from "@saas-ui/react";
-import { yupResolver } from "@saas-ui/forms/yup";
 import { toBinary } from "cosmwasm";
 import {
   CosmosMsgForEmpty,
@@ -26,6 +15,7 @@ import { Heading, Container, Text, Box } from "@chakra-ui/react";
 import React from "react";
 import { useChain } from "@cosmos-kit/react";
 import { FiPercent } from "react-icons/fi";
+import DAOCreate from "@components/DAO/DAOCreate";
 
 export default function EnableAgon() {
   const chain = useChain(process.env.NEXT_PUBLIC_CHAIN!);
@@ -193,51 +183,26 @@ export default function EnableAgon() {
         Use this form to create a proposal enabling Agon Protocol on your DAO!
       </Text>
       <Card w="100%">
-        <Form resolver={yupResolver(schema)} onSubmit={onSubmit} m="4">
+        <Form
+          resolver={yupResolver(schema)}
+          onSubmit={onSubmit}
+          defaultValues={{
+            allow_revoting: true,
+            close_proposal_on_execution_failure: true,
+            max_voting_period: 604800,
+            max_voting_period_units: "Time",
+            min_voting_period_units: "Time",
+            tax: 15,
+            voting_threshold: "Majority",
+          }}
+          m="4"
+        >
           <FormLayout>
             <Field name="dao" label="DAO" />
-            <FormLayout columns={2}>
-              <Field
-                type="switch"
-                name="allow_revoting"
-                defaultChecked={true}
-                label="Allow Revoting"
-              />
-              <Field
-                type="switch"
-                name="close_proposal_on_execution_failure"
-                defaultChecked={true}
-                label="Close Proposal on Execution Failure"
-              />
-            </FormLayout>
-            <FormLayout templateColumns="auto 25%">
-              <Field
-                name="max_voting_period"
-                defaultValue={64800}
-                label="Max Voting Period"
-              />
-              <Field
-                type="select"
-                name="max_voting_period_units"
-                defaultValue="Time"
-                label="Units"
-                options={[{ value: "Time" }, { value: "Height" }]}
-              />
-            </FormLayout>
-            <FormLayout templateColumns="auto 25%">
-              <Field name="min_voting_period" label="Min Voting Period" />
-              <Field
-                type="select"
-                name="min_voting_period_units"
-                defaultValue="Time"
-                label="Units"
-                options={[{ value: "Time" }, { value: "Height" }]}
-              />
-            </FormLayout>
+            <DAOCreate />
             <FormLayout columns={2}>
               <Field
                 name="tax"
-                defaultValue={15}
                 label="Tax"
                 textAlign="right"
                 rightAddon={
@@ -256,7 +221,6 @@ export default function EnableAgon() {
               <Field
                 type="select"
                 name="voting_threshold"
-                defaultValue={"Majority"}
                 label="Voting Threshold"
                 options={[{ value: "Majority" }, { value: "Percentage" }]}
               />
