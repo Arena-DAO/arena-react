@@ -18,19 +18,19 @@ import {
 import NextLink from "next/link";
 import React, { PropsWithChildren } from "react";
 import { FiChevronLeft, FiMenu, FiMoon, FiSun } from "react-icons/fi";
-
 import WalletConnectToggle from "./WalletConnectToggle";
 import { BsDiscord, BsGithub, BsTwitter } from "react-icons/bs";
+import Head from "next/head";
 
 type DefaultLinkItemType = {
   text: string;
+  disabled?: boolean;
 };
-type SimpleLayoutType = {
+interface SimpleLayoutType extends PropsWithChildren {
   logo?: React.ReactNode;
-  children: React.ReactNode;
   connectWalletToggle: React.ReactNode;
   navbarH: string;
-};
+}
 
 function SocialMediaButtons() {
   return (
@@ -366,6 +366,10 @@ function MenuItems() {
       href: "/featured",
     },
     {
+      label: "⚡ Enable DAO",
+      href: "/dao/enable",
+    },
+    {
       label: "⚔️ Create Wager",
       href: "/wager/create",
     },
@@ -387,25 +391,32 @@ function MenuItems() {
       label: "🚀 Buy",
       href: process.env.NEXT_PUBLIC_OSMOSIS,
       target: "_blank",
+      env: "production",
+    },
+    {
+      label: "💧 Faucet",
+      href: "/faucet",
+      env: "development",
     },
   ];
-
   return (
     <>
-      {linkItems?.map(({ label, href, target }, i) => {
-        return (
-          <Link
-            key={i}
-            as={NextLink}
-            href={href}
-            _hover={{ textDecoration: "none" }}
-            _focus={{ outline: "none" }}
-            target={target}
-          >
-            <MenuButton text={label} />
-          </Link>
-        );
-      })}
+      {linkItems
+        ?.filter(({ env }) => !env || env === process.env.NODE_ENV)
+        .map(({ label, href, target }, i) => {
+          return (
+            <Link
+              key={i}
+              as={NextLink}
+              href={href}
+              _hover={{ textDecoration: "none" }}
+              _focus={{ outline: "none" }}
+              target={target}
+            >
+              <MenuButton text={label} />
+            </Link>
+          );
+        })}
     </>
   );
 }
@@ -425,7 +436,7 @@ const SimpleLayout = ({
           process.env.NEXT_PUBLIC_ARENA_DAO
         }
       >
-        <Image src="/logo.svg" />
+        <Image src="/logo.svg" alt="logo" />
       </Link>
     </Box>
   );
@@ -435,26 +446,31 @@ const SimpleLayout = ({
       <Box display={{ base: "none", lg: "block" }} w="full" h="full">
         <DesktopMenu
           logo={logo}
-          children={children}
           connectWalletToggle={connectWalletToggle}
           navbarH={navbarH}
-        />
+        >
+          {children}
+        </DesktopMenu>
       </Box>
       <Box display={{ base: "block", lg: "none" }} w="full" h="full">
         <MobileMenu
           logo={logo}
-          children={children}
           connectWalletToggle={connectWalletToggle}
           navbarH={navbarH}
-        />
+        >
+          {children}
+        </MobileMenu>
       </Box>
     </Box>
   );
 };
 
-export default function ({ children }: PropsWithChildren) {
+export default function MainLayout({ children }: PropsWithChildren) {
   return (
     <SimpleLayout connectWalletToggle={<WalletConnectToggle />} navbarH="60px">
+      <Head>
+        <title>Arena Protocol</title>
+      </Head>
       <Box mx="auto" w="full" pb={10}>
         {children}
       </Box>

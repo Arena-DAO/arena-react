@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { Decimal, InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, ModuleInstantiateInfo, MemberShare, QueryMsg, Null, AdminResponse, Addr, CompetitionStatus, CompetitionForEmpty, Config } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, ModuleInstantiateInfo, MemberShare, QueryMsg, Null, AdminResponse, Addr, CompetitionStatus, CompetitionForEmpty, Config } from "./ArenaWagerModule.types";
 export interface ArenaWagerModuleReadOnlyInterface {
   contractAddress: string;
   dAO: () => Promise<Addr>;

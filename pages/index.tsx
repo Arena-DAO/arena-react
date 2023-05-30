@@ -9,10 +9,10 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import {
-  BsChat,
+  BsChatFill,
   BsCurrencyBitcoin,
   BsLightningFill,
-  BsShieldCheck,
+  BsShieldFillCheck,
 } from "react-icons/bs";
 
 interface FeatureProps {
@@ -101,7 +101,7 @@ export default function Home() {
         >
           <Feature
             title="Trustless Escrow Management"
-            icon={<BsShieldCheck />}
+            icon={<BsShieldFillCheck />}
             description="If an escrow resolution cannot be reached, we guarantee a trustless
             solution through the Arena DAO. The Arena DAO is a decentralized
             autonomous organization that governs the platform and ensures its
@@ -111,7 +111,7 @@ export default function Home() {
 
           <Feature
             title="Enhanced Community Interaction"
-            icon={<BsChat />}
+            icon={<BsChatFill />}
             description="By lowering the barriers of entry for competitions, Arena DAO fosters greater interaction among members and supports a thriving ecosystem. This leads to increased engagement and diverse opportunities within the community."
           />
 

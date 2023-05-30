@@ -19,29 +19,18 @@ export default function FeaturedDAOs() {
   const daoItem = id ? DAOMap.get(id as string) ?? DAORoot : DAORoot;
 
   return (
-    <Container centerContent pb={10} maxW="150ch">
+    <Container maxW={{ base: "100%" }} centerContent pb={10}>
       {daoItem.title && (
-        <Heading
-          as="h1"
-          className="holographic"
-          fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
-          fontWeight="extrabold"
-        >
+        <Heading as="h1" fontWeight="extrabold">
           {daoItem.title}
         </Heading>
       )}
       {daoItem.children && (
-        <Heading
-          as="h2"
-          className="holographic"
-          fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
-          fontWeight="extrabold"
-          mb={3}
-        >
+        <Heading as="h2" fontWeight="extrabold" mb={3}>
           Categories
         </Heading>
       )}
-      <SimpleGrid minChildWidth="300px" spacing="5">
+      <SimpleGrid minChildWidth="400px" spacing="5">
         {daoItem.children?.map((x, i) => {
           return (
             <Flex
@@ -71,19 +60,14 @@ export default function FeaturedDAOs() {
                 rounded="base"
                 overflow="hidden"
               >
-                <Heading
-                  py={2}
-                  textAlign="center"
-                  className="holographic"
-                  fontWeight="bold"
-                >
+                <Heading py={2} textAlign="center" fontWeight="bold">
                   {x.title}
                 </Heading>
                 <Flex
                   justifyContent="space-between"
                   py={2}
                   px={3}
-                  bg="gray.200"
+                  bg="gray.300"
                   _dark={{
                     bg: "gray.700",
                   }}

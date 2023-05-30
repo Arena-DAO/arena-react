@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, ReactNode } from "react";
+import React, { MouseEventHandler, ReactNode, useEffect } from "react";
 import {
   IconButton,
   Menu,
@@ -11,7 +11,7 @@ import {
 import { IconType } from "react-icons";
 import { useChain } from "@cosmos-kit/react";
 import { BsPerson, BsWallet } from "react-icons/bs";
-import { gql, useQuery } from "@apollo/client";
+import { useProfileData } from "~/hooks/useProfileData";
 
 type IconTypeProps = string | IconType | JSX.Element | ReactNode | any;
 type ConnectWalletType = {
@@ -24,62 +24,39 @@ interface ProfileProps {
   openView: () => void;
 }
 
-const GET_DESMOS_PROFILE_BY_CHAIN_ADDRESS = gql`
-  query GetDesmosProfileByChainAddress($address: String!) {
-    chain_link(where: { external_address: { _eq: $address } }) {
-      profile {
-        dtag
-        profile_pic
-      }
-    }
-  }
-`;
-
 function Profile({ address, openView }: ProfileProps) {
-  const { chain } = useChain(process.env.NEXT_PUBLIC_DESMOS!);
-  const { loading, error, data } = useQuery(
-    GET_DESMOS_PROFILE_BY_CHAIN_ADDRESS,
-    { variables: { address: address } }
-  );
-
-  let hasDesmosProfile = !(loading || error || data.chain_link.length == 0);
+  const { isLoading, data } = useProfileData(address);
 
   return (
     <Menu>
-      <MenuButton>
-        {hasDesmosProfile ? (
+      {data && data.nft ? (
+        <MenuButton>
           <Image
             h="50px"
-            src={data.chain_link[0].profile.profile_pic}
+            srcSet={data.nft.imageUrl}
             borderRadius="full"
             alt="Profile"
           ></Image>
-        ) : (
-          <IconButton
-            aria-label="Profile"
-            isLoading={loading}
-            icon={<BsPerson />}
-            colorScheme="primary"
-            variant="outline"
-          />
-        )}
-      </MenuButton>
+        </MenuButton>
+      ) : (
+        <MenuButton
+          as={IconButton}
+          aria-label="Profile"
+          isLoading={isLoading}
+          icon={<BsPerson />}
+          colorScheme="primary"
+          variant="outline"
+        ></MenuButton>
+      )}
       <MenuList>
-        {hasDesmosProfile ? (
-          <Link
-            href={
-              chain?.explorers?.at(0)!.url! +
-              "/" +
-              data.chain_link[0].profile.dtag!
-            }
-            isExternal
-          >
+        {data ? (
+          <Link href={process.env.NEXT_PUBLIC_DAO_DAO + "/me"} isExternal>
             <MenuItem>View Profile</MenuItem>
           </Link>
         ) : (
           <Link
             className="text-decoration-none"
-            href="https://go-find.me/"
+            href={process.env.NEXT_PUBLIC_DAO_DAO + "/me"}
             isExternal
           >
             <MenuItem>Create Profile</MenuItem>

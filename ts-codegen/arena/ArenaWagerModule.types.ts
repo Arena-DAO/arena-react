@@ -4,12 +4,10 @@
 * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
 */
 
-export type Decimal = string;
 export interface InstantiateMsg {
   description: string;
   extension: Empty;
   key: string;
-  tax: Decimal;
 }
 export interface Empty {
   [k: string]: unknown;
@@ -98,10 +96,10 @@ export interface CompetitionForEmpty {
   name: string;
   rules: string[];
   ruleset?: Uint128 | null;
+  start_height: number;
   status: CompetitionStatus;
 }
 export interface Config {
   description: string;
   key: string;
-  tax: Decimal;
 }

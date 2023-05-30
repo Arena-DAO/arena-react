@@ -5,26 +5,42 @@ import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { chains, assets } from "chain-registry";
 import MainLayout from "../components/MainLayout";
-import { getMorpheusAssets, getMorpheusChain } from "../config/desmos";
-import DesmosProvider from "../components/DesmosProvider";
 import theme from "../config/theme";
 import React from "react";
 import { ChakraProvider } from "@chakra-ui/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { SignerOptions } from "@cosmos-kit/core";
+import { GasPrice } from "@cosmjs/stargate";
 
 export default function CreateCosmosApp({ Component, pageProps }: AppProps) {
+  const queryClient = new QueryClient({});
+  const signerOptions: SignerOptions = {
+    signingCosmwasm: (chain) => {
+      if (chain.chain_name.startsWith("juno"))
+        return {
+          gasPrice: GasPrice.fromString(
+            chain.fees!.fee_tokens[0]!.average_gas_price! +
+              chain.fees!.fee_tokens[0]!.denom!
+          ),
+        };
+      return undefined;
+    },
+  };
+
   return (
     <ChakraProvider theme={theme}>
       <ChainProvider
-        chains={[...chains, getMorpheusChain()]}
-        assetLists={[...assets, getMorpheusAssets()]}
+        chains={chains}
+        assetLists={assets}
         wallets={[...keplrWallets, ...leapWallets]}
+        signerOptions={signerOptions}
         wrappedWithChakra
       >
-        <DesmosProvider>
+        <QueryClientProvider client={queryClient}>
           <MainLayout>
             <Component {...pageProps} />
           </MainLayout>
-        </DesmosProvider>
+        </QueryClientProvider>
       </ChainProvider>
     </ChakraProvider>
   );
