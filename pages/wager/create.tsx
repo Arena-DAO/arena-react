@@ -1,4 +1,4 @@
-import { Container, Heading } from "@chakra-ui/layout";
+import { Container, Heading, Stack } from "@chakra-ui/layout";
 
 const CreateWagerPage = () => {
   return (
@@ -15,6 +15,7 @@ const CreateWagerPage = () => {
       >
         Create a Wager
       </Heading>
+      <Stack w="100%" spacing={4}></Stack>
     </Container>
   );
 };
