@@ -9,7 +9,7 @@ import theme from "../config/theme";
 import React from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { SignerOptions } from "@cosmos-kit/core";
+import { MainWalletBase, SignerOptions } from "@cosmos-kit/core";
 import { GasPrice } from "@cosmjs/stargate";
 
 export default function CreateCosmosApp({ Component, pageProps }: AppProps) {
@@ -32,7 +32,9 @@ export default function CreateCosmosApp({ Component, pageProps }: AppProps) {
       <ChainProvider
         chains={chains}
         assetLists={assets}
-        wallets={[...keplrWallets, ...leapWallets]}
+        wallets={
+          [...keplrWallets, ...leapWallets] as unknown as MainWalletBase[]
+        }
         signerOptions={signerOptions}
         wrappedWithChakra
       >
