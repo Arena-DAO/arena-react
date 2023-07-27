@@ -2,33 +2,6 @@ import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { DaoCoreQueryClient } from "@dao/DaoCore.client";
 import { DaoProposalSingleQueryClient } from "@dao/DaoProposalSingle.client";
 import { DaoPreProposeSingleQueryClient } from "@dao/DaoPreProposeSingle.client";
-import { z } from "zod";
-
-export const DurationSchema = z.object({
-  period: z
-    .number({
-      invalid_type_error: "Period must be a number",
-    })
-    .positive(),
-  period_units: z.enum(["Time", "Height"]),
-});
-
-export const PercentageThresholdSchema = z
-  .object({
-    percentage_threshold: z.enum(["Majority", "Percent"]),
-    percent: z.number().positive().max(100).optional(),
-  })
-  .refine(
-    (context) => {
-      return context.percentage_threshold === "Percent"
-        ? !!context.percent
-        : true;
-    },
-    {
-      message:
-        'Percent is required when percentage threshold is set to "Percent"',
-    }
-  );
 
 export type ProposalAddrType = "proposal_module" | "prepropose";
 

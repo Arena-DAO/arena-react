@@ -11,6 +11,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MainWalletBase, SignerOptions } from "@cosmos-kit/core";
 import { GasPrice } from "@cosmjs/stargate";
+import "@interchain-ui/react/styles";
 
 export default function CreateCosmosApp({ Component, pageProps }: AppProps) {
   const queryClient = new QueryClient({});
@@ -36,7 +37,6 @@ export default function CreateCosmosApp({ Component, pageProps }: AppProps) {
           [...keplrWallets, ...leapWallets] as unknown as MainWalletBase[]
         }
         signerOptions={signerOptions}
-        wrappedWithChakra
       >
         <QueryClientProvider client={queryClient}>
           <MainLayout>

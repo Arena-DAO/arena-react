@@ -41,32 +41,23 @@ import { DaoProposalSingleClient } from "@dao/DaoProposalSingle.client";
 import { InstantiateMsg as ArenaWagerModuleInstantiateMsg } from "@arena/ArenaWagerModule.types";
 import { InstantiateMsg as DAOProposalMultipleInstantiateMsg } from "@dao/DaoProposalMultiple.types";
 import { toBinary } from "cosmwasm";
-import { convertPercentageToUint128 } from "~/helpers/NumberHelpers";
+import { getProposalAddr } from "~/helpers/DAOHelpers";
+import { DaoPreProposeSingleClient } from "@dao/DaoPreProposeSingle.client";
 import {
+  DAOAddressSchema,
   DurationSchema,
   PercentageThresholdSchema,
-  getProposalAddr,
-} from "~/helpers/DAOHelpers";
-import { DaoPreProposeSingleClient } from "@dao/DaoPreProposeSingle.client";
+} from "~/helpers/SchemaHelpers";
 
 const EnableForm = () => {
   const chainContext = useChain(process.env.NEXT_PUBLIC_CHAIN!);
 
   const validationSchema = z
     .object({
-      dao: z
-        .string()
-        .nonempty("DAO address is required")
-        .length(63, {
-          message: "DAO address must be exactly 63 characters long",
-        })
-        .refine(
-          (value: string) => value.startsWith(chainContext.chain.bech32_prefix),
-          `DAO address must start with the ${chainContext.chain.bech32_prefix} prefix`
-        ),
+      dao: DAOAddressSchema(chainContext.chain.bech32_prefix),
       //Dao Proposal Multiple Properties
       max_voting_duration: DurationSchema,
-      min_voting_duration: DurationSchema.partial({ period: true }),
+      min_voting_duration: DurationSchema.partial({ duration: true }),
       allow_revoting: z.boolean(),
       close_proposal_on_execution_failure: z.boolean(),
       only_members_execute: z.boolean(),
@@ -108,15 +99,19 @@ const EnableForm = () => {
       tax: 15,
       allow_revoting: false,
       close_proposal_on_execution_failure: true,
-      max_voting_duration: { period: 1209600, period_units: "Time" }, //2 weeks in seconds
-      min_voting_duration: { period_units: "Time" },
+      max_voting_duration: { duration: 1209600, duration_units: "Time" }, //2 weeks in seconds
+      min_voting_duration: { duration_units: "Time" },
       only_members_execute: false,
       quorum: { percentage_threshold: "Majority" },
     },
     resolver: zodResolver(validationSchema),
   });
-  const watchMinVotingDurationUnits = watch("min_voting_duration.period_units");
-  const watchMaxVotingDurationUnits = watch("max_voting_duration.period_units");
+  const watchMinVotingDurationUnits = watch(
+    "min_voting_duration.duration_units"
+  );
+  const watchMaxVotingDurationUnits = watch(
+    "max_voting_duration.duration_units"
+  );
   const watchPercentageThreshold = watch("quorum.percentage_threshold");
 
   const {
@@ -161,7 +156,7 @@ const EnableForm = () => {
       msg: toBinary({
         open_proposal_submission: false,
         extension: {
-          tax: convertPercentageToUint128(values.tax).toString(),
+          tax: (values.tax / 100).toString(),
           rulesets: values.rulesets,
           competition_modules_instantiate_info: [
             arena_wager_module_instantiate,
@@ -179,14 +174,14 @@ const EnableForm = () => {
         close_proposal_on_execution_failure:
           values.close_proposal_on_execution_failure,
         max_voting_period:
-          values.max_voting_duration.period_units == "Height"
-            ? { height: values.max_voting_duration.period }
-            : { time: values.max_voting_duration.period },
-        min_voting_period: !values.min_voting_duration?.period
+          values.max_voting_duration.duration_units == "Height"
+            ? { height: values.max_voting_duration.duration }
+            : { time: values.max_voting_duration.duration },
+        min_voting_period: !values.min_voting_duration?.duration
           ? undefined
-          : values.min_voting_duration.period_units == "Height"
-          ? { height: values.min_voting_duration.period }
-          : { time: values.min_voting_duration.period },
+          : values.min_voting_duration.duration_units == "Height"
+          ? { height: values.min_voting_duration.duration }
+          : { time: values.min_voting_duration.duration },
         only_members_execute: values.only_members_execute,
         pre_propose_info: {
           module_may_propose: { info: arena_core_instantiate },
@@ -324,7 +319,7 @@ const EnableForm = () => {
       <SimpleGrid minChildWidth="300px" my="2" gap={2}>
         <Grid templateColumns="repeat(5, 1fr)" gap={1} alignItems="flex-start">
           <GridItem colSpan={3}>
-            <FormControl isInvalid={!!errors.min_voting_duration?.period}>
+            <FormControl isInvalid={!!errors.min_voting_duration?.duration}>
               <FormLabel>
                 Min Voting Duration{" "}
                 <FormHelperText display="inline">(optional)</FormHelperText>
@@ -332,7 +327,7 @@ const EnableForm = () => {
               <InputGroup>
                 <Input
                   type="number"
-                  {...register("min_voting_duration.period", {
+                  {...register("min_voting_duration.duration", {
                     setValueAs: (x) => (x === "" ? undefined : parseInt(x)),
                   })}
                   textAlign="right"
@@ -342,31 +337,33 @@ const EnableForm = () => {
                 </InputRightAddon>
               </InputGroup>
               <FormErrorMessage>
-                {errors.min_voting_duration?.period?.message}
+                {errors.min_voting_duration?.duration?.message}
               </FormErrorMessage>
             </FormControl>
           </GridItem>
           <GridItem colSpan={2}>
-            <FormControl isInvalid={!!errors.min_voting_duration?.period_units}>
+            <FormControl
+              isInvalid={!!errors.min_voting_duration?.duration_units}
+            >
               <FormLabel>Units</FormLabel>
-              <Select {...register("min_voting_duration.period_units")}>
+              <Select {...register("min_voting_duration.duration_units")}>
                 <option value="Time">Time</option>
                 <option value="Height">Height</option>
               </Select>
               <FormErrorMessage>
-                {errors.min_voting_duration?.period_units?.message}
+                {errors.min_voting_duration?.duration_units?.message}
               </FormErrorMessage>
             </FormControl>
           </GridItem>
         </Grid>
         <Grid templateColumns="repeat(5, 1fr)" gap={1} alignItems="flex-start">
           <GridItem colSpan={3}>
-            <FormControl isInvalid={!!errors.max_voting_duration?.period}>
+            <FormControl isInvalid={!!errors.max_voting_duration?.duration}>
               <FormLabel>Max Voting Duration</FormLabel>
               <InputGroup>
                 <Input
                   type="number"
-                  {...register("max_voting_duration.period", {
+                  {...register("max_voting_duration.duration", {
                     setValueAs: (x) => (x === "" ? undefined : parseInt(x)),
                   })}
                   textAlign="right"
@@ -376,19 +373,21 @@ const EnableForm = () => {
                 </InputRightAddon>
               </InputGroup>
               <FormErrorMessage>
-                {errors.max_voting_duration?.period?.message}
+                {errors.max_voting_duration?.duration?.message}
               </FormErrorMessage>
             </FormControl>
           </GridItem>
           <GridItem colSpan={2}>
-            <FormControl isInvalid={!!errors.max_voting_duration?.period_units}>
+            <FormControl
+              isInvalid={!!errors.max_voting_duration?.duration_units}
+            >
               <FormLabel>Units</FormLabel>
-              <Select {...register("max_voting_duration.period_units")}>
+              <Select {...register("max_voting_duration.duration_units")}>
                 <option value="Time">Time</option>
                 <option value="Height">Height</option>
               </Select>
               <FormErrorMessage>
-                {errors.max_voting_duration?.period_units?.message}
+                {errors.max_voting_duration?.duration_units?.message}
               </FormErrorMessage>
             </FormControl>
           </GridItem>
@@ -552,7 +551,7 @@ const EnableForm = () => {
         mt={6}
         type="submit"
         colorScheme="secondary"
-        isDisabled={chainContext.isWalletDisconnected}
+        isDisabled={!chainContext.isWalletConnected}
         isLoading={isSubmitting}
       >
         Submit
