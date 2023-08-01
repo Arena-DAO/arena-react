@@ -37,6 +37,11 @@ export default function CreateCosmosApp({ Component, pageProps }: AppProps) {
           [...keplrWallets, ...leapWallets] as unknown as MainWalletBase[]
         }
         signerOptions={signerOptions}
+        walletConnectOptions={{
+          signClient: {
+            projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
+          },
+        }}
       >
         <QueryClientProvider client={queryClient}>
           <MainLayout>

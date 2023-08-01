@@ -25,6 +25,7 @@ import {
   Stack,
   Switch,
   Textarea,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,7 +37,7 @@ import {
 import { BsPercent, BsPlus } from "react-icons/bs";
 import { FiDelete } from "react-icons/fi";
 import { useChain } from "@cosmos-kit/react-lite";
-import { ExecuteMsg as DaoCoreExecuteMsg } from "@dao/DaoCore.types";
+import { Config, ExecuteMsg as DaoCoreExecuteMsg } from "@dao/DaoCore.types";
 import { DaoProposalSingleClient } from "@dao/DaoProposalSingle.client";
 import { InstantiateMsg as ArenaWagerModuleInstantiateMsg } from "@arena/ArenaWagerModule.types";
 import { InstantiateMsg as DAOProposalMultipleInstantiateMsg } from "@dao/DaoProposalMultiple.types";
@@ -47,17 +48,22 @@ import {
   DAOAddressSchema,
   DurationSchema,
   PercentageThresholdSchema,
+  convertToDuration,
 } from "~/helpers/SchemaHelpers";
+import { useEffect, useState } from "react";
+import { DaoCoreQueryClient } from "@dao/DaoCore.client";
+import { DAOCard } from "@components/DAOCard";
 
 const EnableForm = () => {
   const chainContext = useChain(process.env.NEXT_PUBLIC_CHAIN!);
+  let daoAddressSchema = DAOAddressSchema(chainContext.chain.bech32_prefix);
 
   const validationSchema = z
     .object({
-      dao: DAOAddressSchema(chainContext.chain.bech32_prefix),
+      dao: daoAddressSchema,
       //Dao Proposal Multiple Properties
-      max_voting_duration: DurationSchema,
-      min_voting_duration: DurationSchema.partial({ duration: true }),
+      max_voting_duration: DurationSchema.required({ duration: true }),
+      min_voting_duration: DurationSchema,
       allow_revoting: z.boolean(),
       close_proposal_on_execution_failure: z.boolean(),
       only_members_execute: z.boolean(),
@@ -114,6 +120,30 @@ const EnableForm = () => {
   );
   const watchPercentageThreshold = watch("quorum.percentage_threshold");
 
+  const watchDAO = watch("dao");
+  const [daoConfig, setDAOConfig] = useState<Config | undefined>();
+  useEffect(() => {
+    try {
+      daoAddressSchema.parse(watchDAO);
+
+      async function queryDAO() {
+        let cosmwasmClient = await chainContext.getCosmWasmClient();
+
+        let daoCoreQueryClient = new DaoCoreQueryClient(
+          cosmwasmClient,
+          watchDAO
+        );
+
+        let config = await daoCoreQueryClient.config();
+        setDAOConfig(config);
+      }
+
+      queryDAO();
+    } catch {
+      setDAOConfig(undefined);
+    }
+  }, [watchDAO, daoAddressSchema, chainContext]);
+
   const {
     fields: rulesetsFields,
     append: rulesetsAppend,
@@ -125,127 +155,136 @@ const EnableForm = () => {
 
   const onSubmit = async (values: FormValues) => {
     let cosmWasmClient = await chainContext.getSigningCosmWasmClient();
-    const proposalAddrResponse = await getProposalAddr(
-      cosmWasmClient,
-      values.dao,
-      chainContext.address!
-    );
 
-    if (!proposalAddrResponse) {
-      setError("dao", {
-        message:
-          "The dao does not have an accessible single proposal module available.",
-      });
+    if (!cosmWasmClient) {
+      console.error("Could not get the CosmWasm client.");
       return;
     }
 
-    let arena_wager_module_instantiate = {
-      code_id: parseInt(process.env.NEXT_PUBLIC_CODE_ID_WAGER_MODULE!),
-      label: "Arena Wager Module",
-      msg: toBinary({
-        key: "wagers",
-        description: "The Arena Protocol Wager Module",
-        extension: {},
-      } as ArenaWagerModuleInstantiateMsg),
-      admin: { core_module: {} },
-    };
-
-    let arena_core_instantiate = {
-      code_id: parseInt(process.env.NEXT_PUBLIC_CODE_ID_ARENA_CORE!),
-      label: "Arena Core",
-      msg: toBinary({
-        open_proposal_submission: false,
-        extension: {
-          tax: (values.tax / 100).toString(),
-          rulesets: values.rulesets,
-          competition_modules_instantiate_info: [
-            arena_wager_module_instantiate,
-          ],
-        },
-      } as ArenaCoreInstantiateMsg),
-      admin: { core_module: {} },
-    };
-
-    let dao_proposal_multiple_instantiate = {
-      code_id: parseInt(process.env.NEXT_PUBLIC_CODE_ID_DAO_PROPOSAL_MULTIPLE!),
-      label: "Arena Proposal Multiple Module",
-      msg: toBinary({
-        allow_revoting: values.allow_revoting,
-        close_proposal_on_execution_failure:
-          values.close_proposal_on_execution_failure,
-        max_voting_period:
-          values.max_voting_duration.duration_units == "Height"
-            ? { height: values.max_voting_duration.duration }
-            : { time: values.max_voting_duration.duration },
-        min_voting_period: !values.min_voting_duration?.duration
-          ? undefined
-          : values.min_voting_duration.duration_units == "Height"
-          ? { height: values.min_voting_duration.duration }
-          : { time: values.min_voting_duration.duration },
-        only_members_execute: values.only_members_execute,
-        pre_propose_info: {
-          module_may_propose: { info: arena_core_instantiate },
-        },
-        voting_strategy: {
-          single_choice: {
-            quorum:
-              values.quorum.percentage_threshold == "Majority"
-                ? { majority: {} }
-                : { percent: values.quorum.percent },
-          },
-        },
-      } as DAOProposalMultipleInstantiateMsg),
-      admin: { core_module: {} },
-    };
-
-    const executeMsg: DaoCoreExecuteMsg = {
-      update_proposal_modules: {
-        to_add: [dao_proposal_multiple_instantiate],
-        to_disable: [],
-      },
-    };
-
-    let cosmosMsg = {
-      wasm: {
-        execute: {
-          contract_addr: values.dao,
-          msg: toBinary(executeMsg),
-          funds: [],
-        },
-      },
-    };
-
-    let proposal_description =
-      "Enabling the Arena Protocol extension provides a framework for organizing and managing decentralized competitions, allowing for fair and transparent competition validation. By enabling the extension, participants can compete against each other in a trustless environment, and the DAO can ensure that the competition is fair and secure.";
-    let proposal_title = "Enable the Arena Protocol extension.";
-    if (proposalAddrResponse.type == "proposal_module") {
-      let daoProposalClient = new DaoProposalSingleClient(
+    try {
+      const proposalAddrResponse = await getProposalAddr(
         cosmWasmClient,
-        chainContext.address!,
-        proposalAddrResponse.addr
+        values.dao,
+        chainContext.address!
       );
 
-      await daoProposalClient.propose({
-        title: proposal_title,
-        description: proposal_description,
-        msgs: [cosmosMsg],
-      });
-    } else if (proposalAddrResponse.type == "prepropose") {
-      let preProposeClient = new DaoPreProposeSingleClient(
-        cosmWasmClient,
-        chainContext.address!,
-        proposalAddrResponse.addr
-      );
+      if (!proposalAddrResponse) {
+        setError("dao", {
+          message:
+            "The dao does not have an accessible single proposal module available.",
+        });
+        return;
+      }
 
-      await preProposeClient.propose({
-        msg: {
-          propose: {
-            title: proposal_title,
-            description: proposal_description,
-            msgs: [cosmosMsg],
+      let arena_wager_module_instantiate = {
+        code_id: parseInt(process.env.NEXT_PUBLIC_CODE_ID_WAGER_MODULE!),
+        label: "Arena Wager Module",
+        msg: toBinary({
+          key: process.env.NEXT_PUBLIC_WAGER_MODULE_KEY!,
+          description: "The Arena Protocol Wager Module",
+          extension: {},
+        } as ArenaWagerModuleInstantiateMsg),
+        admin: { core_module: {} },
+      };
+
+      let arena_core_instantiate = {
+        code_id: parseInt(process.env.NEXT_PUBLIC_CODE_ID_ARENA_CORE!),
+        label: "Arena Core",
+        msg: toBinary({
+          open_proposal_submission: false,
+          extension: {
+            tax: (values.tax / 100).toString(),
+            rulesets: values.rulesets,
+            competition_modules_instantiate_info: [
+              arena_wager_module_instantiate,
+            ],
+          },
+        } as ArenaCoreInstantiateMsg),
+        admin: { core_module: {} },
+      };
+
+      let dao_proposal_multiple_instantiate = {
+        code_id: parseInt(
+          process.env.NEXT_PUBLIC_CODE_ID_DAO_PROPOSAL_MULTIPLE!
+        ),
+        label: "Arena Proposal Multiple Module",
+        msg: toBinary({
+          allow_revoting: values.allow_revoting,
+          close_proposal_on_execution_failure:
+            values.close_proposal_on_execution_failure,
+          max_voting_period: convertToDuration(values.max_voting_duration),
+          min_voting_period:
+            !values.min_voting_duration.duration ||
+            values.min_voting_duration.duration == 0
+              ? undefined
+              : convertToDuration(values.min_voting_duration),
+          only_members_execute: values.only_members_execute,
+          pre_propose_info: {
+            module_may_propose: { info: arena_core_instantiate },
+          },
+          voting_strategy: {
+            single_choice: {
+              quorum:
+                values.quorum.percentage_threshold == "Majority"
+                  ? { majority: {} }
+                  : { percent: values.quorum.percent },
+            },
+          },
+        } as DAOProposalMultipleInstantiateMsg),
+        admin: { core_module: {} },
+      };
+
+      const executeMsg: DaoCoreExecuteMsg = {
+        update_proposal_modules: {
+          to_add: [dao_proposal_multiple_instantiate],
+          to_disable: [],
+        },
+      };
+
+      let cosmosMsg = {
+        wasm: {
+          execute: {
+            contract_addr: values.dao,
+            msg: toBinary(executeMsg),
+            funds: [],
           },
         },
-      });
+      };
+
+      let proposal_description =
+        "Enabling the Arena Protocol extension provides a framework for organizing and managing decentralized competitions, allowing for fair and transparent competition validation. By enabling the extension, participants can compete against each other in a trustless environment, and the DAO can ensure that the competition is fair and secure.";
+      let proposal_title = "Enable the Arena Protocol extension.";
+      if (proposalAddrResponse.type == "proposal_module") {
+        let daoProposalClient = new DaoProposalSingleClient(
+          cosmWasmClient,
+          chainContext.address!,
+          proposalAddrResponse.addr
+        );
+
+        await daoProposalClient.propose({
+          title: proposal_title,
+          description: proposal_description,
+          msgs: [cosmosMsg],
+        });
+      } else if (proposalAddrResponse.type == "prepropose") {
+        let preProposeClient = new DaoPreProposeSingleClient(
+          cosmWasmClient,
+          chainContext.address!,
+          proposalAddrResponse.addr
+        );
+
+        await preProposeClient.propose({
+          msg: {
+            propose: {
+              title: proposal_title,
+              description: proposal_description,
+              msgs: [cosmosMsg],
+            },
+          },
+        });
+      }
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -256,6 +295,7 @@ const EnableForm = () => {
         <Input id="dao" {...register("dao")} />
         <FormErrorMessage>{errors.dao?.message}</FormErrorMessage>
       </FormControl>
+      {!!daoConfig && <DAOCard config={daoConfig} addr={watchDAO} my="2" />}
       <SimpleGrid minChildWidth={"200px"} my="2">
         <FormControl
           display="flex"
@@ -320,10 +360,7 @@ const EnableForm = () => {
         <Grid templateColumns="repeat(5, 1fr)" gap={1} alignItems="flex-start">
           <GridItem colSpan={3}>
             <FormControl isInvalid={!!errors.min_voting_duration?.duration}>
-              <FormLabel>
-                Min Voting Duration{" "}
-                <FormHelperText display="inline">(optional)</FormHelperText>
-              </FormLabel>
+              <FormLabel>Min Voting Duration</FormLabel>
               <InputGroup>
                 <Input
                   type="number"
@@ -393,8 +430,16 @@ const EnableForm = () => {
           </GridItem>
         </Grid>
       </SimpleGrid>
-      <Grid templateColumns="repeat(12, 1fr)" gap={1} alignItems="flex-start">
-        <GridItem colSpan={2}>
+      <Grid
+        templateColumns={useBreakpointValue({
+          base: "1fr",
+          sm: "repeat(2, 1fr)",
+          xl: "repeat(4, 1fr)",
+        })}
+        gap={1}
+        alignItems="flex-start"
+      >
+        <GridItem>
           <FormControl
             isInvalid={!!errors.quorum?.percentage_threshold || !!errors.quorum}
           >
@@ -410,7 +455,7 @@ const EnableForm = () => {
           </FormControl>
         </GridItem>
         {watchPercentageThreshold == "Percent" && (
-          <GridItem colSpan={3}>
+          <GridItem>
             <FormControl isInvalid={!!errors.quorum?.percent}>
               <FormLabel>Percentage</FormLabel>
               <InputGroup>
@@ -531,6 +576,9 @@ const EnableForm = () => {
                     </Stack>
                   )}
                 />
+                <FormErrorMessage>
+                  {errors.rulesets?.[rulesetIndex]?.rules?.message}
+                </FormErrorMessage>
               </AccordionPanel>
             </AccordionItem>
           ))}

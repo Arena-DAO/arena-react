@@ -1,3 +1,5 @@
+import { Expiration } from "@arena/ArenaWagerModule.types";
+import { Duration } from "@dao/DaoProposalMultiple.types";
 import { z } from "zod";
 
 export const DurationSchema = z.object({
@@ -5,9 +7,24 @@ export const DurationSchema = z.object({
     .number({
       invalid_type_error: "Duration must be a number",
     })
-    .positive(),
+    .positive()
+    .optional(),
   duration_units: z.enum(["Time", "Height"]),
 });
+
+export const Uint128Schema = z.number().positive();
+
+export function convertToUint128(
+  uint128Schema: z.infer<typeof Uint128Schema>,
+  decimals: number
+): string {
+  // Convert to BigInt with appropriate scaling for decimals
+  const scaleFactor = BigInt(10 ** decimals);
+  const bigNum = BigInt(uint128Schema) * scaleFactor;
+
+  // Convert to string
+  return bigNum.toString();
+}
 
 export const PercentageThresholdSchema = z
   .object({
@@ -57,3 +74,31 @@ export const ExpirationSchema = z
       message: "A validation expiration value is required.",
     }
   );
+
+export function convertToExpiration(
+  expirationSchema: z.infer<typeof ExpirationSchema>
+): Expiration {
+  switch (expirationSchema.expiration_units) {
+    case "At Height":
+      return { at_height: expirationSchema.height };
+    case "At Time":
+      return { at_time: expirationSchema.time.getTime().toString() };
+    case "Never":
+      return { never: {} };
+    default:
+      throw new Error(
+        `Unknown expiration units: ${expirationSchema.expiration_units}`
+      );
+  }
+}
+
+export function convertToDuration(
+  durationSchema: z.infer<typeof DurationSchema>
+): Duration {
+  switch (durationSchema.duration_units) {
+    case "Height":
+      return { height: durationSchema.duration || 0 };
+    case "Time":
+      return { time: durationSchema.duration || 0 };
+  }
+}
