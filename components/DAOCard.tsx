@@ -32,6 +32,7 @@ export function DAOCard({ config, addr, ...boxprops }: DAOCardProps) {
         boxSize="50px"
         borderRadius="full"
         src={convertIPFSToHttp(config.image_url)}
+        fallbackSrc="/logo.svg"
         alt="DAO Image"
         marginRight="3"
       />

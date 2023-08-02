@@ -1,5 +1,7 @@
 import { Expiration } from "@arena/ArenaWagerModule.types";
 import { Duration } from "@dao/DaoProposalMultiple.types";
+import { isBefore } from "date-fns";
+import { utcToZonedTime } from "date-fns-tz";
 import { z } from "zod";
 
 export const DurationSchema = z.object({
@@ -58,31 +60,74 @@ export const DAOAddressSchema = (bech32_prefix: string) => {
 
 export const ExpirationSchema = z
   .object({
-    time: z.date(),
-    height: z.number().positive(),
+    time: z.string().optional(),
+    timezone: z.string().optional(),
+    height: z.number().positive().optional(),
     expiration_units: z.enum(["At Time", "At Height", "Never"]),
   })
-  .refine(
-    (context) => {
-      return (
-        (context.expiration_units === "At Height" && !!context.height) ||
-        (context.expiration_units === "At Time" && !!context.time) ||
-        context.expiration_units === "Never"
-      );
-    },
-    {
-      message: "A validation expiration value is required.",
+  .superRefine((context, ctx) => {
+    if (context.expiration_units === "At Height" && !context.height) {
+      ctx.addIssue({
+        path: ["height"],
+        code: z.ZodIssueCode.custom,
+        message: "Height is required for expiration unit 'At Height'",
+      });
     }
-  );
+
+    if (context.expiration_units === "At Time") {
+      if (!context.time) {
+        ctx.addIssue({
+          path: ["time"],
+          code: z.ZodIssueCode.custom,
+          message: "Time is required for expiration unit 'At Time'",
+        });
+      }
+
+      if (!context.timezone) {
+        ctx.addIssue({
+          path: ["timezone"],
+          code: z.ZodIssueCode.custom,
+          message: "Timezone is required for expiration unit 'At Time'",
+        });
+      }
+
+      if (context.time && context.timezone) {
+        const providedTimeInZone = utcToZonedTime(
+          context.time,
+          context.timezone
+        );
+        const currentTimeInZone = utcToZonedTime(
+          new Date(),
+          Intl.DateTimeFormat().resolvedOptions().timeZone
+        );
+
+        // Check if the provided time is greater than the current time in the user's timezone
+        if (isBefore(providedTimeInZone, currentTimeInZone)) {
+          ctx.addIssue({
+            path: ["time"],
+            code: z.ZodIssueCode.custom,
+            message: "Provided time must be greater than the current time",
+          });
+        }
+      }
+    }
+  });
 
 export function convertToExpiration(
   expirationSchema: z.infer<typeof ExpirationSchema>
 ): Expiration {
   switch (expirationSchema.expiration_units) {
     case "At Height":
-      return { at_height: expirationSchema.height };
+      return { at_height: expirationSchema.height! };
     case "At Time":
-      return { at_time: expirationSchema.time.getTime().toString() };
+      return {
+        at_time: utcToZonedTime(
+          expirationSchema.time!,
+          expirationSchema.timezone!
+        )
+          .getTime()
+          .toString(),
+      };
     case "Never":
       return { never: {} };
     default:
