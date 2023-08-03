@@ -6,9 +6,11 @@ import {
 import { Container, Grid, GridItem, Heading, Stack } from "@chakra-ui/layout";
 import {
   Button,
+  IconButton,
   Input,
   InputGroup,
   InputRightAddon,
+  InputRightElement,
   Select,
   Textarea,
   useBreakpointValue,
@@ -24,7 +26,7 @@ import { ArenaCoreQueryClient } from "@arena/ArenaCore.client";
 import { ArenaWagerModuleClient } from "@arena/ArenaWagerModule.client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import {
   DAOAddressSchema,
@@ -33,14 +35,17 @@ import {
   convertToDuration,
   convertToExpiration,
 } from "~/helpers/SchemaHelpers";
-import { toBinary } from "cosmwasm";
+import { fromBinary, toBinary } from "cosmwasm";
 import { InstantiateMsg as DAOProposalMultipleInstantiateMsg } from "@dao/DaoProposalMultiple.types";
 import { InstantiateMsg as DAOPreProposeMultipleInstantiateMsg } from "@dao/DaoPreProposeMultiple.types";
 import { InstantiateMsg as DAOVotingCW4InstantiateMsg } from "@dao/DaoVotingCw4.types";
 import { DAOCard } from "@components/DAOCard";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
 import moment from "moment-timezone";
+import { BsPlus } from "react-icons/bs";
+import { FiDelete } from "react-icons/fi";
+import { Ruleset } from "@arena/ArenaCore.types";
 
 const WagerForm = () => {
   const router = useRouter();
@@ -54,7 +59,6 @@ const WagerForm = () => {
     name: z.string().nonempty({ message: "Name is required " }),
     rules: z.string().nonempty({ message: "Rule cannot be empty " }).array(),
     ruleset: z.number().optional(),
-    max_voting_period: DurationSchema.required({ duration: true }),
     dues: z.array(
       z.object({
         addr: z.string().nonempty(),
@@ -102,6 +106,7 @@ const WagerForm = () => {
         ),
         timezone: moment.tz.guess(),
       },
+      rules: [],
     },
     resolver: zodResolver(validationSchema),
   });
@@ -111,6 +116,7 @@ const WagerForm = () => {
   const watchDAO = watch("dao");
   const [daoConfig, setDAOConfig] = useState<Config | undefined>();
   const [arenaCoreAddr, setArenaCoreAddr] = useState<string | undefined>();
+  const [rulesets, setRulesets] = useState<Ruleset[] | undefined>();
   useEffect(() => {
     try {
       daoAddressSchema.parse(watchDAO);
@@ -125,25 +131,73 @@ const WagerForm = () => {
 
         let config = await daoCoreQueryClient.config();
         setDAOConfig(config);
-
-        let getItemResponse = await daoCoreQueryClient.getItem({
-          key: process.env.NEXT_PUBLIC_ITEM_KEY!,
-        });
-
-        if (!getItemResponse.item) {
-          setError("dao", {
-            message: "The DAO does not have an Arena extension.",
-          });
-        }
-        setArenaCoreAddr(getItemResponse.item ?? undefined);
       }
 
       queryDAO();
     } catch {
       setDAOConfig(undefined);
-      setArenaCoreAddr(undefined);
     }
   }, [watchDAO, daoAddressSchema, chainContext]);
+  useEffect(() => {
+    if (daoConfig) {
+      try {
+        async function queryArenaCoreAddr() {
+          let cosmwasmClient = await chainContext.getCosmWasmClient();
+
+          let daoCoreQueryClient = new DaoCoreQueryClient(
+            cosmwasmClient,
+            watchDAO
+          );
+
+          let getItemResponse = await daoCoreQueryClient.getItem({
+            key: process.env.NEXT_PUBLIC_ITEM_KEY!,
+          });
+
+          if (!getItemResponse.item) {
+            setError("dao", {
+              message: "The DAO does not have an Arena extension.",
+            });
+          }
+          setArenaCoreAddr(getItemResponse.item ?? undefined);
+        }
+
+        queryArenaCoreAddr();
+      } catch {
+        setArenaCoreAddr(undefined);
+      }
+    } else setArenaCoreAddr(undefined);
+  }, [daoConfig, chainContext, setError, watchDAO]);
+
+  const getRulesets = useCallback(
+    async (arenaCoreAddr: string, skip: number | null) => {
+      try {
+        let cosmwasmClient = await chainContext.getCosmWasmClient();
+        let arenaCoreQueryClient = new ArenaCoreQueryClient(
+          cosmwasmClient,
+          arenaCoreAddr
+        );
+        let rulesets = fromBinary(
+          await arenaCoreQueryClient.queryExtension({
+            msg: { rulesets: { skip } },
+          })
+        );
+
+        setRulesets(rulesets);
+      } catch {
+        setRulesets(undefined);
+      }
+    },
+    [chainContext]
+  );
+  useEffect(() => {
+    if (arenaCoreAddr) {
+      try {
+        getRulesets(arenaCoreAddr, null);
+      } catch {
+        setRulesets(undefined);
+      }
+    } else setRulesets(undefined);
+  }, [arenaCoreAddr, chainContext, getRulesets]);
 
   const onSubmit = async (values: FormValues) => {
     let cosmWasmClient = await chainContext.getSigningCosmWasmClient();
@@ -215,9 +269,7 @@ const WagerForm = () => {
                 msg: toBinary({
                   allow_revoting: false,
                   close_proposal_on_execution_failure: true,
-                  max_voting_period: convertToDuration(
-                    values.max_voting_period
-                  ),
+                  max_voting_period: { time: Number.MAX_SAFE_INTEGER },
                   only_members_execute: true,
                   pre_propose_info: {
                     module_may_propose: {
@@ -363,6 +415,61 @@ const WagerForm = () => {
           </GridItem>
         )}
       </Grid>
+      <FormControl>
+        <FormLabel>Rules</FormLabel>
+        <Controller
+          control={control}
+          name="rules"
+          render={({ field: { onChange, onBlur, value, ref } }) => (
+            <Stack spacing={4}>
+              {value?.map((_rule, ruleIndex) => (
+                <FormControl
+                  key={ruleIndex}
+                  isInvalid={!!errors.rules?.[ruleIndex]}
+                >
+                  <InputGroup>
+                    <Input
+                      onBlur={onBlur}
+                      onChange={(e) => {
+                        const newValue = [...value];
+                        newValue[ruleIndex] = e.target.value;
+                        onChange(newValue);
+                      }}
+                      value={value[ruleIndex]}
+                      ref={ref}
+                    />
+                    <InputRightElement>
+                      <IconButton
+                        aria-label="delete"
+                        variant="ghost"
+                        icon={<FiDelete />}
+                        onClick={() =>
+                          onChange([
+                            ...value.slice(0, ruleIndex),
+                            ...value.slice(ruleIndex + 1),
+                          ])
+                        }
+                      />
+                    </InputRightElement>
+                  </InputGroup>
+                  <FormErrorMessage>
+                    {errors.rules?.[ruleIndex]?.message}
+                  </FormErrorMessage>
+                </FormControl>
+              ))}
+              <IconButton
+                variant="outline"
+                colorScheme="secondary"
+                aria-label="Add Rule"
+                alignSelf="flex-start"
+                onClick={() => onChange([...value, ""])}
+                icon={<BsPlus />}
+              />
+            </Stack>
+          )}
+        />
+        <FormErrorMessage>{errors.rules?.message}</FormErrorMessage>
+      </FormControl>
       <Button
         mt={6}
         type="submit"

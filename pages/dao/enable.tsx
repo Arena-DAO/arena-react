@@ -515,70 +515,72 @@ const EnableForm = () => {
                     {errors.rulesets?.[rulesetIndex]?.description?.message}
                   </FormErrorMessage>
                 </FormControl>
-                <FormLabel>Rules</FormLabel>
-                <Controller
-                  control={control}
-                  name={`rulesets.${rulesetIndex}.rules`}
-                  defaultValue={[] as string[]}
-                  render={({ field: { onChange, onBlur, value, ref } }) => (
-                    <Stack spacing={4}>
-                      {value?.map((_rule, ruleIndex) => (
-                        <FormControl
-                          key={ruleIndex}
-                          isInvalid={
-                            !!errors.rulesets?.[rulesetIndex]?.rules?.[
-                              ruleIndex
-                            ]
-                          }
-                        >
-                          <InputGroup>
-                            <Input
-                              onBlur={onBlur}
-                              onChange={(e) => {
-                                const newValue = [...value];
-                                newValue[ruleIndex] = e.target.value;
-                                onChange(newValue);
-                              }}
-                              value={value[ruleIndex]}
-                              ref={ref}
-                            />
-                            <InputRightElement>
-                              <IconButton
-                                aria-label="delete"
-                                variant="ghost"
-                                icon={<FiDelete />}
-                                onClick={() =>
-                                  onChange([
-                                    ...value.slice(0, ruleIndex),
-                                    ...value.slice(ruleIndex + 1),
-                                  ])
-                                }
-                              />
-                            </InputRightElement>
-                          </InputGroup>
-                          <FormErrorMessage>
-                            {
-                              errors.rulesets?.[rulesetIndex]?.rules?.[
+                <FormControl>
+                  <FormLabel>Rules</FormLabel>
+                  <Controller
+                    control={control}
+                    name={`rulesets.${rulesetIndex}.rules`}
+                    defaultValue={[] as string[]}
+                    render={({ field: { onChange, onBlur, value, ref } }) => (
+                      <Stack spacing={4}>
+                        {value?.map((_rule, ruleIndex) => (
+                          <FormControl
+                            key={ruleIndex}
+                            isInvalid={
+                              !!errors.rulesets?.[rulesetIndex]?.rules?.[
                                 ruleIndex
-                              ]?.message
+                              ]
                             }
-                          </FormErrorMessage>
-                        </FormControl>
-                      ))}
-                      <IconButton
-                        variant="outline"
-                        colorScheme="secondary"
-                        aria-label="Add Rule"
-                        alignSelf="flex-start"
-                        onClick={() => onChange([...value, ""])}
-                        icon={<BsPlus />}
-                      />
-                    </Stack>
-                  )}
-                />
-                <FormErrorMessage>
-                  {errors.rulesets?.[rulesetIndex]?.rules?.message}
-                </FormErrorMessage>
+                          >
+                            <InputGroup>
+                              <Input
+                                onBlur={onBlur}
+                                onChange={(e) => {
+                                  const newValue = [...value];
+                                  newValue[ruleIndex] = e.target.value;
+                                  onChange(newValue);
+                                }}
+                                value={value[ruleIndex]}
+                                ref={ref}
+                              />
+                              <InputRightElement>
+                                <IconButton
+                                  aria-label="delete"
+                                  variant="ghost"
+                                  icon={<FiDelete />}
+                                  onClick={() =>
+                                    onChange([
+                                      ...value.slice(0, ruleIndex),
+                                      ...value.slice(ruleIndex + 1),
+                                    ])
+                                  }
+                                />
+                              </InputRightElement>
+                            </InputGroup>
+                            <FormErrorMessage>
+                              {
+                                errors.rulesets?.[rulesetIndex]?.rules?.[
+                                  ruleIndex
+                                ]?.message
+                              }
+                            </FormErrorMessage>
+                          </FormControl>
+                        ))}
+                        <IconButton
+                          variant="outline"
+                          colorScheme="secondary"
+                          aria-label="Add Rule"
+                          alignSelf="flex-start"
+                          onClick={() => onChange([...value, ""])}
+                          icon={<BsPlus />}
+                        />
+                      </Stack>
+                    )}
+                  />
+                  <FormErrorMessage>
+                    {errors.rulesets?.[rulesetIndex]?.rules?.message}
+                  </FormErrorMessage>
+                </FormControl>
               </AccordionPanel>
             </AccordionItem>
           ))}
