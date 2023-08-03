@@ -480,7 +480,7 @@ const EnableForm = () => {
       </Grid>
       <FormControl isInvalid={!!errors.rulesets}>
         <FormLabel>Rulesets</FormLabel>
-        <Accordion allowToggle>
+        <Accordion defaultIndex={[0]} allowMultiple>
           {rulesetsFields.map((ruleset, rulesetIndex) => (
             <AccordionItem key={ruleset.id}>
               <HStack>
@@ -515,7 +515,9 @@ const EnableForm = () => {
                     {errors.rulesets?.[rulesetIndex]?.description?.message}
                   </FormErrorMessage>
                 </FormControl>
-                <FormControl>
+                <FormControl
+                  isInvalid={!!errors.rulesets?.[rulesetIndex]?.rules}
+                >
                   <FormLabel>Rules</FormLabel>
                   <Controller
                     control={control}

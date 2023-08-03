@@ -415,7 +415,7 @@ const WagerForm = () => {
           </GridItem>
         )}
       </Grid>
-      <FormControl>
+      <FormControl isInvalid={!!errors.rules}>
         <FormLabel>Rules</FormLabel>
         <Controller
           control={control}
