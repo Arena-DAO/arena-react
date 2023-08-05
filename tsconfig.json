@@ -48,6 +48,8 @@
       "@components/*": ["components/*"],
       "@arena/*": ["ts-codegen/arena/*"],
       "@dao/*": ["ts-codegen/dao/*"],
+      "@cw-nfts/*": ["ts-codegen/cw-nfts/*"],
+      "@cw-plus/*": ["ts-codegen/cw-plus/*"],
       "@config/*": ["config/*"],
       "~/*": ["./*"]
     }

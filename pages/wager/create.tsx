@@ -3,36 +3,61 @@ import {
   FormErrorMessage,
   FormLabel,
 } from "@chakra-ui/form-control";
-import { Container, Grid, GridItem, Heading, Stack } from "@chakra-ui/layout";
+import {
+  Container,
+  Grid,
+  GridItem,
+  Heading,
+  ListItem,
+  Stack,
+  UnorderedList,
+} from "@chakra-ui/layout";
 import {
   Button,
+  ButtonGroup,
   IconButton,
   Input,
   InputGroup,
   InputRightAddon,
   InputRightElement,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
   Select,
+  Table,
+  TableContainer,
+  TableContainerProps,
+  Tbody,
+  Td,
   Textarea,
+  Th,
+  Thead,
+  Tr,
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { useChain } from "@cosmos-kit/react";
-import { DaoCoreQueryClient } from "@dao/DaoCore.client";
-import {
-  Config,
-  InstantiateMsg as DAOCoreInstantiateMsg,
-} from "@dao/DaoCore.types";
+import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
+import { InstantiateMsg as DaoDaoCoreInstantiateMsg } from "@dao/DaoDaoCore.types";
 import { InstantiateMsg as ArenaEscrowInstantiateMsg } from "@arena/ArenaEscrow.types";
 import { ArenaCoreQueryClient } from "@arena/ArenaCore.client";
 import { ArenaWagerModuleClient } from "@arena/ArenaWagerModule.client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
-import { Controller, useForm } from "react-hook-form";
+import {
+  Controller,
+  UseFormClearErrors,
+  UseFormSetError,
+  useForm,
+} from "react-hook-form";
 import { z } from "zod";
 import {
   DAOAddressSchema,
-  DurationSchema,
+  DueSchema,
   ExpirationSchema,
-  convertToDuration,
   convertToExpiration,
 } from "~/helpers/SchemaHelpers";
 import { fromBinary, toBinary } from "cosmwasm";
@@ -46,11 +71,200 @@ import moment from "moment-timezone";
 import { BsPlus } from "react-icons/bs";
 import { FiDelete } from "react-icons/fi";
 import { Ruleset } from "@arena/ArenaCore.types";
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { useDaoDaoCoreGetItemQuery } from "@dao/DaoDaoCore.react-query";
+import { useArenaCoreQueryExtensionQuery } from "@arena/ArenaCore.react-query";
+
+interface RulesetProps {
+  addr: string;
+  cosmwasmClient: CosmWasmClient;
+  onRulesetSelect: (id: number | undefined) => void;
+}
+
+interface RulesetTableProps extends RulesetProps, TableContainerProps {
+  onArenaCoreLoaded: (data: string | undefined) => void;
+  setError: UseFormSetError<{ dao: string }>;
+  clearErrors: UseFormClearErrors<{ dao: string }>;
+}
+
+interface RulesetTableInnerProps extends RulesetProps {
+  start_after?: number;
+  selectedRuleset: number | undefined;
+  onRulesetLoaded: (data: number | undefined) => void;
+}
+
+function RulesetTableInner({
+  addr,
+  cosmwasmClient,
+  onRulesetSelect,
+  onRulesetLoaded,
+  selectedRuleset,
+  start_after,
+}: RulesetTableInnerProps) {
+  const { data, isLoading, isError } = useArenaCoreQueryExtensionQuery({
+    client: new ArenaCoreQueryClient(cosmwasmClient, addr),
+    args: { msg: { rulesets: { start_after } } },
+  });
+  const parseRulesets = (data: string) => {
+    let rulesets: [number, Ruleset][] = [];
+    try {
+      rulesets = fromBinary(data) as [number, Ruleset][];
+    } catch {}
+
+    return rulesets;
+  };
+  useEffect(() => {
+    if (data && !isError && !isLoading) {
+      let rulesets = parseRulesets(data);
+      let largestNumber = 0;
+
+      if (rulesets.length > 0) {
+        largestNumber = Math.max(...rulesets.map(([number]) => number));
+      }
+
+      onRulesetLoaded(largestNumber);
+    } else onRulesetLoaded(undefined);
+  }, [isError, data, isLoading, onRulesetLoaded]);
+
+  if (isLoading || isError || !data) return <></>;
+
+  const rulesets = parseRulesets(data);
+  return (
+    <>
+      {rulesets.map((ruleset) => (
+        <Tr key={ruleset[0]}>
+          <Td>{ruleset[1].description}</Td>
+          <Td>
+            <ButtonGroup>
+              <Popover>
+                <PopoverTrigger>
+                  <Button>View</Button>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <PopoverArrow />
+                  <PopoverCloseButton />
+                  <PopoverHeader>Rules</PopoverHeader>
+                  <PopoverBody>
+                    <UnorderedList>
+                      {ruleset[1].rules.map((rule, index) => (
+                        <ListItem key={index}>{rule}</ListItem>
+                      ))}
+                    </UnorderedList>
+                  </PopoverBody>
+                </PopoverContent>
+              </Popover>
+              {selectedRuleset != ruleset[0] && (
+                <Button onClick={() => onRulesetSelect(ruleset[0])}>
+                  Select
+                </Button>
+              )}
+              {selectedRuleset == ruleset[0] && (
+                <Button onClick={() => onRulesetSelect(undefined)}>
+                  Unselect
+                </Button>
+              )}
+            </ButtonGroup>
+          </Td>
+        </Tr>
+      ))}
+    </>
+  );
+}
+
+function RulesetTable({
+  addr,
+  cosmwasmClient,
+  onRulesetSelect,
+  setError,
+  onArenaCoreLoaded,
+  clearErrors,
+  ...props
+}: RulesetTableProps) {
+  const { data, isLoading, isError } = useDaoDaoCoreGetItemQuery({
+    client: new DaoDaoCoreQueryClient(cosmwasmClient, addr),
+    args: { key: process.env.NEXT_PUBLIC_ITEM_KEY! },
+  });
+  const [selectedRuleset, setSelectedRuleset] = useState<number | undefined>(
+    undefined
+  );
+  const [lastRuleset, setLastRuleset] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    onRulesetSelect(selectedRuleset);
+    setSelectedRuleset(selectedRuleset);
+  }, [selectedRuleset]);
+
+  useEffect(() => {
+    if (isError || !data || !data.item)
+      setError("dao", {
+        message: "The dao does not have an arena core extension",
+      });
+    else clearErrors("dao");
+  }, [isError, data]);
+
+  useEffect(() => {
+    if (data && data.item && !isError && !isLoading) {
+      onArenaCoreLoaded(data.item);
+    } else {
+      onArenaCoreLoaded(undefined);
+    }
+  }, [data, isError, isLoading, onArenaCoreLoaded]);
+
+  if (!data || !data.item || isError || isLoading) {
+    return <></>;
+  }
+
+  if (lastRuleset == 0) return <></>;
+  return (
+    <FormControl>
+      <FormLabel>Rulesets</FormLabel>
+      <TableContainer {...props}>
+        <Table variant="simple">
+          <Thead>
+            <Tr>
+              <Th>Description</Th>
+              <Th>Action</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {
+              <RulesetTableInner
+                addr={data.item}
+                cosmwasmClient={cosmwasmClient}
+                onRulesetSelect={setSelectedRuleset}
+                selectedRuleset={selectedRuleset}
+                onRulesetLoaded={setLastRuleset}
+              />
+            }
+          </Tbody>
+        </Table>
+      </TableContainer>
+    </FormControl>
+  );
+}
 
 const WagerForm = () => {
   const router = useRouter();
-  const chainContext = useChain(process.env.NEXT_PUBLIC_CHAIN!);
-  const daoAddressSchema = DAOAddressSchema(chainContext.chain.bech32_prefix);
+  const {
+    getCosmWasmClient,
+    chain,
+    getSigningCosmWasmClient,
+    address,
+    isWalletConnected,
+  } = useChain(process.env.NEXT_PUBLIC_CHAIN!);
+  const [cosmwasmClient, setCosmwasmClient] = useState<
+    CosmWasmClient | undefined
+  >(undefined);
+
+  useEffect(() => {
+    async function fetchClient() {
+      const client = await getCosmWasmClient();
+      setCosmwasmClient(client);
+    }
+
+    fetchClient();
+  }, [getCosmWasmClient]);
+  const daoAddressSchema = DAOAddressSchema(chain.bech32_prefix);
 
   const validationSchema = z.object({
     dao: daoAddressSchema,
@@ -59,31 +273,7 @@ const WagerForm = () => {
     name: z.string().nonempty({ message: "Name is required " }),
     rules: z.string().nonempty({ message: "Rule cannot be empty " }).array(),
     ruleset: z.number().optional(),
-    dues: z.array(
-      z.object({
-        addr: z.string().nonempty(),
-        balance: z.object({
-          cw20: z.array(
-            z.object({
-              address: z.string().nonempty(),
-              amount: z.number().positive(),
-            })
-          ),
-          cw721: z.array(
-            z.object({
-              addr: z.string().nonempty(),
-              token_ids: z.array(z.string().nonempty()).min(1),
-            })
-          ),
-          native: z.array(
-            z.object({
-              amount: z.number().positive(),
-              denom: z.string().nonempty(),
-            })
-          ),
-        }),
-      })
-    ),
+    dues: z.array(DueSchema),
   });
 
   type FormValues = z.infer<typeof validationSchema>;
@@ -93,11 +283,12 @@ const WagerForm = () => {
     handleSubmit,
     control,
     setError,
+    clearErrors,
+    setValue,
     watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     defaultValues: {
-      dao: router.query.dao as string | undefined,
       expiration: {
         expiration_units: "At Time",
         time: format(
@@ -111,96 +302,22 @@ const WagerForm = () => {
     resolver: zodResolver(validationSchema),
   });
 
+  useEffect(() => {
+    if (router.query.dao as string | undefined)
+      setValue("dao", router.query.dao as string);
+  }, [router.query.dao, setValue]);
+
   const watchExpirationUnits = watch("expiration.expiration_units");
 
-  const watchDAO = watch("dao");
-  const [daoConfig, setDAOConfig] = useState<Config | undefined>();
+  const watchDao = watch("dao");
   const [arenaCoreAddr, setArenaCoreAddr] = useState<string | undefined>();
-  const [rulesets, setRulesets] = useState<Ruleset[] | undefined>();
-  useEffect(() => {
-    try {
-      daoAddressSchema.parse(watchDAO);
 
-      async function queryDAO() {
-        let cosmwasmClient = await chainContext.getCosmWasmClient();
-
-        let daoCoreQueryClient = new DaoCoreQueryClient(
-          cosmwasmClient,
-          watchDAO
-        );
-
-        let config = await daoCoreQueryClient.config();
-        setDAOConfig(config);
-      }
-
-      queryDAO();
-    } catch {
-      setDAOConfig(undefined);
-    }
-  }, [watchDAO, daoAddressSchema, chainContext]);
-  useEffect(() => {
-    if (daoConfig) {
-      try {
-        async function queryArenaCoreAddr() {
-          let cosmwasmClient = await chainContext.getCosmWasmClient();
-
-          let daoCoreQueryClient = new DaoCoreQueryClient(
-            cosmwasmClient,
-            watchDAO
-          );
-
-          let getItemResponse = await daoCoreQueryClient.getItem({
-            key: process.env.NEXT_PUBLIC_ITEM_KEY!,
-          });
-
-          if (!getItemResponse.item) {
-            setError("dao", {
-              message: "The DAO does not have an Arena extension.",
-            });
-          }
-          setArenaCoreAddr(getItemResponse.item ?? undefined);
-        }
-
-        queryArenaCoreAddr();
-      } catch {
-        setArenaCoreAddr(undefined);
-      }
-    } else setArenaCoreAddr(undefined);
-  }, [daoConfig, chainContext, setError, watchDAO]);
-
-  const getRulesets = useCallback(
-    async (arenaCoreAddr: string, skip: number | null) => {
-      try {
-        let cosmwasmClient = await chainContext.getCosmWasmClient();
-        let arenaCoreQueryClient = new ArenaCoreQueryClient(
-          cosmwasmClient,
-          arenaCoreAddr
-        );
-        let rulesets = fromBinary(
-          await arenaCoreQueryClient.queryExtension({
-            msg: { rulesets: { skip } },
-          })
-        );
-
-        setRulesets(rulesets);
-      } catch {
-        setRulesets(undefined);
-      }
-    },
-    [chainContext]
-  );
-  useEffect(() => {
-    if (arenaCoreAddr) {
-      try {
-        getRulesets(arenaCoreAddr, null);
-      } catch {
-        setRulesets(undefined);
-      }
-    } else setRulesets(undefined);
-  }, [arenaCoreAddr, chainContext, getRulesets]);
+  const onRulesetSelect = (id: number | undefined) => {
+    setValue("ruleset", id);
+  };
 
   const onSubmit = async (values: FormValues) => {
-    let cosmWasmClient = await chainContext.getSigningCosmWasmClient();
+    let cosmWasmClient = await getSigningCosmWasmClient();
 
     if (!cosmWasmClient) {
       console.error("Could not get the CosmWasm client.");
@@ -239,7 +356,7 @@ const WagerForm = () => {
 
       let wagerModuleClient = new ArenaWagerModuleClient(
         cosmWasmClient,
-        chainContext.address!,
+        address!,
         wager_module
       );
 
@@ -306,7 +423,7 @@ const WagerForm = () => {
                 initial_members: [],
               } as DAOVotingCW4InstantiateMsg),
             },
-          } as DAOCoreInstantiateMsg),
+          } as DaoDaoCoreInstantiateMsg),
         },
         escrow: {
           code_id: parseInt(process.env.NEXT_PUBLIC_CODE_ID_ESCROW!),
@@ -329,7 +446,15 @@ const WagerForm = () => {
         <Input id="dao" {...register("dao")} />
         <FormErrorMessage>{errors.dao?.message}</FormErrorMessage>
       </FormControl>
-      {!!daoConfig && <DAOCard config={daoConfig} addr={watchDAO} my="2" />}
+      {!!cosmwasmClient && daoAddressSchema.safeParse(watchDao).success && (
+        <DAOCard
+          addr={watchDao}
+          setError={setError}
+          clearErrors={clearErrors}
+          cosmwasmClient={cosmwasmClient}
+          my="2"
+        />
+      )}
       <FormControl isInvalid={!!errors.name}>
         <FormLabel>Name</FormLabel>
         <Input id="name" {...register("name")} />
@@ -415,6 +540,16 @@ const WagerForm = () => {
           </GridItem>
         )}
       </Grid>
+      {!!cosmwasmClient && daoAddressSchema.safeParse(watchDao).success && (
+        <RulesetTable
+          cosmwasmClient={cosmwasmClient}
+          addr={watchDao}
+          onRulesetSelect={onRulesetSelect}
+          setError={setError}
+          clearErrors={clearErrors}
+          onArenaCoreLoaded={setArenaCoreAddr}
+        />
+      )}
       <FormControl isInvalid={!!errors.rules}>
         <FormLabel>Rules</FormLabel>
         <Controller
@@ -474,7 +609,7 @@ const WagerForm = () => {
         mt={6}
         type="submit"
         colorScheme="secondary"
-        isDisabled={!chainContext.isWalletConnected}
+        isDisabled={!isWalletConnected}
         isLoading={isSubmitting}
       >
         Submit

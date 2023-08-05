@@ -38,6 +38,6 @@ const fetchProfile = async (address: string): Promise<ProfileData> => {
 
 export const useProfileData = (address: string) => {
   return useQuery(["profile", address], () => fetchProfile(address), {
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 30, // 30 minutes
   });
 };

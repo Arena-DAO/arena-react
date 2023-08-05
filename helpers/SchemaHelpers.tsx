@@ -147,3 +147,27 @@ export function convertToDuration(
       return { time: durationSchema.duration || 0 };
   }
 }
+
+export const DueSchema = z.object({
+  addr: z.string().nonempty(),
+  balance: z.object({
+    cw20: z.array(
+      z.object({
+        address: z.string().nonempty(),
+        amount: z.number().positive(),
+      })
+    ),
+    cw721: z.array(
+      z.object({
+        addr: z.string().nonempty(),
+        token_ids: z.array(z.string().nonempty()).min(1),
+      })
+    ),
+    native: z.array(
+      z.object({
+        amount: z.number().positive(),
+        denom: z.string().nonempty(),
+      })
+    ),
+  }),
+});

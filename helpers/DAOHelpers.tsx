@@ -1,5 +1,5 @@
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { DaoCoreQueryClient } from "@dao/DaoCore.client";
+import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 import { DaoProposalSingleQueryClient } from "@dao/DaoProposalSingle.client";
 import { DaoPreProposeSingleQueryClient } from "@dao/DaoPreProposeSingle.client";
 
@@ -15,7 +15,7 @@ export async function getProposalAddr(
   dao: string,
   user?: string
 ): Promise<ProposalAddrResponse | null> {
-  let daoCoreClient = new DaoCoreQueryClient(cosmWasmClient, dao);
+  let daoCoreClient = new DaoDaoCoreQueryClient(cosmWasmClient, dao);
   let proposalModules = [];
   let startAfter: string | undefined;
   do {

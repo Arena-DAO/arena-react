@@ -37,7 +37,10 @@ import {
 import { BsPercent, BsPlus } from "react-icons/bs";
 import { FiDelete } from "react-icons/fi";
 import { useChain } from "@cosmos-kit/react-lite";
-import { Config, ExecuteMsg as DaoCoreExecuteMsg } from "@dao/DaoCore.types";
+import {
+  Config,
+  ExecuteMsg as DaoDaoCoreExecuteMsg,
+} from "@dao/DaoDaoCore.types";
 import { DaoProposalSingleClient } from "@dao/DaoProposalSingle.client";
 import { InstantiateMsg as ArenaWagerModuleInstantiateMsg } from "@arena/ArenaWagerModule.types";
 import { InstantiateMsg as DAOProposalMultipleInstantiateMsg } from "@dao/DaoProposalMultiple.types";
@@ -51,12 +54,32 @@ import {
   convertToDuration,
 } from "~/helpers/SchemaHelpers";
 import { useEffect, useState } from "react";
-import { DaoCoreQueryClient } from "@dao/DaoCore.client";
 import { DAOCard } from "@components/DAOCard";
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 
 const EnableForm = () => {
-  const chainContext = useChain(process.env.NEXT_PUBLIC_CHAIN!);
-  let daoAddressSchema = DAOAddressSchema(chainContext.chain.bech32_prefix);
+  const {
+    getCosmWasmClient,
+    chain,
+    address,
+    getSigningCosmWasmClient,
+    isWalletConnected,
+  } = useChain(process.env.NEXT_PUBLIC_CHAIN!);
+
+  const [cosmwasmClient, setCosmwasmClient] = useState<
+    CosmWasmClient | undefined
+  >(undefined);
+
+  useEffect(() => {
+    async function fetchClient() {
+      const client = await getCosmWasmClient();
+      setCosmwasmClient(client);
+    }
+    console.log("CHAIN");
+    fetchClient();
+  }, [getCosmWasmClient]);
+
+  let daoAddressSchema = DAOAddressSchema(chain.bech32_prefix);
 
   const validationSchema = z
     .object({
@@ -96,6 +119,7 @@ const EnableForm = () => {
     handleSubmit,
     control,
     setError,
+    clearErrors,
     watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
@@ -119,30 +143,7 @@ const EnableForm = () => {
     "max_voting_duration.duration_units"
   );
   const watchPercentageThreshold = watch("quorum.percentage_threshold");
-
-  const watchDAO = watch("dao");
-  const [daoConfig, setDAOConfig] = useState<Config | undefined>();
-  useEffect(() => {
-    try {
-      daoAddressSchema.parse(watchDAO);
-
-      async function queryDAO() {
-        let cosmwasmClient = await chainContext.getCosmWasmClient();
-
-        let daoCoreQueryClient = new DaoCoreQueryClient(
-          cosmwasmClient,
-          watchDAO
-        );
-
-        let config = await daoCoreQueryClient.config();
-        setDAOConfig(config);
-      }
-
-      queryDAO();
-    } catch {
-      setDAOConfig(undefined);
-    }
-  }, [watchDAO, daoAddressSchema, chainContext]);
+  const watchDao = watch("dao");
 
   const {
     fields: rulesetsFields,
@@ -154,7 +155,7 @@ const EnableForm = () => {
   });
 
   const onSubmit = async (values: FormValues) => {
-    let cosmWasmClient = await chainContext.getSigningCosmWasmClient();
+    let cosmWasmClient = await getSigningCosmWasmClient();
 
     if (!cosmWasmClient) {
       console.error("Could not get the CosmWasm client.");
@@ -165,7 +166,7 @@ const EnableForm = () => {
       const proposalAddrResponse = await getProposalAddr(
         cosmWasmClient,
         values.dao,
-        chainContext.address!
+        address!
       );
 
       if (!proposalAddrResponse) {
@@ -234,7 +235,7 @@ const EnableForm = () => {
         admin: { core_module: {} },
       };
 
-      const executeMsg: DaoCoreExecuteMsg = {
+      const executeMsg: DaoDaoCoreExecuteMsg = {
         update_proposal_modules: {
           to_add: [dao_proposal_multiple_instantiate],
           to_disable: [],
@@ -257,7 +258,7 @@ const EnableForm = () => {
       if (proposalAddrResponse.type == "proposal_module") {
         let daoProposalClient = new DaoProposalSingleClient(
           cosmWasmClient,
-          chainContext.address!,
+          address!,
           proposalAddrResponse.addr
         );
 
@@ -269,7 +270,7 @@ const EnableForm = () => {
       } else if (proposalAddrResponse.type == "prepropose") {
         let preProposeClient = new DaoPreProposeSingleClient(
           cosmWasmClient,
-          chainContext.address!,
+          address!,
           proposalAddrResponse.addr
         );
 
@@ -295,7 +296,15 @@ const EnableForm = () => {
         <Input id="dao" {...register("dao")} />
         <FormErrorMessage>{errors.dao?.message}</FormErrorMessage>
       </FormControl>
-      {!!daoConfig && <DAOCard config={daoConfig} addr={watchDAO} my="2" />}
+      {!!cosmwasmClient && daoAddressSchema.safeParse(watchDao).success && (
+        <DAOCard
+          addr={watchDao}
+          setError={setError}
+          clearErrors={clearErrors}
+          cosmwasmClient={cosmwasmClient}
+          my="2"
+        />
+      )}
       <SimpleGrid minChildWidth={"200px"} my="2">
         <FormControl
           display="flex"
@@ -603,7 +612,7 @@ const EnableForm = () => {
         mt={6}
         type="submit"
         colorScheme="secondary"
-        isDisabled={!chainContext.isWalletConnected}
+        isDisabled={!isWalletConnected}
         isLoading={isSubmitting}
       >
         Submit
