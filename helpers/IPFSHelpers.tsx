@@ -1,3 +1,5 @@
+import env from "@config/env";
+
 export function convertIPFSToHttp(url: string | null | undefined) {
   if (!url) return undefined;
 
@@ -5,7 +7,7 @@ export function convertIPFSToHttp(url: string | null | undefined) {
   const ipfsRegex = /^ipfs:\/\/(.*)/;
   const match = url.match(ipfsRegex);
   if (match) {
-    return `${process.env.NEXT_PUBLIC_IPFS_GATEWAY}${match[1]}`;
+    return `${env.IPFS_GATEWAY}${match[1]}`;
   }
 
   // Otherwise return the URL as it is

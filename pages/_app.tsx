@@ -12,6 +12,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MainWalletBase, SignerOptions } from "@cosmos-kit/core";
 import { GasPrice } from "@cosmjs/stargate";
 import "@interchain-ui/react/styles";
+import env from "@config/env";
 
 export default function CreateCosmosApp({ Component, pageProps }: AppProps) {
   const queryClient = new QueryClient({});
@@ -39,7 +40,7 @@ export default function CreateCosmosApp({ Component, pageProps }: AppProps) {
         signerOptions={signerOptions}
         walletConnectOptions={{
           signClient: {
-            projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
+            projectId: env.WALLETCONNECT_PROJECT_ID,
           },
         }}
       >

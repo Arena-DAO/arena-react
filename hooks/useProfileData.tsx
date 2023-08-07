@@ -1,3 +1,4 @@
+import env from "@config/env";
 import { useQuery } from "@tanstack/react-query";
 
 type ProfileData = {
@@ -19,7 +20,7 @@ type ErrorResponse = {
 type FetchProfileResponse = ProfileData | ErrorResponse;
 
 const fetchProfile = async (address: string): Promise<ProfileData> => {
-  const apiPrefix = process.env.NEXT_PUBLIC_PFPK;
+  const apiPrefix = env.PFPK_URL;
   const endpoint = `/address/${address}`;
   const response = await fetch(apiPrefix + endpoint);
 

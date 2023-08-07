@@ -22,6 +22,7 @@ import {
   InputRightElement,
   Select,
   SimpleGrid,
+  Spacer,
   Stack,
   Switch,
   Textarea,
@@ -56,6 +57,7 @@ import {
 import { useEffect, useState } from "react";
 import { DAOCard } from "@components/DAOCard";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import env from "@config/env";
 
 const EnableForm = () => {
   const {
@@ -64,7 +66,7 @@ const EnableForm = () => {
     address,
     getSigningCosmWasmClient,
     isWalletConnected,
-  } = useChain(process.env.NEXT_PUBLIC_CHAIN!);
+  } = useChain(env.CHAIN);
 
   const [cosmwasmClient, setCosmwasmClient] = useState<
     CosmWasmClient | undefined
@@ -75,7 +77,6 @@ const EnableForm = () => {
       const client = await getCosmWasmClient();
       setCosmwasmClient(client);
     }
-    console.log("CHAIN");
     fetchClient();
   }, [getCosmWasmClient]);
 
@@ -178,10 +179,10 @@ const EnableForm = () => {
       }
 
       let arena_wager_module_instantiate = {
-        code_id: parseInt(process.env.NEXT_PUBLIC_CODE_ID_WAGER_MODULE!),
+        code_id: env.CODE_ID_WAGER_MODULE,
         label: "Arena Wager Module",
         msg: toBinary({
-          key: process.env.NEXT_PUBLIC_WAGER_MODULE_KEY!,
+          key: env.WAGER_MODULE_KEY,
           description: "The Arena Protocol Wager Module",
           extension: {},
         } as ArenaWagerModuleInstantiateMsg),
@@ -189,7 +190,7 @@ const EnableForm = () => {
       };
 
       let arena_core_instantiate = {
-        code_id: parseInt(process.env.NEXT_PUBLIC_CODE_ID_ARENA_CORE!),
+        code_id: env.CODE_ID_ARENA_CORE,
         label: "Arena Core",
         msg: toBinary({
           open_proposal_submission: false,
@@ -205,9 +206,7 @@ const EnableForm = () => {
       };
 
       let dao_proposal_multiple_instantiate = {
-        code_id: parseInt(
-          process.env.NEXT_PUBLIC_CODE_ID_DAO_PROPOSAL_MULTIPLE!
-        ),
+        code_id: env.CODE_ID_DAO_PROPOSAL_MULTIPLE,
         label: "Arena Proposal Multiple Module",
         msg: toBinary({
           allow_revoting: values.allow_revoting,
@@ -290,343 +289,354 @@ const EnableForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <FormControl isInvalid={!!errors.dao}>
-        <FormLabel>DAO</FormLabel>
-        <Input id="dao" {...register("dao")} />
-        <FormErrorMessage>{errors.dao?.message}</FormErrorMessage>
-      </FormControl>
-      {!!cosmwasmClient && daoAddressSchema.safeParse(watchDao).success && (
-        <DAOCard
-          addr={watchDao}
-          setError={setError}
-          clearErrors={clearErrors}
-          cosmwasmClient={cosmwasmClient}
-          my="2"
-        />
-      )}
-      <SimpleGrid minChildWidth={"200px"} my="2">
-        <FormControl
-          display="flex"
-          alignItems="center"
-          isInvalid={!!errors.only_members_execute}
-        >
-          <FormLabel htmlFor="only-members-execute" mb="0">
-            Only members execute
-          </FormLabel>
-          <Switch
-            id="only-members-execute"
-            {...register("only_members_execute")}
-          />
-          <FormErrorMessage>
-            {errors.only_members_execute?.message}
-          </FormErrorMessage>
+    <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
+      <Stack>
+        <FormControl isInvalid={!!errors.dao}>
+          <FormLabel>DAO</FormLabel>
+          <Input id="dao" {...register("dao")} />
+          <FormErrorMessage>{errors.dao?.message}</FormErrorMessage>
         </FormControl>
-        <FormControl
-          display="flex"
-          alignItems="center"
-          isInvalid={!!errors.allow_revoting}
-        >
-          <FormLabel htmlFor="allow-revoting" mb="0">
-            Allow revoting
-          </FormLabel>
-          <Switch id="allow-revoting" {...register("allow_revoting")} />
-          <FormErrorMessage>{errors.allow_revoting?.message}</FormErrorMessage>
-        </FormControl>
-        <FormControl
-          display="flex"
-          alignItems="center"
-          isInvalid={!!errors.close_proposal_on_execution_failure}
-        >
-          <FormLabel htmlFor="close-on-failure" mb="0">
-            Close proposal on execution failure
-          </FormLabel>
-          <Switch
-            id="close-on-failure"
-            {...register("close_proposal_on_execution_failure")}
+        {!!cosmwasmClient && daoAddressSchema.safeParse(watchDao).success && (
+          <DAOCard
+            addr={watchDao}
+            setError={setError}
+            clearErrors={clearErrors}
+            cosmwasmClient={cosmwasmClient}
           />
-          <FormErrorMessage>
-            {errors.close_proposal_on_execution_failure?.message}
-          </FormErrorMessage>
-        </FormControl>
-      </SimpleGrid>
-      <FormControl isInvalid={!!errors.tax} maxW="150px">
-        <FormLabel>Tax</FormLabel>
-        <InputGroup>
-          <Input
-            type="number"
-            {...register("tax", { valueAsNumber: true })}
-            step="1"
-            textAlign="right"
-          />
-          <InputRightElement>
-            <BsPercent />
-          </InputRightElement>
-        </InputGroup>
-        <FormErrorMessage>{errors.tax?.message}</FormErrorMessage>
-      </FormControl>
-      <SimpleGrid minChildWidth="300px" my="2" gap={2}>
-        <Grid templateColumns="repeat(5, 1fr)" gap={1} alignItems="flex-start">
-          <GridItem colSpan={3}>
-            <FormControl isInvalid={!!errors.min_voting_duration?.duration}>
-              <FormLabel>Min Voting Duration</FormLabel>
-              <InputGroup>
-                <Input
-                  type="number"
-                  {...register("min_voting_duration.duration", {
-                    setValueAs: (x) => (x === "" ? undefined : parseInt(x)),
-                  })}
-                  textAlign="right"
-                />
-                <InputRightAddon>
-                  {watchMinVotingDurationUnits == "Time" ? "seconds" : "blocks"}
-                </InputRightAddon>
-              </InputGroup>
-              <FormErrorMessage>
-                {errors.min_voting_duration?.duration?.message}
-              </FormErrorMessage>
-            </FormControl>
-          </GridItem>
-          <GridItem colSpan={2}>
-            <FormControl
-              isInvalid={!!errors.min_voting_duration?.duration_units}
-            >
-              <FormLabel>Units</FormLabel>
-              <Select {...register("min_voting_duration.duration_units")}>
-                <option value="Time">Time</option>
-                <option value="Height">Height</option>
-              </Select>
-              <FormErrorMessage>
-                {errors.min_voting_duration?.duration_units?.message}
-              </FormErrorMessage>
-            </FormControl>
-          </GridItem>
-        </Grid>
-        <Grid templateColumns="repeat(5, 1fr)" gap={1} alignItems="flex-start">
-          <GridItem colSpan={3}>
-            <FormControl isInvalid={!!errors.max_voting_duration?.duration}>
-              <FormLabel>Max Voting Duration</FormLabel>
-              <InputGroup>
-                <Input
-                  type="number"
-                  {...register("max_voting_duration.duration", {
-                    setValueAs: (x) => (x === "" ? undefined : parseInt(x)),
-                  })}
-                  textAlign="right"
-                />
-                <InputRightAddon>
-                  {watchMaxVotingDurationUnits == "Time" ? "seconds" : "blocks"}
-                </InputRightAddon>
-              </InputGroup>
-              <FormErrorMessage>
-                {errors.max_voting_duration?.duration?.message}
-              </FormErrorMessage>
-            </FormControl>
-          </GridItem>
-          <GridItem colSpan={2}>
-            <FormControl
-              isInvalid={!!errors.max_voting_duration?.duration_units}
-            >
-              <FormLabel>Units</FormLabel>
-              <Select {...register("max_voting_duration.duration_units")}>
-                <option value="Time">Time</option>
-                <option value="Height">Height</option>
-              </Select>
-              <FormErrorMessage>
-                {errors.max_voting_duration?.duration_units?.message}
-              </FormErrorMessage>
-            </FormControl>
-          </GridItem>
-        </Grid>
-      </SimpleGrid>
-      <Grid
-        templateColumns={useBreakpointValue({
-          base: "1fr",
-          sm: "repeat(2, 1fr)",
-          xl: "repeat(4, 1fr)",
-        })}
-        gap={1}
-        alignItems="flex-start"
-      >
-        <GridItem>
+        )}
+        <SimpleGrid minChildWidth={"250px"}>
           <FormControl
-            isInvalid={!!errors.quorum?.percentage_threshold || !!errors.quorum}
+            display="flex"
+            alignItems="center"
+            isInvalid={!!errors.only_members_execute}
           >
-            <FormLabel>Quorum Threshold</FormLabel>
-            <Select {...register("quorum.percentage_threshold")}>
-              <option value="Majority">Majority</option>
-              <option value="Percent">Percent</option>
-            </Select>
+            <FormLabel htmlFor="only-members-execute">
+              Only members execute
+            </FormLabel>
+            <Switch
+              id="only-members-execute"
+              {...register("only_members_execute")}
+            />
             <FormErrorMessage>
-              {errors.quorum?.percentage_threshold?.message ??
-                errors.quorum?.message}
+              {errors.only_members_execute?.message}
             </FormErrorMessage>
           </FormControl>
-        </GridItem>
-        {watchPercentageThreshold == "Percent" && (
+          <FormControl
+            display="flex"
+            alignItems="center"
+            isInvalid={!!errors.allow_revoting}
+          >
+            <FormLabel htmlFor="allow-revoting">Allow revoting</FormLabel>
+            <Switch id="allow-revoting" {...register("allow_revoting")} />
+            <FormErrorMessage>
+              {errors.allow_revoting?.message}
+            </FormErrorMessage>
+          </FormControl>
+          <FormControl
+            display="flex"
+            alignItems="center"
+            isInvalid={!!errors.close_proposal_on_execution_failure}
+          >
+            <FormLabel htmlFor="close-on-failure">
+              Close proposal on execution failure
+            </FormLabel>
+            <Switch
+              id="close-on-failure"
+              {...register("close_proposal_on_execution_failure")}
+            />
+            <FormErrorMessage>
+              {errors.close_proposal_on_execution_failure?.message}
+            </FormErrorMessage>
+          </FormControl>
+        </SimpleGrid>
+        <FormControl isInvalid={!!errors.tax} maxW="150px">
+          <FormLabel>Tax</FormLabel>
+          <InputGroup>
+            <Input
+              type="number"
+              {...register("tax", { valueAsNumber: true })}
+              step="1"
+              textAlign="right"
+            />
+            <InputRightElement>
+              <BsPercent />
+            </InputRightElement>
+          </InputGroup>
+          <FormErrorMessage>{errors.tax?.message}</FormErrorMessage>
+        </FormControl>
+        <SimpleGrid minChildWidth="350px" my="2" gap={2}>
+          <Grid
+            templateColumns="repeat(5, 1fr)"
+            gap={2}
+            alignItems="flex-start"
+          >
+            <GridItem colSpan={3}>
+              <FormControl isInvalid={!!errors.min_voting_duration?.duration}>
+                <FormLabel>Min Voting Duration</FormLabel>
+                <InputGroup>
+                  <Input
+                    type="number"
+                    {...register("min_voting_duration.duration", {
+                      setValueAs: (x) => (x === "" ? undefined : parseInt(x)),
+                    })}
+                    textAlign="right"
+                  />
+                  <InputRightAddon>
+                    {watchMinVotingDurationUnits == "Time"
+                      ? "seconds"
+                      : "blocks"}
+                  </InputRightAddon>
+                </InputGroup>
+                <FormErrorMessage>
+                  {errors.min_voting_duration?.duration?.message}
+                </FormErrorMessage>
+              </FormControl>
+            </GridItem>
+            <GridItem colSpan={2}>
+              <FormControl
+                isInvalid={!!errors.min_voting_duration?.duration_units}
+              >
+                <FormLabel>Units</FormLabel>
+                <Select {...register("min_voting_duration.duration_units")}>
+                  <option value="Time">Time</option>
+                  <option value="Height">Height</option>
+                </Select>
+                <FormErrorMessage>
+                  {errors.min_voting_duration?.duration_units?.message}
+                </FormErrorMessage>
+              </FormControl>
+            </GridItem>
+          </Grid>
+          <Grid
+            templateColumns="repeat(5, 1fr)"
+            gap={2}
+            alignItems="flex-start"
+          >
+            <GridItem colSpan={3}>
+              <FormControl isInvalid={!!errors.max_voting_duration?.duration}>
+                <FormLabel>Max Voting Duration</FormLabel>
+                <InputGroup>
+                  <Input
+                    type="number"
+                    {...register("max_voting_duration.duration", {
+                      setValueAs: (x) => (x === "" ? undefined : parseInt(x)),
+                    })}
+                    textAlign="right"
+                  />
+                  <InputRightAddon>
+                    {watchMaxVotingDurationUnits == "Time"
+                      ? "seconds"
+                      : "blocks"}
+                  </InputRightAddon>
+                </InputGroup>
+                <FormErrorMessage>
+                  {errors.max_voting_duration?.duration?.message}
+                </FormErrorMessage>
+              </FormControl>
+            </GridItem>
+            <GridItem colSpan={2}>
+              <FormControl
+                isInvalid={!!errors.max_voting_duration?.duration_units}
+              >
+                <FormLabel>Units</FormLabel>
+                <Select {...register("max_voting_duration.duration_units")}>
+                  <option value="Time">Time</option>
+                  <option value="Height">Height</option>
+                </Select>
+                <FormErrorMessage>
+                  {errors.max_voting_duration?.duration_units?.message}
+                </FormErrorMessage>
+              </FormControl>
+            </GridItem>
+          </Grid>
+        </SimpleGrid>
+        <Grid
+          templateColumns={useBreakpointValue({
+            base: "1fr",
+            sm: "repeat(2, 1fr)",
+            xl: "repeat(4, 1fr)",
+          })}
+          gap={2}
+          alignItems="flex-start"
+        >
           <GridItem>
-            <FormControl isInvalid={!!errors.quorum?.percent}>
-              <FormLabel>Percentage</FormLabel>
-              <InputGroup>
-                <Input
-                  type="number"
-                  {...register("quorum.percent", {
-                    setValueAs: (x) => (x === "" ? undefined : parseInt(x)),
-                  })}
-                  textAlign="right"
-                  step="1"
-                />
-                <InputRightElement>
-                  <BsPercent />
-                </InputRightElement>
-              </InputGroup>
+            <FormControl
+              isInvalid={
+                !!errors.quorum?.percentage_threshold || !!errors.quorum
+              }
+            >
+              <FormLabel>Quorum Threshold</FormLabel>
+              <Select {...register("quorum.percentage_threshold")}>
+                <option value="Majority">Majority</option>
+                <option value="Percent">Percent</option>
+              </Select>
               <FormErrorMessage>
-                {errors.quorum?.percent?.message}
+                {errors.quorum?.percentage_threshold?.message ??
+                  errors.quorum?.message}
               </FormErrorMessage>
             </FormControl>
           </GridItem>
-        )}
-      </Grid>
-      <FormControl isInvalid={!!errors.rulesets}>
-        <FormLabel>Rulesets</FormLabel>
-        <Accordion defaultIndex={[0]} allowMultiple>
-          {rulesetsFields.map((ruleset, rulesetIndex) => (
-            <AccordionItem key={ruleset.id}>
-              <HStack>
-                <AccordionButton>
-                  <Box flex="1" textAlign="left">
-                    Ruleset {rulesetIndex + 1}
-                  </Box>
-                  <AccordionIcon />
-                </AccordionButton>
-                <IconButton
-                  variant="outline"
-                  colorScheme="secondary"
-                  aria-label="Delete Ruleset"
-                  icon={<FiDelete />}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    rulesetsRemove(rulesetIndex);
-                  }}
-                />
-              </HStack>
-              <AccordionPanel pb={4}>
-                <FormControl
-                  isInvalid={!!errors.rulesets?.[rulesetIndex]?.description}
-                >
-                  <FormLabel>Description</FormLabel>
-                  <Textarea
-                    {...register(
-                      `rulesets.${rulesetIndex}.description` as const
-                    )}
+          {watchPercentageThreshold == "Percent" && (
+            <GridItem>
+              <FormControl isInvalid={!!errors.quorum?.percent}>
+                <FormLabel>Percentage</FormLabel>
+                <InputGroup>
+                  <Input
+                    type="number"
+                    {...register("quorum.percent", {
+                      setValueAs: (x) => (x === "" ? undefined : parseInt(x)),
+                    })}
+                    textAlign="right"
+                    step="1"
                   />
-                  <FormErrorMessage>
-                    {errors.rulesets?.[rulesetIndex]?.description?.message}
-                  </FormErrorMessage>
-                </FormControl>
-                <FormControl
-                  isInvalid={!!errors.rulesets?.[rulesetIndex]?.rules}
-                >
-                  <FormLabel>Rules</FormLabel>
-                  <Controller
-                    control={control}
-                    name={`rulesets.${rulesetIndex}.rules`}
-                    defaultValue={[] as string[]}
-                    render={({ field: { onChange, onBlur, value, ref } }) => (
-                      <Stack spacing={4}>
-                        {value?.map((_rule, ruleIndex) => (
-                          <FormControl
-                            key={ruleIndex}
-                            isInvalid={
-                              !!errors.rulesets?.[rulesetIndex]?.rules?.[
-                                ruleIndex
-                              ]
-                            }
-                          >
-                            <InputGroup>
-                              <Input
-                                onBlur={onBlur}
-                                onChange={(e) => {
-                                  const newValue = [...value];
-                                  newValue[ruleIndex] = e.target.value;
-                                  onChange(newValue);
-                                }}
-                                value={value[ruleIndex]}
-                                ref={ref}
-                              />
-                              <InputRightElement>
-                                <IconButton
-                                  aria-label="delete"
-                                  variant="ghost"
-                                  icon={<FiDelete />}
-                                  onClick={() =>
-                                    onChange([
-                                      ...value.slice(0, ruleIndex),
-                                      ...value.slice(ruleIndex + 1),
-                                    ])
-                                  }
-                                />
-                              </InputRightElement>
-                            </InputGroup>
-                            <FormErrorMessage>
-                              {
-                                errors.rulesets?.[rulesetIndex]?.rules?.[
+                  <InputRightElement>
+                    <BsPercent />
+                  </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage>
+                  {errors.quorum?.percent?.message}
+                </FormErrorMessage>
+              </FormControl>
+            </GridItem>
+          )}
+        </Grid>
+        <FormControl isInvalid={!!errors.rulesets}>
+          <FormLabel>Rulesets</FormLabel>
+          <Accordion defaultIndex={[0]} allowMultiple>
+            {rulesetsFields.map((ruleset, rulesetIndex) => (
+              <AccordionItem key={ruleset.id}>
+                <HStack>
+                  <AccordionButton>
+                    <Box flex="1" textAlign="left">
+                      Ruleset {rulesetIndex + 1}
+                    </Box>
+                    <AccordionIcon />
+                  </AccordionButton>
+                  <IconButton
+                    variant="outline"
+                    colorScheme="secondary"
+                    aria-label="Delete Ruleset"
+                    icon={<FiDelete />}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      rulesetsRemove(rulesetIndex);
+                    }}
+                  />
+                </HStack>
+                <AccordionPanel>
+                  <FormControl
+                    isInvalid={!!errors.rulesets?.[rulesetIndex]?.description}
+                  >
+                    <FormLabel>Description</FormLabel>
+                    <Textarea
+                      {...register(
+                        `rulesets.${rulesetIndex}.description` as const
+                      )}
+                    />
+                    <FormErrorMessage>
+                      {errors.rulesets?.[rulesetIndex]?.description?.message}
+                    </FormErrorMessage>
+                  </FormControl>
+                  <FormControl
+                    isInvalid={!!errors.rulesets?.[rulesetIndex]?.rules}
+                  >
+                    <FormLabel>Rules</FormLabel>
+                    <Controller
+                      control={control}
+                      name={`rulesets.${rulesetIndex}.rules`}
+                      defaultValue={[] as string[]}
+                      render={({ field: { onChange, onBlur, value, ref } }) => (
+                        <Stack spacing={4}>
+                          {value?.map((_rule, ruleIndex) => (
+                            <FormControl
+                              key={ruleIndex}
+                              isInvalid={
+                                !!errors.rulesets?.[rulesetIndex]?.rules?.[
                                   ruleIndex
-                                ]?.message
+                                ]
                               }
-                            </FormErrorMessage>
-                          </FormControl>
-                        ))}
-                        <IconButton
-                          variant="outline"
-                          colorScheme="secondary"
-                          aria-label="Add Rule"
-                          alignSelf="flex-start"
-                          onClick={() => onChange([...value, ""])}
-                          icon={<BsPlus />}
-                        />
-                      </Stack>
-                    )}
-                  />
-                  <FormErrorMessage>
-                    {errors.rulesets?.[rulesetIndex]?.rules?.message}
-                  </FormErrorMessage>
-                </FormControl>
-              </AccordionPanel>
-            </AccordionItem>
-          ))}
-        </Accordion>
-        <IconButton
-          mt={4}
-          variant="outline"
+                            >
+                              <InputGroup>
+                                <Input
+                                  onBlur={onBlur}
+                                  onChange={(e) => {
+                                    const newValue = [...value];
+                                    newValue[ruleIndex] = e.target.value;
+                                    onChange(newValue);
+                                  }}
+                                  value={value[ruleIndex]}
+                                  ref={ref}
+                                />
+                                <InputRightElement>
+                                  <IconButton
+                                    aria-label="delete"
+                                    variant="ghost"
+                                    icon={<FiDelete />}
+                                    onClick={() =>
+                                      onChange([
+                                        ...value.slice(0, ruleIndex),
+                                        ...value.slice(ruleIndex + 1),
+                                      ])
+                                    }
+                                  />
+                                </InputRightElement>
+                              </InputGroup>
+                              <FormErrorMessage>
+                                {
+                                  errors.rulesets?.[rulesetIndex]?.rules?.[
+                                    ruleIndex
+                                  ]?.message
+                                }
+                              </FormErrorMessage>
+                            </FormControl>
+                          ))}
+                          <IconButton
+                            variant="outline"
+                            colorScheme="secondary"
+                            aria-label="Add Rule"
+                            alignSelf="flex-start"
+                            onClick={() => onChange([...value, ""])}
+                            icon={<BsPlus />}
+                          />
+                        </Stack>
+                      )}
+                    />
+                    <FormErrorMessage>
+                      {errors.rulesets?.[rulesetIndex]?.rules?.message}
+                    </FormErrorMessage>
+                  </FormControl>
+                </AccordionPanel>
+              </AccordionItem>
+            ))}
+          </Accordion>
+          <IconButton
+            mt="2"
+            variant="outline"
+            colorScheme="secondary"
+            aria-label="Add Ruleset"
+            onClick={() =>
+              rulesetsAppend({ description: "", is_enabled: true, rules: [] })
+            }
+            icon={<BsPlus />}
+          />
+          <FormErrorMessage>{errors.rulesets?.message}</FormErrorMessage>
+        </FormControl>
+        <Button
+          type="submit"
           colorScheme="secondary"
-          aria-label="Add Ruleset"
-          onClick={() =>
-            rulesetsAppend({ description: "", is_enabled: true, rules: [] })
-          }
-          icon={<BsPlus />}
-        />
-        <FormErrorMessage>{errors.rulesets?.message}</FormErrorMessage>
-      </FormControl>
-      <Button
-        mt={6}
-        type="submit"
-        colorScheme="secondary"
-        isDisabled={!isWalletConnected}
-        isLoading={isSubmitting}
-      >
-        Submit
-      </Button>
+          isDisabled={!isWalletConnected}
+          isLoading={isSubmitting}
+          maxW="150px"
+        >
+          Submit
+        </Button>
+      </Stack>
     </form>
   );
 };
 const EnableDAOPage = () => {
   return (
-    <Container
-      maxW={{ base: "100%", md: "75%", lg: "60%" }}
-      centerContent
-      pb={10}
-    >
+    <Container maxW={{ base: "full", md: "5xl" }} centerContent pb={10}>
       <Heading
         as="h1"
         fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
@@ -635,9 +645,7 @@ const EnableDAOPage = () => {
       >
         Enable the Arena Extension
       </Heading>
-      <Stack w="100%" spacing={4}>
-        <EnableForm />
-      </Stack>
+      <EnableForm />
     </Container>
   );
 };

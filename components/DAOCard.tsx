@@ -1,8 +1,12 @@
 import {
+  Avatar,
   Box,
-  BoxProps,
+  Card,
+  CardBody,
+  CardProps,
   Image,
   Link,
+  Skeleton,
   Spacer,
   Text,
   useColorModeValue,
@@ -16,8 +20,9 @@ import { Config } from "@dao/DaoDaoCore.types";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { UseFormClearErrors, UseFormSetError } from "react-hook-form";
 import { useEffect } from "react";
+import env from "config/env";
 
-interface DAOCardProps extends BoxProps {
+interface DAOCardProps extends CardProps {
   addr: string;
   onDataLoaded?: (data: Config | undefined) => void;
   cosmwasmClient: CosmWasmClient;
@@ -31,11 +36,11 @@ export function DAOCard({
   onDataLoaded,
   setError,
   clearErrors,
-  ...boxProps
+  ...cardProps
 }: DAOCardProps) {
   const { data, isLoading, isError } = useDaoDaoCoreConfigQuery({
     client: new DaoDaoCoreQueryClient(cosmwasmClient, addr),
-    options: { cacheTime: 1000 * 60 * 60, retry: false },
+    options: { staleTime: Infinity, retry: false },
   });
   useEffect(() => {
     if (isError)
@@ -43,55 +48,41 @@ export function DAOCard({
     else clearErrors("dao");
   }, [isError]);
   useEffect(() => {
-    if (data && !isError && !isLoading) onDataLoaded?.(data);
+    if (data) onDataLoaded?.(data);
     else onDataLoaded?.(undefined);
-  }, [isError, data, isLoading, onDataLoaded]);
+  }, [data, onDataLoaded]);
 
   if (isError) {
     return <></>;
   }
 
-  // Render different content based on the loading and error state
-  let content;
-  if (isLoading) {
-    content = <Text fontSize="xl">Loading...</Text>;
-  } else if (data) {
-    content = (
-      <>
-        <Image
-          boxSize="50px"
-          borderRadius="full"
-          src={convertIPFSToHttp(data.image_url)}
-          fallbackSrc="/logo.svg"
-          alt="DAO Image"
+  return (
+    <Skeleton isLoaded={!isLoading}>
+      <Card
+        direction="row"
+        px="4"
+        overflow="hidden"
+        alignItems="center"
+        {...cardProps}
+      >
+        <Avatar
+          src={convertIPFSToHttp(data?.image_url)}
           marginRight="3"
+          name={data?.name}
         />
-        <Text fontSize="xl">{data.name}</Text>
-        <Spacer />
+        <CardBody>
+          <Text fontSize="xl">{data?.name}</Text>
+        </CardBody>
         <Link
           as={NextLink}
-          href={process.env.NEXT_PUBLIC_DAO_DAO! + "/dao/" + addr}
+          href={env.DAO_DAO_URL + "/dao/" + addr}
           _hover={{ textDecoration: "none" }}
           _focus={{ outline: "none" }}
           target="_blank"
         >
           <ExternalLinkIcon mr="3" />
         </Link>
-      </>
-    );
-  }
-
-  return (
-    <Box
-      display="flex"
-      alignItems="center"
-      padding="2"
-      borderRadius="md"
-      boxShadow="md"
-      bgColor={useColorModeValue("gray.200", "gray.700")}
-      {...boxProps}
-    >
-      {content}
-    </Box>
+      </Card>
+    </Skeleton>
   );
 }

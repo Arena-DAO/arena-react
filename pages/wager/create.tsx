@@ -74,6 +74,8 @@ import { Ruleset } from "@arena/ArenaCore.types";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useDaoDaoCoreGetItemQuery } from "@dao/DaoDaoCore.react-query";
 import { useArenaCoreQueryExtensionQuery } from "@arena/ArenaCore.react-query";
+import env from "config/env";
+import { DueCard } from "@components/DueCard";
 
 interface RulesetProps {
   addr: string;
@@ -101,7 +103,7 @@ function RulesetTableInner({
   selectedRuleset,
   start_after,
 }: RulesetTableInnerProps) {
-  const { data, isLoading, isError } = useArenaCoreQueryExtensionQuery({
+  const { data } = useArenaCoreQueryExtensionQuery({
     client: new ArenaCoreQueryClient(cosmwasmClient, addr),
     args: { msg: { rulesets: { start_after } } },
   });
@@ -114,7 +116,7 @@ function RulesetTableInner({
     return rulesets;
   };
   useEffect(() => {
-    if (data && !isError && !isLoading) {
+    if (data) {
       let rulesets = parseRulesets(data);
       let largestNumber = 0;
 
@@ -124,9 +126,9 @@ function RulesetTableInner({
 
       onRulesetLoaded(largestNumber);
     } else onRulesetLoaded(undefined);
-  }, [isError, data, isLoading, onRulesetLoaded]);
+  }, [data, onRulesetLoaded]);
 
-  if (isLoading || isError || !data) return <></>;
+  if (!data) return <></>;
 
   const rulesets = parseRulesets(data);
   return (
@@ -180,9 +182,9 @@ function RulesetTable({
   clearErrors,
   ...props
 }: RulesetTableProps) {
-  const { data, isLoading, isError } = useDaoDaoCoreGetItemQuery({
+  const { data, isError } = useDaoDaoCoreGetItemQuery({
     client: new DaoDaoCoreQueryClient(cosmwasmClient, addr),
-    args: { key: process.env.NEXT_PUBLIC_ITEM_KEY! },
+    args: { key: env.ARENA_ITEM_KEY },
   });
   const [selectedRuleset, setSelectedRuleset] = useState<number | undefined>(
     undefined
@@ -195,7 +197,7 @@ function RulesetTable({
   }, [selectedRuleset]);
 
   useEffect(() => {
-    if (isError || !data || !data.item)
+    if (isError || (data && !data.item))
       setError("dao", {
         message: "The dao does not have an arena core extension",
       });
@@ -203,14 +205,14 @@ function RulesetTable({
   }, [isError, data]);
 
   useEffect(() => {
-    if (data && data.item && !isError && !isLoading) {
+    if (data && data.item) {
       onArenaCoreLoaded(data.item);
     } else {
       onArenaCoreLoaded(undefined);
     }
-  }, [data, isError, isLoading, onArenaCoreLoaded]);
+  }, [data, onArenaCoreLoaded]);
 
-  if (!data || !data.item || isError || isLoading) {
+  if (!data || !data.item) {
     return <></>;
   }
 
@@ -251,7 +253,7 @@ const WagerForm = () => {
     getSigningCosmWasmClient,
     address,
     isWalletConnected,
-  } = useChain(process.env.NEXT_PUBLIC_CHAIN!);
+  } = useChain(env.CHAIN);
   const [cosmwasmClient, setCosmwasmClient] = useState<
     CosmWasmClient | undefined
   >(undefined);
@@ -340,7 +342,7 @@ const WagerForm = () => {
       let wager_module = await arenaCoreClient.queryExtension({
         msg: {
           competition_module: {
-            key: process.env.NEXT_PUBLIC_WAGER_MODULE_KEY!,
+            key: env.WAGER_MODULE_KEY,
           },
         },
       });
@@ -368,7 +370,7 @@ const WagerForm = () => {
         ruleset: values.ruleset?.toString(),
         extension: {},
         competitionDao: {
-          code_id: parseInt(process.env.NEXT_PUBLIC_CODE_ID_DAO_CORE!),
+          code_id: env.CODE_ID_DAO_CORE,
           label: "Arena Competition DAO",
           msg: toBinary({
             admin: values.dao,
@@ -378,9 +380,7 @@ const WagerForm = () => {
             name: "Arena Competition DAO",
             proposal_modules_instantiate_info: [
               {
-                code_id: parseInt(
-                  process.env.NEXT_PUBLIC_CODE_ID_DAO_PROPOSAL_MULTIPLE!
-                ),
+                code_id: env.CODE_ID_DAO_PROPOSAL_MULTIPLE,
                 admin: { address: { addr: values.dao } },
                 label: "DAO Proposal Multiple",
                 msg: toBinary({
@@ -411,22 +411,18 @@ const WagerForm = () => {
               },
             ],
             voting_module_instantiate_info: {
-              code_id: parseInt(
-                process.env.NEXT_PUBLIC_CODE_ID_DAO_VOTING_CW4!
-              ),
+              code_id: env.CODE_ID_DAO_VOTING_CW4,
               admin: { address: { addr: values.dao } },
               label: "DAO Voting CW4",
               msg: toBinary({
-                cw4_group_code_id: parseInt(
-                  process.env.NEXT_PUBLIC_CODE_ID_CW4_GROUP!
-                ),
+                cw4_group_code_id: env.CODE_ID_CW4_GROUP,
                 initial_members: [],
               } as DAOVotingCW4InstantiateMsg),
             },
           } as DaoDaoCoreInstantiateMsg),
         },
         escrow: {
-          code_id: parseInt(process.env.NEXT_PUBLIC_CODE_ID_ESCROW!),
+          code_id: env.CODE_ID_ESCROW,
           label: "Arena Escrow",
           msg: "" /*toBinary({
           dues: values.dues,
@@ -440,191 +436,201 @@ const WagerForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <FormControl isInvalid={!!errors.dao}>
-        <FormLabel>DAO</FormLabel>
-        <Input id="dao" {...register("dao")} />
-        <FormErrorMessage>{errors.dao?.message}</FormErrorMessage>
-      </FormControl>
-      {!!cosmwasmClient && daoAddressSchema.safeParse(watchDao).success && (
-        <DAOCard
-          addr={watchDao}
-          setError={setError}
-          clearErrors={clearErrors}
-          cosmwasmClient={cosmwasmClient}
-          my="2"
-        />
-      )}
-      <FormControl isInvalid={!!errors.name}>
-        <FormLabel>Name</FormLabel>
-        <Input id="name" {...register("name")} />
-        <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
-      </FormControl>
-      <FormControl isInvalid={!!errors.description}>
-        <FormLabel>Description</FormLabel>
-        <Textarea id="description" {...register("description")} />
-        <FormErrorMessage>{errors.description?.message}</FormErrorMessage>
-      </FormControl>
-      <Grid
-        templateColumns={useBreakpointValue({
-          base: "1fr",
-          sm: "repeat(2, 1fr)",
-          xl: "repeat(4, 1fr)",
-        })}
-        gap={1}
-        alignItems="flex-start"
-      >
-        <GridItem>
-          <FormControl
-            isInvalid={
-              !!errors.expiration?.expiration_units || !!errors.expiration
-            }
-          >
-            <FormLabel>Expiration</FormLabel>
-            <Select {...register("expiration.expiration_units")}>
-              <option value="At Time">At Time</option>
-              <option value="At Height">At Height</option>
-              <option value="Never">Never</option>
-            </Select>
-            <FormErrorMessage>
-              {errors.expiration?.expiration_units?.message ??
-                errors.expiration?.message}
-            </FormErrorMessage>
-          </FormControl>
-        </GridItem>
-        {watchExpirationUnits == "At Time" && (
-          <>
-            <GridItem>
-              <FormControl isInvalid={!!errors.expiration?.time}>
-                <FormLabel>Time</FormLabel>
-                <Input type="datetime-local" {...register("expiration.time")} />
-                <FormErrorMessage>
-                  {errors.expiration?.time?.message}
-                </FormErrorMessage>
-              </FormControl>
-            </GridItem>
-            <GridItem>
-              <FormControl isInvalid={!!errors.expiration?.timezone}>
-                <FormLabel>Timezone</FormLabel>
-                <Select {...register("expiration.timezone")}>
-                  {moment.tz.names().map((timezone) => (
-                    <option key={timezone} value={timezone}>
-                      {timezone}
-                    </option>
-                  ))}
-                </Select>
-                <FormErrorMessage>
-                  {errors.expiration?.timezone?.message}
-                </FormErrorMessage>
-              </FormControl>
-            </GridItem>
-          </>
+    <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
+      <Stack>
+        <FormControl isInvalid={!!errors.dao}>
+          <FormLabel>DAO</FormLabel>
+          <Input id="dao" {...register("dao")} />
+          <FormErrorMessage>{errors.dao?.message}</FormErrorMessage>
+        </FormControl>
+        {!!cosmwasmClient && daoAddressSchema.safeParse(watchDao).success && (
+          <DAOCard
+            addr={watchDao}
+            setError={setError}
+            clearErrors={clearErrors}
+            cosmwasmClient={cosmwasmClient}
+          />
         )}
-        {watchExpirationUnits == "At Height" && (
+        <FormControl isInvalid={!!errors.name}>
+          <FormLabel>Name</FormLabel>
+          <Input id="name" {...register("name")} />
+          <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={!!errors.description}>
+          <FormLabel>Description</FormLabel>
+          <Textarea id="description" {...register("description")} />
+          <FormErrorMessage>{errors.description?.message}</FormErrorMessage>
+        </FormControl>
+        <Grid
+          templateColumns={useBreakpointValue({
+            base: "1fr",
+            sm: "repeat(2, 1fr)",
+            xl: "repeat(4, 1fr)",
+          })}
+          gap="2"
+          alignItems="flex-start"
+        >
           <GridItem>
-            <FormControl isInvalid={!!errors.expiration?.height}>
-              <FormLabel>Height</FormLabel>
-              <InputGroup>
-                <Input
-                  type="number"
-                  {...register("expiration.height", {
-                    setValueAs: (x) => (x === "" ? undefined : parseInt(x)),
-                  })}
-                />
-                <InputRightAddon>blocks</InputRightAddon>
-              </InputGroup>
+            <FormControl
+              isInvalid={
+                !!errors.expiration?.expiration_units || !!errors.expiration
+              }
+            >
+              <FormLabel>Expiration</FormLabel>
+              <Select {...register("expiration.expiration_units")}>
+                <option value="At Time">At Time</option>
+                <option value="At Height">At Height</option>
+                <option value="Never">Never</option>
+              </Select>
               <FormErrorMessage>
-                {errors.expiration?.height?.message}
+                {errors.expiration?.expiration_units?.message ??
+                  errors.expiration?.message}
               </FormErrorMessage>
             </FormControl>
           </GridItem>
-        )}
-      </Grid>
-      {!!cosmwasmClient && daoAddressSchema.safeParse(watchDao).success && (
-        <RulesetTable
-          cosmwasmClient={cosmwasmClient}
-          addr={watchDao}
-          onRulesetSelect={onRulesetSelect}
-          setError={setError}
-          clearErrors={clearErrors}
-          onArenaCoreLoaded={setArenaCoreAddr}
-        />
-      )}
-      <FormControl isInvalid={!!errors.rules}>
-        <FormLabel>Rules</FormLabel>
-        <Controller
-          control={control}
-          name="rules"
-          render={({ field: { onChange, onBlur, value, ref } }) => (
-            <Stack spacing={4}>
-              {value?.map((_rule, ruleIndex) => (
-                <FormControl
-                  key={ruleIndex}
-                  isInvalid={!!errors.rules?.[ruleIndex]}
-                >
-                  <InputGroup>
-                    <Input
-                      onBlur={onBlur}
-                      onChange={(e) => {
-                        const newValue = [...value];
-                        newValue[ruleIndex] = e.target.value;
-                        onChange(newValue);
-                      }}
-                      value={value[ruleIndex]}
-                      ref={ref}
-                    />
-                    <InputRightElement>
-                      <IconButton
-                        aria-label="delete"
-                        variant="ghost"
-                        icon={<FiDelete />}
-                        onClick={() =>
-                          onChange([
-                            ...value.slice(0, ruleIndex),
-                            ...value.slice(ruleIndex + 1),
-                          ])
-                        }
-                      />
-                    </InputRightElement>
-                  </InputGroup>
+          {watchExpirationUnits == "At Time" && (
+            <>
+              <GridItem>
+                <FormControl isInvalid={!!errors.expiration?.time}>
+                  <FormLabel>Time</FormLabel>
+                  <Input
+                    type="datetime-local"
+                    {...register("expiration.time")}
+                  />
                   <FormErrorMessage>
-                    {errors.rules?.[ruleIndex]?.message}
+                    {errors.expiration?.time?.message}
                   </FormErrorMessage>
                 </FormControl>
-              ))}
-              <IconButton
-                variant="outline"
-                colorScheme="secondary"
-                aria-label="Add Rule"
-                alignSelf="flex-start"
-                onClick={() => onChange([...value, ""])}
-                icon={<BsPlus />}
-              />
-            </Stack>
+              </GridItem>
+              <GridItem>
+                <FormControl isInvalid={!!errors.expiration?.timezone}>
+                  <FormLabel>Timezone</FormLabel>
+                  <Select {...register("expiration.timezone")}>
+                    {moment.tz.names().map((timezone) => (
+                      <option key={timezone} value={timezone}>
+                        {timezone}
+                      </option>
+                    ))}
+                  </Select>
+                  <FormErrorMessage>
+                    {errors.expiration?.timezone?.message}
+                  </FormErrorMessage>
+                </FormControl>
+              </GridItem>
+            </>
           )}
-        />
-        <FormErrorMessage>{errors.rules?.message}</FormErrorMessage>
-      </FormControl>
-      <Button
-        mt={6}
-        type="submit"
-        colorScheme="secondary"
-        isDisabled={!isWalletConnected}
-        isLoading={isSubmitting}
-      >
-        Submit
-      </Button>
+          {watchExpirationUnits == "At Height" && (
+            <GridItem>
+              <FormControl isInvalid={!!errors.expiration?.height}>
+                <FormLabel>Height</FormLabel>
+                <InputGroup>
+                  <Input
+                    type="number"
+                    {...register("expiration.height", {
+                      setValueAs: (x) => (x === "" ? undefined : parseInt(x)),
+                    })}
+                  />
+                  <InputRightAddon>blocks</InputRightAddon>
+                </InputGroup>
+                <FormErrorMessage>
+                  {errors.expiration?.height?.message}
+                </FormErrorMessage>
+              </FormControl>
+            </GridItem>
+          )}
+        </Grid>
+        {!!cosmwasmClient && daoAddressSchema.safeParse(watchDao).success && (
+          <RulesetTable
+            cosmwasmClient={cosmwasmClient}
+            addr={watchDao}
+            onRulesetSelect={onRulesetSelect}
+            setError={setError}
+            clearErrors={clearErrors}
+            onArenaCoreLoaded={setArenaCoreAddr}
+          />
+        )}
+        <FormControl isInvalid={!!errors.rules}>
+          <FormLabel>Rules</FormLabel>
+          <Controller
+            control={control}
+            name="rules"
+            render={({ field: { onChange, onBlur, value, ref } }) => (
+              <Stack>
+                {value?.map((_rule, ruleIndex) => (
+                  <FormControl
+                    key={ruleIndex}
+                    isInvalid={!!errors.rules?.[ruleIndex]}
+                  >
+                    <InputGroup>
+                      <Input
+                        onBlur={onBlur}
+                        onChange={(e) => {
+                          const newValue = [...value];
+                          newValue[ruleIndex] = e.target.value;
+                          onChange(newValue);
+                        }}
+                        value={value[ruleIndex]}
+                        ref={ref}
+                      />
+                      <InputRightElement>
+                        <IconButton
+                          aria-label="delete"
+                          variant="ghost"
+                          icon={<FiDelete />}
+                          onClick={() =>
+                            onChange([
+                              ...value.slice(0, ruleIndex),
+                              ...value.slice(ruleIndex + 1),
+                            ])
+                          }
+                        />
+                      </InputRightElement>
+                    </InputGroup>
+                    <FormErrorMessage>
+                      {errors.rules?.[ruleIndex]?.message}
+                    </FormErrorMessage>
+                  </FormControl>
+                ))}
+                <IconButton
+                  variant="outline"
+                  colorScheme="secondary"
+                  aria-label="Add Rule"
+                  alignSelf="flex-start"
+                  onClick={() => onChange([...value, ""])}
+                  icon={<BsPlus />}
+                />
+              </Stack>
+            )}
+          />
+          <FormErrorMessage>{errors.rules?.message}</FormErrorMessage>
+        </FormControl>
+        {cosmwasmClient && (
+          <DueCard
+            cosmwasmClient={cosmwasmClient}
+            balance={{
+              native: [{ amount: 1000.434, denom: "junox" }],
+              cw20: [],
+              cw721: [],
+            }}
+          />
+        )}
+        <Button
+          type="submit"
+          colorScheme="secondary"
+          isDisabled={!isWalletConnected}
+          isLoading={isSubmitting}
+          maxW="150px"
+        >
+          Submit
+        </Button>
+      </Stack>
     </form>
   );
 };
 
 const CreateWagerPage = () => {
   return (
-    <Container
-      maxW={{ base: "100%", md: "75%", lg: "60%" }}
-      centerContent
-      pb={10}
-    >
+    <Container maxW={{ base: "full", md: "5xl" }} centerContent pb={10}>
       <Heading
         as="h1"
         fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
@@ -633,9 +639,7 @@ const CreateWagerPage = () => {
       >
         Create a Wager
       </Heading>
-      <Stack w="100%" spacing={4}>
-        <WagerForm />
-      </Stack>
+      <WagerForm />
     </Container>
   );
 };

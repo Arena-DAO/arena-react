@@ -12,6 +12,7 @@ import { IconType } from "react-icons";
 import { useChain } from "@cosmos-kit/react";
 import { BsPerson, BsWallet } from "react-icons/bs";
 import { useProfileData } from "~/hooks/useProfileData";
+import env from "@config/env";
 
 type IconTypeProps = string | IconType | JSX.Element | ReactNode | any;
 type ConnectWalletType = {
@@ -50,13 +51,13 @@ function Profile({ address, openView }: ProfileProps) {
       )}
       <MenuList>
         {data ? (
-          <Link href={process.env.NEXT_PUBLIC_DAO_DAO + "/me"} isExternal>
+          <Link href={env.DAO_DAO_URL + "/me"} isExternal>
             <MenuItem>View Profile</MenuItem>
           </Link>
         ) : (
           <Link
             className="text-decoration-none"
-            href={process.env.NEXT_PUBLIC_DAO_DAO + "/me"}
+            href={env.DAO_DAO_URL + "/me"}
             isExternal
           >
             <MenuItem>Create Profile</MenuItem>
@@ -86,7 +87,7 @@ const ConnectWalletButton = ({
 };
 
 export default function WalletConnectToggle() {
-  const chainContext = useChain(process.env.NEXT_PUBLIC_CHAIN!);
+  const chainContext = useChain(env.CHAIN);
 
   if (chainContext.isWalletConnected) {
     return (

@@ -21,6 +21,7 @@ import { FiChevronLeft, FiMenu, FiMoon, FiSun } from "react-icons/fi";
 import WalletConnectToggle from "./WalletConnectToggle";
 import { BsDiscord, BsGithub, BsTwitter } from "react-icons/bs";
 import Head from "next/head";
+import env from "config/env";
 
 type DefaultLinkItemType = {
   text: string;
@@ -375,21 +376,17 @@ function MenuItems() {
     },
     {
       label: "☯️ Create Team",
-      href: process.env.NEXT_PUBLIC_DAO_DAO + "/dao/create",
+      href: env.DAO_DAO_URL + "/dao/create",
       target: "_blank",
     },
     {
       label: "🗳️ Participate",
-      href:
-        process.env.NEXT_PUBLIC_DAO_DAO +
-        "/dao/" +
-        process.env.NEXT_PUBLIC_ARENA_DAO +
-        "#proposals",
+      href: env.DAO_DAO_URL + "/dao/" + env.ARENA_DAO_ADDRESS + "#proposals",
       target: "_blank",
     },
     {
       label: "🚀 Buy",
-      href: process.env.NEXT_PUBLIC_OSMOSIS,
+      href: env.OSMOSIS_URL,
       target: "_blank",
       env: "production",
     },
@@ -430,11 +427,7 @@ const SimpleLayout = ({
     <Box w={{ base: 10, lg: 20 }} h={{ base: 10, lg: 20 }}>
       <Link
         target="_blank"
-        href={
-          process.env.NEXT_PUBLIC_DAO_DAO +
-          "/dao/" +
-          process.env.NEXT_PUBLIC_ARENA_DAO
-        }
+        href={env.DAO_DAO_URL + "/dao/" + env.ARENA_DAO_ADDRESS}
       >
         <Image src="/logo.svg" alt="logo" />
       </Link>
