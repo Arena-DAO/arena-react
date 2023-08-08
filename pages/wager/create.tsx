@@ -211,7 +211,7 @@ function RulesetTable({
   useEffect(() => {
     onRulesetSelect(selectedRuleset);
     setSelectedRuleset(selectedRuleset);
-  }, [selectedRuleset]);
+  }, [selectedRuleset, onRulesetSelect]);
 
   useEffect(() => {
     if (isError || (data && !data.item))
@@ -219,7 +219,7 @@ function RulesetTable({
         message: "The dao does not have an arena core extension",
       });
     else clearErrors("dao");
-  }, [isError, data]);
+  }, [isError, data, setError, clearErrors]);
 
   useEffect(() => {
     if (data && data.item) {
@@ -274,7 +274,7 @@ const DueForm = ({
   onClose,
   ...modalProps
 }: DueFormProps) => {
-  const addressSchema = AddressSchema(bech32Prefix, [63]);
+  const addressSchema = AddressSchema(bech32Prefix);
 
   const validationSchema = z
     .object({
@@ -312,7 +312,9 @@ const DueForm = ({
     formState: { errors, isSubmitting },
   } = useForm<FormValues>();
 
-  const onSubmit = async (values: FormValues) => {};
+  const onSubmit = async (values: FormValues) => {
+    console.log(values);
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} {...modalProps}>
@@ -353,7 +355,7 @@ const WagerForm = () => {
 
     fetchClient();
   }, [getCosmWasmClient]);
-  const daoAddressSchema = AddressSchema(chain.bech32_prefix, [63]);
+  const daoAddressSchema = AddressSchema(chain.bech32_prefix);
 
   const validationSchema = z.object({
     dao: daoAddressSchema,
@@ -363,7 +365,7 @@ const WagerForm = () => {
     rules: z.string().nonempty({ message: "Rule cannot be empty " }).array(),
     ruleset: z.number().optional(),
     dues: z
-      .array(DueSchema(chain.bech32_prefix, [43, 63]))
+      .array(DueSchema(chain.bech32_prefix))
       .nonempty({ message: "Dues cannot be empty" }),
   });
 
@@ -759,9 +761,7 @@ const WagerForm = () => {
                         key={dueIndex}
                         control={control}
                         name={`dues.${dueIndex}.balance`}
-                        render={({
-                          field: { onChange, onBlur, value, ref },
-                        }) => (
+                        render={({ field: { onChange, value } }) => (
                           <DueCard
                             variant="ghost"
                             borderWidth={0}

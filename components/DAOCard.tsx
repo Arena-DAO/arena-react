@@ -46,7 +46,7 @@ export function DAOCard({
     if (isError)
       setError("dao", { message: "The given address is not a valid dao" });
     else clearErrors("dao");
-  }, [isError]);
+  }, [isError, setError, clearErrors]);
   useEffect(() => {
     if (data) onDataLoaded?.(data);
     else onDataLoaded?.(undefined);

@@ -127,14 +127,14 @@ export function NativeCard({
   }, [data]);
   useEffect(() => {
     if (nativeInfo) onDataLoaded?.([denom, nativeInfo.exponent]);
-  }, [nativeInfo, onDataLoaded]);
+  }, [nativeInfo, onDataLoaded, denom]);
   useEffect(() => {
     if (isError)
       setError?.("address", {
         message: "The given address is not a valid CW20",
       });
     else clearErrors?.("address");
-  }, [isError]);
+  }, [isError, setError, clearErrors]);
 
   if (isError) return <></>;
   return (
@@ -206,14 +206,14 @@ export function Cw20Card({
   });
   useEffect(() => {
     if (tokenData) onDataLoaded?.([address, tokenData.decimals]);
-  }, [tokenData, onDataLoaded]);
+  }, [tokenData, onDataLoaded, address]);
   useEffect(() => {
     if (tokenError)
       setError?.("address", {
         message: "The given address is not a valid CW20",
       });
     else clearErrors?.("address");
-  }, [tokenError]);
+  }, [tokenError, setError, clearErrors]);
 
   if (tokenError) return <></>;
 
@@ -291,13 +291,15 @@ export function DueCard({
     exponentInfo.cw20.set(cw20Data[0], cw20Data[1]);
     onDataLoaded?.(exponentInfo);
     setExponentInfo(exponentInfo);
-  }, [cw20Data]);
+    setCw20Data(undefined);
+  }, [cw20Data, exponentInfo, onDataLoaded]);
   useEffect(() => {
     if (!nativeData) return;
     exponentInfo.native.set(nativeData[0], nativeData[1]);
     setExponentInfo(exponentInfo);
     onDataLoaded?.(exponentInfo);
-  }, [nativeData]);
+    setNativeData(undefined);
+  }, [nativeData, exponentInfo, onDataLoaded]);
 
   const childCardProps: CardProps = { p: 4 };
 
