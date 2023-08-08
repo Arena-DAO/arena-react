@@ -65,37 +65,34 @@ export const ExpirationSchema = z
     height: z.number().positive().optional(),
     expiration_units: z.enum(["At Time", "At Height", "Never"]),
   })
-  .superRefine((context, ctx) => {
-    if (context.expiration_units === "At Height" && !context.height) {
-      ctx.addIssue({
+  .superRefine((value, context) => {
+    if (value.expiration_units === "At Height" && !value.height) {
+      context.addIssue({
         path: ["height"],
         code: z.ZodIssueCode.custom,
         message: "Height is required for expiration unit 'At Height'",
       });
     }
 
-    if (context.expiration_units === "At Time") {
-      if (!context.time) {
-        ctx.addIssue({
+    if (value.expiration_units === "At Time") {
+      if (!value.time) {
+        context.addIssue({
           path: ["time"],
           code: z.ZodIssueCode.custom,
           message: "Time is required for expiration unit 'At Time'",
         });
       }
 
-      if (!context.timezone) {
-        ctx.addIssue({
+      if (!value.timezone) {
+        context.addIssue({
           path: ["timezone"],
           code: z.ZodIssueCode.custom,
           message: "Timezone is required for expiration unit 'At Time'",
         });
       }
 
-      if (context.time && context.timezone) {
-        const providedTimeInZone = utcToZonedTime(
-          context.time,
-          context.timezone
-        );
+      if (value.time && value.timezone) {
+        const providedTimeInZone = utcToZonedTime(value.time, value.timezone);
         const currentTimeInZone = utcToZonedTime(
           new Date(),
           Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -103,7 +100,7 @@ export const ExpirationSchema = z
 
         // Check if the provided time is greater than the current time in the user's timezone
         if (isBefore(providedTimeInZone, currentTimeInZone)) {
-          ctx.addIssue({
+          context.addIssue({
             path: ["time"],
             code: z.ZodIssueCode.custom,
             message: "Provided time must be greater than the current time",
@@ -157,7 +154,7 @@ export const BalanceSchema = z.object({
   ),
   cw721: z.array(
     z.object({
-      addr: z.string().nonempty(),
+      address: z.string().nonempty(),
       token_ids: z.array(z.string().nonempty()).min(1),
     })
   ),
@@ -169,7 +166,21 @@ export const BalanceSchema = z.object({
   ),
 });
 
-export const DueSchema = z.object({
-  addr: z.string().nonempty(),
-  balance: BalanceSchema,
-});
+export const DueSchema = z
+  .object({
+    address: z.string().nonempty({ message: "Address is required" }),
+    balance: BalanceSchema,
+  })
+  .superRefine((value, context) => {
+    if (
+      value.balance.cw20.length == 0 &&
+      value.balance.cw721.length == 0 &&
+      value.balance.native.length == 0
+    ) {
+      context.addIssue({
+        path: ["balance"],
+        code: z.ZodIssueCode.custom,
+        message: "Due balance cannot be empty",
+      });
+    }
+  });

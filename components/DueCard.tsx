@@ -35,7 +35,9 @@ interface DueCardProps extends CardProps {
   cosmwasmClient: CosmWasmClient;
   balance: z.infer<typeof BalanceSchema>;
   onDataLoaded?: (data: ExponentInfo) => void;
-  deleteFn?: (key: string) => void;
+  cw20DeleteFn?: (index: number) => void;
+  nativeDeleteFn?: (index: number) => void;
+  cw721DeleteFn?: (index: number) => void;
 }
 
 interface NativeInfo {
@@ -52,10 +54,11 @@ interface Cw20CardProps extends CardProps {
   cosmwasmClient: CosmWasmClient;
   address: string;
   amount: number;
-  deleteFn?: (key: string) => void;
+  deleteFn?: (index: number) => void;
   onDataLoaded?: (data: [string, number]) => void;
   setError?: UseFormSetError<{ address: string }>;
   clearErrors?: UseFormClearErrors<{ address: string }>;
+  index: number;
 }
 
 interface Cw20LogoProps extends AvatarProps {
@@ -66,10 +69,11 @@ interface Cw20LogoProps extends AvatarProps {
 interface NativeCardProps extends CardProps {
   denom: string;
   amount: number;
-  deleteFn?: (key: string) => void;
+  deleteFn?: (index: number) => void;
   onDataLoaded?: (data: [string, number]) => void;
   setError?: UseFormSetError<{ address: string }>;
   clearErrors?: UseFormClearErrors<{ address: string }>;
+  index: number;
 }
 
 export function NativeCard({
@@ -79,6 +83,7 @@ export function NativeCard({
   setError,
   clearErrors,
   deleteFn,
+  index,
   ...cardProps
 }: NativeCardProps) {
   const { assets } = useChain(env.CHAIN);
@@ -152,7 +157,7 @@ export function NativeCard({
           <IconButton
             variant="ghost"
             aria-label="Delete"
-            onClick={() => deleteFn(denom)}
+            onClick={() => deleteFn(index)}
             icon={<DeleteIcon />}
           />
         )}
@@ -183,6 +188,7 @@ export function Cw20Card({
   setError,
   clearErrors,
   deleteFn,
+  index,
   ...cardProps
 }: Cw20CardProps) {
   const client = new Cw20BaseQueryClient(cosmwasmClient, address);
@@ -247,7 +253,7 @@ export function Cw20Card({
           <IconButton
             variant="ghost"
             aria-label="Delete"
-            onClick={() => deleteFn(address)}
+            onClick={() => deleteFn(index)}
             icon={<DeleteIcon />}
           />
         )}
@@ -260,7 +266,9 @@ export function DueCard({
   cosmwasmClient,
   balance,
   onDataLoaded,
-  deleteFn,
+  cw20DeleteFn,
+  cw721DeleteFn,
+  nativeDeleteFn,
   ...cardProps
 }: DueCardProps) {
   const [cw20Data, setCw20Data] = useState<[string, number] | undefined>(
@@ -286,30 +294,31 @@ export function DueCard({
     onDataLoaded?.(exponentInfo);
   }, [nativeData]);
 
-  const childCardProps: CardProps = { p: 4, variant: "outline" };
+  const childCardProps: CardProps = { p: 4 };
 
   return (
     <Card {...cardProps}>
       <CardBody>
         <Stack divider={<StackDivider />}>
-          {balance.native.length > 0 && (
+          {balance.native && balance.native.length > 0 && (
             <Stack>
-              <Heading size="md">Native Tokens</Heading>
+              <Heading size="xs">Native Tokens</Heading>
               {balance.native.map((x, i) => (
                 <NativeCard
                   key={i}
                   denom={x.denom}
                   amount={x.amount}
                   onDataLoaded={setNativeData}
-                  deleteFn={deleteFn}
+                  deleteFn={nativeDeleteFn}
+                  index={i}
                   {...childCardProps}
                 />
               ))}
             </Stack>
           )}
-          {balance.cw20.length > 0 && (
+          {balance.cw20 && balance.cw20.length > 0 && (
             <Stack>
-              <Heading size="md">Cw20 Tokens</Heading>
+              <Heading size="xs">Cw20 Tokens</Heading>
               {balance.cw20.map((x, i) => (
                 <Cw20Card
                   key={i}
@@ -317,7 +326,8 @@ export function DueCard({
                   address={x.address}
                   amount={x.amount}
                   onDataLoaded={setCw20Data}
-                  deleteFn={deleteFn}
+                  deleteFn={cw20DeleteFn}
+                  index={i}
                   {...childCardProps}
                 />
               ))}

@@ -9,7 +9,6 @@ import {
   Container,
   FormControl,
   FormErrorMessage,
-  FormHelperText,
   FormLabel,
   Grid,
   GridItem,
@@ -22,7 +21,6 @@ import {
   InputRightElement,
   Select,
   SimpleGrid,
-  Spacer,
   Stack,
   Switch,
   Textarea,
@@ -35,13 +33,9 @@ import {
   Ruleset,
   InstantiateMsg as ArenaCoreInstantiateMsg,
 } from "~/ts-codegen/arena/ArenaCore.types";
-import { BsPercent, BsPlus } from "react-icons/bs";
-import { FiDelete } from "react-icons/fi";
+import { BsPercent } from "react-icons/bs";
 import { useChain } from "@cosmos-kit/react-lite";
-import {
-  Config,
-  ExecuteMsg as DaoDaoCoreExecuteMsg,
-} from "@dao/DaoDaoCore.types";
+import { ExecuteMsg as DaoDaoCoreExecuteMsg } from "@dao/DaoDaoCore.types";
 import { DaoProposalSingleClient } from "@dao/DaoProposalSingle.client";
 import { InstantiateMsg as ArenaWagerModuleInstantiateMsg } from "@arena/ArenaWagerModule.types";
 import { InstantiateMsg as DAOProposalMultipleInstantiateMsg } from "@dao/DaoProposalMultiple.types";
@@ -58,6 +52,7 @@ import { useEffect, useState } from "react";
 import { DAOCard } from "@components/DAOCard";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import env from "@config/env";
+import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 
 const EnableForm = () => {
   const {
@@ -513,10 +508,10 @@ const EnableForm = () => {
                     <AccordionIcon />
                   </AccordionButton>
                   <IconButton
-                    variant="outline"
+                    variant="ghost"
                     colorScheme="secondary"
                     aria-label="Delete Ruleset"
-                    icon={<FiDelete />}
+                    icon={<DeleteIcon />}
                     onClick={(e) => {
                       e.stopPropagation();
                       rulesetsRemove(rulesetIndex);
@@ -571,7 +566,7 @@ const EnableForm = () => {
                                   <IconButton
                                     aria-label="delete"
                                     variant="ghost"
-                                    icon={<FiDelete />}
+                                    icon={<DeleteIcon />}
                                     onClick={() =>
                                       onChange([
                                         ...value.slice(0, ruleIndex),
@@ -591,12 +586,12 @@ const EnableForm = () => {
                             </FormControl>
                           ))}
                           <IconButton
-                            variant="outline"
+                            variant="ghost"
                             colorScheme="secondary"
                             aria-label="Add Rule"
                             alignSelf="flex-start"
                             onClick={() => onChange([...value, ""])}
-                            icon={<BsPlus />}
+                            icon={<AddIcon />}
                           />
                         </Stack>
                       )}
@@ -611,13 +606,13 @@ const EnableForm = () => {
           </Accordion>
           <IconButton
             mt="2"
-            variant="outline"
+            variant="ghost"
             colorScheme="secondary"
             aria-label="Add Ruleset"
             onClick={() =>
               rulesetsAppend({ description: "", is_enabled: true, rules: [] })
             }
-            icon={<BsPlus />}
+            icon={<AddIcon />}
           />
           <FormErrorMessage>{errors.rulesets?.message}</FormErrorMessage>
         </FormControl>

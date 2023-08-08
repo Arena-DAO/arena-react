@@ -5,16 +5,22 @@ import {
 } from "@chakra-ui/form-control";
 import {
   Container,
+  Flex,
   Grid,
   GridItem,
   Heading,
   ListItem,
+  Spacer,
   Stack,
   UnorderedList,
 } from "@chakra-ui/layout";
 import {
   Button,
   ButtonGroup,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
   IconButton,
   Input,
   InputGroup,
@@ -38,6 +44,7 @@ import {
   Thead,
   Tr,
   useBreakpointValue,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useChain } from "@cosmos-kit/react";
 import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
@@ -51,6 +58,7 @@ import {
   Controller,
   UseFormClearErrors,
   UseFormSetError,
+  useFieldArray,
   useForm,
 } from "react-hook-form";
 import { z } from "zod";
@@ -65,17 +73,16 @@ import { InstantiateMsg as DAOProposalMultipleInstantiateMsg } from "@dao/DaoPro
 import { InstantiateMsg as DAOPreProposeMultipleInstantiateMsg } from "@dao/DaoPreProposeMultiple.types";
 import { InstantiateMsg as DAOVotingCW4InstantiateMsg } from "@dao/DaoVotingCw4.types";
 import { DAOCard } from "@components/DAOCard";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import moment from "moment-timezone";
-import { BsPlus } from "react-icons/bs";
-import { FiDelete } from "react-icons/fi";
 import { Ruleset } from "@arena/ArenaCore.types";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useDaoDaoCoreGetItemQuery } from "@dao/DaoDaoCore.react-query";
 import { useArenaCoreQueryExtensionQuery } from "@arena/ArenaCore.react-query";
 import env from "config/env";
 import { DueCard } from "@components/DueCard";
+import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 
 interface RulesetProps {
   addr: string;
@@ -245,6 +252,10 @@ function RulesetTable({
   );
 }
 
+const DueForm = () => {
+  return <></>;
+};
+
 const WagerForm = () => {
   const router = useRouter();
   const {
@@ -275,7 +286,7 @@ const WagerForm = () => {
     name: z.string().nonempty({ message: "Name is required " }),
     rules: z.string().nonempty({ message: "Rule cannot be empty " }).array(),
     ruleset: z.number().optional(),
-    dues: z.array(DueSchema),
+    dues: z.array(DueSchema).nonempty({ message: "Dues cannot be empty" }),
   });
 
   type FormValues = z.infer<typeof validationSchema>;
@@ -300,6 +311,22 @@ const WagerForm = () => {
         timezone: moment.tz.guess(),
       },
       rules: [],
+      dues: [
+        {
+          balance: {
+            cw20: [],
+            cw721: [],
+            native: [],
+          },
+        },
+        {
+          balance: {
+            cw20: [],
+            cw721: [],
+            native: [],
+          },
+        },
+      ],
     },
     resolver: zodResolver(validationSchema),
   });
@@ -317,6 +344,16 @@ const WagerForm = () => {
   const onRulesetSelect = (id: number | undefined) => {
     setValue("ruleset", id);
   };
+
+  const {
+    fields: duesField,
+    append: duesAppend,
+    remove: duesRemove,
+  } = useFieldArray({
+    name: "dues",
+    control,
+  });
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onSubmit = async (values: FormValues) => {
     let cosmWasmClient = await getSigningCosmWasmClient();
@@ -576,7 +613,7 @@ const WagerForm = () => {
                         <IconButton
                           aria-label="delete"
                           variant="ghost"
-                          icon={<FiDelete />}
+                          icon={<DeleteIcon />}
                           onClick={() =>
                             onChange([
                               ...value.slice(0, ruleIndex),
@@ -592,12 +629,12 @@ const WagerForm = () => {
                   </FormControl>
                 ))}
                 <IconButton
-                  variant="outline"
+                  variant="ghost"
                   colorScheme="secondary"
                   aria-label="Add Rule"
                   alignSelf="flex-start"
                   onClick={() => onChange([...value, ""])}
-                  icon={<BsPlus />}
+                  icon={<AddIcon />}
                 />
               </Stack>
             )}
@@ -605,14 +642,101 @@ const WagerForm = () => {
           <FormErrorMessage>{errors.rules?.message}</FormErrorMessage>
         </FormControl>
         {cosmwasmClient && (
-          <DueCard
-            cosmwasmClient={cosmwasmClient}
-            balance={{
-              native: [{ amount: 1000.434, denom: "junox" }],
-              cw20: [],
-              cw721: [],
-            }}
-          />
+          <FormControl isInvalid={!!errors.dues}>
+            <FormLabel>Dues</FormLabel>
+            <Stack>
+              {duesField.map((_due: any, dueIndex: number) => (
+                <Card key={dueIndex} variant="outline">
+                  <CardHeader pb="0">
+                    <Flex>
+                      <Heading size="md">Team {dueIndex + 1}</Heading>
+                      <Spacer />
+                      <IconButton
+                        aria-label="delete"
+                        variant="ghost"
+                        icon={<DeleteIcon />}
+                        onClick={() => duesRemove(dueIndex)}
+                      />
+                    </Flex>
+                  </CardHeader>
+                  <CardBody>
+                    <FormControl isInvalid={!!errors.dues?.[dueIndex]?.address}>
+                      <FormLabel>Address</FormLabel>
+                      <Input
+                        {...register(`dues.${dueIndex}.address` as const)}
+                      />
+                      <FormErrorMessage>
+                        {errors.dues?.[dueIndex]?.address?.message}
+                      </FormErrorMessage>
+                    </FormControl>
+                    <FormControl isInvalid={!!errors.dues?.[dueIndex]?.balance}>
+                      <FormLabel mb="0">Balance</FormLabel>
+                      <Controller
+                        key={dueIndex}
+                        control={control}
+                        name={`dues.${dueIndex}.balance`}
+                        render={({
+                          field: { onChange, onBlur, value, ref },
+                        }) => (
+                          <DueCard
+                            variant="ghost"
+                            borderWidth={0}
+                            cosmwasmClient={cosmwasmClient}
+                            balance={value}
+                            nativeDeleteFn={(index) => {
+                              onChange({
+                                ...value,
+                                native: [
+                                  ...value.native.slice(0, index),
+                                  ...value.native.slice(index + 1),
+                                ],
+                              });
+                            }}
+                            cw20DeleteFn={(index) => {
+                              onChange({
+                                ...value,
+                                cw20: [
+                                  ...value.cw20.slice(0, index),
+                                  ...value.cw20.slice(index + 1),
+                                ],
+                              });
+                            }}
+                          />
+                        )}
+                      />
+                      <FormErrorMessage>
+                        {errors.dues?.[dueIndex]?.balance?.message}
+                      </FormErrorMessage>
+                      <IconButton
+                        aria-label="add"
+                        variant="ghost"
+                        icon={<AddIcon />}
+                        onClick={onOpen}
+                      />
+                    </FormControl>
+                  </CardBody>
+                </Card>
+              ))}
+            </Stack>
+            <IconButton
+              mt="2"
+              variant="ghost"
+              colorScheme="secondary"
+              aria-label="Add Team"
+              onClick={() =>
+                duesAppend({
+                  address: "",
+                  balance: {
+                    cw20: [],
+                    cw721: [],
+                    native: [],
+                  },
+                })
+              }
+              icon={<AddIcon />}
+            />
+            <FormErrorMessage>{errors.dues?.message}</FormErrorMessage>
+          </FormControl>
         )}
         <Button
           type="submit"
