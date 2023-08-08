@@ -7,6 +7,8 @@ import {
   Image,
   Link,
   MenuItem,
+  Avatar,
+  Button,
 } from "@chakra-ui/react";
 import { IconType } from "react-icons";
 import { useChain } from "@cosmos-kit/react";
@@ -26,43 +28,25 @@ interface ProfileProps {
 }
 
 function Profile({ address, openView }: ProfileProps) {
-  const { isLoading, data } = useProfileData(address);
+  const { data, isLoading } = useProfileData(address);
 
   return (
     <Menu>
-      {data && data.nft ? (
-        <MenuButton>
-          <Image
-            h="50px"
-            srcSet={data.nft.imageUrl}
-            borderRadius="full"
-            alt="Profile"
-          ></Image>
-        </MenuButton>
-      ) : (
-        <MenuButton
-          as={IconButton}
+      <MenuButton as={IconButton} isLoading={isLoading} variant="link">
+        <Avatar
+          src={data?.nft?.imageUrl}
           aria-label="Profile"
-          isLoading={isLoading}
           icon={<BsPerson />}
-          colorScheme="primary"
-          variant="outline"
-        ></MenuButton>
-      )}
+        />
+      </MenuButton>
       <MenuList>
-        {data ? (
-          <Link href={env.DAO_DAO_URL + "/me"} isExternal>
-            <MenuItem>View Profile</MenuItem>
-          </Link>
-        ) : (
-          <Link
-            className="text-decoration-none"
-            href={env.DAO_DAO_URL + "/me"}
-            isExternal
-          >
-            <MenuItem>Create Profile</MenuItem>
-          </Link>
-        )}
+        <Link href={env.DAO_DAO_URL + "/me"} isExternal>
+          <MenuItem>
+            {data && (data.nft || data.name)
+              ? "View Profile"
+              : "Create Profile"}
+          </MenuItem>
+        </Link>
         <MenuItem onClick={openView}>Manage Wallet</MenuItem>
       </MenuList>
     </Menu>

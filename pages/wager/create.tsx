@@ -19,13 +19,20 @@ import {
   ButtonGroup,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   IconButton,
   Input,
   InputGroup,
   InputRightAddon,
   InputRightElement,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  ModalProps,
   Popover,
   PopoverArrow,
   PopoverBody,
@@ -42,6 +49,7 @@ import {
   Textarea,
   Th,
   Thead,
+  Tooltip,
   Tr,
   useBreakpointValue,
   useDisclosure,
@@ -63,7 +71,7 @@ import {
 } from "react-hook-form";
 import { z } from "zod";
 import {
-  DAOAddressSchema,
+  AddressSchema,
   DueSchema,
   ExpirationSchema,
   convertToExpiration,
@@ -101,6 +109,8 @@ interface RulesetTableInnerProps extends RulesetProps {
   selectedRuleset: number | undefined;
   onRulesetLoaded: (data: number | undefined) => void;
 }
+
+const TokenTypes = z.enum(["cw20", "cw721", "native"]);
 
 function RulesetTableInner({
   addr,
@@ -252,8 +262,74 @@ function RulesetTable({
   );
 }
 
-const DueForm = () => {
-  return <></>;
+interface DueFormProps extends ModalProps {
+  bech32Prefix: string;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const DueForm = ({
+  bech32Prefix,
+  isOpen,
+  onClose,
+  ...modalProps
+}: DueFormProps) => {
+  const addressSchema = AddressSchema(bech32Prefix, [63]);
+
+  const validationSchema = z
+    .object({
+      dao: addressSchema,
+      type: TokenTypes,
+      key: z.string().nonempty(),
+      amount: z.number().positive().optional(),
+      token_ids: z.string().nonempty().array().optional(),
+    })
+    .refine(
+      (value) =>
+        (value.type == "cw20" || value.type == "cw721") &&
+        !addressSchema.safeParse(value.key),
+      { message: "Address is not valid" }
+    )
+    .refine(
+      (value) =>
+        (value.type == "cw20" || value.type == "native") && !value.amount,
+      { message: "Amount is required for cw20 or native tokens" }
+    )
+    .refine(
+      (value) =>
+        value.type == "cw721" &&
+        (!value.token_ids || value.token_ids.length == 0),
+      {
+        message: "Token id's are required for cw721 tokens",
+      }
+    );
+
+  type FormValues = z.infer<typeof validationSchema>;
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormValues>();
+
+  const onSubmit = async (values: FormValues) => {};
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} {...modalProps}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Add Due Amount</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody></ModalBody>
+
+        <ModalFooter>
+          <Button variant="ghost" onClick={handleSubmit(onSubmit)}>
+            Submit
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
 };
 
 const WagerForm = () => {
@@ -277,7 +353,7 @@ const WagerForm = () => {
 
     fetchClient();
   }, [getCosmWasmClient]);
-  const daoAddressSchema = DAOAddressSchema(chain.bech32_prefix);
+  const daoAddressSchema = AddressSchema(chain.bech32_prefix, [63]);
 
   const validationSchema = z.object({
     dao: daoAddressSchema,
@@ -286,7 +362,9 @@ const WagerForm = () => {
     name: z.string().nonempty({ message: "Name is required " }),
     rules: z.string().nonempty({ message: "Rule cannot be empty " }).array(),
     ruleset: z.number().optional(),
-    dues: z.array(DueSchema).nonempty({ message: "Dues cannot be empty" }),
+    dues: z
+      .array(DueSchema(chain.bech32_prefix, [43, 63]))
+      .nonempty({ message: "Dues cannot be empty" }),
   });
 
   type FormValues = z.infer<typeof validationSchema>;
@@ -610,17 +688,19 @@ const WagerForm = () => {
                         ref={ref}
                       />
                       <InputRightElement>
-                        <IconButton
-                          aria-label="delete"
-                          variant="ghost"
-                          icon={<DeleteIcon />}
-                          onClick={() =>
-                            onChange([
-                              ...value.slice(0, ruleIndex),
-                              ...value.slice(ruleIndex + 1),
-                            ])
-                          }
-                        />
+                        <Tooltip label="Delete Rule">
+                          <IconButton
+                            aria-label="delete"
+                            variant="ghost"
+                            icon={<DeleteIcon />}
+                            onClick={() =>
+                              onChange([
+                                ...value.slice(0, ruleIndex),
+                                ...value.slice(ruleIndex + 1),
+                              ])
+                            }
+                          />
+                        </Tooltip>
                       </InputRightElement>
                     </InputGroup>
                     <FormErrorMessage>
@@ -628,14 +708,16 @@ const WagerForm = () => {
                     </FormErrorMessage>
                   </FormControl>
                 ))}
-                <IconButton
-                  variant="ghost"
-                  colorScheme="secondary"
-                  aria-label="Add Rule"
-                  alignSelf="flex-start"
-                  onClick={() => onChange([...value, ""])}
-                  icon={<AddIcon />}
-                />
+                <Tooltip label="Add Rule">
+                  <IconButton
+                    variant="ghost"
+                    colorScheme="secondary"
+                    aria-label="Add Rule"
+                    alignSelf="flex-start"
+                    onClick={() => onChange([...value, ""])}
+                    icon={<AddIcon />}
+                  />
+                </Tooltip>
               </Stack>
             )}
           />
@@ -651,12 +733,14 @@ const WagerForm = () => {
                     <Flex>
                       <Heading size="md">Team {dueIndex + 1}</Heading>
                       <Spacer />
-                      <IconButton
-                        aria-label="delete"
-                        variant="ghost"
-                        icon={<DeleteIcon />}
-                        onClick={() => duesRemove(dueIndex)}
-                      />
+                      <Tooltip label="Delete Team">
+                        <IconButton
+                          aria-label="delete"
+                          variant="ghost"
+                          icon={<DeleteIcon />}
+                          onClick={() => duesRemove(dueIndex)}
+                        />
+                      </Tooltip>
                     </Flex>
                   </CardHeader>
                   <CardBody>
@@ -707,34 +791,38 @@ const WagerForm = () => {
                       <FormErrorMessage>
                         {errors.dues?.[dueIndex]?.balance?.message}
                       </FormErrorMessage>
-                      <IconButton
-                        aria-label="add"
-                        variant="ghost"
-                        icon={<AddIcon />}
-                        onClick={onOpen}
-                      />
+                      <Tooltip label="Add Amount">
+                        <IconButton
+                          aria-label="add"
+                          variant="ghost"
+                          icon={<AddIcon />}
+                          onClick={onOpen}
+                        />
+                      </Tooltip>
                     </FormControl>
                   </CardBody>
                 </Card>
               ))}
             </Stack>
-            <IconButton
-              mt="2"
-              variant="ghost"
-              colorScheme="secondary"
-              aria-label="Add Team"
-              onClick={() =>
-                duesAppend({
-                  address: "",
-                  balance: {
-                    cw20: [],
-                    cw721: [],
-                    native: [],
-                  },
-                })
-              }
-              icon={<AddIcon />}
-            />
+            <Tooltip label="Add Team">
+              <IconButton
+                mt="2"
+                variant="ghost"
+                colorScheme="secondary"
+                aria-label="Add Team"
+                onClick={() =>
+                  duesAppend({
+                    address: "",
+                    balance: {
+                      cw20: [],
+                      cw721: [],
+                      native: [],
+                    },
+                  })
+                }
+                icon={<AddIcon />}
+              />
+            </Tooltip>
             <FormErrorMessage>{errors.dues?.message}</FormErrorMessage>
           </FormControl>
         )}

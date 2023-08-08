@@ -24,6 +24,7 @@ import {
   Stack,
   Switch,
   Textarea,
+  Tooltip,
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
@@ -43,7 +44,7 @@ import { toBinary } from "cosmwasm";
 import { getProposalAddr } from "~/helpers/DAOHelpers";
 import { DaoPreProposeSingleClient } from "@dao/DaoPreProposeSingle.client";
 import {
-  DAOAddressSchema,
+  AddressSchema,
   DurationSchema,
   PercentageThresholdSchema,
   convertToDuration,
@@ -75,7 +76,7 @@ const EnableForm = () => {
     fetchClient();
   }, [getCosmWasmClient]);
 
-  let daoAddressSchema = DAOAddressSchema(chain.bech32_prefix);
+  let daoAddressSchema = AddressSchema(chain.bech32_prefix);
 
   const validationSchema = z
     .object({
@@ -507,16 +508,18 @@ const EnableForm = () => {
                     </Box>
                     <AccordionIcon />
                   </AccordionButton>
-                  <IconButton
-                    variant="ghost"
-                    colorScheme="secondary"
-                    aria-label="Delete Ruleset"
-                    icon={<DeleteIcon />}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      rulesetsRemove(rulesetIndex);
-                    }}
-                  />
+                  <Tooltip label="Delete Ruleset">
+                    <IconButton
+                      variant="ghost"
+                      colorScheme="secondary"
+                      aria-label="Delete Ruleset"
+                      icon={<DeleteIcon />}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        rulesetsRemove(rulesetIndex);
+                      }}
+                    />
+                  </Tooltip>
                 </HStack>
                 <AccordionPanel>
                   <FormControl
@@ -563,17 +566,19 @@ const EnableForm = () => {
                                   ref={ref}
                                 />
                                 <InputRightElement>
-                                  <IconButton
-                                    aria-label="delete"
-                                    variant="ghost"
-                                    icon={<DeleteIcon />}
-                                    onClick={() =>
-                                      onChange([
-                                        ...value.slice(0, ruleIndex),
-                                        ...value.slice(ruleIndex + 1),
-                                      ])
-                                    }
-                                  />
+                                  <Tooltip label="Delete Rule">
+                                    <IconButton
+                                      aria-label="delete"
+                                      variant="ghost"
+                                      icon={<DeleteIcon />}
+                                      onClick={() =>
+                                        onChange([
+                                          ...value.slice(0, ruleIndex),
+                                          ...value.slice(ruleIndex + 1),
+                                        ])
+                                      }
+                                    />
+                                  </Tooltip>
                                 </InputRightElement>
                               </InputGroup>
                               <FormErrorMessage>
@@ -585,14 +590,16 @@ const EnableForm = () => {
                               </FormErrorMessage>
                             </FormControl>
                           ))}
-                          <IconButton
-                            variant="ghost"
-                            colorScheme="secondary"
-                            aria-label="Add Rule"
-                            alignSelf="flex-start"
-                            onClick={() => onChange([...value, ""])}
-                            icon={<AddIcon />}
-                          />
+                          <Tooltip label="Add Rule">
+                            <IconButton
+                              variant="ghost"
+                              colorScheme="secondary"
+                              aria-label="Add Rule"
+                              alignSelf="flex-start"
+                              onClick={() => onChange([...value, ""])}
+                              icon={<AddIcon />}
+                            />
+                          </Tooltip>
                         </Stack>
                       )}
                     />
@@ -604,16 +611,18 @@ const EnableForm = () => {
               </AccordionItem>
             ))}
           </Accordion>
-          <IconButton
-            mt="2"
-            variant="ghost"
-            colorScheme="secondary"
-            aria-label="Add Ruleset"
-            onClick={() =>
-              rulesetsAppend({ description: "", is_enabled: true, rules: [] })
-            }
-            icon={<AddIcon />}
-          />
+          <Tooltip label="Add Ruleset">
+            <IconButton
+              mt="2"
+              variant="ghost"
+              colorScheme="secondary"
+              aria-label="Add Ruleset"
+              onClick={() =>
+                rulesetsAppend({ description: "", is_enabled: true, rules: [] })
+              }
+              icon={<AddIcon />}
+            />
+          </Tooltip>
           <FormErrorMessage>{errors.rulesets?.message}</FormErrorMessage>
         </FormControl>
         <Button

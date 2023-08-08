@@ -1,15 +1,14 @@
 import {
   Avatar,
-  Box,
   Card,
   CardBody,
+  CardFooter,
   CardProps,
-  Image,
+  IconButton,
   Link,
   Skeleton,
-  Spacer,
   Text,
-  useColorModeValue,
+  Tooltip,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { useDaoDaoCoreConfigQuery } from "@dao/DaoDaoCore.react-query";
@@ -21,6 +20,7 @@ import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { UseFormClearErrors, UseFormSetError } from "react-hook-form";
 import { useEffect } from "react";
 import env from "config/env";
+import { CopyAddressButton } from "./CopyAddressButton";
 
 interface DAOCardProps extends CardProps {
   addr: string;
@@ -73,15 +73,24 @@ export function DAOCard({
         <CardBody>
           <Text fontSize="xl">{data?.name}</Text>
         </CardBody>
-        <Link
-          as={NextLink}
-          href={env.DAO_DAO_URL + "/dao/" + addr}
-          _hover={{ textDecoration: "none" }}
-          _focus={{ outline: "none" }}
-          target="_blank"
-        >
-          <ExternalLinkIcon mr="3" />
-        </Link>
+        <CardFooter alignItems={"center"}>
+          <Tooltip label="View">
+            <Link
+              as={NextLink}
+              href={env.DAO_DAO_URL + "/dao/" + addr}
+              _hover={{ textDecoration: "none" }}
+              _focus={{ outline: "none" }}
+              target="_blank"
+            >
+              <IconButton
+                icon={<ExternalLinkIcon />}
+                aria-label="View"
+                variant="ghost"
+              />
+            </Link>
+          </Tooltip>
+          <CopyAddressButton addr={addr} aria-label="Copy Address" />
+        </CardFooter>
       </Card>
     </Skeleton>
   );

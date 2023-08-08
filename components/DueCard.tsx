@@ -21,6 +21,7 @@ import {
   CardBody,
   Button,
   IconButton,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useEffect, useMemo, useState } from "react";
 import { UseFormClearErrors, UseFormSetError } from "react-hook-form";
@@ -154,12 +155,14 @@ export function NativeCard({
           </Text>
         </CardBody>
         {deleteFn && (
-          <IconButton
-            variant="ghost"
-            aria-label="Delete"
-            onClick={() => deleteFn(index)}
-            icon={<DeleteIcon />}
-          />
+          <Tooltip label="Delete Amount">
+            <IconButton
+              variant="ghost"
+              aria-label="Delete"
+              onClick={() => deleteFn(index)}
+              icon={<DeleteIcon />}
+            />
+          </Tooltip>
         )}
       </Card>
     </Skeleton>
@@ -250,12 +253,14 @@ export function Cw20Card({
           </Text>
         </CardBody>
         {deleteFn && (
-          <IconButton
-            variant="ghost"
-            aria-label="Delete"
-            onClick={() => deleteFn(index)}
-            icon={<DeleteIcon />}
-          />
+          <Tooltip label="Delete Amount">
+            <IconButton
+              variant="ghost"
+              aria-label="Delete"
+              onClick={() => deleteFn(index)}
+              icon={<DeleteIcon />}
+            />
+          </Tooltip>
         )}
       </Card>
     </Skeleton>
