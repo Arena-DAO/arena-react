@@ -4,7 +4,7 @@ import { ChainProvider } from "@cosmos-kit/react";
 import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { chains, assets } from "chain-registry";
-import MainLayout from "../components/MainLayout";
+import MainLayout from "../components/layouts/MainLayout";
 import theme from "../config/theme";
 import React from "react";
 import { ChakraProvider } from "@chakra-ui/react";

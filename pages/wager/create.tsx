@@ -80,8 +80,8 @@ import { fromBinary, toBinary } from "cosmwasm";
 import { InstantiateMsg as DAOProposalMultipleInstantiateMsg } from "@dao/DaoProposalMultiple.types";
 import { InstantiateMsg as DAOPreProposeMultipleInstantiateMsg } from "@dao/DaoPreProposeMultiple.types";
 import { InstantiateMsg as DAOVotingCW4InstantiateMsg } from "@dao/DaoVotingCw4.types";
-import { DAOCard } from "@components/DAOCard";
-import { useEffect, useState } from "react";
+import { DAOCard } from "@components/cards/DAOCard";
+import { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
 import moment from "moment-timezone";
 import { Ruleset } from "@arena/ArenaCore.types";
@@ -89,8 +89,27 @@ import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useDaoDaoCoreGetItemQuery } from "@dao/DaoDaoCore.react-query";
 import { useArenaCoreQueryExtensionQuery } from "@arena/ArenaCore.react-query";
 import env from "config/env";
-import { DueCard } from "@components/DueCard";
+import {
+  Cw20Card,
+  DataLoadedResult,
+  DueCard,
+  ExponentInfo,
+  NativeCard,
+} from "@components/cards/DueCard";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
+import { UserCard } from "@components/cards/UserCard";
+import { debounce } from "lodash";
+
+const FormSchema = z.object({
+  dao_address: AddressSchema,
+  description: z.string().nonempty({ message: "Description is required" }),
+  expiration: ExpirationSchema,
+  name: z.string().nonempty({ message: "Name is required " }),
+  rules: z.string().nonempty({ message: "Rule cannot be empty " }).array(),
+  ruleset: z.number().optional(),
+  dues: z.array(DueSchema).nonempty({ message: "Dues cannot be empty" }),
+});
+type FormValues = z.infer<typeof FormSchema>;
 
 interface RulesetProps {
   addr: string;
@@ -100,8 +119,8 @@ interface RulesetProps {
 
 interface RulesetTableProps extends RulesetProps, TableContainerProps {
   onArenaCoreLoaded: (data: string | undefined) => void;
-  setError: UseFormSetError<{ dao: string }>;
-  clearErrors: UseFormClearErrors<{ dao: string }>;
+  setError: UseFormSetError<{ dao_address: string }>;
+  clearErrors: UseFormClearErrors<{ dao_address: string }>;
 }
 
 interface RulesetTableInnerProps extends RulesetProps {
@@ -199,7 +218,7 @@ function RulesetTable({
   clearErrors,
   ...props
 }: RulesetTableProps) {
-  const { data, isError } = useDaoDaoCoreGetItemQuery({
+  const { data, isError, isLoading } = useDaoDaoCoreGetItemQuery({
     client: new DaoDaoCoreQueryClient(cosmwasmClient, addr),
     args: { key: env.ARENA_ITEM_KEY },
   });
@@ -215,10 +234,10 @@ function RulesetTable({
 
   useEffect(() => {
     if (isError || (data && !data.item))
-      setError("dao", {
+      setError("dao_address", {
         message: "The dao does not have an arena core extension",
       });
-    else clearErrors("dao");
+    else clearErrors("dao_address");
   }, [isError, data, setError, clearErrors]);
 
   useEffect(() => {
@@ -229,7 +248,7 @@ function RulesetTable({
     }
   }, [data, onArenaCoreLoaded]);
 
-  if (!data || !data.item) {
+  if (isLoading || isError || !data || !data.item) {
     return <></>;
   }
 
@@ -264,6 +283,7 @@ function RulesetTable({
 
 interface DueFormProps extends ModalProps {
   bech32Prefix: string;
+  cosmwasmClient: CosmWasmClient;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -271,23 +291,28 @@ interface DueFormProps extends ModalProps {
 const DueForm = ({
   bech32Prefix,
   isOpen,
+  cosmwasmClient,
   onClose,
   ...modalProps
 }: DueFormProps) => {
-  const addressSchema = AddressSchema(bech32Prefix);
-
-  const validationSchema = z
+  const dueFormSchema = z
     .object({
-      dao: addressSchema,
       type: TokenTypes,
-      key: z.string().nonempty(),
-      amount: z.number().positive().optional(),
-      token_ids: z.string().nonempty().array().optional(),
+      key: z.string().nonempty({ message: "Key is required" }),
+      amount: z
+        .number()
+        .positive({ message: "Amount must be positive" })
+        .optional(),
+      token_ids: z
+        .string()
+        .nonempty({ message: "Token id cannot be empty" })
+        .array()
+        .optional(),
     })
     .refine(
       (value) =>
         (value.type == "cw20" || value.type == "cw721") &&
-        !addressSchema.safeParse(value.key),
+        !AddressSchema.safeParse(value.key).success,
       { message: "Address is not valid" }
     )
     .refine(
@@ -304,15 +329,41 @@ const DueForm = ({
       }
     );
 
-  type FormValues = z.infer<typeof validationSchema>;
+  type DueFormValues = z.infer<typeof dueFormSchema>;
+  const [key, setKey] = useState<string>(env.DEFAULT_NATIVE);
 
   const {
     register,
     handleSubmit,
+    watch,
+    setError,
+    clearErrors,
     formState: { errors, isSubmitting },
-  } = useForm<FormValues>();
+  } = useForm<DueFormValues>({
+    resolver: zodResolver(dueFormSchema),
+    defaultValues: {
+      type: "native",
+      key: key,
+    },
+  });
 
-  const onSubmit = async (values: FormValues) => {
+  const debouncedSetKey = debounce((value: string) => {
+    setKey(value);
+  }, 500);
+  const watchType = watch("type");
+  const watchAmount = watch("amount");
+
+  const [keyData, setKeyData] = useState<DataLoadedResult | undefined>(
+    undefined
+  );
+  useEffect(() => {
+    if (keyData) {
+      if (keyData.exponent == 0 || keyData.exponent) clearErrors("key");
+      else setError("key", { message: "The given key is invalid" });
+    }
+  }, [keyData, clearErrors, setError]);
+
+  const onSubmit = async (values: DueFormValues) => {
     console.log(values);
   };
 
@@ -322,8 +373,65 @@ const DueForm = ({
       <ModalContent>
         <ModalHeader>Add Due Amount</ModalHeader>
         <ModalCloseButton />
-        <ModalBody></ModalBody>
-
+        <ModalBody>
+          <Stack>
+            <FormControl isInvalid={!!errors.type}>
+              <FormLabel>Type</FormLabel>
+              <Select id="type" {...register("type")}>
+                <option value="native">Native</option>
+                <option value="cw20">Cw20 Token</option>
+                <option value="cw721">Cw721 NFT</option>
+              </Select>
+              <FormErrorMessage>{errors.type?.message}</FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!errors.key}>
+              <FormLabel>
+                {watchType == "native" ? "Denom" : "Address"}
+              </FormLabel>
+              <Input
+                id="key"
+                {...register("key", {
+                  onChange: (e) => {
+                    e.persist();
+                    debouncedSetKey(e.target.value);
+                  },
+                })}
+              />
+              <FormErrorMessage>{errors.key?.message}</FormErrorMessage>
+            </FormControl>
+            {watchType == "cw20" && AddressSchema.safeParse(key).success && (
+              <Cw20Card
+                cosmwasmClient={cosmwasmClient}
+                address={key}
+                amount={watchAmount ?? 0}
+                onDataLoaded={setKeyData}
+              />
+            )}
+            {watchType == "native" && (
+              <NativeCard
+                denom={key}
+                amount={watchAmount ?? 0}
+                onDataLoaded={setKeyData}
+              />
+            )}
+            <FormControl
+              isInvalid={!!errors.amount}
+              hidden={watchType == "cw721"}
+            >
+              <FormLabel>Amount</FormLabel>
+              <Input
+                id="amount"
+                type="number"
+                {...register("amount", {
+                  setValueAs: (x) => {
+                    return x === "" ? undefined : parseFloat(x);
+                  },
+                })}
+              />
+              <FormErrorMessage>{errors.amount?.message}</FormErrorMessage>
+            </FormControl>
+          </Stack>
+        </ModalBody>
         <ModalFooter>
           <Button variant="ghost" onClick={handleSubmit(onSubmit)}>
             Submit
@@ -355,21 +463,6 @@ const WagerForm = () => {
 
     fetchClient();
   }, [getCosmWasmClient]);
-  const daoAddressSchema = AddressSchema(chain.bech32_prefix);
-
-  const validationSchema = z.object({
-    dao: daoAddressSchema,
-    description: z.string().nonempty({ message: "Description is required" }),
-    expiration: ExpirationSchema,
-    name: z.string().nonempty({ message: "Name is required " }),
-    rules: z.string().nonempty({ message: "Rule cannot be empty " }).array(),
-    ruleset: z.number().optional(),
-    dues: z
-      .array(DueSchema(chain.bech32_prefix))
-      .nonempty({ message: "Dues cannot be empty" }),
-  });
-
-  type FormValues = z.infer<typeof validationSchema>;
 
   const {
     register,
@@ -382,6 +475,7 @@ const WagerForm = () => {
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     defaultValues: {
+      dao_address: "",
       expiration: {
         expiration_units: "At Time",
         time: format(
@@ -408,17 +502,16 @@ const WagerForm = () => {
         },
       ],
     },
-    resolver: zodResolver(validationSchema),
+    resolver: zodResolver(FormSchema),
   });
-
   useEffect(() => {
     if (router.query.dao as string | undefined)
-      setValue("dao", router.query.dao as string);
+      setValue("dao_address", router.query.dao as string);
   }, [router.query.dao, setValue]);
 
   const watchExpirationUnits = watch("expiration.expiration_units");
 
-  const watchDao = watch("dao");
+  const watchDaoAddress = watch("dao_address");
   const [arenaCoreAddr, setArenaCoreAddr] = useState<string | undefined>();
 
   const onRulesetSelect = (id: number | undefined) => {
@@ -435,6 +528,18 @@ const WagerForm = () => {
   });
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const [isValidDao, setIsValidDao] = useState<boolean | undefined>(undefined);
+  useEffect(() => {
+    if (isValidDao === undefined) return;
+    if (isValidDao) clearErrors("dao_address");
+    else setError("dao_address", { message: "The address is not a valid dao" });
+  }, [isValidDao, clearErrors, setError]);
+
+  const [exponentInfo, setExponentInfo] = useState<ExponentInfo | undefined>(
+    undefined
+  );
+  useEffect(() => {}, [exponentInfo]);
+
   const onSubmit = async (values: FormValues) => {
     let cosmWasmClient = await getSigningCosmWasmClient();
 
@@ -445,7 +550,7 @@ const WagerForm = () => {
 
     try {
       if (!arenaCoreAddr) {
-        setError("dao", {
+        setError("dao_address", {
           message: "The DAO does not have an Arena extension.",
         });
         return;
@@ -465,7 +570,7 @@ const WagerForm = () => {
       });
 
       if (!wager_module) {
-        setError("dao", {
+        setError("dao_address", {
           message:
             "The DAO's Arena extension does not have a wager module set.",
         });
@@ -490,7 +595,7 @@ const WagerForm = () => {
           code_id: env.CODE_ID_DAO_CORE,
           label: "Arena Competition DAO",
           msg: toBinary({
-            admin: values.dao,
+            admin: values.dao_address,
             automatically_add_cw20s: false,
             automatically_add_cw721s: false,
             description: "A DAO for handling an Arena Competition",
@@ -498,7 +603,7 @@ const WagerForm = () => {
             proposal_modules_instantiate_info: [
               {
                 code_id: env.CODE_ID_DAO_PROPOSAL_MULTIPLE,
-                admin: { address: { addr: values.dao } },
+                admin: { address: { addr: values.dao_address } },
                 label: "DAO Proposal Multiple",
                 msg: toBinary({
                   allow_revoting: false,
@@ -512,7 +617,7 @@ const WagerForm = () => {
                           process.env
                             .NEXT_PUBLIC_CODE_ID_DAO_PREPROPOSE_MULTIPLE!
                         ),
-                        admin: { address: { addr: values.dao } },
+                        admin: { address: { addr: values.dao_address } },
                         label: "DAO PrePropose Multiple",
                         msg: toBinary({
                           extension: {},
@@ -529,7 +634,7 @@ const WagerForm = () => {
             ],
             voting_module_instantiate_info: {
               code_id: env.CODE_ID_DAO_VOTING_CW4,
-              admin: { address: { addr: values.dao } },
+              admin: { address: { addr: values.dao_address } },
               label: "DAO Voting CW4",
               msg: toBinary({
                 cw4_group_code_id: env.CODE_ID_CW4_GROUP,
@@ -555,19 +660,19 @@ const WagerForm = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
       <Stack>
-        <FormControl isInvalid={!!errors.dao}>
+        <FormControl isInvalid={!!errors.dao_address}>
           <FormLabel>DAO</FormLabel>
-          <Input id="dao" {...register("dao")} />
-          <FormErrorMessage>{errors.dao?.message}</FormErrorMessage>
+          <Input id="dao_address" {...register("dao_address")} />
+          <FormErrorMessage>{errors.dao_address?.message}</FormErrorMessage>
         </FormControl>
-        {!!cosmwasmClient && daoAddressSchema.safeParse(watchDao).success && (
-          <DAOCard
-            addr={watchDao}
-            setError={setError}
-            clearErrors={clearErrors}
-            cosmwasmClient={cosmwasmClient}
-          />
-        )}
+        {!!cosmwasmClient &&
+          AddressSchema.safeParse(watchDaoAddress).success && (
+            <DAOCard
+              address={watchDaoAddress}
+              isValidCallback={setIsValidDao}
+              cosmwasmClient={cosmwasmClient}
+            />
+          )}
         <FormControl isInvalid={!!errors.name}>
           <FormLabel>Name</FormLabel>
           <Input id="name" {...register("name")} />
@@ -656,16 +761,17 @@ const WagerForm = () => {
             </GridItem>
           )}
         </Grid>
-        {!!cosmwasmClient && daoAddressSchema.safeParse(watchDao).success && (
-          <RulesetTable
-            cosmwasmClient={cosmwasmClient}
-            addr={watchDao}
-            onRulesetSelect={onRulesetSelect}
-            setError={setError}
-            clearErrors={clearErrors}
-            onArenaCoreLoaded={setArenaCoreAddr}
-          />
-        )}
+        {!!cosmwasmClient &&
+          AddressSchema.safeParse(watchDaoAddress).success && (
+            <RulesetTable
+              cosmwasmClient={cosmwasmClient}
+              addr={watchDaoAddress}
+              onRulesetSelect={onRulesetSelect}
+              setError={setError}
+              clearErrors={clearErrors}
+              onArenaCoreLoaded={setArenaCoreAddr}
+            />
+          )}
         <FormControl isInvalid={!!errors.rules}>
           <FormLabel>Rules</FormLabel>
           <Controller
@@ -729,80 +835,105 @@ const WagerForm = () => {
           <FormControl isInvalid={!!errors.dues}>
             <FormLabel>Dues</FormLabel>
             <Stack>
-              {duesField.map((_due: any, dueIndex: number) => (
-                <Card key={dueIndex} variant="outline">
-                  <CardHeader pb="0">
-                    <Flex>
-                      <Heading size="md">Team {dueIndex + 1}</Heading>
-                      <Spacer />
-                      <Tooltip label="Delete Team">
-                        <IconButton
-                          aria-label="delete"
-                          variant="ghost"
-                          icon={<DeleteIcon />}
-                          onClick={() => duesRemove(dueIndex)}
-                        />
-                      </Tooltip>
-                    </Flex>
-                  </CardHeader>
-                  <CardBody>
-                    <FormControl isInvalid={!!errors.dues?.[dueIndex]?.address}>
-                      <FormLabel>Address</FormLabel>
-                      <Input
-                        {...register(`dues.${dueIndex}.address` as const)}
-                      />
-                      <FormErrorMessage>
-                        {errors.dues?.[dueIndex]?.address?.message}
-                      </FormErrorMessage>
-                    </FormControl>
-                    <FormControl isInvalid={!!errors.dues?.[dueIndex]?.balance}>
-                      <FormLabel mb="0">Balance</FormLabel>
-                      <Controller
-                        key={dueIndex}
-                        control={control}
-                        name={`dues.${dueIndex}.balance`}
-                        render={({ field: { onChange, value } }) => (
-                          <DueCard
-                            variant="ghost"
-                            borderWidth={0}
-                            cosmwasmClient={cosmwasmClient}
-                            balance={value}
-                            nativeDeleteFn={(index) => {
-                              onChange({
-                                ...value,
-                                native: [
-                                  ...value.native.slice(0, index),
-                                  ...value.native.slice(index + 1),
-                                ],
-                              });
-                            }}
-                            cw20DeleteFn={(index) => {
-                              onChange({
-                                ...value,
-                                cw20: [
-                                  ...value.cw20.slice(0, index),
-                                  ...value.cw20.slice(index + 1),
-                                ],
-                              });
-                            }}
+              {duesField.map(
+                (_due: z.infer<typeof DueSchema>, dueIndex: number) => {
+                  return (
+                    <Card key={dueIndex} variant="outline">
+                      <CardHeader pb="0">
+                        <Flex>
+                          <Heading size="md">Team {dueIndex + 1}</Heading>
+                          <Spacer />
+                          <Tooltip label="Delete Team">
+                            <IconButton
+                              aria-label="delete"
+                              variant="ghost"
+                              icon={<DeleteIcon />}
+                              onClick={() => duesRemove(dueIndex)}
+                            />
+                          </Tooltip>
+                        </Flex>
+                      </CardHeader>
+                      <CardBody>
+                        <FormControl
+                          isInvalid={!!errors.dues?.[dueIndex]?.address}
+                        >
+                          <FormLabel>Address</FormLabel>
+                          <Input
+                            {...register(`dues.${dueIndex}.address` as const)}
                           />
-                        )}
-                      />
-                      <FormErrorMessage>
-                        {errors.dues?.[dueIndex]?.balance?.message}
-                      </FormErrorMessage>
-                      <Tooltip label="Add Amount">
-                        <IconButton
-                          aria-label="add"
-                          variant="ghost"
-                          icon={<AddIcon />}
-                          onClick={onOpen}
-                        />
-                      </Tooltip>
-                    </FormControl>
-                  </CardBody>
-                </Card>
-              ))}
+                          <FormErrorMessage>
+                            {errors.dues?.[dueIndex]?.address?.message}
+                          </FormErrorMessage>
+                        </FormControl>
+                        <FormControl
+                          isInvalid={!!errors.dues?.[dueIndex]?.balance}
+                        >
+                          <FormLabel mb="0">Balance</FormLabel>
+                          <Controller
+                            key={dueIndex}
+                            control={control}
+                            name={`dues.${dueIndex}.balance`}
+                            render={({ field: { onChange, value } }) => (
+                              <DueCard
+                                variant="ghost"
+                                borderWidth={0}
+                                cosmwasmClient={cosmwasmClient}
+                                balance={value}
+                                onDataLoaded={setExponentInfo}
+                                nativeDeleteFn={(index: number) => {
+                                  if (exponentInfo) {
+                                    let map = new Map(exponentInfo.native);
+                                    map.delete(value.native[index]!.denom);
+                                    setExponentInfo({
+                                      ...exponentInfo,
+                                      native: map,
+                                    });
+                                  }
+                                  onChange({
+                                    ...value,
+                                    native: [
+                                      ...value.native.slice(0, index),
+                                      ...value.native.slice(index + 1),
+                                    ],
+                                  });
+                                }}
+                                cw20DeleteFn={(index: number) => {
+                                  if (exponentInfo) {
+                                    let map = new Map(exponentInfo.cw20);
+                                    map.delete(value.cw20[index]!.address);
+                                    setExponentInfo({
+                                      ...exponentInfo,
+                                      cw20: map,
+                                    });
+                                  }
+                                  onChange({
+                                    ...value,
+                                    cw20: [
+                                      ...value.cw20.slice(0, index),
+                                      ...value.cw20.slice(index + 1),
+                                    ],
+                                  });
+                                }}
+                              />
+                            )}
+                          />
+                          <FormErrorMessage>
+                            {errors.dues?.[dueIndex]?.balance?.message}
+                          </FormErrorMessage>
+                          <Tooltip label="Add Amount">
+                            <IconButton
+                              aria-label="add"
+                              variant="ghost"
+                              icon={<AddIcon />}
+                              onClick={onOpen}
+                            />
+                          </Tooltip>
+                        </FormControl>
+                      </CardBody>
+                    </Card>
+                  );
+                }
+              )}
             </Stack>
             <Tooltip label="Add Team">
               <IconButton
@@ -825,6 +956,16 @@ const WagerForm = () => {
             </Tooltip>
             <FormErrorMessage>{errors.dues?.message}</FormErrorMessage>
           </FormControl>
+        )}
+        {cosmwasmClient && (
+          <DueForm
+            bech32Prefix={chain.bech32_prefix}
+            isOpen={isOpen}
+            onClose={onClose}
+            cosmwasmClient={cosmwasmClient}
+          >
+            <></>
+          </DueForm>
         )}
         <Button
           type="submit"

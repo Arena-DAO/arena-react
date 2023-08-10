@@ -1,21 +1,14 @@
 import { Card, CardBody, CardFooter, CardProps } from "@chakra-ui/card";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { Skeleton, Avatar, Text } from "@chakra-ui/react";
-import Link from "next/link";
-import { env } from "process";
-import { UseFormSetError, UseFormClearErrors } from "react-hook-form";
 import { BsPerson } from "react-icons/bs";
-import { convertIPFSToHttp } from "~/helpers/IPFSHelpers";
 import { useProfileData } from "~/hooks/useProfileData";
-import { CopyAddressButton } from "./CopyAddressButton";
+import { CopyAddressButton } from "@components/buttons/CopyAddressButton";
 
-interface DAOCardProps extends CardProps {
+interface UserCardProps extends CardProps {
   addr: string;
-  setError: UseFormSetError<{ address: string }>;
-  clearErrors: UseFormClearErrors<{ address: string }>;
 }
 
-export function DAOCard({ addr, ...cardProps }: DAOCardProps) {
+export function UserCard({ addr, ...cardProps }: UserCardProps) {
   const { data, isLoading, isError } = useProfileData(addr);
 
   if (isError) {

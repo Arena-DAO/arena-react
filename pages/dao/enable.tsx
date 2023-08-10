@@ -50,10 +50,42 @@ import {
   convertToDuration,
 } from "~/helpers/SchemaHelpers";
 import { useEffect, useState } from "react";
-import { DAOCard } from "@components/DAOCard";
+import { DAOCard } from "@components/cards/DAOCard";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import env from "@config/env";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
+
+const FormSchema = z
+  .object({
+    dao_address: AddressSchema,
+    //Dao Proposal Multiple Properties
+    max_voting_duration: DurationSchema.required({ duration: true }),
+    min_voting_duration: DurationSchema,
+    allow_revoting: z.boolean(),
+    close_proposal_on_execution_failure: z.boolean(),
+    only_members_execute: z.boolean(),
+    quorum: PercentageThresholdSchema,
+    //Arena Core Properties
+    rulesets: z
+      .array(
+        z.object({
+          description: z.string().nonempty("Ruleset description is required"),
+          is_enabled: z.boolean().default(true),
+          rules: z
+            .array(z.string().nonempty("Rule cannot be empty"))
+            .refine((rules) => rules.length > 0, {
+              message: "At least one rule is required",
+            }),
+        })
+      )
+      .optional(),
+    tax: z
+      .number()
+      .min(0, "Tax must be between 0 and 100%")
+      .max(100, "Tax must be between 0 and 100%"),
+  })
+  .required();
+type FormValues = z.infer<typeof FormSchema>;
 
 const EnableForm = () => {
   const {
@@ -67,6 +99,7 @@ const EnableForm = () => {
   const [cosmwasmClient, setCosmwasmClient] = useState<
     CosmWasmClient | undefined
   >(undefined);
+  const [isValidDao, setIsValidDao] = useState<boolean | undefined>(undefined);
 
   useEffect(() => {
     async function fetchClient() {
@@ -75,41 +108,6 @@ const EnableForm = () => {
     }
     fetchClient();
   }, [getCosmWasmClient]);
-
-  let daoAddressSchema = AddressSchema(chain.bech32_prefix);
-
-  const validationSchema = z
-    .object({
-      dao: daoAddressSchema,
-      //Dao Proposal Multiple Properties
-      max_voting_duration: DurationSchema.required({ duration: true }),
-      min_voting_duration: DurationSchema,
-      allow_revoting: z.boolean(),
-      close_proposal_on_execution_failure: z.boolean(),
-      only_members_execute: z.boolean(),
-      quorum: PercentageThresholdSchema,
-      //Arena Core Properties
-      rulesets: z
-        .array(
-          z.object({
-            description: z.string().nonempty("Ruleset description is required"),
-            is_enabled: z.boolean().default(true),
-            rules: z
-              .array(z.string().nonempty("Rule cannot be empty"))
-              .refine((rules) => rules.length > 0, {
-                message: "At least one rule is required",
-              }),
-          })
-        )
-        .optional(),
-      tax: z
-        .number()
-        .min(0, "Tax must be between 0 and 100%")
-        .max(100, "Tax must be between 0 and 100%"),
-    })
-    .required();
-
-  type FormValues = z.infer<typeof validationSchema>;
 
   const {
     register,
@@ -121,7 +119,7 @@ const EnableForm = () => {
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     defaultValues: {
-      dao: "",
+      dao_address: "",
       rulesets: [] as Ruleset[],
       tax: 15,
       allow_revoting: false,
@@ -131,8 +129,16 @@ const EnableForm = () => {
       only_members_execute: false,
       quorum: { percentage_threshold: "Majority" },
     },
-    resolver: zodResolver(validationSchema),
+    resolver: zodResolver(FormSchema),
   });
+
+  useEffect(() => {
+    if (isValidDao === undefined) return;
+    if (isValidDao) clearErrors("dao_address");
+    else setError("dao_address", { message: "The address is not a valid dao" });
+  }, [isValidDao, clearErrors, setError]);
+
+  const watchDaoAddress = watch("dao_address");
   const watchMinVotingDurationUnits = watch(
     "min_voting_duration.duration_units"
   );
@@ -140,7 +146,6 @@ const EnableForm = () => {
     "max_voting_duration.duration_units"
   );
   const watchPercentageThreshold = watch("quorum.percentage_threshold");
-  const watchDao = watch("dao");
 
   const {
     fields: rulesetsFields,
@@ -162,12 +167,12 @@ const EnableForm = () => {
     try {
       const proposalAddrResponse = await getProposalAddr(
         cosmWasmClient,
-        values.dao,
+        values.dao_address,
         address!
       );
 
       if (!proposalAddrResponse) {
-        setError("dao", {
+        setError("dao_address", {
           message:
             "The dao does not have an accessible single proposal module available.",
         });
@@ -240,7 +245,7 @@ const EnableForm = () => {
       let cosmosMsg = {
         wasm: {
           execute: {
-            contract_addr: values.dao,
+            contract_addr: values.dao_address,
             msg: toBinary(executeMsg),
             funds: [],
           },
@@ -287,19 +292,19 @@ const EnableForm = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
       <Stack>
-        <FormControl isInvalid={!!errors.dao}>
+        <FormControl isInvalid={!!errors.dao_address}>
           <FormLabel>DAO</FormLabel>
-          <Input id="dao" {...register("dao")} />
-          <FormErrorMessage>{errors.dao?.message}</FormErrorMessage>
+          <Input id="dao" {...register("dao_address")} />
+          <FormErrorMessage>{errors.dao_address?.message}</FormErrorMessage>
         </FormControl>
-        {!!cosmwasmClient && daoAddressSchema.safeParse(watchDao).success && (
-          <DAOCard
-            addr={watchDao}
-            setError={setError}
-            clearErrors={clearErrors}
-            cosmwasmClient={cosmwasmClient}
-          />
-        )}
+        {!!cosmwasmClient &&
+          AddressSchema.safeParse(watchDaoAddress).success && (
+            <DAOCard
+              address={watchDaoAddress}
+              isValidCallback={setIsValidDao}
+              cosmwasmClient={cosmwasmClient}
+            />
+          )}
         <SimpleGrid minChildWidth={"250px"}>
           <FormControl
             display="flex"
@@ -480,7 +485,7 @@ const EnableForm = () => {
                   <Input
                     type="number"
                     {...register("quorum.percent", {
-                      setValueAs: (x) => (x === "" ? undefined : parseInt(x)),
+                      setValueAs: (x) => (x === "" ? undefined : parseFloat(x)),
                     })}
                     textAlign="right"
                     step="1"
@@ -514,10 +519,7 @@ const EnableForm = () => {
                       colorScheme="secondary"
                       aria-label="Delete Ruleset"
                       icon={<DeleteIcon />}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        rulesetsRemove(rulesetIndex);
-                      }}
+                      onClick={() => rulesetsRemove(rulesetIndex)}
                     />
                   </Tooltip>
                 </HStack>

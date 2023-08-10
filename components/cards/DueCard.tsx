@@ -3,7 +3,7 @@ import {
   ContractInfoResponse,
 } from "@cw-nfts/Cw721Base.types";
 import { Metadata } from "cosmjs-types/cosmos/bank/v1beta1/bank";
-import { Heading, Spacer, Stack, StackDivider } from "@chakra-ui/layout";
+import { Heading, Stack, StackDivider } from "@chakra-ui/layout";
 import {
   useCw20BaseDownloadLogoQuery,
   useCw20BaseMarketingInfoQuery,
@@ -19,12 +19,10 @@ import {
   Avatar,
   AvatarProps,
   CardBody,
-  Button,
   IconButton,
   Tooltip,
 } from "@chakra-ui/react";
 import { useEffect, useMemo, useState } from "react";
-import { UseFormClearErrors, UseFormSetError } from "react-hook-form";
 import { BalanceSchema } from "~/helpers/SchemaHelpers";
 import { z } from "zod";
 import { useQuery } from "@tanstack/react-query";
@@ -46,6 +44,11 @@ interface NativeInfo {
   exponent: number;
 }
 
+export interface DataLoadedResult {
+  key: string;
+  exponent: number | undefined;
+}
+
 export interface ExponentInfo {
   cw20: Map<string, number>;
   native: Map<string, number>;
@@ -56,10 +59,8 @@ interface Cw20CardProps extends CardProps {
   address: string;
   amount: number;
   deleteFn?: (index: number) => void;
-  onDataLoaded?: (data: [string, number]) => void;
-  setError?: UseFormSetError<{ address: string }>;
-  clearErrors?: UseFormClearErrors<{ address: string }>;
-  index: number;
+  onDataLoaded?: (data: DataLoadedResult) => void;
+  index?: number;
 }
 
 interface Cw20LogoProps extends AvatarProps {
@@ -71,20 +72,17 @@ interface NativeCardProps extends CardProps {
   denom: string;
   amount: number;
   deleteFn?: (index: number) => void;
-  onDataLoaded?: (data: [string, number]) => void;
-  setError?: UseFormSetError<{ address: string }>;
-  clearErrors?: UseFormClearErrors<{ address: string }>;
-  index: number;
+  onDataLoaded?: (data: DataLoadedResult) => void;
+  isValidCallback?: (result: boolean | undefined) => void;
+  index?: number;
 }
 
 export function NativeCard({
   denom,
   amount,
   onDataLoaded,
-  setError,
-  clearErrors,
   deleteFn,
-  index,
+  index = 0,
   ...cardProps
 }: NativeCardProps) {
   const { assets } = useChain(env.CHAIN);
@@ -94,12 +92,20 @@ export function NativeCard({
     );
   }, [assets, denom]);
   const [nativeInfo, setNativeInfo] = useState<NativeInfo | undefined>(
-    asset && {
-      imageUrl:
-        asset.logo_URIs?.svg ?? asset.logo_URIs?.png ?? asset.logo_URIs?.jpeg,
-      exponent: asset.denom_units.find((x) => x.denom == denom)!.exponent,
-    }
+    undefined
   );
+  useEffect(() => {
+    if (asset) {
+      const info: NativeInfo = {
+        imageUrl:
+          asset.logo_URIs?.svg ?? asset.logo_URIs?.png ?? asset.logo_URIs?.jpeg,
+        exponent:
+          asset.denom_units.find((x) => x.denom == denom)?.exponent ?? 0,
+      };
+      setNativeInfo(info);
+    } else setNativeInfo(undefined);
+  }, [asset, denom, setNativeInfo]);
+
   const { isLoading, isError, data } = useQuery({
     queryKey: ["native", denom],
     queryFn: () =>
@@ -119,22 +125,19 @@ export function NativeCard({
               .exponent,
           } as NativeInfo;
         }),
-    enabled: !nativeInfo,
+    enabled: !asset && !nativeInfo,
     retry: false,
+    staleTime: Infinity,
   });
   useEffect(() => {
-    if (data) setNativeInfo(data);
-  }, [data]);
+    if (data && !isLoading && !isError) setNativeInfo(data);
+  }, [data, isLoading, isError]);
   useEffect(() => {
-    if (nativeInfo) onDataLoaded?.([denom, nativeInfo.exponent]);
+    onDataLoaded?.({
+      key: denom,
+      exponent: nativeInfo?.exponent,
+    });
   }, [nativeInfo, onDataLoaded, denom]);
-  useEffect(() => {
-    if (isError)
-      setError?.("address", {
-        message: "The given address is not a valid CW20",
-      });
-    else clearErrors?.("address");
-  }, [isError, setError, clearErrors]);
 
   if (isError) return <></>;
   return (
@@ -151,7 +154,7 @@ export function NativeCard({
         )}
         <CardBody>
           <Text>
-            {amount} {denom}
+            {amount.toLocaleString()} {denom}
           </Text>
         </CardBody>
         {deleteFn && (
@@ -188,10 +191,8 @@ export function Cw20Card({
   address,
   amount,
   onDataLoaded,
-  setError,
-  clearErrors,
   deleteFn,
-  index,
+  index = 0,
   ...cardProps
 }: Cw20CardProps) {
   const client = new Cw20BaseQueryClient(cosmwasmClient, address);
@@ -205,23 +206,16 @@ export function Cw20Card({
     options: { enabled: !!tokenData },
   });
   useEffect(() => {
-    if (tokenData) onDataLoaded?.([address, tokenData.decimals]);
+    onDataLoaded?.({
+      key: address,
+      exponent: tokenData?.decimals,
+    });
   }, [tokenData, onDataLoaded, address]);
-  useEffect(() => {
-    if (tokenError)
-      setError?.("address", {
-        message: "The given address is not a valid CW20",
-      });
-    else clearErrors?.("address");
-  }, [tokenError, setError, clearErrors]);
 
   if (tokenError) return <></>;
 
   let logo;
 
-  if (tokenData) {
-    onDataLoaded?.([address, tokenData.decimals]);
-  }
   if (marketingData) {
     const avatarProps: AvatarProps = { mr: "3", name: tokenData?.name };
 
@@ -249,7 +243,7 @@ export function Cw20Card({
         {logo}
         <CardBody>
           <Text>
-            {amount} {tokenData?.symbol}
+            {amount.toLocaleString()} {tokenData?.symbol}
           </Text>
         </CardBody>
         {deleteFn && (
@@ -276,10 +270,10 @@ export function DueCard({
   nativeDeleteFn,
   ...cardProps
 }: DueCardProps) {
-  const [cw20Data, setCw20Data] = useState<[string, number] | undefined>(
+  const [cw20Data, setCw20Data] = useState<DataLoadedResult | undefined>(
     undefined
   );
-  const [nativeData, setNativeData] = useState<[string, number] | undefined>(
+  const [nativeData, setNativeData] = useState<DataLoadedResult | undefined>(
     undefined
   );
   const [exponentInfo, setExponentInfo] = useState<ExponentInfo>({
@@ -287,15 +281,15 @@ export function DueCard({
     native: new Map(),
   });
   useEffect(() => {
-    if (!cw20Data) return;
-    exponentInfo.cw20.set(cw20Data[0], cw20Data[1]);
+    if (!cw20Data || !cw20Data.exponent) return;
+    exponentInfo.cw20.set(cw20Data.key, cw20Data.exponent);
     onDataLoaded?.(exponentInfo);
     setExponentInfo(exponentInfo);
     setCw20Data(undefined);
   }, [cw20Data, exponentInfo, onDataLoaded]);
   useEffect(() => {
-    if (!nativeData) return;
-    exponentInfo.native.set(nativeData[0], nativeData[1]);
+    if (!nativeData || !nativeData.exponent) return;
+    exponentInfo.native.set(nativeData.key, nativeData.exponent);
     setExponentInfo(exponentInfo);
     onDataLoaded?.(exponentInfo);
     setNativeData(undefined);

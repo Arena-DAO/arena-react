@@ -1,4 +1,5 @@
 import { Expiration } from "@arena/ArenaWagerModule.types";
+import env from "@config/env";
 import { Duration } from "@dao/DaoProposalMultiple.types";
 import { bech32 } from "bech32";
 import { isBefore } from "date-fns";
@@ -19,6 +20,7 @@ export const DurationSchema = z.object({
     .number({
       invalid_type_error: "Duration must be a number",
     })
+    .int({ message: "Duration must be a whole number" })
     .positive()
     .optional(),
   duration_units: z.enum(["Time", "Height"]),
@@ -55,23 +57,25 @@ export const PercentageThresholdSchema = z
     }
   );
 
-export const AddressSchema = (bech32_prefix: string) => {
-  return z
-    .string()
-    .nonempty("Address is required")
-    .startsWith(bech32_prefix, {
-      message: `Address must start with the ${bech32_prefix} prefix`,
-    })
-    .refine((value) => isValidBech32(value), {
-      message: "Invalid Bech32 address",
-    });
-};
+export const AddressSchema = z
+  .string()
+  .nonempty("Address is required")
+  .startsWith(env.BECH32_PREFIX, {
+    message: `Address must start with the ${env.BECH32_PREFIX} prefix`,
+  })
+  .refine((value) => isValidBech32(value), {
+    message: "Invalid Bech32 address",
+  });
 
 export const ExpirationSchema = z
   .object({
     time: z.string().optional(),
     timezone: z.string().optional(),
-    height: z.number().positive().optional(),
+    height: z
+      .number()
+      .int({ message: "Height must be a whole number" })
+      .positive({ message: "Height must be positive" })
+      .optional(),
     expiration_units: z.enum(["At Time", "At Height", "Never"]),
   })
   .superRefine((value, context) => {
@@ -175,23 +179,21 @@ export const BalanceSchema = z.object({
   ),
 });
 
-export const DueSchema = (bech32_prefix: string) => {
-  return z
-    .object({
-      address: AddressSchema(bech32_prefix),
-      balance: BalanceSchema,
-    })
-    .superRefine((value, context) => {
-      if (
-        value.balance.cw20.length == 0 &&
-        value.balance.cw721.length == 0 &&
-        value.balance.native.length == 0
-      ) {
-        context.addIssue({
-          path: ["balance"],
-          code: z.ZodIssueCode.custom,
-          message: "Due balance cannot be empty",
-        });
-      }
-    });
-};
+export const DueSchema = z
+  .object({
+    address: AddressSchema,
+    balance: BalanceSchema,
+  })
+  .superRefine((value, context) => {
+    if (
+      value.balance.cw20.length == 0 &&
+      value.balance.cw721.length == 0 &&
+      value.balance.native.length == 0
+    ) {
+      context.addIssue({
+        path: ["balance"],
+        code: z.ZodIssueCode.custom,
+        message: "Due balance cannot be empty",
+      });
+    }
+  });

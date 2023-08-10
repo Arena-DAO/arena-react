@@ -18,7 +18,7 @@ import {
 import NextLink from "next/link";
 import React, { PropsWithChildren } from "react";
 import { FiChevronLeft, FiMenu, FiMoon, FiSun } from "react-icons/fi";
-import WalletConnectToggle from "./WalletConnectToggle";
+import WalletConnectToggle from "@components/buttons/WalletConnectToggle";
 import { BsDiscord, BsGithub, BsTwitter } from "react-icons/bs";
 import Head from "next/head";
 import env from "config/env";

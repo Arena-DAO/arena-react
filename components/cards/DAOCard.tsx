@@ -15,42 +15,36 @@ import { useDaoDaoCoreConfigQuery } from "@dao/DaoDaoCore.react-query";
 import { convertIPFSToHttp } from "~/helpers/IPFSHelpers";
 import NextLink from "next/link";
 import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
-import { Config } from "@dao/DaoDaoCore.types";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { UseFormClearErrors, UseFormSetError } from "react-hook-form";
 import { useEffect } from "react";
 import env from "config/env";
-import { CopyAddressButton } from "./CopyAddressButton";
+import { CopyAddressButton } from "@components/buttons/CopyAddressButton";
 
 interface DAOCardProps extends CardProps {
-  addr: string;
-  onDataLoaded?: (data: Config | undefined) => void;
+  address: string;
+  isValidCallback?: (result: boolean | undefined) => void;
   cosmwasmClient: CosmWasmClient;
-  setError: UseFormSetError<{ dao: string }>;
-  clearErrors: UseFormClearErrors<{ dao: string }>;
 }
 
 export function DAOCard({
+  address,
   cosmwasmClient,
-  addr,
-  onDataLoaded,
-  setError,
-  clearErrors,
+  isValidCallback,
   ...cardProps
 }: DAOCardProps) {
   const { data, isLoading, isError } = useDaoDaoCoreConfigQuery({
-    client: new DaoDaoCoreQueryClient(cosmwasmClient, addr),
-    options: { staleTime: Infinity, retry: false },
+    client: new DaoDaoCoreQueryClient(cosmwasmClient, address),
+    options: {
+      staleTime: Infinity,
+      retry: false,
+    },
   });
+
   useEffect(() => {
-    if (isError)
-      setError("dao", { message: "The given address is not a valid dao" });
-    else clearErrors("dao");
-  }, [isError, setError, clearErrors]);
-  useEffect(() => {
-    if (data) onDataLoaded?.(data);
-    else onDataLoaded?.(undefined);
-  }, [data, onDataLoaded]);
+    if (isError) isValidCallback?.(false);
+    else if (data) isValidCallback?.(true);
+    else isValidCallback?.(undefined);
+  }, [data, isValidCallback, isError]);
 
   if (isError) {
     return <></>;
@@ -77,7 +71,7 @@ export function DAOCard({
           <Tooltip label="View">
             <Link
               as={NextLink}
-              href={env.DAO_DAO_URL + "/dao/" + addr}
+              href={env.DAO_DAO_URL + "/dao/" + address}
               _hover={{ textDecoration: "none" }}
               _focus={{ outline: "none" }}
               target="_blank"
@@ -89,7 +83,7 @@ export function DAOCard({
               />
             </Link>
           </Tooltip>
-          <CopyAddressButton addr={addr} aria-label="Copy Address" />
+          <CopyAddressButton addr={address} aria-label="Copy Address" />
         </CardFooter>
       </Card>
     </Skeleton>

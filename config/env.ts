@@ -1,4 +1,5 @@
 interface Env {
+  BECH32_PREFIX: string;
   GAS_PRICE: string;
   PFPK_URL: string;
   ARENA_ITEM_KEY: string;
@@ -8,6 +9,7 @@ interface Env {
 
   // Variables specific to both .env.development and .env.production
   CHAIN: string;
+  DEFAULT_NATIVE: string;
   ARENA_DAO_ADDRESS: string;
   DAO_DAO_URL: string;
   OSMOSIS_URL: string;
@@ -26,6 +28,7 @@ interface Env {
 
 // Instantiate Env
 const env: Env = {
+  BECH32_PREFIX: process.env.NEXT_PUBLIC_BECH32_PREFIX!,
   GAS_PRICE: process.env.NEXT_PUBLIC_GAS_PRICE!,
   PFPK_URL: process.env.NEXT_PUBLIC_PFPK_URL!,
   ARENA_ITEM_KEY: process.env.NEXT_PUBLIC_ARENA_ITEM_KEY!,
@@ -33,6 +36,7 @@ const env: Env = {
   IPFS_GATEWAY: process.env.NEXT_PUBLIC_IPFS_GATEWAY!,
   WALLETCONNECT_PROJECT_ID: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
 
+  DEFAULT_NATIVE: process.env.NEXT_PUBLIC_DEFAULT_NATIVE!,
   CHAIN: process.env.NEXT_PUBLIC_CHAIN!,
   ARENA_DAO_ADDRESS: process.env.NEXT_PUBLIC_ARENA_DAO_ADDRESS!,
   DAO_DAO_URL: process.env.NEXT_PUBLIC_DAO_DAO_URL!,
