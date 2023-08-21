@@ -7,6 +7,7 @@ import {
   Box,
   Button,
   Container,
+  Fade,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -26,6 +27,7 @@ import {
   Textarea,
   Tooltip,
   useBreakpointValue,
+  useToast,
 } from "@chakra-ui/react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,7 +38,10 @@ import {
 } from "~/ts-codegen/arena/ArenaCore.types";
 import { BsPercent } from "react-icons/bs";
 import { useChain } from "@cosmos-kit/react-lite";
-import { ExecuteMsg as DaoDaoCoreExecuteMsg } from "@dao/DaoDaoCore.types";
+import {
+  Config,
+  ExecuteMsg as DaoDaoCoreExecuteMsg,
+} from "@dao/DaoDaoCore.types";
 import { DaoProposalSingleClient } from "@dao/DaoProposalSingle.client";
 import { InstantiateMsg as ArenaWagerModuleInstantiateMsg } from "@arena/ArenaWagerModule.types";
 import { InstantiateMsg as DAOProposalMultipleInstantiateMsg } from "@dao/DaoProposalMultiple.types";
@@ -54,6 +59,7 @@ import { DAOCard } from "@components/cards/DAOCard";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import env from "@config/env";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
+import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 
 const FormSchema = z
   .object({
@@ -87,34 +93,21 @@ const FormSchema = z
   .required();
 type FormValues = z.infer<typeof FormSchema>;
 
-const EnableForm = () => {
-  const {
-    getCosmWasmClient,
-    chain,
-    address,
-    getSigningCosmWasmClient,
-    isWalletConnected,
-  } = useChain(env.CHAIN);
+interface EnableFormProps {
+  cosmwasmClient: CosmWasmClient;
+}
 
-  const [cosmwasmClient, setCosmwasmClient] = useState<
-    CosmWasmClient | undefined
-  >(undefined);
-  const [isValidDao, setIsValidDao] = useState<boolean | undefined>(undefined);
-
-  useEffect(() => {
-    async function fetchClient() {
-      const client = await getCosmWasmClient();
-      setCosmwasmClient(client);
-    }
-    fetchClient();
-  }, [getCosmWasmClient]);
+function EnableForm({ cosmwasmClient }: EnableFormProps) {
+  const { address, getSigningCosmWasmClient, isWalletConnected } = useChain(
+    env.CHAIN
+  );
+  const toast = useToast();
 
   const {
     register,
     handleSubmit,
     control,
     setError,
-    clearErrors,
     watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
@@ -131,12 +124,6 @@ const EnableForm = () => {
     },
     resolver: zodResolver(FormSchema),
   });
-
-  useEffect(() => {
-    if (isValidDao === undefined) return;
-    if (isValidDao) clearErrors("dao_address");
-    else setError("dao_address", { message: "The address is not a valid dao" });
-  }, [isValidDao, clearErrors, setError]);
 
   const watchDaoAddress = watch("dao_address");
   const watchMinVotingDurationUnits = watch(
@@ -165,6 +152,20 @@ const EnableForm = () => {
     }
 
     try {
+      const daoDaoCoreQuery = new DaoDaoCoreQueryClient(
+        cosmwasmClient,
+        values.dao_address
+      );
+
+      try {
+        await daoDaoCoreQuery.config();
+      } catch (e) {
+        setError("dao_address", {
+          message: "The given address is not a valid dao",
+        });
+        throw e;
+      }
+
       const proposalAddrResponse = await getProposalAddr(
         cosmWasmClient,
         values.dao_address,
@@ -283,6 +284,14 @@ const EnableForm = () => {
             },
           },
         });
+
+        toast({
+          title: "Success",
+          isClosable: true,
+          status: "success",
+          description:
+            "The Arena extension has sucessfully been proposed to the DAO.",
+        });
       }
     } catch (e) {
       console.error(e);
@@ -291,356 +300,374 @@ const EnableForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
-      <Stack>
-        <FormControl isInvalid={!!errors.dao_address}>
-          <FormLabel>DAO</FormLabel>
-          <Input id="dao" {...register("dao_address")} />
-          <FormErrorMessage>{errors.dao_address?.message}</FormErrorMessage>
-        </FormControl>
-        {!!cosmwasmClient &&
-          AddressSchema.safeParse(watchDaoAddress).success && (
+      <Fade in={true}>
+        <Stack>
+          <FormControl isInvalid={!!errors.dao_address}>
+            <FormLabel>DAO</FormLabel>
+            <Input id="dao" {...register("dao_address")} />
+            <FormErrorMessage>{errors.dao_address?.message}</FormErrorMessage>
+          </FormControl>
+          {AddressSchema.safeParse(watchDaoAddress).success && (
             <DAOCard
               address={watchDaoAddress}
-              isValidCallback={setIsValidDao}
               cosmwasmClient={cosmwasmClient}
             />
           )}
-        <SimpleGrid minChildWidth={"250px"}>
-          <FormControl
-            display="flex"
-            alignItems="center"
-            isInvalid={!!errors.only_members_execute}
-          >
-            <FormLabel htmlFor="only-members-execute">
-              Only members execute
-            </FormLabel>
-            <Switch
-              id="only-members-execute"
-              {...register("only_members_execute")}
-            />
-            <FormErrorMessage>
-              {errors.only_members_execute?.message}
-            </FormErrorMessage>
-          </FormControl>
-          <FormControl
-            display="flex"
-            alignItems="center"
-            isInvalid={!!errors.allow_revoting}
-          >
-            <FormLabel htmlFor="allow-revoting">Allow revoting</FormLabel>
-            <Switch id="allow-revoting" {...register("allow_revoting")} />
-            <FormErrorMessage>
-              {errors.allow_revoting?.message}
-            </FormErrorMessage>
-          </FormControl>
-          <FormControl
-            display="flex"
-            alignItems="center"
-            isInvalid={!!errors.close_proposal_on_execution_failure}
-          >
-            <FormLabel htmlFor="close-on-failure">
-              Close proposal on execution failure
-            </FormLabel>
-            <Switch
-              id="close-on-failure"
-              {...register("close_proposal_on_execution_failure")}
-            />
-            <FormErrorMessage>
-              {errors.close_proposal_on_execution_failure?.message}
-            </FormErrorMessage>
-          </FormControl>
-        </SimpleGrid>
-        <FormControl isInvalid={!!errors.tax} maxW="150px">
-          <FormLabel>Tax</FormLabel>
-          <InputGroup>
-            <Input
-              type="number"
-              {...register("tax", { valueAsNumber: true })}
-              step="1"
-              textAlign="right"
-            />
-            <InputRightElement>
-              <BsPercent />
-            </InputRightElement>
-          </InputGroup>
-          <FormErrorMessage>{errors.tax?.message}</FormErrorMessage>
-        </FormControl>
-        <SimpleGrid minChildWidth="350px" my="2" gap={2}>
-          <Grid
-            templateColumns="repeat(5, 1fr)"
-            gap={2}
-            alignItems="flex-start"
-          >
-            <GridItem colSpan={3}>
-              <FormControl isInvalid={!!errors.min_voting_duration?.duration}>
-                <FormLabel>Min Voting Duration</FormLabel>
-                <InputGroup>
-                  <Input
-                    type="number"
-                    {...register("min_voting_duration.duration", {
-                      setValueAs: (x) => (x === "" ? undefined : parseInt(x)),
-                    })}
-                    textAlign="right"
-                  />
-                  <InputRightAddon>
-                    {watchMinVotingDurationUnits == "Time"
-                      ? "seconds"
-                      : "blocks"}
-                  </InputRightAddon>
-                </InputGroup>
-                <FormErrorMessage>
-                  {errors.min_voting_duration?.duration?.message}
-                </FormErrorMessage>
-              </FormControl>
-            </GridItem>
-            <GridItem colSpan={2}>
-              <FormControl
-                isInvalid={!!errors.min_voting_duration?.duration_units}
-              >
-                <FormLabel>Units</FormLabel>
-                <Select {...register("min_voting_duration.duration_units")}>
-                  <option value="Time">Time</option>
-                  <option value="Height">Height</option>
-                </Select>
-                <FormErrorMessage>
-                  {errors.min_voting_duration?.duration_units?.message}
-                </FormErrorMessage>
-              </FormControl>
-            </GridItem>
-          </Grid>
-          <Grid
-            templateColumns="repeat(5, 1fr)"
-            gap={2}
-            alignItems="flex-start"
-          >
-            <GridItem colSpan={3}>
-              <FormControl isInvalid={!!errors.max_voting_duration?.duration}>
-                <FormLabel>Max Voting Duration</FormLabel>
-                <InputGroup>
-                  <Input
-                    type="number"
-                    {...register("max_voting_duration.duration", {
-                      setValueAs: (x) => (x === "" ? undefined : parseInt(x)),
-                    })}
-                    textAlign="right"
-                  />
-                  <InputRightAddon>
-                    {watchMaxVotingDurationUnits == "Time"
-                      ? "seconds"
-                      : "blocks"}
-                  </InputRightAddon>
-                </InputGroup>
-                <FormErrorMessage>
-                  {errors.max_voting_duration?.duration?.message}
-                </FormErrorMessage>
-              </FormControl>
-            </GridItem>
-            <GridItem colSpan={2}>
-              <FormControl
-                isInvalid={!!errors.max_voting_duration?.duration_units}
-              >
-                <FormLabel>Units</FormLabel>
-                <Select {...register("max_voting_duration.duration_units")}>
-                  <option value="Time">Time</option>
-                  <option value="Height">Height</option>
-                </Select>
-                <FormErrorMessage>
-                  {errors.max_voting_duration?.duration_units?.message}
-                </FormErrorMessage>
-              </FormControl>
-            </GridItem>
-          </Grid>
-        </SimpleGrid>
-        <Grid
-          templateColumns={useBreakpointValue({
-            base: "1fr",
-            sm: "repeat(2, 1fr)",
-            xl: "repeat(4, 1fr)",
-          })}
-          gap={2}
-          alignItems="flex-start"
-        >
-          <GridItem>
+          <SimpleGrid minChildWidth={"250px"}>
             <FormControl
-              isInvalid={
-                !!errors.quorum?.percentage_threshold || !!errors.quorum
-              }
+              display="flex"
+              alignItems="center"
+              isInvalid={!!errors.only_members_execute}
             >
-              <FormLabel>Quorum Threshold</FormLabel>
-              <Select {...register("quorum.percentage_threshold")}>
-                <option value="Majority">Majority</option>
-                <option value="Percent">Percent</option>
-              </Select>
+              <FormLabel htmlFor="only-members-execute">
+                Only members execute
+              </FormLabel>
+              <Switch
+                id="only-members-execute"
+                {...register("only_members_execute")}
+              />
               <FormErrorMessage>
-                {errors.quorum?.percentage_threshold?.message ??
-                  errors.quorum?.message}
+                {errors.only_members_execute?.message}
               </FormErrorMessage>
             </FormControl>
-          </GridItem>
-          {watchPercentageThreshold == "Percent" && (
+            <FormControl
+              display="flex"
+              alignItems="center"
+              isInvalid={!!errors.allow_revoting}
+            >
+              <FormLabel htmlFor="allow-revoting">Allow revoting</FormLabel>
+              <Switch id="allow-revoting" {...register("allow_revoting")} />
+              <FormErrorMessage>
+                {errors.allow_revoting?.message}
+              </FormErrorMessage>
+            </FormControl>
+            <FormControl
+              display="flex"
+              alignItems="center"
+              isInvalid={!!errors.close_proposal_on_execution_failure}
+            >
+              <FormLabel htmlFor="close-on-failure">
+                Close proposal on execution failure
+              </FormLabel>
+              <Switch
+                id="close-on-failure"
+                {...register("close_proposal_on_execution_failure")}
+              />
+              <FormErrorMessage>
+                {errors.close_proposal_on_execution_failure?.message}
+              </FormErrorMessage>
+            </FormControl>
+          </SimpleGrid>
+          <FormControl isInvalid={!!errors.tax} maxW="150px">
+            <FormLabel>Tax</FormLabel>
+            <InputGroup>
+              <Input
+                type="number"
+                {...register("tax", { valueAsNumber: true })}
+                step="1"
+                textAlign="right"
+              />
+              <InputRightElement>
+                <BsPercent />
+              </InputRightElement>
+            </InputGroup>
+            <FormErrorMessage>{errors.tax?.message}</FormErrorMessage>
+          </FormControl>
+          <SimpleGrid minChildWidth="350px" my="2" gap={2}>
+            <Grid
+              templateColumns="repeat(5, 1fr)"
+              gap={2}
+              alignItems="flex-start"
+            >
+              <GridItem colSpan={3}>
+                <FormControl isInvalid={!!errors.min_voting_duration?.duration}>
+                  <FormLabel>Min Voting Duration</FormLabel>
+                  <InputGroup>
+                    <Input
+                      type="number"
+                      {...register("min_voting_duration.duration", {
+                        setValueAs: (x) => (x === "" ? undefined : parseInt(x)),
+                      })}
+                      textAlign="right"
+                    />
+                    <InputRightAddon>
+                      {watchMinVotingDurationUnits == "Time"
+                        ? "seconds"
+                        : "blocks"}
+                    </InputRightAddon>
+                  </InputGroup>
+                  <FormErrorMessage>
+                    {errors.min_voting_duration?.duration?.message}
+                  </FormErrorMessage>
+                </FormControl>
+              </GridItem>
+              <GridItem colSpan={2}>
+                <FormControl
+                  isInvalid={!!errors.min_voting_duration?.duration_units}
+                >
+                  <FormLabel>Units</FormLabel>
+                  <Select {...register("min_voting_duration.duration_units")}>
+                    <option value="Time">Time</option>
+                    <option value="Height">Height</option>
+                  </Select>
+                  <FormErrorMessage>
+                    {errors.min_voting_duration?.duration_units?.message}
+                  </FormErrorMessage>
+                </FormControl>
+              </GridItem>
+            </Grid>
+            <Grid
+              templateColumns="repeat(5, 1fr)"
+              gap={2}
+              alignItems="flex-start"
+            >
+              <GridItem colSpan={3}>
+                <FormControl isInvalid={!!errors.max_voting_duration?.duration}>
+                  <FormLabel>Max Voting Duration</FormLabel>
+                  <InputGroup>
+                    <Input
+                      type="number"
+                      {...register("max_voting_duration.duration", {
+                        setValueAs: (x) => (x === "" ? undefined : parseInt(x)),
+                      })}
+                      textAlign="right"
+                    />
+                    <InputRightAddon>
+                      {watchMaxVotingDurationUnits == "Time"
+                        ? "seconds"
+                        : "blocks"}
+                    </InputRightAddon>
+                  </InputGroup>
+                  <FormErrorMessage>
+                    {errors.max_voting_duration?.duration?.message}
+                  </FormErrorMessage>
+                </FormControl>
+              </GridItem>
+              <GridItem colSpan={2}>
+                <FormControl
+                  isInvalid={!!errors.max_voting_duration?.duration_units}
+                >
+                  <FormLabel>Units</FormLabel>
+                  <Select {...register("max_voting_duration.duration_units")}>
+                    <option value="Time">Time</option>
+                    <option value="Height">Height</option>
+                  </Select>
+                  <FormErrorMessage>
+                    {errors.max_voting_duration?.duration_units?.message}
+                  </FormErrorMessage>
+                </FormControl>
+              </GridItem>
+            </Grid>
+          </SimpleGrid>
+          <Grid
+            templateColumns={useBreakpointValue({
+              base: "1fr",
+              sm: "repeat(2, 1fr)",
+              xl: "repeat(4, 1fr)",
+            })}
+            gap={2}
+            alignItems="flex-start"
+          >
             <GridItem>
-              <FormControl isInvalid={!!errors.quorum?.percent}>
-                <FormLabel>Percentage</FormLabel>
-                <InputGroup>
-                  <Input
-                    type="number"
-                    {...register("quorum.percent", {
-                      setValueAs: (x) => (x === "" ? undefined : parseFloat(x)),
-                    })}
-                    textAlign="right"
-                    step="1"
-                  />
-                  <InputRightElement>
-                    <BsPercent />
-                  </InputRightElement>
-                </InputGroup>
+              <FormControl
+                isInvalid={
+                  !!errors.quorum?.percentage_threshold || !!errors.quorum
+                }
+              >
+                <FormLabel>Quorum Threshold</FormLabel>
+                <Select {...register("quorum.percentage_threshold")}>
+                  <option value="Majority">Majority</option>
+                  <option value="Percent">Percent</option>
+                </Select>
                 <FormErrorMessage>
-                  {errors.quorum?.percent?.message}
+                  {errors.quorum?.percentage_threshold?.message ??
+                    errors.quorum?.message}
                 </FormErrorMessage>
               </FormControl>
             </GridItem>
-          )}
-        </Grid>
-        <FormControl isInvalid={!!errors.rulesets}>
-          <FormLabel>Rulesets</FormLabel>
-          <Accordion defaultIndex={[0]} allowMultiple>
-            {rulesetsFields.map((ruleset, rulesetIndex) => (
-              <AccordionItem key={ruleset.id}>
-                <HStack>
-                  <AccordionButton>
-                    <Box flex="1" textAlign="left">
-                      Ruleset {rulesetIndex + 1}
-                    </Box>
-                    <AccordionIcon />
-                  </AccordionButton>
-                  <Tooltip label="Delete Ruleset">
-                    <IconButton
-                      variant="ghost"
-                      colorScheme="secondary"
-                      aria-label="Delete Ruleset"
-                      icon={<DeleteIcon />}
-                      onClick={() => rulesetsRemove(rulesetIndex)}
+            {watchPercentageThreshold == "Percent" && (
+              <GridItem>
+                <FormControl isInvalid={!!errors.quorum?.percent}>
+                  <FormLabel>Percentage</FormLabel>
+                  <InputGroup>
+                    <Input
+                      type="number"
+                      {...register("quorum.percent", {
+                        setValueAs: (x) => (x === "" ? undefined : parseInt(x)),
+                      })}
+                      textAlign="right"
+                      step="1"
                     />
-                  </Tooltip>
-                </HStack>
-                <AccordionPanel>
-                  <FormControl
-                    isInvalid={!!errors.rulesets?.[rulesetIndex]?.description}
-                  >
-                    <FormLabel>Description</FormLabel>
-                    <Textarea
-                      {...register(
-                        `rulesets.${rulesetIndex}.description` as const
-                      )}
-                    />
-                    <FormErrorMessage>
-                      {errors.rulesets?.[rulesetIndex]?.description?.message}
-                    </FormErrorMessage>
-                  </FormControl>
-                  <FormControl
-                    isInvalid={!!errors.rulesets?.[rulesetIndex]?.rules}
-                  >
-                    <FormLabel>Rules</FormLabel>
-                    <Controller
-                      control={control}
-                      name={`rulesets.${rulesetIndex}.rules`}
-                      defaultValue={[] as string[]}
-                      render={({ field: { onChange, onBlur, value, ref } }) => (
-                        <Stack spacing={4}>
-                          {value?.map((_rule, ruleIndex) => (
-                            <FormControl
-                              key={ruleIndex}
-                              isInvalid={
-                                !!errors.rulesets?.[rulesetIndex]?.rules?.[
-                                  ruleIndex
-                                ]
-                              }
-                            >
-                              <InputGroup>
-                                <Input
-                                  onBlur={onBlur}
-                                  onChange={(e) => {
-                                    const newValue = [...value];
-                                    newValue[ruleIndex] = e.target.value;
-                                    onChange(newValue);
-                                  }}
-                                  value={value[ruleIndex]}
-                                  ref={ref}
-                                />
-                                <InputRightElement>
-                                  <Tooltip label="Delete Rule">
-                                    <IconButton
-                                      aria-label="delete"
-                                      variant="ghost"
-                                      icon={<DeleteIcon />}
-                                      onClick={() =>
-                                        onChange([
-                                          ...value.slice(0, ruleIndex),
-                                          ...value.slice(ruleIndex + 1),
-                                        ])
-                                      }
-                                    />
-                                  </Tooltip>
-                                </InputRightElement>
-                              </InputGroup>
-                              <FormErrorMessage>
-                                {
-                                  errors.rulesets?.[rulesetIndex]?.rules?.[
+                    <InputRightElement>
+                      <BsPercent />
+                    </InputRightElement>
+                  </InputGroup>
+                  <FormErrorMessage>
+                    {errors.quorum?.percent?.message}
+                  </FormErrorMessage>
+                </FormControl>
+              </GridItem>
+            )}
+          </Grid>
+          <FormControl isInvalid={!!errors.rulesets}>
+            <FormLabel>Rulesets</FormLabel>
+            <Accordion defaultIndex={[0]} allowMultiple>
+              {rulesetsFields.map((ruleset, rulesetIndex) => (
+                <AccordionItem key={ruleset.id}>
+                  <HStack>
+                    <AccordionButton>
+                      <Box flex="1" textAlign="left">
+                        Ruleset {rulesetIndex + 1}
+                      </Box>
+                      <AccordionIcon />
+                    </AccordionButton>
+                    <Tooltip label="Delete Ruleset">
+                      <IconButton
+                        variant="ghost"
+                        colorScheme="secondary"
+                        aria-label="Delete Ruleset"
+                        icon={<DeleteIcon />}
+                        onClick={() => rulesetsRemove(rulesetIndex)}
+                      />
+                    </Tooltip>
+                  </HStack>
+                  <AccordionPanel>
+                    <FormControl
+                      isInvalid={!!errors.rulesets?.[rulesetIndex]?.description}
+                    >
+                      <FormLabel>Description</FormLabel>
+                      <Textarea
+                        {...register(
+                          `rulesets.${rulesetIndex}.description` as const
+                        )}
+                      />
+                      <FormErrorMessage>
+                        {errors.rulesets?.[rulesetIndex]?.description?.message}
+                      </FormErrorMessage>
+                    </FormControl>
+                    <FormControl
+                      isInvalid={!!errors.rulesets?.[rulesetIndex]?.rules}
+                    >
+                      <FormLabel>Rules</FormLabel>
+                      <Controller
+                        control={control}
+                        name={`rulesets.${rulesetIndex}.rules`}
+                        defaultValue={[] as string[]}
+                        render={({
+                          field: { onChange, onBlur, value, ref },
+                        }) => (
+                          <Stack spacing={4}>
+                            {value?.map((_rule, ruleIndex) => (
+                              <FormControl
+                                key={ruleIndex}
+                                isInvalid={
+                                  !!errors.rulesets?.[rulesetIndex]?.rules?.[
                                     ruleIndex
-                                  ]?.message
+                                  ]
                                 }
-                              </FormErrorMessage>
-                            </FormControl>
-                          ))}
-                          <Tooltip label="Add Rule">
-                            <IconButton
-                              variant="ghost"
-                              colorScheme="secondary"
-                              aria-label="Add Rule"
-                              alignSelf="flex-start"
-                              onClick={() => onChange([...value, ""])}
-                              icon={<AddIcon />}
-                            />
-                          </Tooltip>
-                        </Stack>
-                      )}
-                    />
-                    <FormErrorMessage>
-                      {errors.rulesets?.[rulesetIndex]?.rules?.message}
-                    </FormErrorMessage>
-                  </FormControl>
-                </AccordionPanel>
-              </AccordionItem>
-            ))}
-          </Accordion>
-          <Tooltip label="Add Ruleset">
-            <IconButton
-              mt="2"
-              variant="ghost"
-              colorScheme="secondary"
-              aria-label="Add Ruleset"
-              onClick={() =>
-                rulesetsAppend({ description: "", is_enabled: true, rules: [] })
-              }
-              icon={<AddIcon />}
-            />
-          </Tooltip>
-          <FormErrorMessage>{errors.rulesets?.message}</FormErrorMessage>
-        </FormControl>
-        <Button
-          type="submit"
-          colorScheme="secondary"
-          isDisabled={!isWalletConnected}
-          isLoading={isSubmitting}
-          maxW="150px"
-        >
-          Submit
-        </Button>
-      </Stack>
+                              >
+                                <InputGroup>
+                                  <Input
+                                    onBlur={onBlur}
+                                    onChange={(e) => {
+                                      const newValue = [...value];
+                                      newValue[ruleIndex] = e.target.value;
+                                      onChange(newValue);
+                                    }}
+                                    value={value[ruleIndex]}
+                                    ref={ref}
+                                  />
+                                  <InputRightElement>
+                                    <Tooltip label="Delete Rule">
+                                      <IconButton
+                                        aria-label="delete"
+                                        variant="ghost"
+                                        icon={<DeleteIcon />}
+                                        onClick={() =>
+                                          onChange([
+                                            ...value.slice(0, ruleIndex),
+                                            ...value.slice(ruleIndex + 1),
+                                          ])
+                                        }
+                                      />
+                                    </Tooltip>
+                                  </InputRightElement>
+                                </InputGroup>
+                                <FormErrorMessage>
+                                  {
+                                    errors.rulesets?.[rulesetIndex]?.rules?.[
+                                      ruleIndex
+                                    ]?.message
+                                  }
+                                </FormErrorMessage>
+                              </FormControl>
+                            ))}
+                            <Tooltip label="Add Rule">
+                              <IconButton
+                                variant="ghost"
+                                colorScheme="secondary"
+                                aria-label="Add Rule"
+                                alignSelf="flex-start"
+                                onClick={() => onChange([...value, ""])}
+                                icon={<AddIcon />}
+                              />
+                            </Tooltip>
+                          </Stack>
+                        )}
+                      />
+                      <FormErrorMessage>
+                        {errors.rulesets?.[rulesetIndex]?.rules?.message}
+                      </FormErrorMessage>
+                    </FormControl>
+                  </AccordionPanel>
+                </AccordionItem>
+              ))}
+            </Accordion>
+            <Tooltip label="Add Ruleset">
+              <IconButton
+                mt="2"
+                variant="ghost"
+                colorScheme="secondary"
+                aria-label="Add Ruleset"
+                onClick={() =>
+                  rulesetsAppend({
+                    description: "",
+                    is_enabled: true,
+                    rules: [],
+                  })
+                }
+                icon={<AddIcon />}
+              />
+            </Tooltip>
+            <FormErrorMessage>{errors.rulesets?.message}</FormErrorMessage>
+          </FormControl>
+          <Button
+            type="submit"
+            colorScheme="secondary"
+            isDisabled={!isWalletConnected}
+            isLoading={isSubmitting}
+            maxW="150px"
+          >
+            Submit
+          </Button>
+        </Stack>
+      </Fade>
     </form>
   );
-};
+}
 const EnableDAOPage = () => {
+  const { getCosmWasmClient } = useChain(env.CHAIN);
+
+  const [cosmwasmClient, setCosmwasmClient] = useState<
+    CosmWasmClient | undefined
+  >(undefined);
+  useEffect(() => {
+    async function fetchClient() {
+      setCosmwasmClient(await getCosmWasmClient());
+    }
+    fetchClient();
+  }, [getCosmWasmClient]);
+
   return (
     <Container maxW={{ base: "full", md: "5xl" }} centerContent pb={10}>
       <Heading
@@ -651,7 +678,7 @@ const EnableDAOPage = () => {
       >
         Enable the Arena Extension
       </Heading>
-      <EnableForm />
+      {cosmwasmClient && <EnableForm cosmwasmClient={cosmwasmClient} />}
     </Container>
   );
 };

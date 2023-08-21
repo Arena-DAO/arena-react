@@ -16,20 +16,17 @@ import { convertIPFSToHttp } from "~/helpers/IPFSHelpers";
 import NextLink from "next/link";
 import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { useEffect } from "react";
 import env from "config/env";
 import { CopyAddressButton } from "@components/buttons/CopyAddressButton";
 
 interface DAOCardProps extends CardProps {
   address: string;
-  isValidCallback?: (result: boolean | undefined) => void;
   cosmwasmClient: CosmWasmClient;
 }
 
 export function DAOCard({
   address,
   cosmwasmClient,
-  isValidCallback,
   ...cardProps
 }: DAOCardProps) {
   const { data, isLoading, isError } = useDaoDaoCoreConfigQuery({
@@ -39,12 +36,6 @@ export function DAOCard({
       retry: false,
     },
   });
-
-  useEffect(() => {
-    if (isError) isValidCallback?.(false);
-    else if (data) isValidCallback?.(true);
-    else isValidCallback?.(undefined);
-  }, [data, isValidCallback, isError]);
 
   if (isError) {
     return <></>;

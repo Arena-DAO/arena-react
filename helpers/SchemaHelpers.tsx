@@ -43,7 +43,7 @@ export function convertToUint128(
 export const PercentageThresholdSchema = z
   .object({
     percentage_threshold: z.enum(["Majority", "Percent"]),
-    percent: z.number().positive().max(100).optional(),
+    percent: z.number().int().positive().max(100).optional(),
   })
   .refine(
     (context) => {
@@ -158,30 +158,39 @@ export function convertToDuration(
   }
 }
 
+export const AmountSchema = z
+  .string()
+  .refine((value) => !isNaN(parseFloat(value)), {
+    message: "Amount must be a valid number",
+  })
+  .refine((value) => parseFloat(value) > 0, {
+    message: "Amount must be positive",
+  });
+
 export const BalanceSchema = z.object({
   cw20: z.array(
     z.object({
-      address: z.string().nonempty(),
-      amount: z.number().positive(),
+      address: AddressSchema,
+      amount: AmountSchema,
     })
   ),
   cw721: z.array(
     z.object({
-      address: z.string().nonempty(),
+      addr: AddressSchema,
       token_ids: z.array(z.string().nonempty()).min(1),
     })
   ),
   native: z.array(
     z.object({
-      amount: z.number().positive(),
       denom: z.string().nonempty(),
+      amount: AmountSchema,
     })
   ),
 });
 
 export const DueSchema = z
   .object({
-    address: AddressSchema,
+    addr: AddressSchema,
     balance: BalanceSchema,
   })
   .superRefine((value, context) => {

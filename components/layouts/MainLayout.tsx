@@ -426,6 +426,7 @@ const SimpleLayout = ({
   const logo = (
     <Box w={{ base: 10, lg: 20 }} h={{ base: 10, lg: 20 }}>
       <Link
+        _focus={{ boxShadow: "none" }}
         target="_blank"
         href={env.DAO_DAO_URL + "/dao/" + env.ARENA_DAO_ADDRESS}
       >
