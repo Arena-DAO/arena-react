@@ -29,7 +29,13 @@ import {
   useBreakpointValue,
   useToast,
 } from "@chakra-ui/react";
-import { useForm, Controller, useFieldArray } from "react-hook-form";
+import {
+  useForm,
+  Controller,
+  useFieldArray,
+  Control,
+  useWatch,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
@@ -38,10 +44,7 @@ import {
 } from "~/ts-codegen/arena/ArenaCore.types";
 import { BsPercent } from "react-icons/bs";
 import { useChain } from "@cosmos-kit/react-lite";
-import {
-  Config,
-  ExecuteMsg as DaoDaoCoreExecuteMsg,
-} from "@dao/DaoDaoCore.types";
+import { ExecuteMsg as DaoDaoCoreExecuteMsg } from "@dao/DaoDaoCore.types";
 import { DaoProposalSingleClient } from "@dao/DaoProposalSingle.client";
 import { InstantiateMsg as ArenaWagerModuleInstantiateMsg } from "@arena/ArenaWagerModule.types";
 import { InstantiateMsg as DAOProposalMultipleInstantiateMsg } from "@dao/DaoProposalMultiple.types";
@@ -93,6 +96,21 @@ const FormSchema = z
   .required();
 type FormValues = z.infer<typeof FormSchema>;
 
+interface EnableFormDAOCardProps {
+  cosmwasmClient: CosmWasmClient;
+  control: Control<FormValues>;
+}
+
+function EnableFormDAOCard({
+  cosmwasmClient,
+  control,
+}: EnableFormDAOCardProps) {
+  let watchDAOAddress = useWatch({ control, name: "dao_address" });
+
+  if (!AddressSchema.safeParse(watchDAOAddress).success) return <></>;
+  return <DAOCard address={watchDAOAddress} cosmwasmClient={cosmwasmClient} />;
+}
+
 interface EnableFormProps {
   cosmwasmClient: CosmWasmClient;
 }
@@ -125,7 +143,6 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
     resolver: zodResolver(FormSchema),
   });
 
-  const watchDaoAddress = watch("dao_address");
   const watchMinVotingDurationUnits = watch(
     "min_voting_duration.duration_units"
   );
@@ -307,12 +324,10 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
             <Input id="dao" {...register("dao_address")} />
             <FormErrorMessage>{errors.dao_address?.message}</FormErrorMessage>
           </FormControl>
-          {AddressSchema.safeParse(watchDaoAddress).success && (
-            <DAOCard
-              address={watchDaoAddress}
-              cosmwasmClient={cosmwasmClient}
-            />
-          )}
+          <EnableFormDAOCard
+            cosmwasmClient={cosmwasmClient}
+            control={control}
+          />
           <SimpleGrid minChildWidth={"250px"}>
             <FormControl
               display="flex"
