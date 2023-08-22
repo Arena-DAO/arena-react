@@ -28,6 +28,10 @@ export type ExecuteMsg = {
     ruleset?: Uint128 | null;
   };
 } | {
+  generate_proposals: {
+    id: Uint128;
+  };
+} | {
   process_competition: {
     distribution?: MemberShare[] | null;
     id: Uint128;
@@ -85,7 +89,7 @@ export interface AdminResponse {
   admin?: string | null;
 }
 export type Addr = string;
-export type CompetitionStatus = "pending" | "active" | "inactive" | "jailed";
+export type CompetitionStatus = "created" | "pending" | "active" | "inactive" | "jailed";
 export interface CompetitionForEmpty {
   dao: Addr;
   description: string;

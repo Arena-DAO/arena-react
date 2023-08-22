@@ -99,7 +99,7 @@ export type QueryMsg = {
     addr: string;
   };
 };
-export interface MigrateMsg {}
+export type MigrateMsg = string;
 export interface AdminResponse {
   admin?: string | null;
 }

@@ -200,6 +200,28 @@ export function useArenaWagerModuleProcessCompetitionMutation(options?: Omit<Use
     } = {}
   }) => client.processCompetition(msg, fee, memo, funds), options);
 }
+export interface ArenaWagerModuleGenerateProposalsMutation {
+  client: ArenaWagerModuleClient;
+  msg: {
+    id: Uint128;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaWagerModuleGenerateProposalsMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleGenerateProposalsMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaWagerModuleGenerateProposalsMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.generateProposals(msg, fee, memo, funds), options);
+}
 export interface ArenaWagerModuleCreateCompetitionMutation {
   client: ArenaWagerModuleClient;
   msg: {

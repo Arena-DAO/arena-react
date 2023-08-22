@@ -774,14 +774,35 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         },
       };
 
-      await wagerModuleClient.createCompetition(msg);
+      let result = await wagerModuleClient.createCompetition(msg);
 
       toast({
         title: "Success",
         isClosable: true,
         status: "success",
-        description: "The competition has sucessfully been created.",
+        description: "The competition has been created.",
       });
+
+      let id;
+      for (let event of result.events) {
+        for (let attribute of event.attributes) {
+          if (attribute.key === "id") {
+            id = attribute.value;
+            break;
+          }
+        }
+        if (id) break;
+      }
+      if (id) {
+        await wagerModuleClient.generateProposals({ id });
+
+        toast({
+          title: "Success",
+          isClosable: true,
+          status: "success",
+          description: "The competition's proposals have been generated.",
+        });
+      }
     } catch (e) {
       console.error(e);
     }

@@ -102,6 +102,11 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
     rules: string[];
     ruleset?: Uint128;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  generateProposals: ({
+    id
+  }: {
+    id: Uint128;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   processCompetition: ({
     distribution,
     id
@@ -127,6 +132,7 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
     this.contractAddress = contractAddress;
     this.jailCompetition = this.jailCompetition.bind(this);
     this.createCompetition = this.createCompetition.bind(this);
+    this.generateProposals = this.generateProposals.bind(this);
     this.processCompetition = this.processCompetition.bind(this);
     this.extension = this.extension.bind(this);
   }
@@ -171,6 +177,17 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
         name,
         rules,
         ruleset
+      }
+    }, fee, memo, _funds);
+  };
+  generateProposals = async ({
+    id
+  }: {
+    id: Uint128;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      generate_proposals: {
+        id
       }
     }, fee, memo, _funds);
   };
