@@ -2,11 +2,11 @@ import { CardProps, Card, CardBody } from "@chakra-ui/card";
 import { DeleteIcon } from "@chakra-ui/icons";
 import {
   AvatarProps,
-  Avatar,
   Skeleton,
   Tooltip,
   IconButton,
   Text,
+  Avatar,
 } from "@chakra-ui/react";
 import { Cw20BaseQueryClient } from "@cw-plus/Cw20Base.client";
 import {
@@ -17,6 +17,7 @@ import {
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useEffect } from "react";
 import { DataLoadedResult } from "./DueCard";
+import { convertIPFSToHttp } from "~/helpers/IPFSHelpers";
 
 interface Cw20CardProps extends CardProps {
   cosmwasmClient: CosmWasmClient;
@@ -74,7 +75,6 @@ export function Cw20Card({
   if (isError) return <></>;
 
   let logo;
-
   if (marketingData) {
     const avatarProps: AvatarProps = { mr: "3", name: data?.name };
 
@@ -87,7 +87,13 @@ export function Cw20Card({
         />
       );
     else if (marketingData.logo?.url)
-      logo = <Avatar src={marketingData.logo?.url} {...avatarProps} />;
+      logo = (
+        <Avatar
+          src={convertIPFSToHttp(marketingData.logo?.url)}
+          name={data?.name}
+          {...avatarProps}
+        />
+      );
   }
 
   return (

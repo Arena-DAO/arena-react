@@ -568,9 +568,7 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
                         control={control}
                         name={`rulesets.${rulesetIndex}.rules`}
                         defaultValue={[] as string[]}
-                        render={({
-                          field: { onChange, onBlur, value, ref },
-                        }) => (
+                        render={({ field: { onChange, value } }) => (
                           <Stack spacing={4}>
                             {value?.map((_rule, ruleIndex) => (
                               <FormControl
@@ -583,14 +581,9 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
                               >
                                 <InputGroup>
                                   <Input
-                                    onBlur={onBlur}
-                                    onChange={(e) => {
-                                      const newValue = [...value];
-                                      newValue[ruleIndex] = e.target.value;
-                                      onChange(newValue);
-                                    }}
-                                    value={value[ruleIndex]}
-                                    ref={ref}
+                                    {...register(
+                                      `rulesets.${rulesetIndex}.rules.${ruleIndex}`
+                                    )}
                                   />
                                   <InputRightElement>
                                     <Tooltip label="Delete Rule">
