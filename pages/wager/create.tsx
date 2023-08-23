@@ -89,6 +89,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
       rules: [],
       dues: [
         {
+          addr: address,
           balance: {
             cw20: [],
             cw721: [],
