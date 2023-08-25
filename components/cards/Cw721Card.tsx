@@ -10,9 +10,7 @@ import {
   Skeleton,
   Tooltip,
   IconButton,
-  Text,
   Image,
-  Button,
   HStack,
   Heading,
 } from "@chakra-ui/react";
@@ -20,14 +18,10 @@ import {
   useCw721BaseContractInfoQuery,
   useCw721BaseNftInfoQuery,
 } from "@cw-nfts/Cw721Base.react-query";
-import {
-  useCw20BaseTokenInfoQuery,
-  useCw20BaseMarketingInfoQuery,
-} from "@cw-plus/Cw20Base.react-query";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { Cw721BaseQueryClient } from "@cw-nfts/Cw721Base.client";
-import { DataLoadedResult } from "./DueCard";
 import { useEffect } from "react";
+import { DataLoadedResult } from "~/types/DataLoadedResult";
 
 interface Cw721CardProps extends CardProps {
   cosmwasmClient: CosmWasmClient;

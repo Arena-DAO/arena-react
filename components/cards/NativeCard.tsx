@@ -6,7 +6,7 @@ import { useChain } from "@cosmos-kit/react-lite";
 import { Metadata } from "cosmjs-types/cosmos/bank/v1beta1/bank";
 import env from "@config/env";
 import { useMemo, useState, useEffect } from "react";
-import { DataLoadedResult } from "./DueCard";
+import { DataLoadedResult } from "~/types/DataLoadedResult";
 
 interface NativeInfo {
   imageUrl?: string;
@@ -22,24 +22,20 @@ interface NativeCardProps extends CardProps {
   index?: number;
 }
 
-export function fetchNativeInfo(denom: string): Promise<NativeInfo> {
-  return fetch(
+export async function fetchNativeInfo(denom: string): Promise<NativeInfo> {
+  const response = await fetch(
     env.JUNO_API_URL + "/cosmos/bank/v1beta1/denoms_metadata/" + denom
-  )
-    .then(async (response) => {
-      if (!response.ok) {
-        const err = await response.json();
-        throw err;
-      }
-      return response.json();
-    })
-    .then((data) => {
-      // Ensure the data is in the correct format according to your Metadata type
-      const metadata: Metadata = JSON.parse(data);
-      return {
-        exponent: metadata.denomUnits.find((x) => x.denom == denom)!.exponent,
-      } as NativeInfo;
-    });
+  );
+  if (!response.ok) {
+    const err = await response.json();
+    throw err;
+  }
+  const data = await response.json();
+  // Ensure the data is in the correct format according to your Metadata type
+  const metadata: Metadata = JSON.parse(data);
+  return {
+    exponent: metadata.denomUnits.find((x) => x.denom == denom)!.exponent,
+  } as NativeInfo;
 }
 
 export function NativeCard({
@@ -73,7 +69,7 @@ export function NativeCard({
 
   const { isLoading, isError, data } = useQuery({
     queryKey: ["native", denom],
-    queryFn: () => fetchNativeInfo(denom),
+    queryFn: async () => await fetchNativeInfo(denom),
     enabled: !asset && !nativeInfo,
     retry: false,
     staleTime: Infinity,

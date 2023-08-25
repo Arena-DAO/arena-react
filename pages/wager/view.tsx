@@ -26,6 +26,7 @@ import { Button, Skeleton, useToast } from "@chakra-ui/react";
 import { statusColors } from "~/helpers/ArenaHelpers";
 import { WagerViewDuesDisplay } from "@components/pages/wager/view/DuesDisplay";
 import { AddressSchema } from "~/helpers/SchemaHelpers";
+import { WagerViewBalanceCard } from "@components/pages/wager/view/BalanceCard";
 
 interface ViewWagerPageContentProps {
   cosmwasmClient: CosmWasmClient;
@@ -64,6 +65,7 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
       retry: false,
     },
   });
+  const [balanceChanged, setBalanceChanged] = useState<number>(0);
   useEffect(() => {
     if (isError)
       toast({
@@ -82,16 +84,13 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
         description: "DAO address is invalid",
       });
     }
-  }, [isValidAddress]);
+  }, [isValidAddress, toast]);
 
   const generateProposals = async () => {
-    let cosmwasmClient = await getSigningCosmWasmClient();
-
-    if (!cosmwasmClient) {
-      console.error("Could not get the CosmWasm client.");
-      return;
-    }
     try {
+      let cosmwasmClient = await getSigningCosmWasmClient();
+      if (!cosmwasmClient) throw "Could not get the CosmWasm client";
+
       let wagerModuleClient = new ArenaWagerModuleClient(
         cosmwasmClient,
         address!,
@@ -101,8 +100,13 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
       await wagerModuleClient.generateProposals({ id: id as string });
 
       data!.status = "pending";
-    } catch (e) {
-      console.error(e);
+    } catch (e: any) {
+      toast({
+        status: "error",
+        title: "Error",
+        description: e.toString(),
+        isClosable: true,
+      });
     }
   };
 
@@ -140,6 +144,17 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
           <WagerViewDuesDisplay
             cosmwasmClient={cosmwasmClient}
             escrow_addr={data.escrow}
+            balanceChanged={balanceChanged}
+            wager_id={data.id}
+          />
+        )}
+        {address && data && (
+          <WagerViewBalanceCard
+            address={address}
+            cosmwasmClient={cosmwasmClient}
+            escrow_address={data.escrow}
+            status={data.status}
+            notifyBalancesChanged={() => setBalanceChanged(balanceChanged + 1)}
           />
         )}
         {data?.status == "created" && (

@@ -3,6 +3,8 @@ import type { AppProps } from "next/app";
 import { ChainProvider } from "@cosmos-kit/react";
 import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
+import { wallets as vectisWallets } from "@cosmos-kit/vectis";
+import { wallets as ledgerWallets } from "@cosmos-kit/ledger";
 import { chains, assets } from "chain-registry";
 import MainLayout from "../components/layouts/MainLayout";
 import theme from "../config/theme";
@@ -35,7 +37,12 @@ export default function CreateCosmosApp({ Component, pageProps }: AppProps) {
         chains={chains}
         assetLists={assets}
         wallets={
-          [...keplrWallets, ...leapWallets] as unknown as MainWalletBase[]
+          [
+            ...keplrWallets,
+            ...leapWallets,
+            ...vectisWallets,
+            ...ledgerWallets,
+          ] as unknown as MainWalletBase[]
         }
         signerOptions={signerOptions}
         walletConnectOptions={{

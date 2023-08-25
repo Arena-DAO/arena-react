@@ -39,13 +39,12 @@ import {
   ExpirationSchema,
   convertToExpiration,
 } from "~/helpers/SchemaHelpers";
-import { toBinary } from "cosmwasm";
 import { InstantiateMsg as DAOProposalMultipleInstantiateMsg } from "@dao/DaoProposalMultiple.types";
 import { InstantiateMsg as DAOVotingCW4InstantiateMsg } from "@dao/DaoVotingCw4.types";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import moment from "moment-timezone";
-import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { CosmWasmClient, toBinary } from "@cosmjs/cosmwasm-stargate";
 import env from "config/env";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { WagerCreateRulesetTable } from "@components/pages/wager/create/RulesetTable";
@@ -139,33 +138,19 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
   });
 
   const onSubmit = async (values: FormValues) => {
-    let cosmwasmClient = await getSigningCosmWasmClient();
-
-    if (!cosmwasmClient) {
-      console.error("Could not get the CosmWasm client.");
-      return;
-    }
-
     try {
+      let cosmwasmClient = await getSigningCosmWasmClient();
+      if (!cosmwasmClient) throw "Could not get the CosmWasm client";
+
       const daoDaoCoreQuery = new DaoDaoCoreQueryClient(
         cosmwasmClient,
         values.dao_address
       );
 
-      try {
-        await daoDaoCoreQuery.config();
-      } catch (e) {
-        setError("dao_address", {
-          message: "The given address is not a valid dao",
-        });
-        throw e;
-      }
+      await daoDaoCoreQuery.config();
 
       if (!arenaCoreAddr) {
-        setError("dao_address", {
-          message: "The DAO does not have an Arena extension.",
-        });
-        return;
+        throw "The DAO does not have an Arena extension.";
       }
 
       let arenaCoreClient = new ArenaCoreQueryClient(
@@ -181,13 +166,8 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         },
       });
 
-      if (!wager_module) {
-        setError("dao_address", {
-          message:
-            "The DAO's Arena extension does not have a wager module set.",
-        });
-        return;
-      }
+      if (!wager_module)
+        throw "The DAO's Arena extension does not have a wager module set.";
 
       let wagerModuleClient = new ArenaWagerModuleClient(
         cosmwasmClient,
@@ -285,8 +265,13 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
 
         router.push(`/wager/view?dao=${values.dao_address}&id=${id}`);
       }
-    } catch (e) {
-      console.error(e);
+    } catch (e: any) {
+      toast({
+        status: "error",
+        title: "Error",
+        description: e.toString(),
+        isClosable: true,
+      });
     }
   };
 

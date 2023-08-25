@@ -1,17 +1,21 @@
-import { Card, CardBody, CardProps } from "@chakra-ui/card";
+import { Card, CardBody, CardFooter, CardProps } from "@chakra-ui/card";
 import { Heading, Stack, StackDivider } from "@chakra-ui/layout";
 import { NativeCard } from "./NativeCard";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { BalanceVerified } from "@arena/ArenaEscrow.types";
 import { Cw20Card } from "./Cw20Card";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { Cw721Card } from "./Cw721Card";
+import { DataLoadedResult } from "~/types/DataLoadedResult";
+import { ExponentInfo } from "~/types/ExponentInfo";
 
 interface BalanceCardProps extends CardProps {
   header?: ReactNode;
   addrCard?: ReactNode;
   balance: BalanceVerified;
   cosmwasmClient: CosmWasmClient;
+  onDataLoaded?: (data: ExponentInfo) => void;
+  actions?: ReactNode;
 }
 
 export function BalanceCard({
@@ -19,8 +23,35 @@ export function BalanceCard({
   addrCard,
   balance,
   cosmwasmClient,
+  onDataLoaded,
+  actions,
   ...cardProps
 }: BalanceCardProps) {
+  const [cw20Data, setCw20Data] = useState<DataLoadedResult | undefined>(
+    undefined
+  );
+  const [nativeData, setNativeData] = useState<DataLoadedResult | undefined>(
+    undefined
+  );
+  const [exponentInfo, setExponentInfo] = useState<ExponentInfo>({
+    cw20: new Map(),
+    native: new Map(),
+  });
+  useEffect(() => {
+    if (!cw20Data || !cw20Data.exponent) return;
+    exponentInfo.cw20.set(cw20Data.key, cw20Data.exponent);
+    onDataLoaded?.(exponentInfo);
+    setExponentInfo(exponentInfo);
+    setCw20Data(undefined);
+  }, [cw20Data, exponentInfo, onDataLoaded]);
+  useEffect(() => {
+    if (!nativeData || !nativeData.exponent) return;
+    exponentInfo.native.set(nativeData.key, nativeData.exponent);
+    setExponentInfo(exponentInfo);
+    onDataLoaded?.(exponentInfo);
+    setNativeData(undefined);
+  }, [nativeData, exponentInfo, onDataLoaded]);
+
   const childCardProps: CardProps = { p: 4 };
 
   return (
@@ -38,6 +69,7 @@ export function BalanceCard({
                     key={i}
                     denom={x.denom}
                     amount={x.amount}
+                    onDataLoaded={setNativeData}
                     {...childCardProps}
                   />
                 ))}
@@ -52,6 +84,7 @@ export function BalanceCard({
                     cosmwasmClient={cosmwasmClient}
                     address={x.address}
                     amount={x.amount}
+                    onDataLoaded={setCw20Data}
                     {...childCardProps}
                   />
                 ))}
@@ -74,6 +107,7 @@ export function BalanceCard({
           </Stack>
         </Stack>
       </CardBody>
+      {actions && <CardFooter>{actions}</CardFooter>}
     </Card>
   );
 }

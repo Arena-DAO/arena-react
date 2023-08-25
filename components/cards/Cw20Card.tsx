@@ -16,8 +16,8 @@ import {
 } from "@cw-plus/Cw20Base.react-query";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useEffect } from "react";
-import { DataLoadedResult } from "./DueCard";
 import { convertIPFSToHttp } from "~/helpers/IPFSHelpers";
+import { DataLoadedResult } from "~/types/DataLoadedResult";
 
 interface Cw20CardProps extends CardProps {
   cosmwasmClient: CosmWasmClient;

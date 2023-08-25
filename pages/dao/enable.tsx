@@ -48,7 +48,6 @@ import { ExecuteMsg as DaoDaoCoreExecuteMsg } from "@dao/DaoDaoCore.types";
 import { DaoProposalSingleClient } from "@dao/DaoProposalSingle.client";
 import { InstantiateMsg as ArenaWagerModuleInstantiateMsg } from "@arena/ArenaWagerModule.types";
 import { InstantiateMsg as DAOProposalMultipleInstantiateMsg } from "@dao/DaoProposalMultiple.types";
-import { toBinary } from "cosmwasm";
 import { getProposalAddr } from "~/helpers/DAOHelpers";
 import { DaoPreProposeSingleClient } from "@dao/DaoPreProposeSingle.client";
 import {
@@ -59,7 +58,7 @@ import {
 } from "~/helpers/SchemaHelpers";
 import { useEffect, useState } from "react";
 import { DAOCard } from "@components/cards/DAOCard";
-import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { CosmWasmClient, toBinary } from "@cosmjs/cosmwasm-stargate";
 import env from "@config/env";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
@@ -125,7 +124,6 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
     register,
     handleSubmit,
     control,
-    setError,
     watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
@@ -161,27 +159,16 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
   });
 
   const onSubmit = async (values: FormValues) => {
-    let cosmWasmClient = await getSigningCosmWasmClient();
-
-    if (!cosmWasmClient) {
-      console.error("Could not get the CosmWasm client.");
-      return;
-    }
-
     try {
+      let cosmWasmClient = await getSigningCosmWasmClient();
+      if (!cosmWasmClient) throw "Could not get the CosmWasm client";
+
       const daoDaoCoreQuery = new DaoDaoCoreQueryClient(
         cosmwasmClient,
         values.dao_address
       );
 
-      try {
-        await daoDaoCoreQuery.config();
-      } catch (e) {
-        setError("dao_address", {
-          message: "The given address is not a valid dao",
-        });
-        throw e;
-      }
+      await daoDaoCoreQuery.config();
 
       const proposalAddrResponse = await getProposalAddr(
         cosmWasmClient,
@@ -190,11 +177,7 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
       );
 
       if (!proposalAddrResponse) {
-        setError("dao_address", {
-          message:
-            "The dao does not have an accessible single proposal module available.",
-        });
-        return;
+        throw "The dao does not have an accessible single proposal module available.";
       }
 
       let arena_wager_module_instantiate = {
@@ -310,8 +293,13 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
             "The Arena extension has sucessfully been proposed to the DAO.",
         });
       }
-    } catch (e) {
-      console.error(e);
+    } catch (e: any) {
+      toast({
+        status: "error",
+        title: "Error",
+        description: e.toString(),
+        isClosable: true,
+      });
     }
   };
 
