@@ -145,8 +145,6 @@ export type QueryExt = {
   competition_module: {
     key: string;
   };
-} | {
-  dump_state: {};
 };
 export type CheckedDenom = {
   native: string;

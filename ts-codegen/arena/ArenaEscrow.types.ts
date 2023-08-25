@@ -52,8 +52,25 @@ export type ExecuteMsg = {
   lock: {
     value: boolean;
   };
+} | {
+  update_ownership: Action;
 };
 export type Binary = string;
+export type Action = {
+  transfer_ownership: {
+    expiry?: Expiration | null;
+    new_owner: string;
+  };
+} | "accept_ownership" | "renounce_ownership";
+export type Expiration = {
+  at_height: number;
+} | {
+  at_time: Timestamp;
+} | {
+  never: {};
+};
+export type Timestamp = Uint64;
+export type Uint64 = string;
 export interface MemberShare {
   addr: string;
   shares: Uint128;
@@ -73,7 +90,10 @@ export interface CompetitionEscrowDistributeMsg {
   remainder_addr: string;
 }
 export type QueryMsg = {
-  admin: {};
+  balances: {
+    limit?: number | null;
+    start_after?: string | null;
+  };
 } | {
   balance: {
     addr: string;
@@ -81,6 +101,11 @@ export type QueryMsg = {
 } | {
   due: {
     addr: string;
+  };
+} | {
+  dues: {
+    limit?: number | null;
+    start_after?: string | null;
   };
 } | {
   is_funded: {
@@ -93,16 +118,15 @@ export type QueryMsg = {
 } | {
   is_locked: {};
 } | {
-  dump_state: {};
-} | {
   distribution: {
     addr: string;
   };
+} | {
+  ownership: {};
 };
-export type MigrateMsg = string;
-export interface AdminResponse {
-  admin?: string | null;
-}
+export type MigrateMsg = {
+  from_v1: {};
+};
 export type Addr = string;
 export interface BalanceVerified {
   cw20: Cw20CoinVerified[];
@@ -117,14 +141,15 @@ export interface Cw721CollectionVerified {
   addr: Addr;
   token_ids: string[];
 }
+export type ArrayOfTupleOfAddrAndBalanceVerified = [Addr, BalanceVerified][];
 export type NullableArrayOfMemberShareVerified = MemberShareVerified[] | null;
 export interface MemberShareVerified {
   addr: Addr;
   shares: Uint128;
 }
-export interface DumpStateResponse {
-  admin: Addr;
-  is_locked: boolean;
-  total_balance: BalanceVerified;
-}
 export type Boolean = boolean;
+export interface OwnershipForString {
+  owner?: string | null;
+  pending_expiry?: Expiration | null;
+  pending_owner?: string | null;
+}

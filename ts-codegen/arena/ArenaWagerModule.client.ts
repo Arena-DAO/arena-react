@@ -6,10 +6,9 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, ModuleInstantiateInfo, MemberShare, QueryMsg, Null, AdminResponse, Addr, CompetitionStatus, CompetitionForEmpty, Config } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, ModuleInstantiateInfo, MemberShare, QueryMsg, Null, Addr, CompetitionStatus, CompetitionForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
 export interface ArenaWagerModuleReadOnlyInterface {
   contractAddress: string;
-  dAO: () => Promise<Addr>;
   config: () => Promise<Config>;
   competition: ({
     id
@@ -21,7 +20,7 @@ export interface ArenaWagerModuleReadOnlyInterface {
   }: {
     msg: Empty;
   }) => Promise<Binary>;
-  admin: () => Promise<AdminResponse>;
+  ownership: () => Promise<OwnershipForString>;
 }
 export class ArenaWagerModuleQueryClient implements ArenaWagerModuleReadOnlyInterface {
   client: CosmWasmClient;
@@ -30,18 +29,12 @@ export class ArenaWagerModuleQueryClient implements ArenaWagerModuleReadOnlyInte
   constructor(client: CosmWasmClient, contractAddress: string) {
     this.client = client;
     this.contractAddress = contractAddress;
-    this.dAO = this.dAO.bind(this);
     this.config = this.config.bind(this);
     this.competition = this.competition.bind(this);
     this.queryExtension = this.queryExtension.bind(this);
-    this.admin = this.admin.bind(this);
+    this.ownership = this.ownership.bind(this);
   }
 
-  dAO = async (): Promise<Addr> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      d_a_o: {}
-    });
-  };
   config = async (): Promise<Config> => {
     return this.client.queryContractSmart(this.contractAddress, {
       config: {}
@@ -69,9 +62,9 @@ export class ArenaWagerModuleQueryClient implements ArenaWagerModuleReadOnlyInte
       }
     });
   };
-  admin = async (): Promise<AdminResponse> => {
+  ownership = async (): Promise<OwnershipForString> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      admin: {}
+      ownership: {}
     });
   };
 }
@@ -119,6 +112,7 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
   }: {
     msg: Empty;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  updateOwnership: (action: Action, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
 }
 export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implements ArenaWagerModuleInterface {
   client: SigningCosmWasmClient;
@@ -135,6 +129,7 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
     this.generateProposals = this.generateProposals.bind(this);
     this.processCompetition = this.processCompetition.bind(this);
     this.extension = this.extension.bind(this);
+    this.updateOwnership = this.updateOwnership.bind(this);
   }
 
   jailCompetition = async ({
@@ -214,6 +209,11 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
       extension: {
         msg
       }
+    }, fee, memo, _funds);
+  };
+  updateOwnership = async (action: Action, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      update_ownership: action
     }, fee, memo, _funds);
   };
 }

@@ -31,7 +31,7 @@ export function UserCard({ addr, ...cardProps }: UserCardProps) {
           icon={<BsPerson />}
         />
         <CardBody>
-          <Text fontSize="xl">{data?.name ?? addr}</Text>
+          <Text>{data?.name ?? addr}</Text>
         </CardBody>
         <CardFooter>
           <CopyAddressButton addr={addr} aria-label="Copy Address" />

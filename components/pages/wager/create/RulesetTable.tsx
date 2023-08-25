@@ -27,7 +27,7 @@ import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 import { useDaoDaoCoreGetItemQuery } from "@dao/DaoDaoCore.react-query";
 import { CosmWasmClient, fromBinary } from "@cosmjs/cosmwasm-stargate";
 import env from "@config/env";
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useEffect, useState, useCallback } from "react";
 import {
   UseFormSetError,
   UseFormClearErrors,
@@ -50,9 +50,9 @@ interface RulesetTableProps extends RulesetProps, TableContainerProps {
 }
 
 interface RulesetTableInnerProps extends RulesetProps {
-  start_after?: number;
+  start_after?: number | null;
   selectedRuleset: number | undefined;
-  onRulesetLoaded: (data: number | undefined) => void;
+  setLastRuleset: (data: number | null) => void;
   addr: string;
 }
 
@@ -60,7 +60,7 @@ function RulesetTableInner({
   addr,
   cosmwasmClient,
   onRulesetSelect,
-  onRulesetLoaded,
+  setLastRuleset,
   selectedRuleset,
   start_after,
 }: RulesetTableInnerProps) {
@@ -86,9 +86,9 @@ function RulesetTableInner({
         largestNumber = Math.max(...rulesets.map(([number]) => number));
       }
 
-      onRulesetLoaded(largestNumber);
-    } else onRulesetLoaded(undefined);
-  }, [data, onRulesetLoaded, parseRulesets]);
+      setLastRuleset(largestNumber);
+    } else setLastRuleset(null);
+  }, [data, setLastRuleset, parseRulesets]);
 
   if (isError) return <></>;
 
@@ -153,7 +153,9 @@ export function WagerCreateRulesetTable({
   const [selectedRuleset, setSelectedRuleset] = useState<number | undefined>(
     undefined
   );
-  const [lastRuleset, setLastRuleset] = useState<number | undefined>(undefined);
+  const [pages, setPages] = useState<Set<number | null>>(
+    new Set<number | null>([null])
+  );
 
   useEffect(() => {
     if (AddressSchema.safeParse(watchDAOAddress).success) query.refetch();
@@ -178,12 +180,20 @@ export function WagerCreateRulesetTable({
       onArenaCoreLoaded(undefined);
     }
   }, [query.data, onArenaCoreLoaded]);
+  const [hasFetched, setHasFetched] = useState<boolean>(false);
+  const handleSetLastPage = useCallback((x: number | null) => {
+    setPages((prevPages) => {
+      const newPages = new Set(prevPages);
+      newPages.add(x);
+      return newPages;
+    });
+    setHasFetched(true);
+  }, []);
 
-  if (query.isError || !query.isFetched) {
+  if (!query.isFetched || query.isError || (hasFetched && pages.size == 1)) {
     return <></>;
   }
 
-  if (lastRuleset == 0) return <></>;
   return (
     <Skeleton isLoaded={!query.isLoading}>
       <FormControl>
@@ -198,13 +208,21 @@ export function WagerCreateRulesetTable({
             </Thead>
             <Tbody>
               {query.data && query.data.item && (
-                <RulesetTableInner
-                  addr={query.data.item}
-                  cosmwasmClient={cosmwasmClient}
-                  onRulesetSelect={setSelectedRuleset}
-                  selectedRuleset={selectedRuleset}
-                  onRulesetLoaded={setLastRuleset}
-                />
+                <>
+                  {Array.from(pages).map((page, i) => {
+                    return (
+                      <RulesetTableInner
+                        key={i}
+                        addr={query.data.item!}
+                        cosmwasmClient={cosmwasmClient}
+                        onRulesetSelect={setSelectedRuleset}
+                        selectedRuleset={selectedRuleset}
+                        setLastRuleset={handleSetLastPage}
+                        start_after={page}
+                      />
+                    );
+                  })}
+                </>
               )}
             </Tbody>
           </Table>

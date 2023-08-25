@@ -51,7 +51,6 @@ import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { WagerCreateRulesetTable } from "@components/pages/wager/create/RulesetTable";
 import { WagerCreateDAOCard } from "@components/pages/wager/create/DAOCard";
 import { WagerCreateTeamCard } from "@components/pages/wager/create/TeamCard";
-import { ExponentInfo } from "~/types/ExponentInfo";
 
 const FormSchema = z.object({
   dao_address: AddressSchema,
@@ -283,6 +282,8 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
           status: "success",
           description: "The competition's proposals have been generated.",
         });
+
+        router.push(`/wager/${values.dao_address}/${id}`);
       }
     } catch (e) {
       console.error(e);
@@ -459,7 +460,6 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
                       index={dueIndex}
                       cosmwasmClient={cosmwasmClient}
                       duesRemove={() => duesRemove(dueIndex)}
-                      variant={"outline"}
                     />
                   );
                 })}

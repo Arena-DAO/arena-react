@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee, Coin } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, ModuleInstantiateInfo, MemberShare, QueryMsg, Null, AdminResponse, Addr, CompetitionStatus, CompetitionForEmpty, Config } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, ModuleInstantiateInfo, MemberShare, QueryMsg, Null, Addr, CompetitionStatus, CompetitionForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
 import { ArenaWagerModuleQueryClient, ArenaWagerModuleClient } from "./ArenaWagerModule.client";
 export const arenaWagerModuleQueryKeys = {
   contract: ([{
@@ -15,10 +15,6 @@ export const arenaWagerModuleQueryKeys = {
   }] as const),
   address: (contractAddress: string | undefined) => ([{ ...arenaWagerModuleQueryKeys.contract[0],
     address: contractAddress
-  }] as const),
-  dAO: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaWagerModuleQueryKeys.address(contractAddress)[0],
-    method: "d_a_o",
-    args
   }] as const),
   config: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaWagerModuleQueryKeys.address(contractAddress)[0],
     method: "config",
@@ -32,21 +28,12 @@ export const arenaWagerModuleQueryKeys = {
     method: "query_extension",
     args
   }] as const),
-  admin: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaWagerModuleQueryKeys.address(contractAddress)[0],
-    method: "admin",
+  ownership: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaWagerModuleQueryKeys.address(contractAddress)[0],
+    method: "ownership",
     args
   }] as const)
 };
 export const arenaWagerModuleQueries = {
-  dAO: <TData = Addr,>({
-    client,
-    options
-  }: ArenaWagerModuleDAOQuery<TData>): UseQueryOptions<Addr, Error, TData> => ({
-    queryKey: arenaWagerModuleQueryKeys.dAO(client?.contractAddress),
-    queryFn: () => client ? client.dAO() : Promise.reject(new Error("Invalid client")),
-    ...options,
-    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
-  }),
   config: <TData = Config,>({
     client,
     options
@@ -80,12 +67,12 @@ export const arenaWagerModuleQueries = {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   }),
-  admin: <TData = AdminResponse,>({
+  ownership: <TData = OwnershipForString,>({
     client,
     options
-  }: ArenaWagerModuleAdminQuery<TData>): UseQueryOptions<AdminResponse, Error, TData> => ({
-    queryKey: arenaWagerModuleQueryKeys.admin(client?.contractAddress),
-    queryFn: () => client ? client.admin() : Promise.reject(new Error("Invalid client")),
+  }: ArenaWagerModuleOwnershipQuery<TData>): UseQueryOptions<OwnershipForString, Error, TData> => ({
+    queryKey: arenaWagerModuleQueryKeys.ownership(client?.contractAddress),
+    queryFn: () => client ? client.ownership() : Promise.reject(new Error("Invalid client")),
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   })
@@ -96,12 +83,12 @@ export interface ArenaWagerModuleReactQuery<TResponse, TData = TResponse> {
     initialData?: undefined;
   };
 }
-export interface ArenaWagerModuleAdminQuery<TData> extends ArenaWagerModuleReactQuery<AdminResponse, TData> {}
-export function useArenaWagerModuleAdminQuery<TData = AdminResponse>({
+export interface ArenaWagerModuleOwnershipQuery<TData> extends ArenaWagerModuleReactQuery<OwnershipForString, TData> {}
+export function useArenaWagerModuleOwnershipQuery<TData = OwnershipForString>({
   client,
   options
-}: ArenaWagerModuleAdminQuery<TData>) {
-  return useQuery<AdminResponse, Error, TData>(arenaWagerModuleQueryKeys.admin(client?.contractAddress), () => client ? client.admin() : Promise.reject(new Error("Invalid client")), { ...options,
+}: ArenaWagerModuleOwnershipQuery<TData>) {
+  return useQuery<OwnershipForString, Error, TData>(arenaWagerModuleQueryKeys.ownership(client?.contractAddress), () => client ? client.ownership() : Promise.reject(new Error("Invalid client")), { ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
@@ -146,14 +133,25 @@ export function useArenaWagerModuleConfigQuery<TData = Config>({
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
-export interface ArenaWagerModuleDAOQuery<TData> extends ArenaWagerModuleReactQuery<Addr, TData> {}
-export function useArenaWagerModuleDAOQuery<TData = Addr>({
-  client,
-  options
-}: ArenaWagerModuleDAOQuery<TData>) {
-  return useQuery<Addr, Error, TData>(arenaWagerModuleQueryKeys.dAO(client?.contractAddress), () => client ? client.dAO() : Promise.reject(new Error("Invalid client")), { ...options,
-    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
-  });
+export interface ArenaWagerModuleUpdateOwnershipMutation {
+  client: ArenaWagerModuleClient;
+  msg: Action;
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaWagerModuleUpdateOwnershipMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleUpdateOwnershipMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaWagerModuleUpdateOwnershipMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.updateOwnership(msg, fee, memo, funds), options);
 }
 export interface ArenaWagerModuleExtensionMutation {
   client: ArenaWagerModuleClient;

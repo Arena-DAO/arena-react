@@ -40,6 +40,8 @@ export type ExecuteMsg = {
   extension: {
     msg: Empty;
   };
+} | {
+  update_ownership: Action;
 };
 export type Uint128 = string;
 export type Admin = {
@@ -59,6 +61,12 @@ export type Expiration = {
 };
 export type Timestamp = Uint64;
 export type Uint64 = string;
+export type Action = {
+  transfer_ownership: {
+    expiry?: Expiration | null;
+    new_owner: string;
+  };
+} | "accept_ownership" | "renounce_ownership";
 export interface ModuleInstantiateInfo {
   admin?: Admin | null;
   code_id: number;
@@ -70,8 +78,6 @@ export interface MemberShare {
   shares: Uint128;
 }
 export type QueryMsg = {
-  d_a_o: {};
-} | {
   config: {};
 } | {
   competition: {
@@ -82,12 +88,9 @@ export type QueryMsg = {
     msg: Empty;
   };
 } | {
-  admin: {};
+  ownership: {};
 };
 export type Null = null;
-export interface AdminResponse {
-  admin?: string | null;
-}
 export type Addr = string;
 export type CompetitionStatus = "created" | "pending" | "active" | "inactive" | "jailed";
 export interface CompetitionForEmpty {
@@ -106,4 +109,9 @@ export interface CompetitionForEmpty {
 export interface Config {
   description: string;
   key: string;
+}
+export interface OwnershipForString {
+  owner?: string | null;
+  pending_expiry?: Expiration | null;
+  pending_owner?: string | null;
 }

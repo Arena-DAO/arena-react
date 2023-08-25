@@ -6,10 +6,16 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { Uint128, InstantiateMsg, MemberBalance, Balance, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, MemberShare, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, QueryMsg, MigrateMsg, AdminResponse, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, NullableArrayOfMemberShareVerified, MemberShareVerified, DumpStateResponse, Boolean } from "./ArenaEscrow.types";
+import { Uint128, InstantiateMsg, MemberBalance, Balance, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Action, Expiration, Timestamp, Uint64, MemberShare, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, QueryMsg, MigrateMsg, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfTupleOfAddrAndBalanceVerified, NullableArrayOfMemberShareVerified, MemberShareVerified, Boolean, OwnershipForString } from "./ArenaEscrow.types";
 export interface ArenaEscrowReadOnlyInterface {
   contractAddress: string;
-  admin: () => Promise<AdminResponse>;
+  balances: ({
+    limit,
+    startAfter
+  }: {
+    limit?: number;
+    startAfter?: string;
+  }) => Promise<ArrayOfTupleOfAddrAndBalanceVerified>;
   balance: ({
     addr
   }: {
@@ -20,6 +26,13 @@ export interface ArenaEscrowReadOnlyInterface {
   }: {
     addr: string;
   }) => Promise<BalanceVerified>;
+  dues: ({
+    limit,
+    startAfter
+  }: {
+    limit?: number;
+    startAfter?: string;
+  }) => Promise<ArrayOfTupleOfAddrAndBalanceVerified>;
   isFunded: ({
     addr
   }: {
@@ -28,12 +41,12 @@ export interface ArenaEscrowReadOnlyInterface {
   isFullyFunded: () => Promise<Boolean>;
   totalBalance: () => Promise<BalanceVerified>;
   isLocked: () => Promise<Boolean>;
-  dumpState: () => Promise<DumpStateResponse>;
   distribution: ({
     addr
   }: {
     addr: string;
   }) => Promise<NullableArrayOfMemberShareVerified>;
+  ownership: () => Promise<OwnershipForString>;
 }
 export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
   client: CosmWasmClient;
@@ -42,20 +55,30 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
   constructor(client: CosmWasmClient, contractAddress: string) {
     this.client = client;
     this.contractAddress = contractAddress;
-    this.admin = this.admin.bind(this);
+    this.balances = this.balances.bind(this);
     this.balance = this.balance.bind(this);
     this.due = this.due.bind(this);
+    this.dues = this.dues.bind(this);
     this.isFunded = this.isFunded.bind(this);
     this.isFullyFunded = this.isFullyFunded.bind(this);
     this.totalBalance = this.totalBalance.bind(this);
     this.isLocked = this.isLocked.bind(this);
-    this.dumpState = this.dumpState.bind(this);
     this.distribution = this.distribution.bind(this);
+    this.ownership = this.ownership.bind(this);
   }
 
-  admin = async (): Promise<AdminResponse> => {
+  balances = async ({
+    limit,
+    startAfter
+  }: {
+    limit?: number;
+    startAfter?: string;
+  }): Promise<ArrayOfTupleOfAddrAndBalanceVerified> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      admin: {}
+      balances: {
+        limit,
+        start_after: startAfter
+      }
     });
   };
   balance = async ({
@@ -77,6 +100,20 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
     return this.client.queryContractSmart(this.contractAddress, {
       due: {
         addr
+      }
+    });
+  };
+  dues = async ({
+    limit,
+    startAfter
+  }: {
+    limit?: number;
+    startAfter?: string;
+  }): Promise<ArrayOfTupleOfAddrAndBalanceVerified> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      dues: {
+        limit,
+        start_after: startAfter
       }
     });
   };
@@ -106,11 +143,6 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
       is_locked: {}
     });
   };
-  dumpState = async (): Promise<DumpStateResponse> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      dump_state: {}
-    });
-  };
   distribution = async ({
     addr
   }: {
@@ -120,6 +152,11 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
       distribution: {
         addr
       }
+    });
+  };
+  ownership = async (): Promise<OwnershipForString> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      ownership: {}
     });
   };
 }
@@ -169,6 +206,7 @@ export interface ArenaEscrowInterface extends ArenaEscrowReadOnlyInterface {
   }: {
     value: boolean;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  updateOwnership: (action: Action, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
 }
 export class ArenaEscrowClient extends ArenaEscrowQueryClient implements ArenaEscrowInterface {
   client: SigningCosmWasmClient;
@@ -187,6 +225,7 @@ export class ArenaEscrowClient extends ArenaEscrowQueryClient implements ArenaEs
     this.receiveNft = this.receiveNft.bind(this);
     this.distribute = this.distribute.bind(this);
     this.lock = this.lock.bind(this);
+    this.updateOwnership = this.updateOwnership.bind(this);
   }
 
   withdraw = async ({
@@ -276,6 +315,11 @@ export class ArenaEscrowClient extends ArenaEscrowQueryClient implements ArenaEs
       lock: {
         value
       }
+    }, fee, memo, _funds);
+  };
+  updateOwnership = async (action: Action, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      update_ownership: action
     }, fee, memo, _funds);
   };
 }
