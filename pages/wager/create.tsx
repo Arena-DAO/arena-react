@@ -283,7 +283,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
           description: "The competition's proposals have been generated.",
         });
 
-        router.push(`/wager/${values.dao_address}/${id}`);
+        router.push(`/wager/view?dao=${values.dao_address}&id=${id}`);
       }
     } catch (e) {
       console.error(e);

@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/layout";
 import { useChain } from "@cosmos-kit/react-lite";
 import env from "@config/env";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useRouter } from "next/router";
 import { DAOCard } from "@components/cards/DAOCard";
@@ -25,6 +25,7 @@ import {
 import { Button, Skeleton, useToast } from "@chakra-ui/react";
 import { statusColors } from "~/helpers/ArenaHelpers";
 import { WagerViewDuesDisplay } from "@components/pages/wager/view/DuesDisplay";
+import { AddressSchema } from "~/helpers/SchemaHelpers";
 
 interface ViewWagerPageContentProps {
   cosmwasmClient: CosmWasmClient;
@@ -36,10 +37,14 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
   } = useRouter();
   const toast = useToast();
   const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
+  const isValidAddress = useMemo(() => {
+    return !!dao && AddressSchema.safeParse(dao).success;
+  }, [dao]);
   const { data: itemData, isFetched: isItemFetched } =
     useDaoDaoCoreGetItemQuery({
       client: new DaoDaoCoreQueryClient(cosmwasmClient, dao as string),
       args: { key: env.ARENA_ITEM_KEY },
+      options: { enabled: isValidAddress },
     });
   const { data: moduleData, isFetched: isModuleFetched } =
     useArenaCoreQueryExtensionQuery({
@@ -50,7 +55,14 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
   const { data, isLoading, isError } = useArenaWagerModuleCompetitionQuery({
     client: new ArenaWagerModuleQueryClient(cosmwasmClient, moduleData!),
     args: { id: id as string },
-    options: { enabled: isModuleFetched && !!moduleData, retry: false },
+    options: {
+      enabled:
+        !!id &&
+        !isNaN(parseInt(id as string)) &&
+        isModuleFetched &&
+        !!moduleData,
+      retry: false,
+    },
   });
   useEffect(() => {
     if (isError)
@@ -61,6 +73,16 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
         description: `Could not retrieve competition ${id}`,
       });
   }, [isError, toast, id]);
+  useEffect(() => {
+    if (!isValidAddress) {
+      toast({
+        title: "Error",
+        isClosable: false,
+        status: "error",
+        description: "DAO address is invalid",
+      });
+    }
+  }, [isValidAddress]);
 
   const generateProposals = async () => {
     let cosmwasmClient = await getSigningCosmWasmClient();
@@ -84,7 +106,7 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
     }
   };
 
-  if (isError) {
+  if (isError || !isValidAddress) {
     return <></>;
   }
   return (

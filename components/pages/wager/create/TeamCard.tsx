@@ -25,9 +25,7 @@ import { WagerCreateDueForm } from "./DueForm";
 import { NativeCard } from "@components/cards/NativeCard";
 import { Cw20Card } from "@components/cards/Cw20Card";
 import { Cw721Card } from "@components/cards/Cw721Card";
-import { BalanceCard } from "@components/cards/BalanceCard";
-import { useEffect, useState } from "react";
-import { BalanceVerified } from "@arena/ArenaEscrow.types";
+import { useEffect } from "react";
 
 interface WagerCreateTeamCard {
   cosmwasmClient: CosmWasmClient;
@@ -71,18 +69,7 @@ export function WagerCreateTeamCard({
     control,
     name: `dues.${index}.balance.cw721` as "dues.0.balance.cw721",
   });
-  const [balance, setBalance] = useState<BalanceVerified>({
-    cw20: [],
-    cw721: [],
-    native: [],
-  });
-  useEffect(() => {
-    setBalance({
-      cw20: cw20Fields,
-      cw721: cw721Fields,
-      native: nativeFields,
-    });
-  }, [nativeFields, cw721Fields, cw20Fields]);
+
   const childCardProps: CardProps = { p: 4 };
 
   return (
