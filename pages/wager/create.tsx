@@ -79,7 +79,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
       expiration: {
         expiration_units: "At Time",
         time: format(
-          new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+          new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // Default to 2 weeks from now
           "yyyy-MM-dd'T'HH:mm"
         ),
         timezone: moment.tz.guess(),
@@ -184,6 +184,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         extension: {},
         competitionDao: {
           code_id: env.CODE_ID_DAO_CORE,
+          admin: { address: { addr: values.dao_address } },
           label: "Arena Competition DAO",
           msg: toBinary({
             admin: values.dao_address,
@@ -226,10 +227,10 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         },
         escrow: {
           code_id: env.CODE_ID_ESCROW,
+          admin: { address: { addr: values.dao_address } },
           label: "Arena Escrow",
           msg: toBinary({
             dues: values.dues,
-            lock_when_funded: true,
           } as ArenaEscrowInstantiateMsg),
         },
       };
@@ -253,16 +254,21 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         }
         if (id) break;
       }
-      if (id) {
-        await wagerModuleClient.generateProposals({ id });
 
-        toast({
-          title: "Success",
-          isClosable: true,
-          status: "success",
-          description: "The competition's proposals have been generated.",
-        });
+      try {
+        if (id) {
+          await wagerModuleClient.generateProposals({ id });
 
+          toast({
+            title: "Success",
+            isClosable: true,
+            status: "success",
+            description: "The competition's proposals have been generated.",
+          });
+        }
+      } catch (e) {
+        throw e;
+      } finally {
         router.push(`/wager/view?dao=${values.dao_address}&id=${id}`);
       }
     } catch (e: any) {

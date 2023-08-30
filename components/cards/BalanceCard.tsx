@@ -38,14 +38,24 @@ export function BalanceCard({
     native: new Map(),
   });
   useEffect(() => {
-    if (!cw20Data || !cw20Data.exponent) return;
+    if (
+      !cw20Data ||
+      cw20Data.exponent === undefined ||
+      cw20Data.exponent === null
+    )
+      return;
     exponentInfo.cw20.set(cw20Data.key, cw20Data.exponent);
     onDataLoaded?.(exponentInfo);
     setExponentInfo(exponentInfo);
     setCw20Data(undefined);
   }, [cw20Data, exponentInfo, onDataLoaded]);
   useEffect(() => {
-    if (!nativeData || !nativeData.exponent) return;
+    if (
+      !nativeData ||
+      nativeData.exponent === undefined ||
+      nativeData.exponent === null
+    )
+      return;
     exponentInfo.native.set(nativeData.key, nativeData.exponent);
     setExponentInfo(exponentInfo);
     onDataLoaded?.(exponentInfo);

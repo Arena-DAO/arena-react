@@ -23,6 +23,7 @@ interface WagerViewBalanceCardProps {
   address: string;
   status: CompetitionStatus;
   notifyBalancesChanged: () => void;
+  balanceChanged: number;
 }
 
 export function WagerViewBalanceCard({

@@ -7,7 +7,6 @@
 export type Uint128 = string;
 export interface InstantiateMsg {
   dues: MemberBalance[];
-  lock_when_funded: boolean;
 }
 export interface MemberBalance {
   addr: string;

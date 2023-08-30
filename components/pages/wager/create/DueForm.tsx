@@ -129,7 +129,11 @@ export const WagerCreateDueForm = ({
   const watchAmount = watch("amount");
 
   const onSubmit = async (values: DueFormValues) => {
-    if (!dataLoadedResult) {
+    if (
+      !dataLoadedResult ||
+      dataLoadedResult.key != values.key ||
+      dataLoadedResult.exponent === undefined
+    ) {
       setError("key", { message: "Could not retrieve data" });
       return;
     }

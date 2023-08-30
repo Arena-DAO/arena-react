@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, ModuleInstantiateInfo, MemberShare, QueryMsg, Null, Addr, CompetitionStatus, CompetitionForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, CompetitionCoreActivateMsg, ModuleInstantiateInfo, MemberShare, QueryMsg, Null, Addr, CompetitionStatus, CompetitionForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
 export interface ArenaWagerModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<Config>;
@@ -76,6 +76,7 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
   }: {
     id: Uint128;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  activate: (fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   createCompetition: ({
     competitionDao,
     description,
@@ -125,6 +126,7 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
     this.sender = sender;
     this.contractAddress = contractAddress;
     this.jailCompetition = this.jailCompetition.bind(this);
+    this.activate = this.activate.bind(this);
     this.createCompetition = this.createCompetition.bind(this);
     this.generateProposals = this.generateProposals.bind(this);
     this.processCompetition = this.processCompetition.bind(this);
@@ -141,6 +143,11 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
       jail_competition: {
         id
       }
+    }, fee, memo, _funds);
+  };
+  activate = async (fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      activate: {}
     }, fee, memo, _funds);
   };
   createCompetition = async ({

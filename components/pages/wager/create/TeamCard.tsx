@@ -25,7 +25,6 @@ import { WagerCreateDueForm } from "./DueForm";
 import { NativeCard } from "@components/cards/NativeCard";
 import { Cw20Card } from "@components/cards/Cw20Card";
 import { Cw721Card } from "@components/cards/Cw721Card";
-import { useEffect } from "react";
 
 interface WagerCreateTeamCard {
   cosmwasmClient: CosmWasmClient;

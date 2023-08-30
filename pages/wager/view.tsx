@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/layout";
 import { useChain } from "@cosmos-kit/react-lite";
 import env from "@config/env";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useRouter } from "next/router";
 import { DAOCard } from "@components/cards/DAOCard";
@@ -85,6 +85,11 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
       });
     }
   }, [isValidAddress, toast]);
+  useEffect(() => {}, [data?.status]);
+  const notifyBalancesChanged = useCallback(
+    () => setBalanceChanged(balanceChanged + 1),
+    [balanceChanged]
+  );
 
   const generateProposals = async () => {
     try {
@@ -98,6 +103,13 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
       );
 
       await wagerModuleClient.generateProposals({ id: id as string });
+
+      toast({
+        title: "Success",
+        isClosable: true,
+        status: "success",
+        description: "The competition's proposals have been generated.",
+      });
 
       data!.status = "pending";
     } catch (e: any) {
@@ -145,6 +157,7 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
             cosmwasmClient={cosmwasmClient}
             escrow_addr={data.escrow}
             balanceChanged={balanceChanged}
+            notifyBalancesChanged={notifyBalancesChanged}
             wager_id={data.id}
           />
         )}
@@ -154,7 +167,8 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
             cosmwasmClient={cosmwasmClient}
             escrow_address={data.escrow}
             status={data.status}
-            notifyBalancesChanged={() => setBalanceChanged(balanceChanged + 1)}
+            notifyBalancesChanged={notifyBalancesChanged}
+            balanceChanged={balanceChanged}
           />
         )}
         {data?.status == "created" && (

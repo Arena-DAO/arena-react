@@ -27,11 +27,10 @@ import { BalanceVerified } from "@arena/ArenaEscrow.types";
 import { ExecuteMsg as ArenaEscrowExecuteMsg } from "@arena/ArenaEscrow.types";
 import { ExecuteMsg as Cw20ExecuteMsg } from "@cw-plus/Cw20Base.types";
 import { ExecuteMsg as Cw721ExecuteMsg } from "@cw-nfts/Cw721Base.types";
-import {
-  CosmosMsgForEmpty,
-  ExecuteMsg as DaoProposalSingleExecuteMsg,
-} from "@dao/DaoProposalSingle.types";
+import { CosmosMsgForEmpty } from "@dao/DaoProposalSingle.types";
 import { getProposalAddr } from "~/helpers/DAOHelpers";
+import { DaoProposalSingleClient } from "@dao/DaoProposalSingle.client";
+import { DaoPreProposeSingleClient } from "@dao/DaoPreProposeSingle.client";
 
 interface WagerViewDuesInnerProps {
   cosmwasmClient: CosmWasmClient;
@@ -39,6 +38,7 @@ interface WagerViewDuesInnerProps {
   setLastPage: (page: string) => void;
   escrow_addr: string;
   wager_id: string;
+  notifyBalancesChanged: () => void;
 }
 
 interface WagerViewDuesDisplayProps {
@@ -46,6 +46,7 @@ interface WagerViewDuesDisplayProps {
   escrow_addr: string;
   balanceChanged: number;
   wager_id: string;
+  notifyBalancesChanged: () => void;
 }
 
 function WagerViewDuesInner({
@@ -54,6 +55,7 @@ function WagerViewDuesInner({
   setLastPage,
   escrow_addr,
   wager_id,
+  notifyBalancesChanged,
 }: WagerViewDuesInnerProps) {
   const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
   const { data, isLoading, isError, refetch } = useArenaEscrowDuesQuery({
@@ -146,28 +148,51 @@ function WagerViewDuesInner({
           return;
         }
 
-        await cosmwasmClient.execute(
-          address,
-          proposalAddrResponse.addr,
-          {
-            propose: {
-              title: `Fund Wager ${wager_id}`,
-              description: "Send funds to the wager's escrow address.",
-              msgs: msgs.map((x) => {
-                return {
-                  wasm: {
-                    execute: {
-                      contract_addr: x.contractAddress,
-                      funds: x.funds,
-                      msg: toBinary(x.msg),
-                    },
-                  },
-                } as CosmosMsgForEmpty;
-              }),
+        const proposal_title = `Fund Wager ${wager_id}`;
+        const proposal_description =
+          "Send funds to the wager's escrow address.";
+        let proposal_msgs = msgs.map((x) => {
+          return {
+            wasm: {
+              execute: {
+                contract_addr: x.contractAddress,
+                funds: x.funds,
+                msg: toBinary(x.msg),
+              },
             },
-          } as DaoProposalSingleExecuteMsg,
-          "auto"
-        );
+          } as CosmosMsgForEmpty;
+        });
+        if (proposalAddrResponse.type == "proposal_module") {
+          let daoProposalClient = new DaoProposalSingleClient(
+            cosmwasmClient,
+            address!,
+            proposalAddrResponse.addr
+          );
+
+          await daoProposalClient.propose({
+            title: proposal_title,
+            description: proposal_description,
+            msgs: proposal_msgs,
+          });
+
+          notifyBalancesChanged();
+        } else if (proposalAddrResponse.type == "prepropose") {
+          let preProposeClient = new DaoPreProposeSingleClient(
+            cosmwasmClient,
+            address!,
+            proposalAddrResponse.addr
+          );
+
+          await preProposeClient.propose({
+            msg: {
+              propose: {
+                title: proposal_title,
+                description: proposal_description,
+                msgs: proposal_msgs,
+              },
+            },
+          });
+        }
 
         toast({
           status: "success",
@@ -234,6 +259,7 @@ export function WagerViewDuesDisplay({
   cosmwasmClient,
   escrow_addr,
   wager_id,
+  notifyBalancesChanged,
 }: WagerViewDuesDisplayProps) {
   const [pages, setPages] = useState<Set<string | null>>(
     new Set<string | null>([null])
@@ -263,6 +289,7 @@ export function WagerViewDuesDisplay({
             cosmwasmClient={cosmwasmClient}
             setLastPage={handleSetLastPage}
             wager_id={wager_id}
+            notifyBalancesChanged={notifyBalancesChanged}
           />
         );
       })}

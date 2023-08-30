@@ -17,6 +17,8 @@ export type ExecuteMsg = {
     id: Uint128;
   };
 } | {
+  activate: CompetitionCoreActivateMsg;
+} | {
   create_competition: {
     competition_dao: ModuleInstantiateInfo;
     description: string;
@@ -67,6 +69,7 @@ export type Action = {
     new_owner: string;
   };
 } | "accept_ownership" | "renounce_ownership";
+export interface CompetitionCoreActivateMsg {}
 export interface ModuleInstantiateInfo {
   admin?: Admin | null;
   code_id: number;

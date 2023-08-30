@@ -284,15 +284,15 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
             },
           },
         });
-
-        toast({
-          title: "Success",
-          isClosable: true,
-          status: "success",
-          description:
-            "The Arena extension has sucessfully been proposed to the DAO.",
-        });
       }
+
+      toast({
+        title: "Success",
+        isClosable: true,
+        status: "success",
+        description:
+          "The Arena extension has sucessfully been proposed to the DAO.",
+      });
     } catch (e: any) {
       toast({
         status: "error",
