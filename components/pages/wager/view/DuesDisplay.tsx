@@ -39,6 +39,8 @@ interface WagerViewDuesInnerProps {
   escrow_addr: string;
   wager_id: string;
   notifyBalancesChanged: () => void;
+  notifyIsActive: () => void;
+  balanceChanged: number;
 }
 
 interface WagerViewDuesDisplayProps {
@@ -47,6 +49,7 @@ interface WagerViewDuesDisplayProps {
   balanceChanged: number;
   wager_id: string;
   notifyBalancesChanged: () => void;
+  notifyIsActive: () => void;
 }
 
 function WagerViewDuesInner({
@@ -56,12 +59,13 @@ function WagerViewDuesInner({
   escrow_addr,
   wager_id,
   notifyBalancesChanged,
+  notifyIsActive,
+  balanceChanged,
 }: WagerViewDuesInnerProps) {
   const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
   const { data, isLoading, isError, refetch } = useArenaEscrowDuesQuery({
     client: new ArenaEscrowQueryClient(cosmwasmClient, escrow_addr),
     args: { startAfter: start_after ?? undefined },
-    options: { staleTime: 0 },
   });
   const toast = useToast();
   const [exponentInfo, setExponentInfo] = useState<ExponentInfo>();
@@ -70,6 +74,9 @@ function WagerViewDuesInner({
       setLastPage(data[data.length - 1]![0]);
     }
   }, [setLastPage, data]);
+  useEffect(() => {
+    refetch();
+  }, [balanceChanged, refetch]);
 
   const depositFunds = async (team_addr: string, balance: BalanceVerified) => {
     try {
@@ -124,7 +131,20 @@ function WagerViewDuesInner({
 
       // If address is a wallet, just send. If address is a DAO, create a proposal to send.
       if (team_addr == address) {
-        await cosmwasmClient.executeMultiple(address, msgs, "auto");
+        let result = await cosmwasmClient.executeMultiple(
+          address,
+          msgs,
+          "auto"
+        );
+
+        let is_active = !!result.events.find((x) =>
+          x.attributes.find((y) => y.key == "action" && y.value == "activate")
+        );
+
+        if (is_active) {
+          notifyIsActive();
+        }
+
         toast({
           status: "success",
           title: "Success",
@@ -174,8 +194,6 @@ function WagerViewDuesInner({
             description: proposal_description,
             msgs: proposal_msgs,
           });
-
-          notifyBalancesChanged();
         } else if (proposalAddrResponse.type == "prepropose") {
           let preProposeClient = new DaoPreProposeSingleClient(
             cosmwasmClient,
@@ -203,7 +221,7 @@ function WagerViewDuesInner({
         });
       }
 
-      await refetch();
+      notifyBalancesChanged();
     } catch (e: any) {
       toast({
         status: "error",
@@ -260,6 +278,8 @@ export function WagerViewDuesDisplay({
   escrow_addr,
   wager_id,
   notifyBalancesChanged,
+  notifyIsActive,
+  balanceChanged,
 }: WagerViewDuesDisplayProps) {
   const [pages, setPages] = useState<Set<string | null>>(
     new Set<string | null>([null])
@@ -274,6 +294,10 @@ export function WagerViewDuesDisplay({
     });
     setHasFetched(true);
   }, []);
+  useEffect(() => {
+    setPages(new Set<string | null>([null]));
+    setHasFetched(false);
+  }, [setPages, balanceChanged]);
 
   if (hasFetched && pages.size == 1) return <></>;
 
@@ -290,6 +314,8 @@ export function WagerViewDuesDisplay({
             setLastPage={handleSetLastPage}
             wager_id={wager_id}
             notifyBalancesChanged={notifyBalancesChanged}
+            balanceChanged={balanceChanged}
+            notifyIsActive={notifyIsActive}
           />
         );
       })}

@@ -87,9 +87,12 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
   }, [isValidAddress, toast]);
   useEffect(() => {}, [data?.status]);
   const notifyBalancesChanged = useCallback(
-    () => setBalanceChanged(balanceChanged + 1),
-    [balanceChanged]
+    () => setBalanceChanged((prev) => prev + 1),
+    []
   );
+  const notifyIsActive = useCallback(() => {
+    if (data) data.status = "active";
+  }, [data]);
 
   const generateProposals = async () => {
     try {
@@ -159,6 +162,7 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
             balanceChanged={balanceChanged}
             notifyBalancesChanged={notifyBalancesChanged}
             wager_id={data.id}
+            notifyIsActive={notifyIsActive}
           />
         )}
         {address && data && (

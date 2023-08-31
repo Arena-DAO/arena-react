@@ -15,7 +15,7 @@ import { BalanceCard } from "@components/cards/BalanceCard";
 import env from "@config/env";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react-lite";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface WagerViewBalanceCardProps {
   cosmwasmClient: CosmWasmClient;
@@ -32,14 +32,19 @@ export function WagerViewBalanceCard({
   address,
   status,
   notifyBalancesChanged,
+  balanceChanged,
 }: WagerViewBalanceCardProps) {
-  const { data, isLoading, isError } = useArenaEscrowBalanceQuery({
+  const { data, isLoading, isError, refetch } = useArenaEscrowBalanceQuery({
     client: new ArenaEscrowQueryClient(cosmwasmClient, escrow_address),
     args: { addr: address },
   });
   const { getSigningCosmWasmClient } = useChain(env.CHAIN);
   const [hasWithdrawn, setHasWithdrawn] = useState<boolean>(false);
   const toast = useToast();
+  useEffect(() => {
+    refetch();
+    setHasWithdrawn(false);
+  }, [refetch, balanceChanged]);
 
   const withdrawFunds = async () => {
     try {
@@ -94,9 +99,7 @@ export function WagerViewBalanceCard({
           cosmwasmClient={cosmwasmClient}
           balance={data}
           actions={
-            (status == "pending" ||
-              status == "created" ||
-              status == "inactive") && (
+            status !== "active" && (
               <Button onClick={withdrawFunds}>Withdraw</Button>
             )
           }
