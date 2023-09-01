@@ -27,6 +27,7 @@ import { statusColors } from "~/helpers/ArenaHelpers";
 import { WagerViewDuesDisplay } from "@components/pages/wager/view/DuesDisplay";
 import { AddressSchema } from "~/helpers/SchemaHelpers";
 import { WagerViewBalanceCard } from "@components/pages/wager/view/BalanceCard";
+import { WagerViewTotalBalanceCard } from "@components/pages/wager/view/TotalBalanceCard";
 
 interface ViewWagerPageContentProps {
   cosmwasmClient: CosmWasmClient;
@@ -172,6 +173,13 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
             escrow_address={data.escrow}
             status={data.status}
             notifyBalancesChanged={notifyBalancesChanged}
+            balanceChanged={balanceChanged}
+          />
+        )}
+        {data && (
+          <WagerViewTotalBalanceCard
+            cosmwasmClient={cosmwasmClient}
+            escrow_address={data.escrow}
             balanceChanged={balanceChanged}
           />
         )}
