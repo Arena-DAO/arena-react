@@ -117,8 +117,8 @@ export function Cw721Card({
         <CardHeader>
           <Heading>{data?.name}</Heading>
         </CardHeader>
-        <CardBody>
-          <HStack overflowX="auto">
+        <CardBody overflowX={"auto"} whiteSpace={"nowrap"}>
+          <HStack>
             {token_ids.map((x, i) => {
               return (
                 <Cw721NFTCard

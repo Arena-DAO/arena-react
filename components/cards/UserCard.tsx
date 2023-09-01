@@ -30,7 +30,7 @@ export function UserCard({ addr, ...cardProps }: UserCardProps) {
           name={data?.name || undefined}
           icon={<BsPerson />}
         />
-        <CardBody>
+        <CardBody overflowX={"auto"} whiteSpace={"nowrap"}>
           <Text>{data?.name ?? addr}</Text>
         </CardBody>
         <CardFooter>

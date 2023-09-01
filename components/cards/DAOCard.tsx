@@ -55,7 +55,7 @@ export function DAOCard({
           marginRight="3"
           name={data?.name}
         />
-        <CardBody>
+        <CardBody overflowX={"auto"} whiteSpace={"nowrap"}>
           <Text fontSize="xl">{data?.name}</Text>
         </CardBody>
         <CardFooter alignItems={"center"}>

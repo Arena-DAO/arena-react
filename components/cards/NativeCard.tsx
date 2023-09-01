@@ -97,7 +97,7 @@ export function NativeCard({
         {!!nativeInfo?.imageUrl && (
           <Avatar src={nativeInfo.imageUrl!} mr="3" name={denom} size="md" />
         )}
-        <CardBody>
+        <CardBody overflowX={"auto"} whiteSpace={"nowrap"}>
           <Text>
             {amount.toLocaleString()} {denom}
           </Text>

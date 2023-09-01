@@ -106,7 +106,7 @@ export function Cw20Card({
         {...cardProps}
       >
         {logo}
-        <CardBody>
+        <CardBody overflowX={"auto"} whiteSpace={"nowrap"}>
           <Text>
             {amount.toLocaleString()} {data?.symbol}
           </Text>
