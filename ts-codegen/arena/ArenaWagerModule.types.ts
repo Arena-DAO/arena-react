@@ -96,13 +96,13 @@ export type QueryMsg = {
 export type Null = null;
 export type Addr = string;
 export type CompetitionStatus = "created" | "pending" | "active" | "inactive" | "jailed";
-export interface CompetitionForEmpty {
+export interface CompetitionResponseForEmpty {
   dao: Addr;
   description: string;
   escrow: Addr;
-  expiration: Expiration;
   extension: Empty;
   id: Uint128;
+  is_expired: boolean;
   name: string;
   rules: string[];
   ruleset?: Uint128 | null;

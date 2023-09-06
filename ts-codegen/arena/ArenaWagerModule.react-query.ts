@@ -30,7 +30,7 @@ import {
   Null,
   Addr,
   CompetitionStatus,
-  CompetitionForEmpty,
+  CompetitionResponseForEmpty,
   Config,
   OwnershipForString,
 } from "./ArenaWagerModule.types";
@@ -109,12 +109,12 @@ export const arenaWagerModuleQueries = {
     enabled:
       !!client && (options?.enabled != undefined ? options.enabled : true),
   }),
-  competition: <TData = CompetitionForEmpty>({
+  competition: <TData = CompetitionResponseForEmpty>({
     client,
     args,
     options,
   }: ArenaWagerModuleCompetitionQuery<TData>): UseQueryOptions<
-    CompetitionForEmpty,
+    CompetitionResponseForEmpty,
     Error,
     TData
   > => ({
@@ -224,15 +224,15 @@ export function useArenaWagerModuleQueryExtensionQuery<TData = Binary>({
   );
 }
 export interface ArenaWagerModuleCompetitionQuery<TData>
-  extends ArenaWagerModuleReactQuery<CompetitionForEmpty, TData> {
+  extends ArenaWagerModuleReactQuery<CompetitionResponseForEmpty, TData> {
   args: {
     id: Uint128;
   };
 }
 export function useArenaWagerModuleCompetitionQuery<
-  TData = CompetitionForEmpty
+  TData = CompetitionResponseForEmpty
 >({ client, args, options }: ArenaWagerModuleCompetitionQuery<TData>) {
-  return useQuery<CompetitionForEmpty, Error, TData>(
+  return useQuery<CompetitionResponseForEmpty, Error, TData>(
     arenaWagerModuleQueryKeys.competition(client?.contractAddress, args),
     () =>
       client
@@ -417,26 +417,7 @@ export function useArenaWagerModuleCreateCompetitionMutation(
     options
   );
 }
-export interface ArenaWagerModuleActivateMutation {
-  client: ArenaWagerModuleClient;
-  args?: {
-    fee?: number | StdFee | "auto";
-    memo?: string;
-    funds?: Coin[];
-  };
-}
-export function useArenaWagerModuleActivateMutation(
-  options?: Omit<
-    UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleActivateMutation>,
-    "mutationFn"
-  >
-) {
-  return useMutation<ExecuteResult, Error, ArenaWagerModuleActivateMutation>(
-    ({ client, args: { fee, memo, funds } = {} }) =>
-      client.activate(fee, memo, funds),
-    options
-  );
-}
+
 export interface ArenaWagerModuleJailCompetitionMutation {
   client: ArenaWagerModuleClient;
   msg: {

@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { Uint128, InstantiateMsg, MemberBalance, Balance, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Action, Expiration, Timestamp, Uint64, MemberShare, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, QueryMsg, MigrateMsg, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfTupleOfAddrAndBalanceVerified, NullableArrayOfMemberShareVerified, MemberShareVerified, Boolean, OwnershipForString } from "./ArenaEscrow.types";
+import { Uint128, InstantiateMsg, MemberBalance, Balance, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Action, Expiration, Timestamp, Uint64, MemberShare, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, QueryMsg, MigrateMsg, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfTupleOfStringAndBalanceVerified, NullableArrayOfMemberShareVerified, MemberShareVerified, Boolean, OwnershipForString } from "./ArenaEscrow.types";
 export interface ArenaEscrowReadOnlyInterface {
   contractAddress: string;
   balances: ({
@@ -15,7 +15,7 @@ export interface ArenaEscrowReadOnlyInterface {
   }: {
     limit?: number;
     startAfter?: string;
-  }) => Promise<ArrayOfTupleOfAddrAndBalanceVerified>;
+  }) => Promise<ArrayOfTupleOfStringAndBalanceVerified>;
   balance: ({
     addr
   }: {
@@ -32,7 +32,7 @@ export interface ArenaEscrowReadOnlyInterface {
   }: {
     limit?: number;
     startAfter?: string;
-  }) => Promise<ArrayOfTupleOfAddrAndBalanceVerified>;
+  }) => Promise<ArrayOfTupleOfStringAndBalanceVerified>;
   isFunded: ({
     addr
   }: {
@@ -73,7 +73,7 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
   }: {
     limit?: number;
     startAfter?: string;
-  }): Promise<ArrayOfTupleOfAddrAndBalanceVerified> => {
+  }): Promise<ArrayOfTupleOfStringAndBalanceVerified> => {
     return this.client.queryContractSmart(this.contractAddress, {
       balances: {
         limit,
@@ -109,7 +109,7 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
   }: {
     limit?: number;
     startAfter?: string;
-  }): Promise<ArrayOfTupleOfAddrAndBalanceVerified> => {
+  }): Promise<ArrayOfTupleOfStringAndBalanceVerified> => {
     return this.client.queryContractSmart(this.contractAddress, {
       dues: {
         limit,

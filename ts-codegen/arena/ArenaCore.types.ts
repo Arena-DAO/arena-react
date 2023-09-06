@@ -90,7 +90,9 @@ export type ExecuteExt = {
     to_disable: string[];
   };
 } | {
-  jail: CompetitionCoreJailMsg;
+  jail: {
+    id: Uint128;
+  };
 } | {
   update_tax: {
     tax: Decimal;
@@ -104,9 +106,6 @@ export type ExecuteExt = {
 export type Status = "open" | "rejected" | "passed" | "executed" | "closed" | "execution_failed";
 export interface Empty {
   [k: string]: unknown;
-}
-export interface CompetitionCoreJailMsg {
-  id: Uint128;
 }
 export type QueryMsg = {
   proposal_module: {};

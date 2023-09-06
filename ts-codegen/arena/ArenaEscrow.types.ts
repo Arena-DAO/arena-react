@@ -140,7 +140,7 @@ export interface Cw721CollectionVerified {
   addr: Addr;
   token_ids: string[];
 }
-export type ArrayOfTupleOfAddrAndBalanceVerified = [Addr, BalanceVerified][];
+export type ArrayOfTupleOfStringAndBalanceVerified = [string, BalanceVerified][];
 export type NullableArrayOfMemberShareVerified = MemberShareVerified[] | null;
 export interface MemberShareVerified {
   addr: Addr;

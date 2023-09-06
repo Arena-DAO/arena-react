@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, CompetitionCoreActivateMsg, ModuleInstantiateInfo, MemberShare, QueryMsg, Null, Addr, CompetitionStatus, CompetitionForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, CompetitionCoreActivateMsg, ModuleInstantiateInfo, MemberShare, QueryMsg, Null, Addr, CompetitionStatus, CompetitionResponseForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
 export interface ArenaWagerModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<Config>;
@@ -14,7 +14,7 @@ export interface ArenaWagerModuleReadOnlyInterface {
     id
   }: {
     id: Uint128;
-  }) => Promise<CompetitionForEmpty>;
+  }) => Promise<CompetitionResponseForEmpty>;
   queryExtension: ({
     msg
   }: {
@@ -44,7 +44,7 @@ export class ArenaWagerModuleQueryClient implements ArenaWagerModuleReadOnlyInte
     id
   }: {
     id: Uint128;
-  }): Promise<CompetitionForEmpty> => {
+  }): Promise<CompetitionResponseForEmpty> => {
     return this.client.queryContractSmart(this.contractAddress, {
       competition: {
         id

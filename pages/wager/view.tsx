@@ -31,12 +31,15 @@ import { WagerViewTotalBalanceCard } from "@components/pages/wager/view/TotalBal
 
 interface ViewWagerPageContentProps {
   cosmwasmClient: CosmWasmClient;
+  dao: string;
+  id: string;
 }
 
-function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
-  const {
-    query: { dao, id },
-  } = useRouter();
+function ViewWagerPageContent({
+  cosmwasmClient,
+  dao,
+  id,
+}: ViewWagerPageContentProps) {
   const toast = useToast();
   const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
   const isValidAddress = useMemo(() => {
@@ -44,25 +47,25 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
   }, [dao]);
   const { data: itemData, isFetched: isItemFetched } =
     useDaoDaoCoreGetItemQuery({
-      client: new DaoDaoCoreQueryClient(cosmwasmClient, dao as string),
+      client: new DaoDaoCoreQueryClient(cosmwasmClient, dao),
       args: { key: env.ARENA_ITEM_KEY },
-      options: { enabled: isValidAddress },
+      options: { enabled: isValidAddress, staleTime: Infinity },
     });
   const { data: moduleData, isFetched: isModuleFetched } =
     useArenaCoreQueryExtensionQuery({
       client: new ArenaCoreQueryClient(cosmwasmClient, itemData?.item!),
       args: { msg: { competition_module: { key: env.WAGER_MODULE_KEY } } },
-      options: { enabled: isItemFetched && !!itemData && !!itemData.item },
+      options: {
+        enabled: isItemFetched && !!itemData && !!itemData.item,
+        staleTime: Infinity,
+      },
     });
   const { data, isLoading, isError } = useArenaWagerModuleCompetitionQuery({
     client: new ArenaWagerModuleQueryClient(cosmwasmClient, moduleData!),
-    args: { id: id as string },
+    args: { id: id },
     options: {
-      enabled:
-        !!id &&
-        !isNaN(parseInt(id as string)) &&
-        isModuleFetched &&
-        !!moduleData,
+      enabled: !!id && !isNaN(parseInt(id)) && isModuleFetched && !!moduleData,
+      staleTime: 0,
       retry: false,
     },
   });
@@ -95,6 +98,37 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
     if (data) data.status = "active";
   }, [data]);
 
+  const jailWager = async () => {
+    try {
+      let cosmwasmClient = await getSigningCosmWasmClient();
+      if (!cosmwasmClient) throw "Could not get the CosmWasm client";
+
+      let wagerModuleClient = new ArenaWagerModuleClient(
+        cosmwasmClient,
+        address!,
+        moduleData!
+      );
+
+      await wagerModuleClient.jailCompetition({ id: id });
+
+      toast({
+        title: "Success",
+        isClosable: true,
+        status: "success",
+        description: "The competition has been jailed.",
+      });
+
+      data!.status = "jailed";
+    } catch (e: any) {
+      toast({
+        status: "error",
+        title: "Error",
+        description: e.toString(),
+        isClosable: true,
+      });
+    }
+  };
+
   const generateProposals = async () => {
     try {
       let cosmwasmClient = await getSigningCosmWasmClient();
@@ -106,7 +140,7 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
         moduleData!
       );
 
-      await wagerModuleClient.generateProposals({ id: id as string });
+      await wagerModuleClient.generateProposals({ id: id });
 
       toast({
         title: "Success",
@@ -156,32 +190,32 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
             </List>
           </>
         )}
-        {data && (
-          <WagerViewDuesDisplay
-            cosmwasmClient={cosmwasmClient}
-            escrow_addr={data.escrow}
-            balanceChanged={balanceChanged}
-            notifyBalancesChanged={notifyBalancesChanged}
-            wager_id={data.id}
-            notifyIsActive={notifyIsActive}
-          />
-        )}
-        {address && data && (
-          <WagerViewBalanceCard
-            address={address}
-            cosmwasmClient={cosmwasmClient}
-            escrow_address={data.escrow}
-            status={data.status}
-            notifyBalancesChanged={notifyBalancesChanged}
-            balanceChanged={balanceChanged}
-          />
-        )}
-        {data && (
-          <WagerViewTotalBalanceCard
-            cosmwasmClient={cosmwasmClient}
-            escrow_address={data.escrow}
-            balanceChanged={balanceChanged}
-          />
+        {data && data.status != "inactive" && (
+          <>
+            <WagerViewDuesDisplay
+              cosmwasmClient={cosmwasmClient}
+              escrow_addr={data.escrow}
+              balanceChanged={balanceChanged}
+              notifyBalancesChanged={notifyBalancesChanged}
+              wager_id={data.id}
+              notifyIsActive={notifyIsActive}
+            />
+            {address && (
+              <WagerViewBalanceCard
+                address={address}
+                cosmwasmClient={cosmwasmClient}
+                escrow_address={data.escrow}
+                status={data.status}
+                notifyBalancesChanged={notifyBalancesChanged}
+                balanceChanged={balanceChanged}
+              />
+            )}
+            <WagerViewTotalBalanceCard
+              cosmwasmClient={cosmwasmClient}
+              escrow_address={data.escrow}
+              balanceChanged={balanceChanged}
+            />
+          </>
         )}
         {data?.status == "created" && (
           <Button
@@ -192,6 +226,11 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
             Generate Proposals
           </Button>
         )}
+        {data?.status == "active" && data?.is_expired && (
+          <Button colorScheme="secondary" maxW="150px" onClick={jailWager}>
+            Jail Wager
+          </Button>
+        )}
       </Stack>
     </Skeleton>
   );
@@ -200,7 +239,7 @@ function ViewWagerPageContent({ cosmwasmClient }: ViewWagerPageContentProps) {
 const ViewWagerPage = () => {
   const { getCosmWasmClient } = useChain(env.CHAIN);
   const {
-    query: { id },
+    query: { dao, id },
   } = useRouter();
 
   const [cosmwasmClient, setCosmwasmClient] = useState<
@@ -223,8 +262,12 @@ const ViewWagerPage = () => {
       >
         Wager {id}
       </Heading>
-      {cosmwasmClient && (
-        <ViewWagerPageContent cosmwasmClient={cosmwasmClient} />
+      {cosmwasmClient && typeof dao === "string" && typeof id === "string" && (
+        <ViewWagerPageContent
+          cosmwasmClient={cosmwasmClient}
+          dao={dao}
+          id={id}
+        />
       )}
     </Container>
   );

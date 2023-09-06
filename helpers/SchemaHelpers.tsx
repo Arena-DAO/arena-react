@@ -131,12 +131,12 @@ export function convertToExpiration(
       return { at_height: expirationSchema.height! };
     case "At Time":
       return {
-        at_time: utcToZonedTime(
-          expirationSchema.time!,
-          expirationSchema.timezone!
-        )
-          .getTime()
-          .toString(),
+        at_time: Math.floor(
+          utcToZonedTime(
+            expirationSchema.time!,
+            expirationSchema.timezone!
+          ).getDate() / 1000 // Get timestamp in seconds
+        ).toString(),
       };
     case "Never":
       return { never: {} };

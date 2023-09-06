@@ -99,7 +99,8 @@ export function WagerViewBalanceCard({
           cosmwasmClient={cosmwasmClient}
           balance={data}
           actions={
-            status !== "active" && (
+            status !== "active" &&
+            status !== "jailed" && (
               <Button onClick={withdrawFunds}>Withdraw</Button>
             )
           }

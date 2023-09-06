@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { Uint128, DepositToken, UncheckedDenom, DepositRefundPolicy, Admin, Binary, Decimal, InstantiateMsg, UncheckedDepositInfo, InstantiateExt, ModuleInstantiateInfo, Ruleset, ExecuteMsg, ExecuteExt, Status, Empty, CompetitionCoreJailMsg, QueryMsg, QueryExt, CheckedDenom, Addr, Config, CheckedDepositInfo, DepositInfoResponse, HooksResponse } from "./ArenaCore.types";
+import { Uint128, DepositToken, UncheckedDenom, DepositRefundPolicy, Admin, Binary, Decimal, InstantiateMsg, UncheckedDepositInfo, InstantiateExt, ModuleInstantiateInfo, Ruleset, ExecuteMsg, ExecuteExt, Status, Empty, QueryMsg, QueryExt, CheckedDenom, Addr, Config, CheckedDepositInfo, DepositInfoResponse, HooksResponse } from "./ArenaCore.types";
 export interface ArenaCoreReadOnlyInterface {
   contractAddress: string;
   proposalModule: () => Promise<Addr>;
