@@ -399,7 +399,7 @@ function MenuItems() {
   return (
     <>
       {linkItems
-        ?.filter(({ env }) => !env || env === process.env.NODE_ENV)
+        ?.filter(({ env: e }) => !e || e === env.ENV)
         .map(({ label, href, target }, i) => {
           return (
             <Link
