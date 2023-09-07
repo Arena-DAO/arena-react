@@ -26,12 +26,7 @@ import { ArenaCoreQueryClient } from "@arena/ArenaCore.client";
 import { ArenaWagerModuleClient } from "@arena/ArenaWagerModule.client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
-import {
-  Controller,
-  FormProvider,
-  useFieldArray,
-  useForm,
-} from "react-hook-form";
+import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import {
   AddressSchema,

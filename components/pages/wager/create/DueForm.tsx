@@ -24,7 +24,7 @@ import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { debounce } from "lodash";
 import env from "@config/env";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   UseFormGetValues,
   useForm,
@@ -109,6 +109,7 @@ export const WagerCreateDueForm = ({
     handleSubmit,
     watch,
     setError,
+    setValue,
     clearErrors,
     formState: { errors, isSubmitting },
   } = useForm<DueFormValues>({
@@ -127,6 +128,13 @@ export const WagerCreateDueForm = ({
   }, 500);
   const watchType = watch("type");
   const watchAmount = watch("amount");
+
+  useEffect(() => {
+    setValue("token_id", undefined);
+    setValue("amount", undefined);
+
+    setValue("key", watchType == "native" ? env.DEFAULT_NATIVE : "");
+  }, [watchType, setValue]);
 
   const onSubmit = async (values: DueFormValues) => {
     if (

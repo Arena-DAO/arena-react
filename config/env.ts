@@ -14,6 +14,7 @@ interface Env {
   DAO_DAO_URL: string;
   OSMOSIS_URL: string;
   JUNO_API_URL: string;
+  FAUCET_URL: string | undefined;
 
   // Variables specific to .env.development
   CODE_ID_DAO_PROPOSAL_MULTIPLE: number;
@@ -42,6 +43,7 @@ const env: Env = {
   DAO_DAO_URL: process.env.NEXT_PUBLIC_DAO_DAO_URL!,
   OSMOSIS_URL: process.env.NEXT_PUBLIC_OSMOSIS_URL!,
   JUNO_API_URL: process.env.NEXT_PUBLIC_JUNO_API_URL!,
+  FAUCET_URL: process.env.NEXT_PUBLIC_FAUCET_URL,
 
   CODE_ID_DAO_PROPOSAL_MULTIPLE: parseInt(
     process.env.NEXT_PUBLIC_CODE_ID_DAO_PROPOSAL_MULTIPLE!

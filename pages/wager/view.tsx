@@ -19,7 +19,13 @@ import { useArenaCoreQueryExtensionQuery } from "@arena/ArenaCore.react-query";
 import { ArenaCoreQueryClient } from "@arena/ArenaCore.client";
 import { useArenaWagerModuleCompetitionQuery } from "@arena/ArenaWagerModule.react-query";
 import { ArenaWagerModuleQueryClient } from "@arena/ArenaWagerModule.client";
-import { Button, Skeleton, useDisclosure, useToast } from "@chakra-ui/react";
+import {
+  Button,
+  Fade,
+  Skeleton,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
 import { statusColors } from "~/helpers/ArenaHelpers";
 import { WagerViewDuesDisplay } from "@components/pages/wager/view/DuesDisplay";
 import { AddressSchema } from "~/helpers/SchemaHelpers";
@@ -29,7 +35,6 @@ import {
   WagerViewProposalPromptModal,
   WagerViewProposalPromptModalAction,
 } from "@components/pages/wager/view/ProposalPromptModal";
-import { CompetitionStatus } from "@arena/ArenaWagerModule.types";
 
 interface ViewWagerPageContentProps {
   cosmwasmClient: CosmWasmClient;
@@ -113,110 +118,112 @@ function ViewWagerPageContent({
     return null;
   }
   return (
-    <Skeleton isLoaded={!query.isLoading} w="100%">
-      <Stack>
-        {!!data && (
-          <DAOCard address={data.dao} cosmwasmClient={cosmwasmClient} />
-        )}
-        <Heading>
-          {data?.name}{" "}
-          <Badge
-            variant="solid"
-            ml={1}
-            colorScheme={statusColors[data?.status || "inactive"]}
-          >
-            {data?.status}
-          </Badge>
-        </Heading>
-        <Text>{data?.description}</Text>
-        {(data?.rules.length ?? 0) > 0 && (
-          <>
-            <Heading size="md">Rules:</Heading>
-            <List spacing={2}>
-              {data?.rules.map((rule, idx) => (
-                <ListItem key={idx}>{rule}</ListItem>
-              ))}
-            </List>
-          </>
-        )}
-        {data && data.status != "inactive" && (
-          <>
-            <WagerViewDuesDisplay
-              cosmwasmClient={cosmwasmClient}
-              escrow_addr={data.escrow}
-              balanceChanged={balanceChanged}
-              notifyBalancesChanged={notifyBalancesChanged}
-              wager_id={data.id}
-              notifyIsActive={notifyIsActive}
-            />
-            {address && (
-              <WagerViewBalanceCard
-                address={address}
+    <Fade in={true}>
+      <Skeleton isLoaded={!query.isLoading} w="100%">
+        <Stack>
+          {!!data && (
+            <DAOCard address={data.dao} cosmwasmClient={cosmwasmClient} />
+          )}
+          <Heading>
+            {data?.name}{" "}
+            <Badge
+              variant="solid"
+              ml={1}
+              colorScheme={statusColors[data?.status || "inactive"]}
+            >
+              {data?.status}
+            </Badge>
+          </Heading>
+          <Text>{data?.description}</Text>
+          {(data?.rules.length ?? 0) > 0 && (
+            <>
+              <Heading size="md">Rules:</Heading>
+              <List spacing={2}>
+                {data?.rules.map((rule, idx) => (
+                  <ListItem key={idx}>{rule}</ListItem>
+                ))}
+              </List>
+            </>
+          )}
+          {data && data.status != "inactive" && (
+            <>
+              <WagerViewDuesDisplay
+                cosmwasmClient={cosmwasmClient}
+                escrow_addr={data.escrow}
+                balanceChanged={balanceChanged}
+                notifyBalancesChanged={notifyBalancesChanged}
+                wager_id={data.id}
+                notifyIsActive={notifyIsActive}
+              />
+              {address && (
+                <WagerViewBalanceCard
+                  address={address}
+                  cosmwasmClient={cosmwasmClient}
+                  escrow_address={data.escrow}
+                  status={data.status}
+                  notifyBalancesChanged={notifyBalancesChanged}
+                  balanceChanged={balanceChanged}
+                />
+              )}
+              <WagerViewTotalBalanceCard
                 cosmwasmClient={cosmwasmClient}
                 escrow_address={data.escrow}
-                status={data.status}
-                notifyBalancesChanged={notifyBalancesChanged}
                 balanceChanged={balanceChanged}
               />
-            )}
-            <WagerViewTotalBalanceCard
-              cosmwasmClient={cosmwasmClient}
-              escrow_address={data.escrow}
-              balanceChanged={balanceChanged}
+            </>
+          )}
+          {!data?.has_generated_proposals && (
+            <Button
+              colorScheme="secondary"
+              maxW="150px"
+              onClick={() => {
+                setPromptAction("Generate Proposals");
+                onOpen();
+              }}
+            >
+              Generate Proposals
+            </Button>
+          )}
+          {data?.status == "active" && data?.is_expired && (
+            <Button
+              colorScheme="secondary"
+              maxW="150px"
+              onClick={() => {
+                setPromptAction("Jail Wager");
+                onOpen();
+              }}
+            >
+              Jail Wager
+            </Button>
+          )}
+          {moduleData && (
+            <WagerViewProposalPromptModal
+              id={id}
+              module_addr={moduleData}
+              isOpen={isOpen}
+              onClose={onClose}
+              action={promptAction}
+              setJailedStatus={() => {
+                setData((prevData) => {
+                  if (prevData) {
+                    return { ...prevData, status: "jailed" };
+                  }
+                  return prevData;
+                });
+              }}
+              setHasGeneratedProposals={() => {
+                setData((prevData) => {
+                  if (prevData) {
+                    return { ...prevData, has_generated_proposals: true };
+                  }
+                  return prevData;
+                });
+              }}
             />
-          </>
-        )}
-        {!data?.has_generated_proposals && (
-          <Button
-            colorScheme="secondary"
-            maxW="150px"
-            onClick={() => {
-              setPromptAction("Generate Proposals");
-              onOpen();
-            }}
-          >
-            Generate Proposals
-          </Button>
-        )}
-        {data?.status == "active" && data?.is_expired && (
-          <Button
-            colorScheme="secondary"
-            maxW="150px"
-            onClick={() => {
-              setPromptAction("Jail Wager");
-              onOpen();
-            }}
-          >
-            Jail Wager
-          </Button>
-        )}
-        {moduleData && (
-          <WagerViewProposalPromptModal
-            id={id}
-            module_addr={moduleData}
-            isOpen={isOpen}
-            onClose={onClose}
-            action={promptAction}
-            setJailedStatus={() => {
-              setData((prevData) => {
-                if (prevData) {
-                  return { ...prevData, status: "jailed" };
-                }
-                return prevData;
-              });
-            }}
-            setHasGeneratedProposals={() => {
-              setData((prevData) => {
-                if (prevData) {
-                  return { ...prevData, has_generated_proposals: true };
-                }
-                return prevData;
-              });
-            }}
-          />
-        )}
-      </Stack>
-    </Skeleton>
+          )}
+        </Stack>
+      </Skeleton>
+    </Fade>
   );
 }
 
