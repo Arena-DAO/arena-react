@@ -1,33 +1,25 @@
-export class DAOItem {
+import env from "./env";
+
+export interface DAOItem {
   url: string;
   title?: string;
   children?: DAOItem[];
   addrs?: string[];
-  img?: string | undefined;
-
-  constructor(url: string, title: string) {
-    this.url = url;
-    this.title = title;
-    this.children = [];
-    this.addrs = [];
-  }
+  img?: string;
 }
 
-function getDAOMap() {
-  const daoMap = new Map<string, DAOItem>();
-  mapDAOItem(daoMap, DAORoot);
+function populateItemToMap(
+  daoItem: DAOItem,
+  daoMap: Map<string, DAOItem> = new Map()
+): Map<string, DAOItem> {
+  if (daoItem.url) daoMap.set(daoItem.url, daoItem);
+  daoItem.children?.forEach((child) => populateItemToMap(child, daoMap));
   return daoMap;
-}
-
-function mapDAOItem(map: Map<string, DAOItem>, daoItem: DAOItem) {
-  daoItem.children?.forEach((x) => {
-    map.set(x.url, x);
-    mapDAOItem(map, x);
-  });
 }
 
 export const DAORoot: DAOItem = {
   url: "",
+  addrs: [env.ARENA_DAO_ADDRESS],
   children: [
     {
       url: "gaming",
@@ -41,8 +33,8 @@ export const DAORoot: DAOItem = {
         },
         {
           url: "overwatch-2",
-          img: "/category_images/overwatch-2.webp",
           title: "Overwatch 2",
+          img: "/category_images/overwatch-2.webp",
         },
         {
           url: "call-of-duty",
@@ -60,12 +52,18 @@ export const DAORoot: DAOItem = {
           url: "soccer",
           title: "Soccer",
           img: "/category_images/soccer.jpg",
+          addrs: [
+            "juno1v9s28a6cewjqsdqhva27jl8kzm7h39j6rje90du5admp8n0xcneszexzn5",
+          ],
+          children: [
+            {
+              url: "soccer-kc",
+              img: "/category_images/soccer.jpg",
+              title: "KC Soccer",
+            },
+          ],
         },
-        {
-          url: "tennis",
-          title: "Tennis",
-          img: "/category_images/tennis.jpg",
-        },
+        { url: "tennis", title: "Tennis", img: "/category_images/tennis.jpg" },
         {
           url: "basketball",
           title: "Basketball",
@@ -75,4 +73,5 @@ export const DAORoot: DAOItem = {
     },
   ],
 };
-export const DAOMap = getDAOMap();
+
+export const DAOMap = populateItemToMap(DAORoot);

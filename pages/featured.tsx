@@ -1,108 +1,56 @@
-import {
-  Box,
-  Container,
-  Heading,
-  Image,
-  Text,
-  SimpleGrid,
-  Flex,
-  Spacer,
-  Button,
-} from "@chakra-ui/react";
+import { Container, Heading, SimpleGrid, Stack } from "@chakra-ui/react";
 import { DAOMap, DAORoot } from "@config/featured";
 import { useRouter } from "next/router";
-import NextLink from "next/link";
+import { DAOCard } from "@components/cards/DAOCard";
+import { useChain } from "@cosmos-kit/react";
+import env from "@config/env";
+import { useEffect, useState } from "react";
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { FeaturedDAOItemCard } from "@components/pages/featured/DAOItemCard";
 
 export default function FeaturedDAOs() {
   const router = useRouter();
+  const { getCosmWasmClient } = useChain(env.CHAIN);
   const { id } = router.query;
+  const [cosmwasmClient, setCosmwasmClient] = useState<
+    CosmWasmClient | undefined
+  >(undefined);
+  useEffect(() => {
+    async function fetchClient() {
+      setCosmwasmClient(await getCosmWasmClient());
+    }
+    fetchClient();
+  }, [getCosmWasmClient]);
   const daoItem = id ? DAOMap.get(id as string) ?? DAORoot : DAORoot;
 
   return (
-    <Container maxW={{ base: "100%" }} centerContent pb={10}>
-      {daoItem.title && (
-        <Heading as="h1" fontWeight="extrabold">
-          {daoItem.title}
-        </Heading>
-      )}
-      {daoItem.children && (
-        <Heading as="h2" fontWeight="extrabold" mb={3}>
-          Categories
-        </Heading>
-      )}
-      <SimpleGrid minChildWidth="400px" spacing="5">
-        {daoItem.children?.map((x, i) => {
-          return (
-            <Flex
-              key={i}
-              direction="column"
-              justifyContent="center"
-              alignItems="center"
-              mx="auto"
-              w="full"
-            >
-              <Image
-                w="full"
-                rounded="base"
-                shadow="base"
-                bgSize="cover"
-                src={x.img ? x.img : "/default_trophy.jpg"}
-                alt="category image"
-              />
-              <Box
-                w="75%"
-                bg="white"
-                _dark={{
-                  bg: "gray.800",
-                }}
-                mt={-10}
-                shadow="base"
-                rounded="base"
-                overflow="hidden"
-              >
-                <Heading py={2} textAlign="center" fontWeight="bold">
-                  {x.title}
-                </Heading>
-                <Flex
-                  justifyContent="space-between"
-                  py={2}
-                  px={3}
-                  bg="gray.300"
-                  _dark={{
-                    bg: "gray.700",
-                  }}
-                >
-                  <Spacer />
-                  <NextLink href={"/featured?id=" + x.url}>
-                    <Button
-                      colorScheme="secondary"
-                      fontWeight="bold"
-                      textTransform="uppercase"
-                    >
-                      View
-                    </Button>
-                  </NextLink>
-                </Flex>
-              </Box>
-            </Flex>
-          );
+    <Container maxW={{ base: "full" }} centerContent pb={10}>
+      <Heading
+        as="h1"
+        fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
+        fontWeight="extrabold"
+        mb={3}
+      >
+        {daoItem.title} {daoItem.children && "Categories"}
+      </Heading>
+      <SimpleGrid minChildWidth="400px" spacing="5" width="100%">
+        {daoItem.children?.map((x) => {
+          return <FeaturedDAOItemCard item={x} key={x.url} />;
         })}
       </SimpleGrid>
       {daoItem.addrs && (
-        <Heading
-          mt="5"
-          as="h2"
-          className="holographic"
-          fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
-          fontWeight="extrabold"
-          mb={3}
-        >
+        <Heading mt="5" className="holographic" fontWeight="extrabold" mb={3}>
           DAO&apos;s
         </Heading>
       )}
-      {daoItem.addrs?.map((x, i) => {
-        return <Text key={i}>{x}</Text>;
-      })}
+      <SimpleGrid minChildWidth="400px" spacing="5" width="100%">
+        {cosmwasmClient &&
+          daoItem.addrs?.map((x, i) => {
+            return (
+              <DAOCard address={x} cosmwasmClient={cosmwasmClient} key={i} />
+            );
+          })}
+      </SimpleGrid>
     </Container>
   );
 }
