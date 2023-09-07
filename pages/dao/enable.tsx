@@ -314,7 +314,7 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Fade in={true}>
         <Stack>
           <FormControl isInvalid={!!errors.dao_address}>
@@ -525,12 +525,12 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
           <FormControl isInvalid={!!errors.rulesets}>
             <FormLabel>Rulesets</FormLabel>
             <FormProvider {...formMethods}>
-              <Accordion defaultIndex={[0]} allowMultiple>
+              <Accordion defaultIndex={[0]} allowToggle allowMultiple>
                 {rulesetsFields.map((ruleset, rulesetIndex) => (
                   <AccordionItem key={ruleset.id}>
                     <HStack>
                       <AccordionButton>
-                        <Box flex="1" textAlign="left">
+                        <Box as="span" flex="1" textAlign="left">
                           Ruleset {rulesetIndex + 1}
                         </Box>
                         <AccordionIcon />
@@ -590,7 +590,6 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
           </FormControl>
           <Button
             type="submit"
-            colorScheme="secondary"
             isDisabled={!isWalletConnected}
             isLoading={isSubmitting}
             maxW="150px"
@@ -625,7 +624,9 @@ const EnableDAOPage = () => {
       >
         Enable the Arena Extension
       </Heading>
-      {cosmwasmClient && <EnableForm cosmwasmClient={cosmwasmClient} />}
+      <Box w="100%">
+        {cosmwasmClient && <EnableForm cosmwasmClient={cosmwasmClient} />}
+      </Box>
     </Container>
   );
 };

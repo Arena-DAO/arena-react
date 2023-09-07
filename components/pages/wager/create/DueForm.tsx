@@ -290,11 +290,7 @@ export const WagerCreateDueForm = ({
           </Stack>
         </ModalBody>
         <ModalFooter>
-          <Button
-            variant="ghost"
-            onClick={handleSubmit(onSubmit)}
-            isLoading={isSubmitting}
-          >
+          <Button onClick={handleSubmit(onSubmit)} isLoading={isSubmitting}>
             Submit
           </Button>
         </ModalFooter>

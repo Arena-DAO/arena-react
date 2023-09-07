@@ -10,34 +10,38 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { LinkIcon } from "@chakra-ui/icons";
 import { useDaoDaoCoreConfigQuery } from "@dao/DaoDaoCore.react-query";
 import { convertIPFSToHttp } from "~/helpers/IPFSHelpers";
 import NextLink from "next/link";
 import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import env from "config/env";
 import { CopyAddressButton } from "@components/buttons/CopyAddressButton";
+import { AddressSchema } from "~/helpers/SchemaHelpers";
 
 interface DAOCardProps extends CardProps {
   address: string;
   cosmwasmClient: CosmWasmClient;
+  showViewLink?: boolean;
 }
 
 export function DAOCard({
   address,
   cosmwasmClient,
+  showViewLink = true,
   ...cardProps
 }: DAOCardProps) {
+  const isEnabled = AddressSchema.safeParse(address).success;
   const { data, isLoading, isError } = useDaoDaoCoreConfigQuery({
     client: new DaoDaoCoreQueryClient(cosmwasmClient, address),
     options: {
       staleTime: Infinity,
       retry: false,
+      enabled: isEnabled,
     },
   });
 
-  if (isError) {
+  if (isError || !isEnabled) {
     return null;
   }
 
@@ -59,21 +63,22 @@ export function DAOCard({
           <Text fontSize="xl">{data?.name}</Text>
         </CardBody>
         <CardFooter alignItems={"center"}>
-          <Tooltip label="View">
-            <Link
-              as={NextLink}
-              href={env.DAO_DAO_URL + "/dao/" + address}
-              _hover={{ textDecoration: "none" }}
-              _focus={{ outline: "none" }}
-              target="_blank"
-            >
-              <IconButton
-                icon={<ExternalLinkIcon />}
-                aria-label="View"
-                variant="ghost"
-              />
-            </Link>
-          </Tooltip>
+          {showViewLink && (
+            <Tooltip label="View">
+              <Link
+                as={NextLink}
+                href={"/dao/view?dao=" + address}
+                _hover={{ textDecoration: "none" }}
+                _focus={{ outline: "none" }}
+              >
+                <IconButton
+                  icon={<LinkIcon />}
+                  aria-label="View"
+                  variant="ghost"
+                />
+              </Link>
+            </Tooltip>
+          )}
           <CopyAddressButton addr={address} aria-label="Copy Address" />
         </CardFooter>
       </Card>

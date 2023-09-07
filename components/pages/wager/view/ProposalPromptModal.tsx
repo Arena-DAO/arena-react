@@ -180,7 +180,6 @@ export function WagerViewProposalPromptModal({
           </ModalBody>
           <ModalFooter>
             <Button
-              variant="primary"
               type="submit"
               isDisabled={!isWalletConnected}
               isLoading={isSubmitting}

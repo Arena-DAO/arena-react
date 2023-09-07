@@ -3,15 +3,17 @@ import { Skeleton, Avatar, Text } from "@chakra-ui/react";
 import { BsPerson } from "react-icons/bs";
 import { useProfileData } from "~/hooks/useProfileData";
 import { CopyAddressButton } from "@components/buttons/CopyAddressButton";
+import { AddressSchema } from "~/helpers/SchemaHelpers";
 
 interface UserCardProps extends CardProps {
   addr: string;
 }
 
 export function UserCard({ addr, ...cardProps }: UserCardProps) {
-  const { data, isLoading, isError } = useProfileData(addr);
+  const isEnabled = AddressSchema.safeParse(addr).success;
+  const { data, isLoading, isError } = useProfileData(addr, isEnabled);
 
-  if (isError) {
+  if (isError || !isEnabled) {
     return null;
   }
 

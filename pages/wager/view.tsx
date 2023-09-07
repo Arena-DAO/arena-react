@@ -1,5 +1,6 @@
 import {
   Badge,
+  Box,
   Container,
   Heading,
   List,
@@ -119,7 +120,7 @@ function ViewWagerPageContent({
   }
   return (
     <Fade in={true}>
-      <Skeleton isLoaded={!query.isLoading} w="100%">
+      <Skeleton isLoaded={!query.isLoading}>
         <Stack>
           {!!data && (
             <DAOCard address={data.dao} cosmwasmClient={cosmwasmClient} />
@@ -253,13 +254,17 @@ const ViewWagerPage = () => {
       >
         Wager {id}
       </Heading>
-      {cosmwasmClient && typeof dao === "string" && typeof id === "string" && (
-        <ViewWagerPageContent
-          cosmwasmClient={cosmwasmClient}
-          dao={dao}
-          id={id}
-        />
-      )}
+      <Box w="100%">
+        {cosmwasmClient &&
+          typeof dao === "string" &&
+          typeof id === "string" && (
+            <ViewWagerPageContent
+              cosmwasmClient={cosmwasmClient}
+              dao={dao}
+              id={id}
+            />
+          )}
+      </Box>
     </Container>
   );
 };

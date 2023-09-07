@@ -33,7 +33,7 @@ export default function FeaturedDAOs() {
       >
         {daoItem.title} {daoItem.children && "Categories"}
       </Heading>
-      <SimpleGrid minChildWidth="400px" spacing="5" width="100%">
+      <SimpleGrid minChildWidth="300px" spacing="5" width="100%">
         {daoItem.children?.map((x) => {
           return <FeaturedDAOItemCard item={x} key={x.url} />;
         })}
@@ -43,7 +43,7 @@ export default function FeaturedDAOs() {
           DAO&apos;s
         </Heading>
       )}
-      <SimpleGrid minChildWidth="400px" spacing="5" width="100%">
+      <SimpleGrid minChildWidth="300px" spacing="5" width="100%">
         {cosmwasmClient &&
           daoItem.addrs?.map((x, i) => {
             return (

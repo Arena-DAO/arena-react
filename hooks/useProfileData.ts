@@ -37,8 +37,9 @@ const fetchProfile = async (address: string): Promise<ProfileData> => {
   return data;
 };
 
-export const useProfileData = (address: string) => {
+export const useProfileData = (address: string, enabled: boolean = true) => {
   return useQuery(["profile", address], () => fetchProfile(address), {
     staleTime: 1000 * 60 * 30, // 30 minutes
+    enabled,
   });
 };

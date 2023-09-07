@@ -3,8 +3,20 @@ import {
   FormErrorMessage,
   FormLabel,
 } from "@chakra-ui/form-control";
-import { Container, Grid, GridItem, Heading, Stack } from "@chakra-ui/layout";
 import {
+  Box,
+  Container,
+  Grid,
+  GridItem,
+  Heading,
+  Stack,
+} from "@chakra-ui/layout";
+import {
+  Accordion,
+  AccordionButton,
+  AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
   Button,
   Fade,
   IconButton,
@@ -298,7 +310,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Fade in={true}>
         <Stack>
           <FormControl isInvalid={!!errors.dao_address}>
@@ -398,24 +410,6 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
               </GridItem>
             )}
           </Grid>
-          <FormControl isInvalid={!!errors.proposal_title}>
-            <FormLabel>Proposal Title</FormLabel>
-            <InputGroup>
-              <Input {...register("proposal_title")} />
-            </InputGroup>
-            <FormErrorMessage>
-              {errors.proposal_title?.message}
-            </FormErrorMessage>
-          </FormControl>
-          <FormControl isInvalid={!!errors.proposal_description}>
-            <FormLabel>Proposal Description</FormLabel>
-            <InputGroup>
-              <Textarea {...register("proposal_description")} />
-            </InputGroup>
-            <FormErrorMessage>
-              {errors.proposal_description?.message}
-            </FormErrorMessage>
-          </FormControl>
           <WagerCreateRulesetTable
             cosmwasmClient={cosmwasmClient}
             onRulesetSelect={onRulesetSelect}
@@ -500,9 +494,40 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
             </Tooltip>
             <FormErrorMessage>{errors.dues?.message}</FormErrorMessage>
           </FormControl>
+          <Accordion allowToggle>
+            <AccordionItem>
+              <AccordionButton>
+                <Box as="span" flex="1" textAlign="left">
+                  Proposal Details <small>(optional)</small>
+                </Box>
+                <AccordionIcon />
+              </AccordionButton>
+              <AccordionPanel>
+                <Stack>
+                  <FormControl isInvalid={!!errors.proposal_title}>
+                    <FormLabel>Proposal Title</FormLabel>
+                    <InputGroup>
+                      <Input {...register("proposal_title")} />
+                    </InputGroup>
+                    <FormErrorMessage>
+                      {errors.proposal_title?.message}
+                    </FormErrorMessage>
+                  </FormControl>
+                  <FormControl isInvalid={!!errors.proposal_description}>
+                    <FormLabel>Proposal Description</FormLabel>
+                    <InputGroup>
+                      <Textarea {...register("proposal_description")} />
+                    </InputGroup>
+                    <FormErrorMessage>
+                      {errors.proposal_description?.message}
+                    </FormErrorMessage>
+                  </FormControl>
+                </Stack>
+              </AccordionPanel>
+            </AccordionItem>
+          </Accordion>
           <Button
             type="submit"
-            colorScheme="secondary"
             isDisabled={!isWalletConnected}
             isLoading={isSubmitting}
             maxW="150px"
@@ -538,7 +563,9 @@ const CreateWagerPage = () => {
       >
         Create a Wager
       </Heading>
-      {cosmwasmClient && <WagerForm cosmwasmClient={cosmwasmClient} />}
+      <Box w="100%">
+        {cosmwasmClient && <WagerForm cosmwasmClient={cosmwasmClient} />}
+      </Box>
     </Container>
   );
 };
