@@ -37,8 +37,9 @@ export function DAOEnableRulesetRules({
     <FormControl isInvalid={!!errors.rulesets?.[rulesetIndex]?.rules}>
       <FormLabel>Rules</FormLabel>
       <Stack>
-        {fields?.map((_rule, ruleIndex) => (
+        {fields?.map((rule, ruleIndex) => (
           <FormControl
+            key={rule.id}
             isInvalid={!!errors.rulesets?.[rulesetIndex]?.rules?.[ruleIndex]}
           >
             <InputGroup>

@@ -432,9 +432,9 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
           <FormControl isInvalid={!!errors.rules}>
             <FormLabel>Rules</FormLabel>
             <Stack>
-              {rulesFields?.map((_rule, ruleIndex) => (
+              {rulesFields?.map((rule, ruleIndex) => (
                 <FormControl
-                  key={ruleIndex}
+                  key={rule.id}
                   isInvalid={!!errors.rules?.[ruleIndex]?.rule}
                 >
                   <InputGroup>
