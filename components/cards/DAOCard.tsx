@@ -38,7 +38,7 @@ export function DAOCard({
   });
 
   if (isError) {
-    return <></>;
+    return null;
   }
 
   return (

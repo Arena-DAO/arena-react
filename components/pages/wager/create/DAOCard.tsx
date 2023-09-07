@@ -15,6 +15,6 @@ export function WagerCreateDAOCard({
 }: WagerCreateDAOCardProps) {
   let watchDAOAddress = useWatch({ control, name: "dao_address" });
 
-  if (!AddressSchema.safeParse(watchDAOAddress).success) return <></>;
+  if (!AddressSchema.safeParse(watchDAOAddress).success) return null;
   return <DAOCard address={watchDAOAddress} cosmwasmClient={cosmwasmClient} />;
 }

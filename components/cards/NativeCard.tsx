@@ -84,7 +84,7 @@ export function NativeCard({
     });
   }, [nativeInfo, onDataLoaded, denom]);
 
-  if (isError) return <></>;
+  if (isError) return null;
   return (
     <Skeleton isLoaded={!isLoading || !!nativeInfo}>
       <Card

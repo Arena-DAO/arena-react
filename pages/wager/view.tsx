@@ -18,16 +18,18 @@ import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 import { useArenaCoreQueryExtensionQuery } from "@arena/ArenaCore.react-query";
 import { ArenaCoreQueryClient } from "@arena/ArenaCore.client";
 import { useArenaWagerModuleCompetitionQuery } from "@arena/ArenaWagerModule.react-query";
-import {
-  ArenaWagerModuleClient,
-  ArenaWagerModuleQueryClient,
-} from "@arena/ArenaWagerModule.client";
-import { Button, Skeleton, useToast } from "@chakra-ui/react";
+import { ArenaWagerModuleQueryClient } from "@arena/ArenaWagerModule.client";
+import { Button, Skeleton, useDisclosure, useToast } from "@chakra-ui/react";
 import { statusColors } from "~/helpers/ArenaHelpers";
 import { WagerViewDuesDisplay } from "@components/pages/wager/view/DuesDisplay";
 import { AddressSchema } from "~/helpers/SchemaHelpers";
 import { WagerViewBalanceCard } from "@components/pages/wager/view/BalanceCard";
 import { WagerViewTotalBalanceCard } from "@components/pages/wager/view/TotalBalanceCard";
+import {
+  WagerViewProposalPromptModal,
+  WagerViewProposalPromptModalAction,
+} from "@components/pages/wager/view/ProposalPromptModal";
+import { CompetitionStatus } from "@arena/ArenaWagerModule.types";
 
 interface ViewWagerPageContentProps {
   cosmwasmClient: CosmWasmClient;
@@ -41,10 +43,13 @@ function ViewWagerPageContent({
   id,
 }: ViewWagerPageContentProps) {
   const toast = useToast();
-  const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
+  const { address } = useChain(env.CHAIN);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const isValidAddress = useMemo(() => {
     return !!dao && AddressSchema.safeParse(dao).success;
   }, [dao]);
+  const [promptAction, setPromptAction] =
+    useState<WagerViewProposalPromptModalAction>("Generate Proposals");
   const { data: itemData, isFetched: isItemFetched } =
     useDaoDaoCoreGetItemQuery({
       client: new DaoDaoCoreQueryClient(cosmwasmClient, dao),
@@ -60,7 +65,7 @@ function ViewWagerPageContent({
         staleTime: Infinity,
       },
     });
-  const { data, isLoading, isError } = useArenaWagerModuleCompetitionQuery({
+  const query = useArenaWagerModuleCompetitionQuery({
     client: new ArenaWagerModuleQueryClient(cosmwasmClient, moduleData!),
     args: { id: id },
     options: {
@@ -69,16 +74,21 @@ function ViewWagerPageContent({
       retry: false,
     },
   });
+  const [data, setData] = useState(query.data);
+  useEffect(() => {
+    setData(query.data);
+  }, [query.data]);
+
   const [balanceChanged, setBalanceChanged] = useState<number>(0);
   useEffect(() => {
-    if (isError)
+    if (query.isError)
       toast({
         title: "Error",
         isClosable: false,
         status: "error",
         description: `Could not retrieve competition ${id}`,
       });
-  }, [isError, toast, id]);
+  }, [query.isError, toast, id]);
   useEffect(() => {
     if (!isValidAddress) {
       toast({
@@ -90,6 +100,7 @@ function ViewWagerPageContent({
     }
   }, [isValidAddress, toast]);
   useEffect(() => {}, [data?.status]);
+  useEffect(() => {}, [data?.has_generated_proposals]);
   const notifyBalancesChanged = useCallback(
     () => setBalanceChanged((prev) => prev + 1),
     []
@@ -98,73 +109,11 @@ function ViewWagerPageContent({
     if (data) data.status = "active";
   }, [data]);
 
-  const jailWager = async () => {
-    try {
-      let cosmwasmClient = await getSigningCosmWasmClient();
-      if (!cosmwasmClient) throw "Could not get the CosmWasm client";
-
-      let wagerModuleClient = new ArenaWagerModuleClient(
-        cosmwasmClient,
-        address!,
-        moduleData!
-      );
-
-      await wagerModuleClient.jailCompetition({ id: id });
-
-      toast({
-        title: "Success",
-        isClosable: true,
-        status: "success",
-        description: "The competition has been jailed.",
-      });
-
-      data!.status = "jailed";
-    } catch (e: any) {
-      toast({
-        status: "error",
-        title: "Error",
-        description: e.toString(),
-        isClosable: true,
-      });
-    }
-  };
-
-  const generateProposals = async () => {
-    try {
-      let cosmwasmClient = await getSigningCosmWasmClient();
-      if (!cosmwasmClient) throw "Could not get the CosmWasm client";
-
-      let wagerModuleClient = new ArenaWagerModuleClient(
-        cosmwasmClient,
-        address!,
-        moduleData!
-      );
-
-      await wagerModuleClient.generateProposals({ id: id });
-
-      toast({
-        title: "Success",
-        isClosable: true,
-        status: "success",
-        description: "The competition's proposals have been generated.",
-      });
-
-      data!.status = "pending";
-    } catch (e: any) {
-      toast({
-        status: "error",
-        title: "Error",
-        description: e.toString(),
-        isClosable: true,
-      });
-    }
-  };
-
-  if (isError || !isValidAddress) {
-    return <></>;
+  if (query.isError || !isValidAddress) {
+    return null;
   }
   return (
-    <Skeleton isLoaded={!isLoading} w="100%">
+    <Skeleton isLoaded={!query.isLoading} w="100%">
       <Stack>
         {!!data && (
           <DAOCard address={data.dao} cosmwasmClient={cosmwasmClient} />
@@ -217,19 +166,54 @@ function ViewWagerPageContent({
             />
           </>
         )}
-        {data?.status == "created" && (
+        {!data?.has_generated_proposals && (
           <Button
             colorScheme="secondary"
             maxW="150px"
-            onClick={generateProposals}
+            onClick={() => {
+              setPromptAction("Generate Proposals");
+              onOpen();
+            }}
           >
             Generate Proposals
           </Button>
         )}
         {data?.status == "active" && data?.is_expired && (
-          <Button colorScheme="secondary" maxW="150px" onClick={jailWager}>
+          <Button
+            colorScheme="secondary"
+            maxW="150px"
+            onClick={() => {
+              setPromptAction("Jail Wager");
+              onOpen();
+            }}
+          >
             Jail Wager
           </Button>
+        )}
+        {moduleData && (
+          <WagerViewProposalPromptModal
+            id={id}
+            module_addr={moduleData}
+            isOpen={isOpen}
+            onClose={onClose}
+            action={promptAction}
+            setJailedStatus={() => {
+              setData((prevData) => {
+                if (prevData) {
+                  return { ...prevData, status: "jailed" };
+                }
+                return prevData;
+              });
+            }}
+            setHasGeneratedProposals={() => {
+              setData((prevData) => {
+                if (prevData) {
+                  return { ...prevData, has_generated_proposals: true };
+                }
+                return prevData;
+              });
+            }}
+          />
         )}
       </Stack>
     </Skeleton>

@@ -54,7 +54,7 @@ export function Cw721NFTCard({
     options: { retry: false, staleTime: Infinity },
   });
 
-  if (isError) return <></>;
+  if (isError) return null;
   return (
     <Skeleton isLoaded={!isLoading}>
       <Card {...nftCardProps}>
@@ -104,7 +104,7 @@ export function Cw721Card({
     });
   }, [data, onDataLoaded, address]);
 
-  if (isError) return <></>;
+  if (isError) return null;
   return (
     <Skeleton isLoaded={!isLoading}>
       <Card

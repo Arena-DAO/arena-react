@@ -90,7 +90,7 @@ function RulesetTableInner({
     } else setLastRuleset(null);
   }, [data, setLastRuleset, parseRulesets]);
 
-  if (isError) return <></>;
+  if (isError) return null;
 
   const rulesets = parseRulesets;
   return (
@@ -191,7 +191,7 @@ export function WagerCreateRulesetTable({
   }, []);
 
   if (!query.isFetched || query.isError || (hasFetched && pages.size == 1)) {
-    return <></>;
+    return null;
   }
 
   return (

@@ -12,7 +12,7 @@ export function UserCard({ addr, ...cardProps }: UserCardProps) {
   const { data, isLoading, isError } = useProfileData(addr);
 
   if (isError) {
-    return <></>;
+    return null;
   }
 
   return (

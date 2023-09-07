@@ -72,9 +72,13 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
   contractAddress: string;
   sender: string;
   jailCompetition: ({
-    id
+    description,
+    id,
+    title
   }: {
+    description: string;
     id: Uint128;
+    title: string;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   activate: (fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   createCompetition: ({
@@ -97,9 +101,13 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
     ruleset?: Uint128;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   generateProposals: ({
-    id
+    description,
+    id,
+    title
   }: {
+    description: string;
     id: Uint128;
+    title: string;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   processCompetition: ({
     distribution,
@@ -135,13 +143,19 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
   }
 
   jailCompetition = async ({
-    id
+    description,
+    id,
+    title
   }: {
+    description: string;
     id: Uint128;
+    title: string;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       jail_competition: {
-        id
+        description,
+        id,
+        title
       }
     }, fee, memo, _funds);
   };
@@ -183,13 +197,19 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
     }, fee, memo, _funds);
   };
   generateProposals = async ({
-    id
+    description,
+    id,
+    title
   }: {
+    description: string;
     id: Uint128;
+    title: string;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       generate_proposals: {
-        id
+        description,
+        id,
+        title
       }
     }, fee, memo, _funds);
   };

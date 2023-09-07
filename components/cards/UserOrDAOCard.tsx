@@ -9,7 +9,7 @@ interface UserOrDAOCardProps {
 }
 
 export function UserOrDAOCard({ cosmwasmClient, address }: UserOrDAOCardProps) {
-  if (!AddressSchema.safeParse(address).success) return <></>;
+  if (!AddressSchema.safeParse(address).success) return null;
   if (address.length == 43) return <UserCard addr={address} />;
   return <DAOCard address={address} cosmwasmClient={cosmwasmClient} />;
 }

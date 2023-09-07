@@ -35,6 +35,7 @@ import {
   useFieldArray,
   Control,
   useWatch,
+  FormProvider,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -54,7 +55,9 @@ import {
   AddressSchema,
   DurationSchema,
   PercentageThresholdSchema,
+  RulesSchema,
   convertToDuration,
+  convertToRules,
 } from "~/helpers/SchemaHelpers";
 import { useEffect, useState } from "react";
 import { DAOCard } from "@components/cards/DAOCard";
@@ -62,6 +65,7 @@ import { CosmWasmClient, toBinary } from "@cosmjs/cosmwasm-stargate";
 import env from "@config/env";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
+import { DAOEnableRulesetRules } from "@components/pages/dao/enable/RulesetRules";
 
 const FormSchema = z
   .object({
@@ -79,11 +83,9 @@ const FormSchema = z
         z.object({
           description: z.string().nonempty("Ruleset description is required"),
           is_enabled: z.boolean().default(true),
-          rules: z
-            .array(z.string().nonempty("Rule cannot be empty"))
-            .refine((rules) => rules.length > 0, {
-              message: "At least one rule is required",
-            }),
+          rules: RulesSchema.refine((rules) => rules.length > 0, {
+            message: "At least one rule is required",
+          }),
         })
       )
       .optional(),
@@ -93,7 +95,7 @@ const FormSchema = z
       .max(100, "Tax must be between 0 and 100%"),
   })
   .required();
-type FormValues = z.infer<typeof FormSchema>;
+export type FormValues = z.infer<typeof FormSchema>;
 
 interface EnableFormDAOCardProps {
   cosmwasmClient: CosmWasmClient;
@@ -106,7 +108,7 @@ function EnableFormDAOCard({
 }: EnableFormDAOCardProps) {
   let watchDAOAddress = useWatch({ control, name: "dao_address" });
 
-  if (!AddressSchema.safeParse(watchDAOAddress).success) return <></>;
+  if (!AddressSchema.safeParse(watchDAOAddress).success) return null;
   return <DAOCard address={watchDAOAddress} cosmwasmClient={cosmwasmClient} />;
 }
 
@@ -120,16 +122,10 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
   );
   const toast = useToast();
 
-  const {
-    register,
-    handleSubmit,
-    control,
-    watch,
-    formState: { errors, isSubmitting },
-  } = useForm<FormValues>({
+  const formMethods = useForm<FormValues>({
     defaultValues: {
       dao_address: "",
-      rulesets: [] as Ruleset[],
+      rulesets: [],
       tax: 15,
       allow_revoting: false,
       close_proposal_on_execution_failure: true,
@@ -140,6 +136,14 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
     },
     resolver: zodResolver(FormSchema),
   });
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors, isSubmitting },
+  } = formMethods;
 
   const watchMinVotingDurationUnits = watch(
     "min_voting_duration.duration_units"
@@ -198,7 +202,13 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
           open_proposal_submission: false,
           extension: {
             tax: (values.tax / 100).toString(),
-            rulesets: values.rulesets,
+            rulesets: values.rulesets.map((x) => {
+              return {
+                description: x.description,
+                is_enabled: true,
+                rules: convertToRules(x.rules),
+              } as Ruleset;
+            }),
             competition_modules_instantiate_info: [
               arena_wager_module_instantiate,
             ],
@@ -514,111 +524,52 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
           </Grid>
           <FormControl isInvalid={!!errors.rulesets}>
             <FormLabel>Rulesets</FormLabel>
-            <Accordion defaultIndex={[0]} allowMultiple>
-              {rulesetsFields.map((ruleset, rulesetIndex) => (
-                <AccordionItem key={ruleset.id}>
-                  <HStack>
-                    <AccordionButton>
-                      <Box flex="1" textAlign="left">
-                        Ruleset {rulesetIndex + 1}
-                      </Box>
-                      <AccordionIcon />
-                    </AccordionButton>
-                    <Tooltip label="Delete Ruleset">
-                      <IconButton
-                        variant="ghost"
-                        colorScheme="secondary"
-                        aria-label="Delete Ruleset"
-                        icon={<DeleteIcon />}
-                        onClick={() => rulesetsRemove(rulesetIndex)}
-                      />
-                    </Tooltip>
-                  </HStack>
-                  <AccordionPanel>
-                    <FormControl
-                      isInvalid={!!errors.rulesets?.[rulesetIndex]?.description}
-                    >
-                      <FormLabel>Description</FormLabel>
-                      <Textarea
-                        {...register(
-                          `rulesets.${rulesetIndex}.description` as const
-                        )}
-                      />
-                      <FormErrorMessage>
-                        {errors.rulesets?.[rulesetIndex]?.description?.message}
-                      </FormErrorMessage>
-                    </FormControl>
-                    <FormControl
-                      isInvalid={!!errors.rulesets?.[rulesetIndex]?.rules}
-                    >
-                      <FormLabel>Rules</FormLabel>
-                      <Controller
-                        control={control}
-                        name={`rulesets.${rulesetIndex}.rules`}
-                        defaultValue={[] as string[]}
-                        render={({ field: { onChange, value } }) => (
-                          <Stack spacing={4}>
-                            {value?.map((_rule, ruleIndex) => (
-                              <FormControl
-                                key={ruleIndex}
-                                isInvalid={
-                                  !!errors.rulesets?.[rulesetIndex]?.rules?.[
-                                    ruleIndex
-                                  ]
-                                }
-                              >
-                                <InputGroup>
-                                  <Input
-                                    {...register(
-                                      `rulesets.${rulesetIndex}.rules.${ruleIndex}`
-                                    )}
-                                  />
-                                  <InputRightElement>
-                                    <Tooltip label="Delete Rule">
-                                      <IconButton
-                                        aria-label="delete"
-                                        variant="ghost"
-                                        icon={<DeleteIcon />}
-                                        onClick={() =>
-                                          onChange([
-                                            ...value.slice(0, ruleIndex),
-                                            ...value.slice(ruleIndex + 1),
-                                          ])
-                                        }
-                                      />
-                                    </Tooltip>
-                                  </InputRightElement>
-                                </InputGroup>
-                                <FormErrorMessage>
-                                  {
-                                    errors.rulesets?.[rulesetIndex]?.rules?.[
-                                      ruleIndex
-                                    ]?.message
-                                  }
-                                </FormErrorMessage>
-                              </FormControl>
-                            ))}
-                            <Tooltip label="Add Rule">
-                              <IconButton
-                                variant="ghost"
-                                colorScheme="secondary"
-                                aria-label="Add Rule"
-                                alignSelf="flex-start"
-                                onClick={() => onChange([...value, ""])}
-                                icon={<AddIcon />}
-                              />
-                            </Tooltip>
-                          </Stack>
-                        )}
-                      />
-                      <FormErrorMessage>
-                        {errors.rulesets?.[rulesetIndex]?.rules?.message}
-                      </FormErrorMessage>
-                    </FormControl>
-                  </AccordionPanel>
-                </AccordionItem>
-              ))}
-            </Accordion>
+            <FormProvider {...formMethods}>
+              <Accordion defaultIndex={[0]} allowMultiple>
+                {rulesetsFields.map((ruleset, rulesetIndex) => (
+                  <AccordionItem key={ruleset.id}>
+                    <HStack>
+                      <AccordionButton>
+                        <Box flex="1" textAlign="left">
+                          Ruleset {rulesetIndex + 1}
+                        </Box>
+                        <AccordionIcon />
+                      </AccordionButton>
+                      <Tooltip label="Delete Ruleset">
+                        <IconButton
+                          variant="ghost"
+                          colorScheme="secondary"
+                          aria-label="Delete Ruleset"
+                          icon={<DeleteIcon />}
+                          onClick={() => rulesetsRemove(rulesetIndex)}
+                        />
+                      </Tooltip>
+                    </HStack>
+                    <AccordionPanel>
+                      <FormControl
+                        isInvalid={
+                          !!errors.rulesets?.[rulesetIndex]?.description
+                        }
+                      >
+                        <FormLabel>Description</FormLabel>
+                        <Textarea
+                          {...register(
+                            `rulesets.${rulesetIndex}.description` as const
+                          )}
+                        />
+                        <FormErrorMessage>
+                          {
+                            errors.rulesets?.[rulesetIndex]?.description
+                              ?.message
+                          }
+                        </FormErrorMessage>
+                      </FormControl>
+                      <DAOEnableRulesetRules rulesetIndex={rulesetIndex} />
+                    </AccordionPanel>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </FormProvider>
             <Tooltip label="Add Ruleset">
               <IconButton
                 mt="2"

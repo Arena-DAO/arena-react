@@ -14,7 +14,9 @@ export interface Empty {
 }
 export type ExecuteMsg = {
   jail_competition: {
+    description: string;
     id: Uint128;
+    title: string;
   };
 } | {
   activate: CompetitionCoreActivateMsg;
@@ -31,7 +33,9 @@ export type ExecuteMsg = {
   };
 } | {
   generate_proposals: {
+    description: string;
     id: Uint128;
+    title: string;
   };
 } | {
   process_competition: {
@@ -95,12 +99,13 @@ export type QueryMsg = {
 };
 export type Null = null;
 export type Addr = string;
-export type CompetitionStatus = "created" | "pending" | "active" | "inactive" | "jailed";
+export type CompetitionStatus = "pending" | "active" | "inactive" | "jailed";
 export interface CompetitionResponseForEmpty {
   dao: Addr;
   description: string;
   escrow: Addr;
   extension: Empty;
+  has_generated_proposals: boolean;
   id: Uint128;
   is_expired: boolean;
   name: string;

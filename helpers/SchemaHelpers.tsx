@@ -15,6 +15,12 @@ function isValidBech32(value: string) {
   }
 }
 
+export const RulesSchema = z
+  .object({
+    rule: z.string().nonempty({ message: "Rule cannot be empty" }),
+  })
+  .array();
+
 export const DurationSchema = z.object({
   duration: z
     .number({
@@ -131,12 +137,13 @@ export function convertToExpiration(
       return { at_height: expirationSchema.height! };
     case "At Time":
       return {
-        at_time: Math.floor(
+        at_time: (
           utcToZonedTime(
             expirationSchema.time!,
             expirationSchema.timezone!
-          ).getDate() / 1000 // Get timestamp in seconds
-        ).toString(),
+          ).getTime() * 1000000
+        ) // Get time in ns
+          .toString(),
       };
     case "Never":
       return { never: {} };
@@ -156,6 +163,12 @@ export function convertToDuration(
     case "Time":
       return { time: durationSchema.duration || 0 };
   }
+}
+
+export function convertToRules(
+  rulesSchema: z.infer<typeof RulesSchema>
+): string[] {
+  return rulesSchema.map((x) => x.rule);
 }
 
 export const AmountSchema = z

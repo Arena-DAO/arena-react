@@ -299,7 +299,7 @@ export function WagerViewDuesDisplay({
     setHasFetched(false);
   }, [setPages, balanceChanged]);
 
-  if (hasFetched && pages.size == 1) return <></>;
+  if (hasFetched && pages.size == 1) return null;
 
   return (
     <>

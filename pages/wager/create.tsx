@@ -37,7 +37,9 @@ import {
   AddressSchema,
   DueSchema,
   ExpirationSchema,
+  RulesSchema,
   convertToExpiration,
+  convertToRules,
 } from "~/helpers/SchemaHelpers";
 import { InstantiateMsg as DAOProposalMultipleInstantiateMsg } from "@dao/DaoProposalMultiple.types";
 import { InstantiateMsg as DAOVotingCW4InstantiateMsg } from "@dao/DaoVotingCw4.types";
@@ -56,9 +58,15 @@ const FormSchema = z.object({
   description: z.string().nonempty({ message: "Description is required" }),
   expiration: ExpirationSchema,
   name: z.string().nonempty({ message: "Name is required " }),
-  rules: z.array(z.string().nonempty({ message: "Rule cannot be empty " })),
+  rules: RulesSchema,
   ruleset: z.number().optional(),
   dues: z.array(DueSchema).nonempty({ message: "Dues cannot be empty" }),
+  proposal_title: z
+    .string()
+    .nonempty({ message: "Proposal Title cannot be empty" }),
+  proposal_description: z
+    .string()
+    .nonempty({ message: "Proposal Description cannot be empty" }),
 });
 export type FormValues = z.infer<typeof FormSchema>;
 
@@ -102,6 +110,9 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
           },
         },
       ],
+      proposal_title: "Competition Result",
+      proposal_description:
+        "This proposal allows members to vote on the winner of the competition. Each choice represents a different team. Select the team that you believe should win the competition.",
     },
     resolver: zodResolver(FormSchema),
   });
@@ -136,6 +147,12 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
     name: "dues",
     control,
   });
+
+  const {
+    fields: rulesFields,
+    append: rulesAppend,
+    remove: rulesRemove,
+  } = useFieldArray({ name: "rules", control });
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -179,7 +196,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         description: values.description,
         expiration: convertToExpiration(values.expiration),
         name: values.name,
-        rules: values.rules,
+        rules: convertToRules(values.rules),
         ruleset: values.ruleset?.toString(),
         extension: {},
         competitionDao: {
@@ -257,7 +274,11 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
 
       try {
         if (id) {
-          await wagerModuleClient.generateProposals({ id });
+          await wagerModuleClient.generateProposals({
+            id,
+            title: values.proposal_title,
+            description: values.proposal_description,
+          });
 
           toast({
             title: "Success",
@@ -382,6 +403,24 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
               </GridItem>
             )}
           </Grid>
+          <FormControl isInvalid={!!errors.proposal_title}>
+            <FormLabel>Proposal Title</FormLabel>
+            <InputGroup>
+              <Input {...register("proposal_title")} />
+            </InputGroup>
+            <FormErrorMessage>
+              {errors.proposal_title?.message}
+            </FormErrorMessage>
+          </FormControl>
+          <FormControl isInvalid={!!errors.proposal_description}>
+            <FormLabel>Proposal Description</FormLabel>
+            <InputGroup>
+              <Textarea {...register("proposal_description")} />
+            </InputGroup>
+            <FormErrorMessage>
+              {errors.proposal_description?.message}
+            </FormErrorMessage>
+          </FormControl>
           <WagerCreateRulesetTable
             cosmwasmClient={cosmwasmClient}
             onRulesetSelect={onRulesetSelect}
@@ -392,52 +431,41 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
           />
           <FormControl isInvalid={!!errors.rules}>
             <FormLabel>Rules</FormLabel>
-            <Controller
-              control={control}
-              name="rules"
-              render={({ field: { onChange, value } }) => (
-                <Stack>
-                  {value?.map((_rule, ruleIndex) => (
-                    <FormControl
-                      key={ruleIndex}
-                      isInvalid={!!errors.rules?.[ruleIndex]}
-                    >
-                      <InputGroup>
-                        <Input {...register(`rules.${ruleIndex}`)} />
-                        <InputRightElement>
-                          <Tooltip label="Delete Rule">
-                            <IconButton
-                              aria-label="delete"
-                              variant="ghost"
-                              icon={<DeleteIcon />}
-                              onClick={() =>
-                                onChange([
-                                  ...value.slice(0, ruleIndex),
-                                  ...value.slice(ruleIndex + 1),
-                                ])
-                              }
-                            />
-                          </Tooltip>
-                        </InputRightElement>
-                      </InputGroup>
-                      <FormErrorMessage>
-                        {errors.rules?.[ruleIndex]?.message}
-                      </FormErrorMessage>
-                    </FormControl>
-                  ))}
-                  <Tooltip label="Add Rule">
-                    <IconButton
-                      variant="ghost"
-                      colorScheme="secondary"
-                      aria-label="Add Rule"
-                      alignSelf="flex-start"
-                      onClick={() => onChange([...value, ""])}
-                      icon={<AddIcon />}
-                    />
-                  </Tooltip>
-                </Stack>
-              )}
-            />
+            <Stack>
+              {rulesFields?.map((_rule, ruleIndex) => (
+                <FormControl
+                  key={ruleIndex}
+                  isInvalid={!!errors.rules?.[ruleIndex]?.rule}
+                >
+                  <InputGroup>
+                    <Input {...register(`rules.${ruleIndex}.rule`)} />
+                    <InputRightElement>
+                      <Tooltip label="Delete Rule">
+                        <IconButton
+                          aria-label="delete"
+                          variant="ghost"
+                          icon={<DeleteIcon />}
+                          onClick={() => rulesRemove(ruleIndex)}
+                        />
+                      </Tooltip>
+                    </InputRightElement>
+                  </InputGroup>
+                  <FormErrorMessage>
+                    {errors.rules?.[ruleIndex]?.rule?.message}
+                  </FormErrorMessage>
+                </FormControl>
+              ))}
+              <Tooltip label="Add Rule">
+                <IconButton
+                  variant="ghost"
+                  colorScheme="secondary"
+                  aria-label="Add Rule"
+                  alignSelf="flex-start"
+                  onClick={() => rulesAppend({ rule: "" })}
+                  icon={<AddIcon />}
+                />
+              </Tooltip>
+            </Stack>
             <FormErrorMessage>{errors.rules?.message}</FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={!!errors.dues}>

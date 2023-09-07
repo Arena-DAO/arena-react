@@ -85,7 +85,7 @@ export function WagerViewBalanceCard({
       data.native.length == 0 &&
       data.cw721.length == 0)
   )
-    return <></>;
+    return null;
   return (
     <Skeleton isLoaded={!isLoading}>
       {data && (

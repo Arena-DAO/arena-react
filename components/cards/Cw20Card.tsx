@@ -37,7 +37,7 @@ function Cw20Logo({ cosmwasmClient, addr, ...avatarProps }: Cw20LogoProps) {
   const client = new Cw20BaseQueryClient(cosmwasmClient, addr);
   const { data } = useCw20BaseDownloadLogoQuery({ client });
 
-  if (!data) return <></>;
+  if (!data) return null;
 
   return (
     <Avatar
@@ -72,7 +72,7 @@ export function Cw20Card({
     });
   }, [data, onDataLoaded, address]);
 
-  if (isError) return <></>;
+  if (isError) return null;
 
   let logo;
   if (marketingData) {
