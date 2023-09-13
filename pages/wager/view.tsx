@@ -2,9 +2,12 @@ import {
   Badge,
   Box,
   Container,
+  Divider,
+  Flex,
   Heading,
   List,
   ListItem,
+  Spacer,
   Stack,
   Text,
 } from "@chakra-ui/layout";
@@ -22,6 +25,9 @@ import { useArenaWagerModuleCompetitionQuery } from "@arena/ArenaWagerModule.rea
 import { ArenaWagerModuleQueryClient } from "@arena/ArenaWagerModule.client";
 import {
   Button,
+  Card,
+  CardBody,
+  CardHeader,
   Fade,
   Skeleton,
   useDisclosure,
@@ -148,15 +154,35 @@ function ViewWagerPageContent({
             </Badge>
           </Heading>
           <Text>{data?.description}</Text>
-          {(data?.rules.length ?? 0) > 0 && (
-            <>
-              <Heading size="md">Rules:</Heading>
-              <List spacing={2}>
-                {data?.rules.map((rule, idx) => (
-                  <ListItem key={idx}>{rule}</ListItem>
-                ))}
-              </List>
-            </>
+          {!!data && (data.ruleset || data.rules.length > 0) && (
+            <Card>
+              <CardHeader>
+                <Heading size="md">Rules</Heading>
+              </CardHeader>
+              <CardBody>
+                {data.ruleset && (
+                  <>
+                    <Flex>
+                      <Heading size="sm">Ruleset</Heading> <Spacer />
+                      <small>Ruleset Id: {data.ruleset.id}</small>
+                    </Flex>
+                    <List spacing={2}>
+                      {data.ruleset.rules.map((rule, idx) => (
+                        <ListItem key={idx}>{rule}</ListItem>
+                      ))}
+                    </List>
+                  </>
+                )}
+                {data.ruleset && data.rules.length > 0 && <Divider />}
+                {data.rules.length > 0 && (
+                  <List spacing={2}>
+                    {data.rules.map((rule, idx) => (
+                      <ListItem key={idx}>{rule}</ListItem>
+                    ))}
+                  </List>
+                )}
+              </CardBody>
+            </Card>
           )}
           {data && data.status != "inactive" && (
             <WagerViewEscrowDisplay

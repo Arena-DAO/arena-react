@@ -1,6 +1,5 @@
 import { Box, Container, Heading, Link, Stack } from "@chakra-ui/layout";
-import { Button, Fade } from "@chakra-ui/react";
-import NextLink from "next/link";
+import { Fade } from "@chakra-ui/react";
 import { DAOCard } from "@components/cards/DAOCard";
 import env from "@config/env";
 import { CosmWasmClient, fromBinary } from "@cosmjs/cosmwasm-stargate";
@@ -8,7 +7,6 @@ import { useChain } from "@cosmos-kit/react";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { AddressSchema } from "~/helpers/SchemaHelpers";
-import { BsYinYang } from "react-icons/bs";
 import { DAOViewViewArenaModuleCard } from "@components/pages/dao/view/ViewArenaModuleCard";
 import { useDaoDaoCoreGetItemQuery } from "@dao/DaoDaoCore.react-query";
 import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
@@ -51,16 +49,6 @@ function DAOViewPageInner({ dao, cosmwasmClient }: DAOViewPageInnerProps) {
             Tax: {`${parseFloat(dumpState.tax) * 100}%`}
           </Heading>
         )}
-        <Link
-          ml="auto"
-          as={NextLink}
-          href={env.DAO_DAO_URL + "/dao/" + dao}
-          _hover={{ textDecoration: "none" }}
-          _focus={{ outline: "none" }}
-          target="_blank"
-        >
-          <Button rightIcon={<BsYinYang />}>View on DAO DAO</Button>
-        </Link>
         {dumpState &&
           dumpState.competition_modules.map((x) => {
             return (

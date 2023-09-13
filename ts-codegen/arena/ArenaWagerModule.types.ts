@@ -92,9 +92,11 @@ export type QueryMsg = {
 } | {
   competition: {
     id: Uint128;
+    include_ruleset?: boolean | null;
   };
 } | {
   competitions: {
+    include_ruleset?: boolean | null;
     limit?: number | null;
     start_after?: Uint128 | null;
   };
@@ -122,9 +124,15 @@ export interface CompetitionResponseForEmpty {
   is_expired: boolean;
   name: string;
   rules: string[];
-  ruleset?: Uint128 | null;
+  ruleset?: Ruleset | null;
   start_height: number;
   status: CompetitionStatus;
+}
+export interface Ruleset {
+  description: string;
+  id: Uint128;
+  is_enabled: boolean;
+  rules: string[];
 }
 export type ArrayOfCompetitionResponseForEmpty = CompetitionResponseForEmpty[];
 export interface Config {

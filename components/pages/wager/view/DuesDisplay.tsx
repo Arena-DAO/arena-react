@@ -3,8 +3,7 @@ import {
   ExecuteInstruction,
   toBinary,
 } from "@cosmjs/cosmwasm-stargate";
-import { ArenaEscrowQueryClient } from "@arena/ArenaEscrow.client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, CardHeader, Heading, Stack, useToast } from "@chakra-ui/react";
 import { UserOrDAOCard } from "@components/cards/UserOrDAOCard";
 import { BalanceCard } from "@components/cards/BalanceCard";
@@ -22,6 +21,8 @@ import { CosmosMsgForEmpty } from "@dao/DaoProposalSingle.types";
 import { getProposalAddr } from "~/helpers/DAOHelpers";
 import { DaoProposalSingleClient } from "@dao/DaoProposalSingle.client";
 import { DaoPreProposeSingleClient } from "@dao/DaoPreProposeSingle.client";
+import { useAllDues } from "~/hooks/useAllDues";
+import { isValidContractAddress } from "~/helpers/AddressHelpers";
 
 interface WagerViewDuesDisplayProps {
   cosmwasmClient: CosmWasmClient;
@@ -30,49 +31,6 @@ interface WagerViewDuesDisplayProps {
   notifyBalancesChanged: () => void;
   notifyIsActive: () => void;
   initial_dues?: ArrayOfMemberBalanceVerified;
-}
-
-function useAllDues(
-  cosmwasmClient: CosmWasmClient,
-  escrow_addr: string,
-  initial_dues: ArrayOfMemberBalanceVerified = []
-) {
-  const [allDues, setAllDues] =
-    useState<ArrayOfMemberBalanceVerified>(initial_dues);
-  const [startAfter, setStartAfter] = useState<string | undefined>(
-    initial_dues.length > 0
-      ? initial_dues[initial_dues.length - 1]?.addr
-      : undefined
-  );
-  const [hasMore, setHasMore] = useState(true);
-  useEffect(() => {
-    setStartAfter(
-      initial_dues.length > 0
-        ? initial_dues[initial_dues.length - 1]?.addr
-        : undefined
-    );
-    setAllDues(initial_dues);
-    setHasMore(true);
-  }, [initial_dues]);
-  useEffect(() => {
-    async function fetchDues() {
-      if (!hasMore) return;
-
-      const client = new ArenaEscrowQueryClient(cosmwasmClient, escrow_addr);
-      const data = await client.dues({ startAfter });
-
-      if (data && data.length > 0) {
-        setAllDues((prev) => [...prev, ...data]);
-        setStartAfter(data[data.length - 1]!.addr);
-      } else {
-        setHasMore(false);
-      }
-    }
-
-    fetchDues();
-  }, [cosmwasmClient, escrow_addr, startAfter, hasMore]);
-
-  return allDues;
 }
 
 export function WagerViewDuesDisplay({
@@ -161,7 +119,7 @@ export function WagerViewDuesDisplay({
           description: "Funds have been successfully sent to the escrow",
           isClosable: true,
         });
-      } else if (team_addr.length == 63) {
+      } else if (isValidContractAddress(team_addr)) {
         const proposalAddrResponse = await getProposalAddr(
           cosmwasmClient,
           team_addr,
@@ -263,7 +221,7 @@ export function WagerViewDuesDisplay({
             variant={"outline"}
             onDataLoaded={setExponentInfo}
             actions={
-              (address == x.addr || x.addr.length == 63) && (
+              (address == x.addr || isValidContractAddress(x.addr)) && (
                 <Button onClick={() => depositFunds(x.addr, x.balance)}>
                   Deposit
                 </Button>

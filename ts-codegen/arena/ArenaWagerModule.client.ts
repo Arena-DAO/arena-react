@@ -6,20 +6,24 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, ProposalDetails, ModuleInstantiateInfo, MemberShare, QueryMsg, MigrateMsg, Null, Addr, CompetitionStatus, CompetitionResponseForEmpty, ArrayOfCompetitionResponseForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, ProposalDetails, ModuleInstantiateInfo, MemberShare, QueryMsg, MigrateMsg, Null, Addr, CompetitionStatus, CompetitionResponseForEmpty, Ruleset, ArrayOfCompetitionResponseForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
 export interface ArenaWagerModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<Config>;
   competitionCount: () => Promise<Uint128>;
   competition: ({
-    id
+    id,
+    includeRuleset
   }: {
     id: Uint128;
+    includeRuleset?: boolean;
   }) => Promise<CompetitionResponseForEmpty>;
   competitions: ({
+    includeRuleset,
     limit,
     startAfter
   }: {
+    includeRuleset?: boolean;
     limit?: number;
     startAfter?: Uint128;
   }) => Promise<ArrayOfCompetitionResponseForEmpty>;
@@ -56,25 +60,31 @@ export class ArenaWagerModuleQueryClient implements ArenaWagerModuleReadOnlyInte
     });
   };
   competition = async ({
-    id
+    id,
+    includeRuleset
   }: {
     id: Uint128;
+    includeRuleset?: boolean;
   }): Promise<CompetitionResponseForEmpty> => {
     return this.client.queryContractSmart(this.contractAddress, {
       competition: {
-        id
+        id,
+        include_ruleset: includeRuleset
       }
     });
   };
   competitions = async ({
+    includeRuleset,
     limit,
     startAfter
   }: {
+    includeRuleset?: boolean;
     limit?: number;
     startAfter?: Uint128;
   }): Promise<ArrayOfCompetitionResponseForEmpty> => {
     return this.client.queryContractSmart(this.contractAddress, {
       competitions: {
+        include_ruleset: includeRuleset,
         limit,
         start_after: startAfter
       }

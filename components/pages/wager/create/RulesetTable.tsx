@@ -1,6 +1,3 @@
-import { ArenaCoreQueryClient } from "@arena/ArenaCore.client";
-import { useArenaCoreQueryExtensionQuery } from "@arena/ArenaCore.react-query";
-import { Ruleset } from "@arena/ArenaCore.types";
 import { FormControl, FormLabel } from "@chakra-ui/form-control";
 import { UnorderedList, ListItem } from "@chakra-ui/layout";
 import {
@@ -27,7 +24,7 @@ import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 import { useDaoDaoCoreGetItemQuery } from "@dao/DaoDaoCore.react-query";
 import { CosmWasmClient, fromBinary } from "@cosmjs/cosmwasm-stargate";
 import env from "@config/env";
-import { useMemo, useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import {
   UseFormSetError,
   UseFormClearErrors,
@@ -36,6 +33,7 @@ import {
 } from "react-hook-form";
 import { AddressSchema } from "~/helpers/SchemaHelpers";
 import { FormValues } from "~/pages/wager/create";
+import { useAllRulesets } from "~/hooks/useAllRulesets";
 
 interface RulesetProps {
   cosmwasmClient: CosmWasmClient;
@@ -50,44 +48,22 @@ interface RulesetTableProps extends RulesetProps, TableContainerProps {
 }
 
 interface RulesetTableInnerProps extends RulesetProps {
-  start_after?: string | null;
   selectedRuleset: string | undefined;
-  setLastRuleset: (data: string | null) => void;
-  addr: string;
+  arena_core_addr: string;
+  setRulesetsCount: (count: number) => void;
 }
 
 function RulesetTableInner({
-  addr,
+  arena_core_addr,
   cosmwasmClient,
   onRulesetSelect,
-  setLastRuleset,
   selectedRuleset,
-  start_after,
+  setRulesetsCount,
 }: RulesetTableInnerProps) {
-  const { data, isError } = useArenaCoreQueryExtensionQuery({
-    client: new ArenaCoreQueryClient(cosmwasmClient, addr),
-    args: { msg: { rulesets: { start_after } } },
-  });
-  const parseRulesets = useMemo(() => {
-    if (!data) return [];
-    let rulesets: Ruleset[] = [];
-    try {
-      rulesets = fromBinary(data) as Ruleset[];
-    } catch {}
+  const rulesets = useAllRulesets(cosmwasmClient, arena_core_addr, (count) =>
+    setRulesetsCount(count)
+  );
 
-    return rulesets;
-  }, [data]);
-  useEffect(() => {
-    if (data) {
-      let rulesets = parseRulesets;
-
-      setLastRuleset(rulesets[rulesets.length - 1]?.id || null);
-    } else setLastRuleset(null);
-  }, [data, setLastRuleset, parseRulesets]);
-
-  if (isError) return null;
-
-  const rulesets = parseRulesets;
   return (
     <>
       {rulesets.map((ruleset) => (
@@ -148,9 +124,7 @@ export function WagerCreateRulesetTable({
   const [selectedRuleset, setSelectedRuleset] = useState<string | undefined>(
     undefined
   );
-  const [pages, setPages] = useState<Set<string | null>>(
-    new Set<string | null>([null])
-  );
+  const [rulesetsCount, setRulesetsCount] = useState<number>();
 
   useEffect(() => {
     if (AddressSchema.safeParse(watchDAOAddress).success) query.refetch();
@@ -175,17 +149,8 @@ export function WagerCreateRulesetTable({
       onArenaCoreLoaded(undefined);
     }
   }, [query.data, onArenaCoreLoaded]);
-  const [hasFetched, setHasFetched] = useState<boolean>(false);
-  const handleSetLastPage = useCallback((x: string | null) => {
-    setPages((prevPages) => {
-      const newPages = new Set(prevPages);
-      newPages.add(x);
-      return newPages;
-    });
-    setHasFetched(true);
-  }, []);
 
-  if (!query.isFetched || query.isError || (hasFetched && pages.size == 1)) {
+  if (!query.isFetched || query.isError || rulesetsCount === 0) {
     return null;
   }
 
@@ -203,21 +168,17 @@ export function WagerCreateRulesetTable({
             </Thead>
             <Tbody>
               {query.data && query.data.item && (
-                <>
-                  {Array.from(pages).map((page, i) => {
-                    return (
-                      <RulesetTableInner
-                        key={i}
-                        addr={query.data.item!}
-                        cosmwasmClient={cosmwasmClient}
-                        onRulesetSelect={setSelectedRuleset}
-                        selectedRuleset={selectedRuleset}
-                        setLastRuleset={handleSetLastPage}
-                        start_after={page}
-                      />
-                    );
-                  })}
-                </>
+                <RulesetTableInner
+                  selectedRuleset={selectedRuleset}
+                  arena_core_addr={query.data.item}
+                  setRulesetsCount={function (count: number): void {
+                    setRulesetsCount(count);
+                  }}
+                  cosmwasmClient={cosmwasmClient}
+                  onRulesetSelect={function (id: string | undefined): void {
+                    setSelectedRuleset(id);
+                  }}
+                />
               )}
             </Tbody>
           </Table>

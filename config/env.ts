@@ -6,6 +6,8 @@ interface Env {
   WAGER_MODULE_KEY: string;
   IPFS_GATEWAY: string;
   WALLETCONNECT_PROJECT_ID: string;
+  BECH32_WALLET_LENGTH: number;
+  BECH32_CONTRACT_LENGTH: number;
 
   // Variables specific to both .env.development and .env.production
   CHAIN: string;
@@ -37,6 +39,10 @@ const env: Env = {
   WAGER_MODULE_KEY: process.env.NEXT_PUBLIC_WAGER_MODULE_KEY!,
   IPFS_GATEWAY: process.env.NEXT_PUBLIC_IPFS_GATEWAY!,
   WALLETCONNECT_PROJECT_ID: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
+  BECH32_CONTRACT_LENGTH: parseInt(
+    process.env.NEXT_PUBLIC_BECH32_CONTRACT_LENGTH!
+  ),
+  BECH32_WALLET_LENGTH: parseInt(process.env.NEXT_PUBLIC_BECH32_WALLET_LENGTH!),
 
   DEFAULT_NATIVE: process.env.NEXT_PUBLIC_DEFAULT_NATIVE!,
   CHAIN: process.env.NEXT_PUBLIC_CHAIN!,

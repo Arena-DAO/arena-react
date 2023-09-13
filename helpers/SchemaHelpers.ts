@@ -1,19 +1,10 @@
 import { Expiration } from "@arena/ArenaWagerModule.types";
 import env from "@config/env";
 import { Duration } from "@dao/DaoProposalMultiple.types";
-import { bech32 } from "bech32";
 import { isBefore } from "date-fns";
 import { utcToZonedTime } from "date-fns-tz";
 import { z } from "zod";
-
-function isValidBech32(value: string) {
-  try {
-    const decoded = bech32.decode(value);
-    return decoded.prefix !== "" && decoded.words.length > 0;
-  } catch (error) {
-    return false;
-  }
-}
+import { isValidBech32Address } from "./AddressHelpers";
 
 export const RulesSchema = z
   .object({
@@ -69,7 +60,7 @@ export const AddressSchema = z
   .startsWith(env.BECH32_PREFIX, {
     message: `Address must start with the ${env.BECH32_PREFIX} prefix`,
   })
-  .refine((value) => isValidBech32(value), {
+  .refine((value) => isValidBech32Address(value), {
     message: "Invalid Bech32 address",
   });
 

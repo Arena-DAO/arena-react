@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee, Coin } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, ProposalDetails, ModuleInstantiateInfo, MemberShare, QueryMsg, MigrateMsg, Null, Addr, CompetitionStatus, CompetitionResponseForEmpty, ArrayOfCompetitionResponseForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, ProposalDetails, ModuleInstantiateInfo, MemberShare, QueryMsg, MigrateMsg, Null, Addr, CompetitionStatus, CompetitionResponseForEmpty, Ruleset, ArrayOfCompetitionResponseForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
 import { ArenaWagerModuleQueryClient, ArenaWagerModuleClient } from "./ArenaWagerModule.client";
 export const arenaWagerModuleQueryKeys = {
   contract: ([{
@@ -67,7 +67,8 @@ export const arenaWagerModuleQueries = {
   }: ArenaWagerModuleCompetitionQuery<TData>): UseQueryOptions<CompetitionResponseForEmpty, Error, TData> => ({
     queryKey: arenaWagerModuleQueryKeys.competition(client?.contractAddress, args),
     queryFn: () => client ? client.competition({
-      id: args.id
+      id: args.id,
+      includeRuleset: args.includeRuleset
     }) : Promise.reject(new Error("Invalid client")),
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
@@ -79,6 +80,7 @@ export const arenaWagerModuleQueries = {
   }: ArenaWagerModuleCompetitionsQuery<TData>): UseQueryOptions<ArrayOfCompetitionResponseForEmpty, Error, TData> => ({
     queryKey: arenaWagerModuleQueryKeys.competitions(client?.contractAddress, args),
     queryFn: () => client ? client.competitions({
+      includeRuleset: args.includeRuleset,
       limit: args.limit,
       startAfter: args.startAfter
     }) : Promise.reject(new Error("Invalid client")),
@@ -140,6 +142,7 @@ export function useArenaWagerModuleQueryExtensionQuery<TData = Binary>({
 }
 export interface ArenaWagerModuleCompetitionsQuery<TData> extends ArenaWagerModuleReactQuery<ArrayOfCompetitionResponseForEmpty, TData> {
   args: {
+    includeRuleset?: boolean;
     limit?: number;
     startAfter?: Uint128;
   };
@@ -150,6 +153,7 @@ export function useArenaWagerModuleCompetitionsQuery<TData = ArrayOfCompetitionR
   options
 }: ArenaWagerModuleCompetitionsQuery<TData>) {
   return useQuery<ArrayOfCompetitionResponseForEmpty, Error, TData>(arenaWagerModuleQueryKeys.competitions(client?.contractAddress, args), () => client ? client.competitions({
+    includeRuleset: args.includeRuleset,
     limit: args.limit,
     startAfter: args.startAfter
   }) : Promise.reject(new Error("Invalid client")), { ...options,
@@ -159,6 +163,7 @@ export function useArenaWagerModuleCompetitionsQuery<TData = ArrayOfCompetitionR
 export interface ArenaWagerModuleCompetitionQuery<TData> extends ArenaWagerModuleReactQuery<CompetitionResponseForEmpty, TData> {
   args: {
     id: Uint128;
+    includeRuleset?: boolean;
   };
 }
 export function useArenaWagerModuleCompetitionQuery<TData = CompetitionResponseForEmpty>({
@@ -167,7 +172,8 @@ export function useArenaWagerModuleCompetitionQuery<TData = CompetitionResponseF
   options
 }: ArenaWagerModuleCompetitionQuery<TData>) {
   return useQuery<CompetitionResponseForEmpty, Error, TData>(arenaWagerModuleQueryKeys.competition(client?.contractAddress, args), () => client ? client.competition({
-    id: args.id
+    id: args.id,
+    includeRuleset: args.includeRuleset
   }) : Promise.reject(new Error("Invalid client")), { ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });

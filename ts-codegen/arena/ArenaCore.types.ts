@@ -195,9 +195,8 @@ export type ExecuteExt = {
   };
 } | {
   jail: {
-    description: string;
     id: Uint128;
-    title: string;
+    proposal_details: ProposalDetails;
   };
 } | {
   update_tax: {
@@ -236,6 +235,10 @@ export interface IbcTimeoutBlock {
   revision: number;
   [k: string]: unknown;
 }
+export interface ProposalDetails {
+  description: string;
+  title: string;
+}
 export type QueryMsg = {
   proposal_module: {};
 } | {
@@ -258,6 +261,10 @@ export type QueryExt = {
     include_disabled?: boolean | null;
     limit?: number | null;
     start_after?: string | null;
+  };
+} | {
+  ruleset: {
+    id: Uint128;
   };
 } | {
   rulesets: {
