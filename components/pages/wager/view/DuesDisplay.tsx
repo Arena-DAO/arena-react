@@ -3,27 +3,18 @@ import {
   ExecuteInstruction,
   toBinary,
 } from "@cosmjs/cosmwasm-stargate";
-import { useArenaEscrowDuesQuery } from "@arena/ArenaEscrow.react-query";
 import { ArenaEscrowQueryClient } from "@arena/ArenaEscrow.client";
-import { useCallback, useEffect, useState } from "react";
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Button,
-  CardHeader,
-  Heading,
-  Skeleton,
-  Stack,
-  useToast,
-} from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { Button, CardHeader, Heading, Stack, useToast } from "@chakra-ui/react";
 import { UserOrDAOCard } from "@components/cards/UserOrDAOCard";
 import { BalanceCard } from "@components/cards/BalanceCard";
 import { ExponentInfo } from "~/types/ExponentInfo";
 import { useChain } from "@cosmos-kit/react-lite";
 import env from "@config/env";
-import { BalanceVerified } from "@arena/ArenaEscrow.types";
+import {
+  ArrayOfMemberBalanceVerified,
+  BalanceVerified,
+} from "@arena/ArenaEscrow.types";
 import { ExecuteMsg as ArenaEscrowExecuteMsg } from "@arena/ArenaEscrow.types";
 import { ExecuteMsg as Cw20ExecuteMsg } from "@cw-plus/Cw20Base.types";
 import { ExecuteMsg as Cw721ExecuteMsg } from "@cw-nfts/Cw721Base.types";
@@ -32,51 +23,70 @@ import { getProposalAddr } from "~/helpers/DAOHelpers";
 import { DaoProposalSingleClient } from "@dao/DaoProposalSingle.client";
 import { DaoPreProposeSingleClient } from "@dao/DaoPreProposeSingle.client";
 
-interface WagerViewDuesInnerProps {
-  cosmwasmClient: CosmWasmClient;
-  start_after: string | null;
-  setLastPage: (page: string) => void;
-  escrow_addr: string;
-  wager_id: string;
-  notifyBalancesChanged: () => void;
-  notifyIsActive: () => void;
-  balanceChanged: number;
-}
-
 interface WagerViewDuesDisplayProps {
   cosmwasmClient: CosmWasmClient;
   escrow_addr: string;
-  balanceChanged: number;
   wager_id: string;
   notifyBalancesChanged: () => void;
   notifyIsActive: () => void;
+  initial_dues?: ArrayOfMemberBalanceVerified;
 }
 
-function WagerViewDuesInner({
+function useAllDues(
+  cosmwasmClient: CosmWasmClient,
+  escrow_addr: string,
+  initial_dues: ArrayOfMemberBalanceVerified = []
+) {
+  const [allDues, setAllDues] =
+    useState<ArrayOfMemberBalanceVerified>(initial_dues);
+  const [startAfter, setStartAfter] = useState<string | undefined>(
+    initial_dues.length > 0
+      ? initial_dues[initial_dues.length - 1]?.addr
+      : undefined
+  );
+  const [hasMore, setHasMore] = useState(true);
+  useEffect(() => {
+    setStartAfter(
+      initial_dues.length > 0
+        ? initial_dues[initial_dues.length - 1]?.addr
+        : undefined
+    );
+    setAllDues(initial_dues);
+    setHasMore(true);
+  }, [initial_dues]);
+  useEffect(() => {
+    async function fetchDues() {
+      if (!hasMore) return;
+
+      const client = new ArenaEscrowQueryClient(cosmwasmClient, escrow_addr);
+      const data = await client.dues({ startAfter });
+
+      if (data && data.length > 0) {
+        setAllDues((prev) => [...prev, ...data]);
+        setStartAfter(data[data.length - 1]!.addr);
+      } else {
+        setHasMore(false);
+      }
+    }
+
+    fetchDues();
+  }, [cosmwasmClient, escrow_addr, startAfter, hasMore]);
+
+  return allDues;
+}
+
+export function WagerViewDuesDisplay({
   cosmwasmClient,
-  start_after,
-  setLastPage,
   escrow_addr,
   wager_id,
   notifyBalancesChanged,
   notifyIsActive,
-  balanceChanged,
-}: WagerViewDuesInnerProps) {
-  const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
-  const { data, isLoading, isError, refetch } = useArenaEscrowDuesQuery({
-    client: new ArenaEscrowQueryClient(cosmwasmClient, escrow_addr),
-    args: { startAfter: start_after ?? undefined },
-  });
-  const toast = useToast();
+  initial_dues = [],
+}: WagerViewDuesDisplayProps) {
+  const dues = useAllDues(cosmwasmClient, escrow_addr, initial_dues);
   const [exponentInfo, setExponentInfo] = useState<ExponentInfo>();
-  useEffect(() => {
-    if (data && data.length > 0) {
-      setLastPage(data[data.length - 1]![0]);
-    }
-  }, [setLastPage, data]);
-  useEffect(() => {
-    refetch();
-  }, [balanceChanged, refetch]);
+  const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
+  const toast = useToast();
 
   const depositFunds = async (team_addr: string, balance: BalanceVerified) => {
     try {
@@ -231,94 +241,37 @@ function WagerViewDuesInner({
       });
     }
   };
-  if (isError)
-    return (
-      <Alert status="error">
-        <AlertIcon />
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>Could not retrieve balances.</AlertDescription>
-      </Alert>
-    );
-  return (
-    <Skeleton isLoaded={!isLoading}>
-      <Stack>
-        {data?.map((x, i) => {
-          return (
-            <BalanceCard
-              key={i}
-              header={
-                <CardHeader>
-                  <Heading size="md">Team {i + 1}</Heading>
-                </CardHeader>
-              }
-              cosmwasmClient={cosmwasmClient}
-              addrCard={
-                <UserOrDAOCard cosmwasmClient={cosmwasmClient} address={x[0]} />
-              }
-              balance={x[1]}
-              variant={"outline"}
-              onDataLoaded={setExponentInfo}
-              actions={
-                (address == x[0] || x[0].length == 63) && (
-                  <Button onClick={() => depositFunds(x[0], x[1])}>
-                    Deposit
-                  </Button>
-                )
-              }
-            />
-          );
-        })}
-      </Stack>
-    </Skeleton>
-  );
-}
 
-export function WagerViewDuesDisplay({
-  cosmwasmClient,
-  escrow_addr,
-  wager_id,
-  notifyBalancesChanged,
-  notifyIsActive,
-  balanceChanged,
-}: WagerViewDuesDisplayProps) {
-  const [pages, setPages] = useState<Set<string | null>>(
-    new Set<string | null>([null])
-  );
-  const [hasFetched, setHasFetched] = useState<boolean>(false);
-
-  const handleSetLastPage = useCallback((x: string | null) => {
-    setPages((prevPages) => {
-      const newPages = new Set(prevPages);
-      newPages.add(x);
-      return newPages;
-    });
-    setHasFetched(true);
-  }, []);
-  useEffect(() => {
-    setPages(new Set<string | null>([null]));
-    setHasFetched(false);
-  }, [setPages, balanceChanged]);
-
-  if (hasFetched && pages.size == 1) return null;
+  if (dues.length == 0) return null;
 
   return (
-    <>
-      <Heading size="md">Dues</Heading>
-      {Array.from(pages).map((x, i) => {
+    <Stack>
+      {dues?.map((x, i) => {
         return (
-          <WagerViewDuesInner
+          <BalanceCard
             key={i}
-            start_after={x}
-            escrow_addr={escrow_addr}
+            header={
+              <CardHeader>
+                <Heading size="md">Team {i + 1}</Heading>
+              </CardHeader>
+            }
             cosmwasmClient={cosmwasmClient}
-            setLastPage={handleSetLastPage}
-            wager_id={wager_id}
-            notifyBalancesChanged={notifyBalancesChanged}
-            balanceChanged={balanceChanged}
-            notifyIsActive={notifyIsActive}
+            addrCard={
+              <UserOrDAOCard cosmwasmClient={cosmwasmClient} address={x.addr} />
+            }
+            balance={x.balance}
+            variant={"outline"}
+            onDataLoaded={setExponentInfo}
+            actions={
+              (address == x.addr || x.addr.length == 63) && (
+                <Button onClick={() => depositFunds(x.addr, x.balance)}>
+                  Deposit
+                </Button>
+              )
+            }
           />
         );
       })}
-    </>
+    </Stack>
   );
 }

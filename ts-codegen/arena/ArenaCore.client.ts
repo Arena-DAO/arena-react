@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { Uint128, DepositToken, UncheckedDenom, DepositRefundPolicy, Admin, Binary, Decimal, InstantiateMsg, UncheckedDepositInfo, InstantiateExt, ModuleInstantiateInfo, Ruleset, ExecuteMsg, ProposeMessage, CosmosMsgForEmpty, BankMsg, StakingMsg, DistributionMsg, IbcMsg, Timestamp, Uint64, WasmMsg, GovMsg, VoteOption, ExecuteExt, Status, MultipleChoiceOptions, MultipleChoiceOption, Coin, Empty, IbcTimeout, IbcTimeoutBlock, QueryMsg, QueryExt, CheckedDenom, Addr, Config, CheckedDepositInfo, DepositInfoResponse, HooksResponse } from "./ArenaCore.types";
+import { Uint128, DepositToken, UncheckedDenom, DepositRefundPolicy, Admin, Binary, Decimal, InstantiateMsg, UncheckedDepositInfo, InstantiateExt, ModuleInstantiateInfo, Ruleset, ExecuteMsg, ProposeMessage, CosmosMsgForEmpty, BankMsg, IbcMsg, Timestamp, Uint64, WasmMsg, GovMsg, VoteOption, ExecuteExt, Status, MultipleChoiceOptions, MultipleChoiceOption, Coin, Empty, IbcTimeout, IbcTimeoutBlock, QueryMsg, QueryExt, MigrateMsg, Addr, SudoMsg, DumpStateResponse, CompetitionModuleResponse, CheckedDenom, Config, CheckedDepositInfo, DepositInfoResponse, HooksResponse } from "./ArenaCore.types";
 export interface ArenaCoreReadOnlyInterface {
   contractAddress: string;
   proposalModule: () => Promise<Addr>;

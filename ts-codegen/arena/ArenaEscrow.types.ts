@@ -121,10 +121,14 @@ export type QueryMsg = {
     addr: string;
   };
 } | {
+  dump_state: {
+    addr?: string | null;
+  };
+} | {
   ownership: {};
 };
 export type MigrateMsg = {
-  from_v1: {};
+  from_compatible: {};
 };
 export type Addr = string;
 export interface BalanceVerified {
@@ -140,11 +144,21 @@ export interface Cw721CollectionVerified {
   addr: Addr;
   token_ids: string[];
 }
-export type ArrayOfTupleOfStringAndBalanceVerified = [string, BalanceVerified][];
+export type ArrayOfMemberBalanceVerified = MemberBalanceVerified[];
+export interface MemberBalanceVerified {
+  addr: Addr;
+  balance: BalanceVerified;
+}
 export type NullableArrayOfMemberShareVerified = MemberShareVerified[] | null;
 export interface MemberShareVerified {
   addr: Addr;
   shares: Uint128;
+}
+export interface DumpStateResponse {
+  balance: BalanceVerified;
+  dues: MemberBalanceVerified[];
+  is_locked: boolean;
+  total_balance: BalanceVerified;
 }
 export type Boolean = boolean;
 export interface OwnershipForString {

@@ -39,7 +39,7 @@ import { FormValues } from "~/pages/wager/create";
 
 interface RulesetProps {
   cosmwasmClient: CosmWasmClient;
-  onRulesetSelect: (id: number | undefined) => void;
+  onRulesetSelect: (id: string | undefined) => void;
 }
 
 interface RulesetTableProps extends RulesetProps, TableContainerProps {
@@ -50,9 +50,9 @@ interface RulesetTableProps extends RulesetProps, TableContainerProps {
 }
 
 interface RulesetTableInnerProps extends RulesetProps {
-  start_after?: number | null;
-  selectedRuleset: number | undefined;
-  setLastRuleset: (data: number | null) => void;
+  start_after?: string | null;
+  selectedRuleset: string | undefined;
+  setLastRuleset: (data: string | null) => void;
   addr: string;
 }
 
@@ -70,9 +70,9 @@ function RulesetTableInner({
   });
   const parseRulesets = useMemo(() => {
     if (!data) return [];
-    let rulesets: [number, Ruleset][] = [];
+    let rulesets: Ruleset[] = [];
     try {
-      rulesets = fromBinary(data) as [number, Ruleset][];
+      rulesets = fromBinary(data) as Ruleset[];
     } catch {}
 
     return rulesets;
@@ -80,13 +80,8 @@ function RulesetTableInner({
   useEffect(() => {
     if (data) {
       let rulesets = parseRulesets;
-      let largestNumber = 0;
 
-      if (rulesets.length > 0) {
-        largestNumber = Math.max(...rulesets.map(([number]) => number));
-      }
-
-      setLastRuleset(largestNumber);
+      setLastRuleset(rulesets[rulesets.length - 1]?.id || null);
     } else setLastRuleset(null);
   }, [data, setLastRuleset, parseRulesets]);
 
@@ -96,8 +91,8 @@ function RulesetTableInner({
   return (
     <>
       {rulesets.map((ruleset) => (
-        <Tr key={ruleset[0]}>
-          <Td>{ruleset[1].description}</Td>
+        <Tr key={ruleset.id}>
+          <Td>{ruleset.description}</Td>
           <Td>
             <ButtonGroup>
               <Popover>
@@ -110,19 +105,19 @@ function RulesetTableInner({
                   <PopoverHeader>Rules</PopoverHeader>
                   <PopoverBody>
                     <UnorderedList>
-                      {ruleset[1].rules.map((rule, index) => (
+                      {ruleset.rules.map((rule, index) => (
                         <ListItem key={index}>{rule}</ListItem>
                       ))}
                     </UnorderedList>
                   </PopoverBody>
                 </PopoverContent>
               </Popover>
-              {selectedRuleset != ruleset[0] && (
-                <Button onClick={() => onRulesetSelect(ruleset[0])}>
+              {selectedRuleset != ruleset.id && (
+                <Button onClick={() => onRulesetSelect(ruleset.id)}>
                   Select
                 </Button>
               )}
-              {selectedRuleset == ruleset[0] && (
+              {selectedRuleset == ruleset.id && (
                 <Button onClick={() => onRulesetSelect(undefined)}>
                   Unselect
                 </Button>
@@ -150,11 +145,11 @@ export function WagerCreateRulesetTable({
     args: { key: env.ARENA_ITEM_KEY },
     options: { enabled: false },
   });
-  const [selectedRuleset, setSelectedRuleset] = useState<number | undefined>(
+  const [selectedRuleset, setSelectedRuleset] = useState<string | undefined>(
     undefined
   );
-  const [pages, setPages] = useState<Set<number | null>>(
-    new Set<number | null>([null])
+  const [pages, setPages] = useState<Set<string | null>>(
+    new Set<string | null>([null])
   );
 
   useEffect(() => {
@@ -181,7 +176,7 @@ export function WagerCreateRulesetTable({
     }
   }, [query.data, onArenaCoreLoaded]);
   const [hasFetched, setHasFetched] = useState<boolean>(false);
-  const handleSetLastPage = useCallback((x: number | null) => {
+  const handleSetLastPage = useCallback((x: string | null) => {
     setPages((prevPages) => {
       const newPages = new Set(prevPages);
       newPages.add(x);

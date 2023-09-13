@@ -34,6 +34,7 @@ import { useChain } from "@cosmos-kit/react";
 import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 import { InstantiateMsg as DaoDaoCoreInstantiateMsg } from "@dao/DaoDaoCore.types";
 import { InstantiateMsg as ArenaEscrowInstantiateMsg } from "@arena/ArenaEscrow.types";
+import { ExecuteMsg as ArenaWagerModuleExecuteMsg } from "@arena/ArenaWagerModule.types";
 import { ArenaCoreQueryClient } from "@arena/ArenaCore.client";
 import { ArenaWagerModuleClient } from "@arena/ArenaWagerModule.client";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -59,6 +60,7 @@ import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { WagerCreateRulesetTable } from "@components/pages/wager/create/RulesetTable";
 import { WagerCreateDAOCard } from "@components/pages/wager/create/DAOCard";
 import { WagerCreateTeamCard } from "@components/pages/wager/create/TeamCard";
+import { CompetitionModuleResponse } from "@arena/ArenaCore.types";
 
 const FormSchema = z.object({
   dao_address: AddressSchema,
@@ -66,7 +68,7 @@ const FormSchema = z.object({
   expiration: ExpirationSchema,
   name: z.string().nonempty({ message: "Name is required " }),
   rules: RulesSchema,
-  ruleset: z.number().optional(),
+  ruleset: z.string().optional(),
   dues: z.array(DueSchema).nonempty({ message: "Dues cannot be empty" }),
   proposal_title: z
     .string()
@@ -142,7 +144,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
 
   const [arenaCoreAddr, setArenaCoreAddr] = useState<string | undefined>();
 
-  const onRulesetSelect = (id: number | undefined) => {
+  const onRulesetSelect = (id: string | undefined) => {
     setValue("ruleset", id);
   };
 
@@ -165,14 +167,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
     try {
       let cosmwasmClient = await getSigningCosmWasmClient();
       if (!cosmwasmClient) throw "Could not get the CosmWasm client";
-
-      const daoDaoCoreQuery = new DaoDaoCoreQueryClient(
-        cosmwasmClient,
-        values.dao_address
-      );
-
-      await daoDaoCoreQuery.config();
-
+      if (!address) throw "Could not get user address";
       if (!arenaCoreAddr) {
         throw "The DAO does not have an Arena extension.";
       }
@@ -182,21 +177,21 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         arenaCoreAddr
       );
 
-      let wager_module = await arenaCoreClient.queryExtension({
+      let wager_module = (await arenaCoreClient.queryExtension({
         msg: {
           competition_module: {
             key: env.WAGER_MODULE_KEY,
           },
         },
-      });
+      })) as unknown as CompetitionModuleResponse;
 
       if (!wager_module)
         throw "The DAO's Arena extension does not have a wager module set.";
 
       let wagerModuleClient = new ArenaWagerModuleClient(
         cosmwasmClient,
-        address!,
-        wager_module
+        address,
+        wager_module.addr
       );
 
       const msg = {
@@ -204,7 +199,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         expiration: convertToExpiration(values.expiration),
         name: values.name,
         rules: convertToRules(values.rules),
-        ruleset: values.ruleset?.toString(),
+        ruleset: values.ruleset,
         extension: {},
         competitionDao: {
           code_id: env.CODE_ID_DAO_CORE,
@@ -283,8 +278,10 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         if (id) {
           await wagerModuleClient.generateProposals({
             id,
-            title: values.proposal_title,
-            description: values.proposal_description,
+            proposalDetails: {
+              title: values.proposal_title,
+              description: values.proposal_description,
+            },
           });
 
           toast({
@@ -300,6 +297,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         router.push(`/wager/view?dao=${values.dao_address}&id=${id}`);
       }
     } catch (e: any) {
+      console.error(e);
       toast({
         status: "error",
         title: "Error",

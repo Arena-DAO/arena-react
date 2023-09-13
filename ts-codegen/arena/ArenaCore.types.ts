@@ -50,6 +50,7 @@ export interface ModuleInstantiateInfo {
 }
 export interface Ruleset {
   description: string;
+  id: Uint128;
   is_enabled: boolean;
   rules: string[];
 }
@@ -97,10 +98,6 @@ export type CosmosMsgForEmpty = {
 } | {
   custom: Empty;
 } | {
-  staking: StakingMsg;
-} | {
-  distribution: DistributionMsg;
-} | {
   stargate: {
     type_url: string;
     value: Binary;
@@ -122,37 +119,6 @@ export type BankMsg = {
 } | {
   burn: {
     amount: Coin[];
-    [k: string]: unknown;
-  };
-};
-export type StakingMsg = {
-  delegate: {
-    amount: Coin;
-    validator: string;
-    [k: string]: unknown;
-  };
-} | {
-  undelegate: {
-    amount: Coin;
-    validator: string;
-    [k: string]: unknown;
-  };
-} | {
-  redelegate: {
-    amount: Coin;
-    dst_validator: string;
-    src_validator: string;
-    [k: string]: unknown;
-  };
-};
-export type DistributionMsg = {
-  set_withdraw_address: {
-    address: string;
-    [k: string]: unknown;
-  };
-} | {
-  withdraw_delegator_reward: {
-    validator: string;
     [k: string]: unknown;
   };
 };
@@ -297,7 +263,7 @@ export type QueryExt = {
   rulesets: {
     include_disabled?: boolean | null;
     limit?: number | null;
-    start_after?: number | null;
+    start_after?: Uint128 | null;
   };
 } | {
   tax: {
@@ -307,13 +273,32 @@ export type QueryExt = {
   competition_module: {
     key: string;
   };
+} | {
+  dump_state: {};
 };
+export type MigrateMsg = {
+  from_compatible: {};
+};
+export type Addr = string;
+export interface SudoMsg {
+  dump_state_response: DumpStateResponse;
+}
+export interface DumpStateResponse {
+  competition_modules: CompetitionModuleResponse[];
+  rulesets: Ruleset[];
+  tax: Decimal;
+}
+export interface CompetitionModuleResponse {
+  addr: Addr;
+  competition_count: Uint128;
+  is_enabled: boolean;
+  key: string;
+}
 export type CheckedDenom = {
   native: string;
 } | {
   cw20: Addr;
 };
-export type Addr = string;
 export interface Config {
   deposit_info?: CheckedDepositInfo | null;
   open_proposal_submission: boolean;

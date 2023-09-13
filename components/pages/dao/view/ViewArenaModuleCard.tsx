@@ -4,8 +4,9 @@ import {
   FormErrorMessage,
   FormLabel,
 } from "@chakra-ui/form-control";
-import { Heading } from "@chakra-ui/layout";
+import { Flex, Heading, Spacer } from "@chakra-ui/layout";
 import { Input, Button } from "@chakra-ui/react";
+import env from "@config/env";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -15,11 +16,17 @@ const FormSchema = z.object({
 });
 type FormValues = z.infer<typeof FormSchema>;
 
-interface DAOViewViewWagerCardProps {
+interface DAOViewViewArenaModuleCardProps {
+  module_key: string;
   dao: string;
+  competition_count: string;
 }
 
-export function DAOViewViewWagerCard({ dao }: DAOViewViewWagerCardProps) {
+export function DAOViewViewArenaModuleCard({
+  module_key,
+  dao,
+  competition_count,
+}: DAOViewViewArenaModuleCardProps) {
   const {
     register,
     handleSubmit,
@@ -27,14 +34,24 @@ export function DAOViewViewWagerCard({ dao }: DAOViewViewWagerCardProps) {
   } = useForm<FormValues>();
   const router = useRouter();
 
+  let path = "";
+  switch (module_key) {
+    case env.WAGER_MODULE_KEY:
+      path = "wager";
+      break;
+  }
+
   const onSubmit = (values: FormValues) => {
-    router.push(`/wager/view?dao=${dao}&id=${values.id}`);
+    router.push(`/${path}/view?dao=${dao}&id=${values.id}`);
   };
 
   return (
     <Card>
       <CardHeader>
-        <Heading size="md">View Wager</Heading>
+        <Flex>
+          <Heading size="md">View Wager</Heading> <Spacer />
+          <small>Competition Count: {competition_count}</small>
+        </Flex>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardBody>

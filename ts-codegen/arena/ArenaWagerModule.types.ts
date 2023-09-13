@@ -14,12 +14,11 @@ export interface Empty {
 }
 export type ExecuteMsg = {
   jail_competition: {
-    description: string;
     id: Uint128;
-    title: string;
+    proposal_details: ProposalDetails;
   };
 } | {
-  activate: CompetitionCoreActivateMsg;
+  activate: {};
 } | {
   create_competition: {
     competition_dao: ModuleInstantiateInfo;
@@ -33,9 +32,8 @@ export type ExecuteMsg = {
   };
 } | {
   generate_proposals: {
-    description: string;
     id: Uint128;
-    title: string;
+    proposal_details: ProposalDetails;
   };
 } | {
   process_competition: {
@@ -73,7 +71,10 @@ export type Action = {
     new_owner: string;
   };
 } | "accept_ownership" | "renounce_ownership";
-export interface CompetitionCoreActivateMsg {}
+export interface ProposalDetails {
+  description: string;
+  title: string;
+}
 export interface ModuleInstantiateInfo {
   admin?: Admin | null;
   code_id: number;
@@ -87,8 +88,15 @@ export interface MemberShare {
 export type QueryMsg = {
   config: {};
 } | {
+  competition_count: {};
+} | {
   competition: {
     id: Uint128;
+  };
+} | {
+  competitions: {
+    limit?: number | null;
+    start_after?: Uint128 | null;
   };
 } | {
   query_extension: {
@@ -97,6 +105,9 @@ export type QueryMsg = {
 } | {
   ownership: {};
 };
+export type MigrateMsg = {
+  from_compatible: {};
+};
 export type Null = null;
 export type Addr = string;
 export type CompetitionStatus = "pending" | "active" | "inactive" | "jailed";
@@ -104,6 +115,7 @@ export interface CompetitionResponseForEmpty {
   dao: Addr;
   description: string;
   escrow: Addr;
+  expiration: Expiration;
   extension: Empty;
   has_generated_proposals: boolean;
   id: Uint128;
@@ -114,6 +126,7 @@ export interface CompetitionResponseForEmpty {
   start_height: number;
   status: CompetitionStatus;
 }
+export type ArrayOfCompetitionResponseForEmpty = CompetitionResponseForEmpty[];
 export interface Config {
   description: string;
   key: string;

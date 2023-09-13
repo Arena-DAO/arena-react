@@ -3,17 +3,18 @@ import { Button, Fade } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { DAOCard } from "@components/cards/DAOCard";
 import env from "@config/env";
-import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { CosmWasmClient, fromBinary } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { AddressSchema } from "~/helpers/SchemaHelpers";
 import { BsYinYang } from "react-icons/bs";
-import { DAOViewViewWagerCard } from "@components/pages/dao/view/ViewWagerCard";
+import { DAOViewViewArenaModuleCard } from "@components/pages/dao/view/ViewArenaModuleCard";
 import { useDaoDaoCoreGetItemQuery } from "@dao/DaoDaoCore.react-query";
 import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 import { useArenaCoreQueryExtensionQuery } from "@arena/ArenaCore.react-query";
 import { ArenaCoreQueryClient } from "@arena/ArenaCore.client";
+import { DumpStateResponse } from "@arena/ArenaCore.types";
 
 interface DAOViewPageInnerProps {
   cosmwasmClient: CosmWasmClient;
@@ -27,9 +28,15 @@ function DAOViewPageInner({ dao, cosmwasmClient }: DAOViewPageInnerProps) {
   });
   const { data } = useArenaCoreQueryExtensionQuery({
     client: new ArenaCoreQueryClient(cosmwasmClient, itemData?.item!),
-    args: { msg: { tax: {} } },
+    args: { msg: { dump_state: {} } },
     options: { enabled: !!itemData && !!itemData.item },
   });
+  const [dumpState, setDumpState] = useState<DumpStateResponse>();
+  useEffect(() => {
+    if (data) {
+      setDumpState(data as unknown as DumpStateResponse);
+    }
+  }, [data]);
 
   return (
     <Fade in={true}>
@@ -39,8 +46,10 @@ function DAOViewPageInner({ dao, cosmwasmClient }: DAOViewPageInnerProps) {
           cosmwasmClient={cosmwasmClient}
           showViewLink={false}
         />
-        {data && (
-          <Heading size="sm">Tax: {`${parseFloat(data) * 100}%`}</Heading>
+        {dumpState && (
+          <Heading size="sm">
+            Tax: {`${parseFloat(dumpState.tax) * 100}%`}
+          </Heading>
         )}
         <Link
           ml="auto"
@@ -52,7 +61,17 @@ function DAOViewPageInner({ dao, cosmwasmClient }: DAOViewPageInnerProps) {
         >
           <Button rightIcon={<BsYinYang />}>View on DAO DAO</Button>
         </Link>
-        <DAOViewViewWagerCard dao={dao} />
+        {dumpState &&
+          dumpState.competition_modules.map((x) => {
+            return (
+              <DAOViewViewArenaModuleCard
+                key={x.addr}
+                dao={dao}
+                module_key={x.key}
+                competition_count={x.competition_count}
+              />
+            );
+          })}
       </Stack>
     </Fade>
   );

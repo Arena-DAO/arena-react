@@ -28,14 +28,14 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { statusColors } from "~/helpers/ArenaHelpers";
-import { WagerViewDuesDisplay } from "@components/pages/wager/view/DuesDisplay";
 import { AddressSchema } from "~/helpers/SchemaHelpers";
-import { WagerViewBalanceCard } from "@components/pages/wager/view/BalanceCard";
-import { WagerViewTotalBalanceCard } from "@components/pages/wager/view/TotalBalanceCard";
 import {
   WagerViewProposalPromptModal,
   WagerViewProposalPromptModalAction,
 } from "@components/pages/wager/view/ProposalPromptModal";
+import { WagerViewEscrowDisplay } from "@components/pages/wager/view/EscrowDisplay";
+import { CompetitionStatus } from "@arena/ArenaWagerModule.types";
+import { CompetitionModuleResponse } from "@arena/ArenaCore.types";
 
 interface ViewWagerPageContentProps {
   cosmwasmClient: CosmWasmClient;
@@ -49,7 +49,6 @@ function ViewWagerPageContent({
   id,
 }: ViewWagerPageContentProps) {
   const toast = useToast();
-  const { address } = useChain(env.CHAIN);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const isValidAddress = useMemo(() => {
     return !!dao && AddressSchema.safeParse(dao).success;
@@ -72,7 +71,10 @@ function ViewWagerPageContent({
       },
     });
   const query = useArenaWagerModuleCompetitionQuery({
-    client: new ArenaWagerModuleQueryClient(cosmwasmClient, moduleData!),
+    client: new ArenaWagerModuleQueryClient(
+      cosmwasmClient,
+      (moduleData as unknown as CompetitionModuleResponse)?.addr
+    ),
     args: { id: id },
     options: {
       enabled: !!id && !isNaN(parseInt(id)) && isModuleFetched && !!moduleData,
@@ -85,7 +87,6 @@ function ViewWagerPageContent({
     setData(query.data);
   }, [query.data]);
 
-  const [balanceChanged, setBalanceChanged] = useState<number>(0);
   useEffect(() => {
     if (query.isError)
       toast({
@@ -105,15 +106,26 @@ function ViewWagerPageContent({
       });
     }
   }, [isValidAddress, toast]);
-  useEffect(() => {}, [data?.status]);
-  useEffect(() => {}, [data?.has_generated_proposals]);
-  const notifyBalancesChanged = useCallback(
-    () => setBalanceChanged((prev) => prev + 1),
+  const notifyStatusChanged = useCallback(
+    (new_status: CompetitionStatus) =>
+      setData((prevData) => {
+        if (prevData) {
+          return { ...prevData, status: new_status };
+        }
+        return prevData;
+      }),
     []
   );
-  const notifyIsActive = useCallback(() => {
-    if (data) data.status = "active";
-  }, [data]);
+  const notifyHasGeneratedProposals = useCallback(
+    () =>
+      setData((prevData) => {
+        if (prevData) {
+          return { ...prevData, has_generated_proposals: true };
+        }
+        return prevData;
+      }),
+    []
+  );
 
   if (query.isError || !isValidAddress) {
     return null;
@@ -147,31 +159,13 @@ function ViewWagerPageContent({
             </>
           )}
           {data && data.status != "inactive" && (
-            <>
-              <WagerViewDuesDisplay
-                cosmwasmClient={cosmwasmClient}
-                escrow_addr={data.escrow}
-                balanceChanged={balanceChanged}
-                notifyBalancesChanged={notifyBalancesChanged}
-                wager_id={data.id}
-                notifyIsActive={notifyIsActive}
-              />
-              {address && (
-                <WagerViewBalanceCard
-                  address={address}
-                  cosmwasmClient={cosmwasmClient}
-                  escrow_address={data.escrow}
-                  status={data.status}
-                  notifyBalancesChanged={notifyBalancesChanged}
-                  balanceChanged={balanceChanged}
-                />
-              )}
-              <WagerViewTotalBalanceCard
-                cosmwasmClient={cosmwasmClient}
-                escrow_address={data.escrow}
-                balanceChanged={balanceChanged}
-              />
-            </>
+            <WagerViewEscrowDisplay
+              cosmwasmClient={cosmwasmClient}
+              escrow_addr={data.escrow}
+              wager_id={data.id}
+              wager_status={data.status}
+              notifyIsActive={() => notifyStatusChanged("active")}
+            />
           )}
           {!data?.has_generated_proposals && (
             <Button
@@ -204,22 +198,8 @@ function ViewWagerPageContent({
               isOpen={isOpen}
               onClose={onClose}
               action={promptAction}
-              setJailedStatus={() => {
-                setData((prevData) => {
-                  if (prevData) {
-                    return { ...prevData, status: "jailed" };
-                  }
-                  return prevData;
-                });
-              }}
-              setHasGeneratedProposals={() => {
-                setData((prevData) => {
-                  if (prevData) {
-                    return { ...prevData, has_generated_proposals: true };
-                  }
-                  return prevData;
-                });
-              }}
+              setJailedStatus={() => notifyStatusChanged("jailed")}
+              setHasGeneratedProposals={() => notifyHasGeneratedProposals()}
             />
           )}
         </Stack>

@@ -75,8 +75,10 @@ export function WagerViewProposalPromptModal({
 
       await wagerModuleClient.jailCompetition({
         id: id,
-        title: values.proposal_title,
-        description: values.proposal_description,
+        proposalDetails: {
+          title: values.proposal_title,
+          description: values.proposal_description,
+        },
       });
 
       toast({
@@ -110,8 +112,10 @@ export function WagerViewProposalPromptModal({
 
       await wagerModuleClient.generateProposals({
         id: id,
-        title: values.proposal_title,
-        description: values.proposal_description,
+        proposalDetails: {
+          title: values.proposal_title,
+          description: values.proposal_description,
+        },
       });
 
       toast({
