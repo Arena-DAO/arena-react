@@ -31,10 +31,8 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useChain } from "@cosmos-kit/react";
-import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 import { InstantiateMsg as DaoDaoCoreInstantiateMsg } from "@dao/DaoDaoCore.types";
 import { InstantiateMsg as ArenaEscrowInstantiateMsg } from "@arena/ArenaEscrow.types";
-import { ExecuteMsg as ArenaWagerModuleExecuteMsg } from "@arena/ArenaWagerModule.types";
 import { ArenaCoreQueryClient } from "@arena/ArenaCore.client";
 import { ArenaWagerModuleClient } from "@arena/ArenaWagerModule.client";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -72,10 +70,16 @@ const FormSchema = z.object({
   dues: z.array(DueSchema).nonempty({ message: "Dues cannot be empty" }),
   proposal_title: z
     .string()
-    .nonempty({ message: "Proposal Title cannot be empty" }),
+    .nonempty({ message: "Proposal title cannot be empty" }),
   proposal_description: z
     .string()
-    .nonempty({ message: "Proposal Description cannot be empty" }),
+    .nonempty({ message: "Proposal description cannot be empty" }),
+  competition_dao_name: z
+    .string()
+    .nonempty({ message: "Competition DAO name cannot be empty" }),
+  competition_dao_description: z
+    .string()
+    .nonempty({ message: "Competition DAO description cannot be empty" }),
 });
 export type FormValues = z.infer<typeof FormSchema>;
 
@@ -119,6 +123,8 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
           },
         },
       ],
+      competition_dao_name: "Arena Competition DAO",
+      competition_dao_description: "A DAO for handling an Arena Competition",
       proposal_title: "Competition Result",
       proposal_description:
         "This proposal allows members to vote on the winner of the competition. Each choice represents a different team. Select the team that you believe should win the competition.",
@@ -209,8 +215,8 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
             admin: values.dao_address,
             automatically_add_cw20s: true,
             automatically_add_cw721s: true,
-            description: "A DAO for handling an Arena Competition",
-            name: "Arena Competition DAO",
+            description: values.competition_dao_description,
+            name: values.competition_dao_name,
             proposal_modules_instantiate_info: [
               {
                 code_id: env.CODE_ID_DAO_PROPOSAL_MULTIPLE,
@@ -492,7 +498,37 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
             </Tooltip>
             <FormErrorMessage>{errors.dues?.message}</FormErrorMessage>
           </FormControl>
-          <Accordion allowToggle>
+          <Accordion allowToggle allowMultiple>
+            <AccordionItem>
+              <AccordionButton>
+                <Box as="span" flex="1" textAlign="left">
+                  Competition DAO Details <small>(optional)</small>
+                </Box>
+                <AccordionIcon />
+              </AccordionButton>
+              <AccordionPanel>
+                <Stack>
+                  <FormControl isInvalid={!!errors.competition_dao_name}>
+                    <FormLabel>Name</FormLabel>
+                    <InputGroup>
+                      <Input {...register("competition_dao_name")} />
+                    </InputGroup>
+                    <FormErrorMessage>
+                      {errors.competition_dao_name?.message}
+                    </FormErrorMessage>
+                  </FormControl>
+                  <FormControl isInvalid={!!errors.competition_dao_description}>
+                    <FormLabel>Description</FormLabel>
+                    <InputGroup>
+                      <Textarea {...register("competition_dao_description")} />
+                    </InputGroup>
+                    <FormErrorMessage>
+                      {errors.competition_dao_description?.message}
+                    </FormErrorMessage>
+                  </FormControl>
+                </Stack>
+              </AccordionPanel>
+            </AccordionItem>
             <AccordionItem>
               <AccordionButton>
                 <Box as="span" flex="1" textAlign="left">
@@ -503,7 +539,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
               <AccordionPanel>
                 <Stack>
                   <FormControl isInvalid={!!errors.proposal_title}>
-                    <FormLabel>Proposal Title</FormLabel>
+                    <FormLabel>Title</FormLabel>
                     <InputGroup>
                       <Input {...register("proposal_title")} />
                     </InputGroup>
@@ -512,7 +548,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
                     </FormErrorMessage>
                   </FormControl>
                   <FormControl isInvalid={!!errors.proposal_description}>
-                    <FormLabel>Proposal Description</FormLabel>
+                    <FormLabel>Description</FormLabel>
                     <InputGroup>
                       <Textarea {...register("proposal_description")} />
                     </InputGroup>

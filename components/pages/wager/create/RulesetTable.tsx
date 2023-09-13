@@ -19,6 +19,7 @@ import {
   Thead,
   Th,
   Tbody,
+  Tfoot,
 } from "@chakra-ui/react";
 import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 import { useDaoDaoCoreGetItemQuery } from "@dao/DaoDaoCore.react-query";
@@ -181,6 +182,9 @@ export function WagerCreateRulesetTable({
                 />
               )}
             </Tbody>
+            <Tfoot>
+              <small>Rulesets Count: {rulesetsCount}</small>
+            </Tfoot>
           </Table>
         </TableContainer>
       </FormControl>
