@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { Uint128, DepositToken, UncheckedDenom, DepositRefundPolicy, Admin, Binary, Decimal, InstantiateMsg, UncheckedDepositInfo, InstantiateExt, ModuleInstantiateInfo, Ruleset, ExecuteMsg, ProposeMessage, CosmosMsgForEmpty, BankMsg, IbcMsg, Timestamp, Uint64, WasmMsg, GovMsg, VoteOption, ExecuteExt, Status, MultipleChoiceOptions, MultipleChoiceOption, Coin, Empty, IbcTimeout, IbcTimeoutBlock, ProposalDetails, QueryMsg, QueryExt, MigrateMsg, Addr, SudoMsg, DumpStateResponse, CompetitionModuleResponse, CheckedDenom, Config, CheckedDepositInfo, DepositInfoResponse, HooksResponse } from "./ArenaCore.types";
+import { Uint128, DepositToken, UncheckedDenom, DepositRefundPolicy, Admin, Binary, Decimal, InstantiateMsg, UncheckedDepositInfo, InstantiateExt, ModuleInstantiateInfo, NewRuleset, ExecuteMsg, ProposeMessage, CosmosMsgForEmpty, BankMsg, IbcMsg, Timestamp, Uint64, WasmMsg, GovMsg, VoteOption, ExecuteExt, Status, MultipleChoiceOptions, MultipleChoiceOption, Coin, Empty, IbcTimeout, IbcTimeoutBlock, ProposalDetails, QueryMsg, QueryExt, MigrateMsg, Addr, SudoMsg, DumpStateResponse, CompetitionModuleResponse, Ruleset, CheckedDenom, Config, CheckedDepositInfo, DepositInfoResponse, HooksResponse } from "./ArenaCore.types";
 import { ArenaCoreQueryClient, ArenaCoreClient } from "./ArenaCore.client";
 export const arenaCoreQueryKeys = {
   contract: ([{

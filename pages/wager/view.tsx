@@ -195,7 +195,6 @@ function ViewWagerPageContent({
           )}
           {!data?.has_generated_proposals && (
             <Button
-              colorScheme="secondary"
               maxW="150px"
               onClick={() => {
                 setPromptAction("Generate Proposals");
@@ -207,7 +206,6 @@ function ViewWagerPageContent({
           )}
           {data?.status == "active" && data?.is_expired && (
             <Button
-              colorScheme="secondary"
               maxW="150px"
               onClick={() => {
                 setPromptAction("Jail Wager");
@@ -217,10 +215,12 @@ function ViewWagerPageContent({
               Jail Wager
             </Button>
           )}
-          {moduleData && (
+          {(moduleData as unknown as CompetitionModuleResponse)?.addr && (
             <WagerViewProposalPromptModal
               id={id}
-              module_addr={moduleData}
+              module_addr={
+                (moduleData as unknown as CompetitionModuleResponse).addr
+              }
               isOpen={isOpen}
               onClose={onClose}
               action={promptAction}

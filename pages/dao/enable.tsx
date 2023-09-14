@@ -31,7 +31,6 @@ import {
 } from "@chakra-ui/react";
 import {
   useForm,
-  Controller,
   useFieldArray,
   Control,
   useWatch,
@@ -40,8 +39,8 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
-  Ruleset,
   InstantiateMsg as ArenaCoreInstantiateMsg,
+  NewRuleset,
 } from "~/ts-codegen/arena/ArenaCore.types";
 import { BsPercent } from "react-icons/bs";
 import { useChain } from "@cosmos-kit/react-lite";
@@ -205,9 +204,8 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
             rulesets: values.rulesets.map((x) => {
               return {
                 description: x.description,
-                is_enabled: true,
                 rules: convertToRules(x.rules),
-              } as Ruleset;
+              } as NewRuleset;
             }),
             competition_modules_instantiate_info: [
               arena_wager_module_instantiate,
@@ -525,7 +523,7 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
           <FormControl isInvalid={!!errors.rulesets}>
             <FormLabel>Rulesets</FormLabel>
             <FormProvider {...formMethods}>
-              <Accordion defaultIndex={[0]} allowToggle allowMultiple>
+              <Accordion defaultIndex={[0]} allowMultiple>
                 {rulesetsFields.map((ruleset, rulesetIndex) => (
                   <AccordionItem key={ruleset.id}>
                     <HStack>

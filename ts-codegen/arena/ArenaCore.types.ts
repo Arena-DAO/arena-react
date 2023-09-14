@@ -39,7 +39,7 @@ export interface UncheckedDepositInfo {
 }
 export interface InstantiateExt {
   competition_modules_instantiate_info: ModuleInstantiateInfo[];
-  rulesets: Ruleset[];
+  rulesets: NewRuleset[];
   tax: Decimal;
 }
 export interface ModuleInstantiateInfo {
@@ -48,10 +48,8 @@ export interface ModuleInstantiateInfo {
   label: string;
   msg: Binary;
 }
-export interface Ruleset {
+export interface NewRuleset {
   description: string;
-  id: Uint128;
-  is_enabled: boolean;
   rules: string[];
 }
 export type ExecuteMsg = {
@@ -204,7 +202,7 @@ export type ExecuteExt = {
   };
 } | {
   update_rulesets: {
-    to_add: Ruleset[];
+    to_add: NewRuleset[];
     to_disable: Uint128[];
   };
 };
@@ -300,6 +298,12 @@ export interface CompetitionModuleResponse {
   competition_count: Uint128;
   is_enabled: boolean;
   key: string;
+}
+export interface Ruleset {
+  description: string;
+  id: Uint128;
+  is_enabled: boolean;
+  rules: string[];
 }
 export type CheckedDenom = {
   native: string;

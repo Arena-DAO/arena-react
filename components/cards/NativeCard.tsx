@@ -46,6 +46,7 @@ export function NativeCard({
   index = 0,
   ...cardProps
 }: NativeCardProps) {
+  //TODO: need to use ujunox at tx level but junox at user level
   const { assets } = useChain(env.CHAIN);
   const asset = useMemo(() => {
     return assets?.assets.find((x) =>

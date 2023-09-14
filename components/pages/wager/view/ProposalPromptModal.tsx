@@ -66,10 +66,11 @@ export function WagerViewProposalPromptModal({
     try {
       let cosmwasmClient = await getSigningCosmWasmClient();
       if (!cosmwasmClient) throw "Could not get the CosmWasm client";
+      if (!address) throw "Could not get user address";
 
       let wagerModuleClient = new ArenaWagerModuleClient(
         cosmwasmClient,
-        address!,
+        address,
         module_addr
       );
 
@@ -103,10 +104,12 @@ export function WagerViewProposalPromptModal({
     try {
       let cosmwasmClient = await getSigningCosmWasmClient();
       if (!cosmwasmClient) throw "Could not get the CosmWasm client";
+      if (!address) throw "Could not get user address";
 
+      console.log(module_addr);
       let wagerModuleClient = new ArenaWagerModuleClient(
         cosmwasmClient,
-        address!,
+        address,
         module_addr
       );
 

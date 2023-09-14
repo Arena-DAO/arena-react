@@ -49,7 +49,7 @@ import {
 } from "~/helpers/SchemaHelpers";
 import { InstantiateMsg as DAOProposalMultipleInstantiateMsg } from "@dao/DaoProposalMultiple.types";
 import { InstantiateMsg as DAOVotingCW4InstantiateMsg } from "@dao/DaoVotingCw4.types";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
 import moment from "moment-timezone";
 import { CosmWasmClient, toBinary } from "@cosmjs/cosmwasm-stargate";
@@ -59,6 +59,7 @@ import { WagerCreateRulesetTable } from "@components/pages/wager/create/RulesetT
 import { WagerCreateDAOCard } from "@components/pages/wager/create/DAOCard";
 import { WagerCreateTeamCard } from "@components/pages/wager/create/TeamCard";
 import { CompetitionModuleResponse } from "@arena/ArenaCore.types";
+import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 
 const FormSchema = z.object({
   dao_address: AddressSchema,
@@ -135,8 +136,6 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
     register,
     handleSubmit,
     control,
-    setError,
-    clearErrors,
     setValue,
     watch,
     formState: { errors, isSubmitting },
@@ -148,11 +147,12 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
 
   const watchExpirationUnits = watch("expiration.expiration_units");
 
-  const [arenaCoreAddr, setArenaCoreAddr] = useState<string | undefined>();
-
-  const onRulesetSelect = (id: string | undefined) => {
-    setValue("ruleset", id);
-  };
+  const onRulesetSelect = useCallback(
+    (id: string | undefined) => {
+      setValue("ruleset", id);
+    },
+    [setValue]
+  );
 
   const {
     fields: duesFields,
@@ -174,13 +174,22 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
       let cosmwasmClient = await getSigningCosmWasmClient();
       if (!cosmwasmClient) throw "Could not get the CosmWasm client";
       if (!address) throw "Could not get user address";
-      if (!arenaCoreAddr) {
+
+      let daoDaoCoreClient = new DaoDaoCoreQueryClient(
+        cosmwasmClient,
+        values.dao_address
+      );
+      let getItemResponse = await daoDaoCoreClient.getItem({
+        key: env.ARENA_ITEM_KEY,
+      });
+
+      if (!getItemResponse || !getItemResponse.item) {
         throw "The DAO does not have an Arena extension.";
       }
 
       let arenaCoreClient = new ArenaCoreQueryClient(
         cosmwasmClient,
-        arenaCoreAddr
+        getItemResponse.item
       );
 
       let wager_module = (await arenaCoreClient.queryExtension({
@@ -418,9 +427,6 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
             cosmwasmClient={cosmwasmClient}
             onRulesetSelect={onRulesetSelect}
             control={control}
-            setError={setError}
-            clearErrors={clearErrors}
-            onArenaCoreLoaded={setArenaCoreAddr}
           />
           <FormControl isInvalid={!!errors.rules}>
             <FormLabel>Rules</FormLabel>
@@ -498,7 +504,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
             </Tooltip>
             <FormErrorMessage>{errors.dues?.message}</FormErrorMessage>
           </FormControl>
-          <Accordion allowToggle allowMultiple>
+          <Accordion allowMultiple>
             <AccordionItem>
               <AccordionButton>
                 <Box as="span" flex="1" textAlign="left">

@@ -19,90 +19,125 @@ import {
   Thead,
   Th,
   Tbody,
-  Tfoot,
+  ButtonProps,
+  useDisclosure,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  ModalFooter,
 } from "@chakra-ui/react";
 import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 import { useDaoDaoCoreGetItemQuery } from "@dao/DaoDaoCore.react-query";
-import { CosmWasmClient, fromBinary } from "@cosmjs/cosmwasm-stargate";
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import env from "@config/env";
 import { useEffect, useState } from "react";
-import {
-  UseFormSetError,
-  UseFormClearErrors,
-  Control,
-  useWatch,
-} from "react-hook-form";
-import { AddressSchema } from "~/helpers/SchemaHelpers";
+import { Control, useWatch } from "react-hook-form";
 import { FormValues } from "~/pages/wager/create";
 import { useAllRulesets } from "~/hooks/useAllRulesets";
+import { isValidContractAddress } from "~/helpers/AddressHelpers";
+import { Ruleset } from "@arena/ArenaCore.types";
 
 interface RulesetProps {
   cosmwasmClient: CosmWasmClient;
   onRulesetSelect: (id: string | undefined) => void;
 }
 
-interface RulesetTableProps extends RulesetProps, TableContainerProps {
-  onArenaCoreLoaded: (data: string | undefined) => void;
-  setError: UseFormSetError<{ dao_address: string }>;
-  clearErrors: UseFormClearErrors<{ dao_address: string }>;
+interface RulesetTableProps extends RulesetProps {
   control: Control<FormValues>;
 }
 
 interface RulesetTableInnerProps extends RulesetProps {
   selectedRuleset: string | undefined;
-  arena_core_addr: string;
+  arenaCoreAddr: string;
   setRulesetsCount: (count: number) => void;
 }
 
 function RulesetTableInner({
-  arena_core_addr,
+  arenaCoreAddr,
   cosmwasmClient,
   onRulesetSelect,
   selectedRuleset,
   setRulesetsCount,
 }: RulesetTableInnerProps) {
-  const rulesets = useAllRulesets(cosmwasmClient, arena_core_addr, (count) =>
-    setRulesetsCount(count)
+  const rulesets = useAllRulesets(
+    cosmwasmClient,
+    arenaCoreAddr,
+    (count: number) => setRulesetsCount(count)
   );
+  const buttonProps: ButtonProps = {
+    size: "sm",
+    variant: "outline",
+  };
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [modalRuleset, setModalRuleset] = useState<Ruleset>();
 
   return (
     <>
-      {rulesets.map((ruleset) => (
-        <Tr key={ruleset.id}>
-          <Td>{ruleset.description}</Td>
-          <Td>
-            <ButtonGroup>
-              <Popover>
-                <PopoverTrigger>
-                  <Button>View</Button>
-                </PopoverTrigger>
-                <PopoverContent>
-                  <PopoverArrow />
-                  <PopoverCloseButton />
-                  <PopoverHeader>Rules</PopoverHeader>
-                  <PopoverBody>
-                    <UnorderedList>
-                      {ruleset.rules.map((rule, index) => (
-                        <ListItem key={index}>{rule}</ListItem>
-                      ))}
-                    </UnorderedList>
-                  </PopoverBody>
-                </PopoverContent>
-              </Popover>
-              {selectedRuleset != ruleset.id && (
-                <Button onClick={() => onRulesetSelect(ruleset.id)}>
-                  Select
-                </Button>
-              )}
-              {selectedRuleset == ruleset.id && (
-                <Button onClick={() => onRulesetSelect(undefined)}>
-                  Unselect
-                </Button>
-              )}
-            </ButtonGroup>
-          </Td>
-        </Tr>
-      ))}
+      <TableContainer>
+        <Table variant="unstyled">
+          <Thead>
+            <Tr>
+              <Th>Description</Th>
+              <Th>Action</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {rulesets.map((ruleset, i) => (
+              <Tr key={i}>
+                <Td>{ruleset.description}</Td>
+                <Td>
+                  <ButtonGroup>
+                    <Button
+                      {...buttonProps}
+                      onClick={() => {
+                        setModalRuleset(ruleset);
+                        onOpen();
+                      }}
+                    >
+                      View
+                    </Button>
+                    {selectedRuleset == ruleset.id && (
+                      <Button
+                        {...buttonProps}
+                        onClick={() => onRulesetSelect(undefined)}
+                      >
+                        Unselect
+                      </Button>
+                    )}
+                  </ButtonGroup>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </TableContainer>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Rules</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <UnorderedList>
+              {modalRuleset?.rules.map((rule, index) => (
+                <ListItem key={index}>{rule}</ListItem>
+              ))}
+            </UnorderedList>
+          </ModalBody>
+          <ModalFooter>
+            {selectedRuleset != modalRuleset?.id && (
+              <Button
+                {...buttonProps}
+                onClick={() => onRulesetSelect(modalRuleset?.id)}
+              >
+                Select
+              </Button>
+            )}
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 }
@@ -111,83 +146,40 @@ export function WagerCreateRulesetTable({
   cosmwasmClient,
   control,
   onRulesetSelect,
-  setError,
-  onArenaCoreLoaded,
-  clearErrors,
-  ...props
 }: RulesetTableProps) {
   let watchDAOAddress = useWatch({ control, name: "dao_address" });
-  const query = useDaoDaoCoreGetItemQuery({
+  const { data, isError, isFetched, refetch } = useDaoDaoCoreGetItemQuery({
     client: new DaoDaoCoreQueryClient(cosmwasmClient, watchDAOAddress),
     args: { key: env.ARENA_ITEM_KEY },
     options: { enabled: false },
   });
-  const [selectedRuleset, setSelectedRuleset] = useState<string | undefined>(
-    undefined
-  );
-  const [rulesetsCount, setRulesetsCount] = useState<number>();
-
   useEffect(() => {
-    if (AddressSchema.safeParse(watchDAOAddress).success) query.refetch();
-  }, [watchDAOAddress, query]);
+    if (isValidContractAddress(watchDAOAddress)) refetch();
+  }, [watchDAOAddress, refetch]);
+  const [selectedRuleset, setSelectedRuleset] = useState<string>();
+  const [rulesetsCount, setRulesetsCount] = useState<number>();
   useEffect(() => {
     onRulesetSelect(selectedRuleset);
     setSelectedRuleset(selectedRuleset);
   }, [selectedRuleset, onRulesetSelect]);
 
-  useEffect(() => {
-    if (query.isError || (query.data && !query.data.item))
-      setError("dao_address", {
-        message: "The dao does not have an arena core extension",
-      });
-    else clearErrors("dao_address");
-  }, [query.isError, query.data, setError, clearErrors]);
-
-  useEffect(() => {
-    if (query.data && query.data.item) {
-      onArenaCoreLoaded(query.data.item);
-    } else {
-      onArenaCoreLoaded(undefined);
-    }
-  }, [query.data, onArenaCoreLoaded]);
-
-  if (!query.isFetched || query.isError || rulesetsCount === 0) {
+  if (!isFetched || isError || rulesetsCount === 0) {
     return null;
   }
 
   return (
-    <Skeleton isLoaded={!query.isLoading}>
-      <FormControl>
-        <FormLabel>Rulesets</FormLabel>
-        <TableContainer {...props}>
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th>Description</Th>
-                <Th>Action</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {query.data && query.data.item && (
-                <RulesetTableInner
-                  selectedRuleset={selectedRuleset}
-                  arena_core_addr={query.data.item}
-                  setRulesetsCount={function (count: number): void {
-                    setRulesetsCount(count);
-                  }}
-                  cosmwasmClient={cosmwasmClient}
-                  onRulesetSelect={function (id: string | undefined): void {
-                    setSelectedRuleset(id);
-                  }}
-                />
-              )}
-            </Tbody>
-            <Tfoot>
-              <small>Rulesets Count: {rulesetsCount}</small>
-            </Tfoot>
-          </Table>
-        </TableContainer>
-      </FormControl>
-    </Skeleton>
+    <FormControl>
+      <FormLabel>Rulesets</FormLabel>
+      {data && data.item && (
+        <RulesetTableInner
+          selectedRuleset={selectedRuleset}
+          arenaCoreAddr={data.item}
+          setRulesetsCount={(count: number) => setRulesetsCount(count)}
+          cosmwasmClient={cosmwasmClient}
+          onRulesetSelect={(id: string | undefined) => setSelectedRuleset(id)}
+        />
+      )}
+      <small>Rulesets Count: {rulesetsCount}</small>
+    </FormControl>
   );
 }

@@ -7,8 +7,10 @@ export function useAllRulesets(
   cosmwasmClient: CosmWasmClient,
   arena_core_addr: string,
   setRulesetsCount?: (count: number) => void
-) {
-  const [allRulesets, setAllRulesets] = useState<Ruleset[]>([]);
+): Ruleset[] {
+  const [allRulesets, setAllRulesets] = useState<Map<string, Ruleset>>(
+    new Map<string, Ruleset>()
+  );
   const [startAfter, setStartAfter] = useState<string>();
   const [hasMore, setHasMore] = useState(true);
   useEffect(() => {
@@ -21,16 +23,19 @@ export function useAllRulesets(
       })) as unknown as Ruleset[];
 
       if (data && data.length > 0) {
-        setAllRulesets((prev) => [...prev, ...data]);
+        setAllRulesets((prev) => {
+          data.forEach((x) => prev.set(x.id, x));
+          return prev;
+        });
         setStartAfter(data[data.length - 1]!.id);
       } else {
         setHasMore(false);
-        setRulesetsCount?.(allRulesets.length);
+        setRulesetsCount?.(allRulesets.size);
       }
     }
 
     fetchRulesets();
-  }, [cosmwasmClient, arena_core_addr, startAfter, hasMore, setRulesetsCount]);
+  }, [cosmwasmClient, arena_core_addr, startAfter, hasMore]);
 
-  return allRulesets;
+  return [...allRulesets.values()];
 }
