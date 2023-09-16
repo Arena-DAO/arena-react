@@ -2,12 +2,14 @@ import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 import { DaoProposalSingleQueryClient } from "@dao/DaoProposalSingle.client";
 import { DaoPreProposeSingleQueryClient } from "@dao/DaoPreProposeSingle.client";
+import { CheckedDepositInfo, Coin } from "@dao/DaoPreProposeSingle.types";
 
 export type ProposalAddrType = "proposal_module" | "prepropose";
 
 interface ProposalAddrResponse {
   addr: string;
   type: ProposalAddrType;
+  funds?: Coin[];
 }
 
 export async function getProposalAddr(
@@ -42,12 +44,31 @@ export async function getProposalAddr(
           creationPolicy.module.addr
         );
         let config = await daoPreProposeClient.config();
-        if (!config.deposit_info)
-          return { addr: creationPolicy.module.addr, type: "prepropose" };
+        return {
+          addr: creationPolicy.module.addr,
+          type: "prepropose",
+          funds: convertToCoin(config.deposit_info),
+        };
       }
 
       startAfter = proposalModules[proposalModules.length - 1]?.address;
     }
   } while (proposalModules.length != 0);
   return null;
+}
+
+function convertToCoin(
+  depositInfo: CheckedDepositInfo | null | undefined
+): Coin[] | undefined {
+  if (depositInfo)
+    if ("native" in depositInfo.denom) {
+      return [
+        {
+          denom: depositInfo.denom.native,
+          amount: depositInfo.amount,
+        },
+      ];
+    }
+
+  return undefined;
 }

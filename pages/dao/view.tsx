@@ -1,8 +1,8 @@
-import { Box, Container, Heading, Link, Stack } from "@chakra-ui/layout";
+import { Box, Container, Heading, Stack } from "@chakra-ui/layout";
 import { Fade } from "@chakra-ui/react";
 import { DAOCard } from "@components/cards/DAOCard";
 import env from "@config/env";
-import { CosmWasmClient, fromBinary } from "@cosmjs/cosmwasm-stargate";
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";

@@ -169,15 +169,20 @@ export function WagerViewDuesDisplay({
             proposalAddrResponse.addr
           );
 
-          await preProposeClient.propose({
-            msg: {
-              propose: {
-                title: proposal_title,
-                description: proposal_description,
-                msgs: proposal_msgs,
+          await preProposeClient.propose(
+            {
+              msg: {
+                propose: {
+                  title: proposal_title,
+                  description: proposal_description,
+                  msgs: proposal_msgs,
+                },
               },
             },
-          });
+            undefined,
+            undefined,
+            proposalAddrResponse.funds
+          );
         }
 
         toast({

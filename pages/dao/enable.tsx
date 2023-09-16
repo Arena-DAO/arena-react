@@ -283,15 +283,20 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
           proposalAddrResponse.addr
         );
 
-        await preProposeClient.propose({
-          msg: {
-            propose: {
-              title: proposal_title,
-              description: proposal_description,
-              msgs: [cosmosMsg],
+        await preProposeClient.propose(
+          {
+            msg: {
+              propose: {
+                title: proposal_title,
+                description: proposal_description,
+                msgs: [cosmosMsg],
+              },
             },
           },
-        });
+          undefined,
+          undefined,
+          proposalAddrResponse.funds
+        );
       }
 
       toast({
