@@ -48,7 +48,7 @@ import { ExecuteMsg as DaoDaoCoreExecuteMsg } from "@dao/DaoDaoCore.types";
 import { DaoProposalSingleClient } from "@dao/DaoProposalSingle.client";
 import { InstantiateMsg as ArenaWagerModuleInstantiateMsg } from "@arena/ArenaWagerModule.types";
 import { InstantiateMsg as DAOProposalMultipleInstantiateMsg } from "@dao/DaoProposalMultiple.types";
-import { getProposalAddr } from "~/helpers/DAOHelpers";
+import { getProposalConfig } from "~/helpers/DAOHelpers";
 import { DaoPreProposeSingleClient } from "@dao/DaoPreProposeSingle.client";
 import {
   AddressSchema,
@@ -173,13 +173,14 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
 
       await daoDaoCoreQuery.config();
 
-      const proposalAddrResponse = await getProposalAddr(
+      const proposalConfig = await getProposalConfig(
         cosmWasmClient,
         values.dao_address,
+        "dao-proposal-single",
         address!
       );
 
-      if (!proposalAddrResponse) {
+      if (!proposalConfig) {
         throw "The dao does not have an accessible single proposal module available.";
       }
 
@@ -264,11 +265,11 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
       let proposal_description =
         "Enabling the Arena Protocol extension provides a framework for organizing and managing decentralized competitions, allowing for fair and transparent competition validation. By enabling the extension, participants can compete against each other in a trustless environment, and the DAO can ensure that the competition is fair and secure.";
       let proposal_title = "Enable the Arena Protocol extension.";
-      if (proposalAddrResponse.type == "proposal_module") {
+      if (proposalConfig.type == "proposal_module") {
         let daoProposalClient = new DaoProposalSingleClient(
           cosmWasmClient,
           address!,
-          proposalAddrResponse.addr
+          proposalConfig.addr
         );
 
         await daoProposalClient.propose({
@@ -276,11 +277,11 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
           description: proposal_description,
           msgs: [cosmosMsg],
         });
-      } else if (proposalAddrResponse.type == "prepropose") {
+      } else if (proposalConfig.type == "prepropose") {
         let preProposeClient = new DaoPreProposeSingleClient(
           cosmWasmClient,
           address!,
-          proposalAddrResponse.addr
+          proposalConfig.addr
         );
 
         await preProposeClient.propose(
@@ -295,7 +296,7 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
           },
           undefined,
           undefined,
-          proposalAddrResponse.funds
+          proposalConfig.funds
         );
       }
 

@@ -139,10 +139,12 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   generateProposals: ({
     id,
-    proposalDetails
+    proposalDetails,
+    proposalModuleAddr
   }: {
     id: Uint128;
     proposalDetails: ProposalDetails;
+    proposalModuleAddr: string;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   processCompetition: ({
     distribution,
@@ -230,15 +232,18 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
   };
   generateProposals = async ({
     id,
-    proposalDetails
+    proposalDetails,
+    proposalModuleAddr
   }: {
     id: Uint128;
     proposalDetails: ProposalDetails;
+    proposalModuleAddr: string;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       generate_proposals: {
         id,
-        proposal_details: proposalDetails
+        proposal_details: proposalDetails,
+        proposal_module_addr: proposalModuleAddr
       }
     }, fee, memo, _funds);
   };

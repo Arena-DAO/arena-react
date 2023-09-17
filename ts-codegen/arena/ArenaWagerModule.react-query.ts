@@ -266,6 +266,7 @@ export interface ArenaWagerModuleGenerateProposalsMutation {
   msg: {
     id: Uint128;
     proposalDetails: ProposalDetails;
+    proposalModuleAddr: string;
   };
   args?: {
     fee?: number | StdFee | "auto";

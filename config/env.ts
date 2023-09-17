@@ -8,6 +8,7 @@ interface Env {
   WALLETCONNECT_PROJECT_ID: string;
   BECH32_WALLET_LENGTH: number;
   BECH32_CONTRACT_LENGTH: number;
+  DEFAULT_TEAM_VOTING_DURATION_TIME: number;
 
   // Variables specific to both .env.development and .env.production
   CHAIN: string;
@@ -20,6 +21,8 @@ interface Env {
   ENV: string;
 
   // Variables specific to .env.development
+  CODE_ID_DAO_PROPOSAL_SINGLE: number;
+  CODE_ID_DAO_PREPROPOSE_SINGLE: number;
   CODE_ID_DAO_PROPOSAL_MULTIPLE: number;
   CODE_ID_DAO_PREPROPOSE_MULTIPLE: number;
   CODE_ID_DAO_CORE: number;
@@ -43,6 +46,9 @@ const env: Env = {
     process.env.NEXT_PUBLIC_BECH32_CONTRACT_LENGTH!
   ),
   BECH32_WALLET_LENGTH: parseInt(process.env.NEXT_PUBLIC_BECH32_WALLET_LENGTH!),
+  DEFAULT_TEAM_VOTING_DURATION_TIME: parseInt(
+    process.env.NEXT_PUBLIC_DEFAULT_TEAM_VOTING_DURATION_TIME!
+  ),
 
   DEFAULT_NATIVE: process.env.NEXT_PUBLIC_DEFAULT_NATIVE!,
   CHAIN: process.env.NEXT_PUBLIC_CHAIN!,
@@ -57,6 +63,12 @@ const env: Env = {
     process.env.NEXT_PUBLIC_CODE_ID_DAO_PROPOSAL_MULTIPLE!
   ),
   CODE_ID_DAO_PREPROPOSE_MULTIPLE: parseInt(
+    process.env.NEXT_PUBLIC_CODE_ID_DAO_PREPROPOSE_MULTIPLE!
+  ),
+  CODE_ID_DAO_PROPOSAL_SINGLE: parseInt(
+    process.env.NEXT_PUBLIC_CODE_ID_DAO_PROPOSAL_MULTIPLE!
+  ),
+  CODE_ID_DAO_PREPROPOSE_SINGLE: parseInt(
     process.env.NEXT_PUBLIC_CODE_ID_DAO_PREPROPOSE_MULTIPLE!
   ),
   CODE_ID_DAO_CORE: parseInt(process.env.NEXT_PUBLIC_CODE_ID_DAO_CORE!),

@@ -48,6 +48,9 @@ import {
   convertToRules,
 } from "~/helpers/SchemaHelpers";
 import { InstantiateMsg as DAOProposalMultipleInstantiateMsg } from "@dao/DaoProposalMultiple.types";
+import { InstantiateMsg as DaoPreProposeMultipleInstantiateMsg } from "@dao/DaoPreProposeMultiple.types";
+import { InstantiateMsg as DAOProposalSingleInstantiateMsg } from "@dao/DaoProposalSingle.types";
+import { InstantiateMsg as DaoPreProposeSingleInstantiateMsg } from "@dao/DaoPreProposeSingle.types";
 import { InstantiateMsg as DAOVotingCW4InstantiateMsg } from "@dao/DaoVotingCw4.types";
 import { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
@@ -237,12 +240,40 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
                   max_voting_period: { time: 31557600 },
                   only_members_execute: true,
                   pre_propose_info: {
-                    anyone_may_propose: {},
+                    anyone_may_propose: {}, // Cannot set this to an address yet
                   },
                   voting_strategy: {
                     single_choice: { quorum: { percent: "1" } },
                   },
                 } as DAOProposalMultipleInstantiateMsg),
+              },
+              {
+                code_id: env.CODE_ID_DAO_PROPOSAL_SINGLE,
+                admin: { address: { addr: values.dao_address } },
+                label: "DAO Proposal Single",
+                msg: toBinary({
+                  allow_revoting: false,
+                  close_proposal_on_execution_failure: true,
+                  max_voting_period: {
+                    time: env.DEFAULT_TEAM_VOTING_DURATION_TIME,
+                  },
+                  only_members_execute: true,
+                  pre_propose_info: {
+                    module_may_propose: {
+                      info: {
+                        code_id: env.CODE_ID_DAO_PREPROPOSE_SINGLE,
+                        label: "DAO Prepropose Single",
+                        msg: toBinary({
+                          extension: {},
+                          open_proposal_submission: false,
+                        } as DaoPreProposeSingleInstantiateMsg),
+                      },
+                    },
+                  },
+                  threshold: {
+                    absolute_percentage: { percentage: { majority: {} } },
+                  },
+                } as DAOProposalSingleInstantiateMsg),
               },
             ],
             voting_module_instantiate_info: {
@@ -289,28 +320,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         if (id) break;
       }
 
-      try {
-        if (id) {
-          await wagerModuleClient.generateProposals({
-            id,
-            proposalDetails: {
-              title: values.proposal_title,
-              description: values.proposal_description,
-            },
-          });
-
-          toast({
-            title: "Success",
-            isClosable: true,
-            status: "success",
-            description: "The competition's proposals have been generated.",
-          });
-        }
-      } catch (e) {
-        throw e;
-      } finally {
-        router.push(`/wager/view?dao=${values.dao_address}&id=${id}`);
-      }
+      if (id) router.push(`/wager/view?dao=${values.dao_address}&id=${id}`);
     } catch (e: any) {
       console.error(e);
       toast({

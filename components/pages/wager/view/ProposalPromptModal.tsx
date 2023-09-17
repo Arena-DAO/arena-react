@@ -23,6 +23,7 @@ import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { getProposalConfig } from "~/helpers/DAOHelpers";
 
 const FormSchema = z.object({
   proposal_title: z
@@ -41,6 +42,7 @@ export type WagerViewProposalPromptModalAction =
 interface WagerViewProposalPromptModalProps {
   id: string;
   module_addr: string;
+  dao_addr: string;
   isOpen: boolean;
   onClose: () => void;
   action: WagerViewProposalPromptModalAction;
@@ -52,6 +54,7 @@ export function WagerViewProposalPromptModal({
   id,
   isOpen,
   module_addr,
+  dao_addr,
   onClose,
   setJailedStatus,
   setHasGeneratedProposals,
@@ -106,15 +109,26 @@ export function WagerViewProposalPromptModal({
       if (!cosmwasmClient) throw "Could not get the CosmWasm client";
       if (!address) throw "Could not get user address";
 
-      console.log(module_addr);
       let wagerModuleClient = new ArenaWagerModuleClient(
         cosmwasmClient,
         address,
         module_addr
       );
 
+      let config = await getProposalConfig(
+        cosmwasmClient,
+        dao_addr,
+        "dao-proposal-multiple",
+        address,
+        true
+      );
+
+      if (!config)
+        throw "Could not find an active dao-proposal-multiple module";
+
       await wagerModuleClient.generateProposals({
         id: id,
+        proposalModuleAddr: config.addr,
         proposalDetails: {
           title: values.proposal_title,
           description: values.proposal_description,

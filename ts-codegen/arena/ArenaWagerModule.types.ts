@@ -34,6 +34,7 @@ export type ExecuteMsg = {
   generate_proposals: {
     id: Uint128;
     proposal_details: ProposalDetails;
+    proposal_module_addr: string;
   };
 } | {
   process_competition: {

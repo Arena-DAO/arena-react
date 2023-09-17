@@ -215,19 +215,21 @@ function ViewWagerPageContent({
               Jail Wager
             </Button>
           )}
-          {(moduleData as unknown as CompetitionModuleResponse)?.addr && (
-            <WagerViewProposalPromptModal
-              id={id}
-              module_addr={
-                (moduleData as unknown as CompetitionModuleResponse).addr
-              }
-              isOpen={isOpen}
-              onClose={onClose}
-              action={promptAction}
-              setJailedStatus={() => notifyStatusChanged("jailed")}
-              setHasGeneratedProposals={() => notifyHasGeneratedProposals()}
-            />
-          )}
+          {(moduleData as unknown as CompetitionModuleResponse)?.addr &&
+            data && (
+              <WagerViewProposalPromptModal
+                id={id}
+                module_addr={
+                  (moduleData as unknown as CompetitionModuleResponse).addr
+                }
+                dao_addr={data.dao}
+                isOpen={isOpen}
+                onClose={onClose}
+                action={promptAction}
+                setJailedStatus={() => notifyStatusChanged("jailed")}
+                setHasGeneratedProposals={() => notifyHasGeneratedProposals()}
+              />
+            )}
         </Stack>
       </Skeleton>
     </Fade>

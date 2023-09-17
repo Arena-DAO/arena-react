@@ -16,7 +16,7 @@ import { ExecuteMsg as ArenaEscrowExecuteMsg } from "@arena/ArenaEscrow.types";
 import { ExecuteMsg as Cw20ExecuteMsg } from "@cw-plus/Cw20Base.types";
 import { ExecuteMsg as Cw721ExecuteMsg } from "@cw-nfts/Cw721Base.types";
 import { CosmosMsgForEmpty } from "@dao/DaoProposalSingle.types";
-import { getProposalAddr } from "~/helpers/DAOHelpers";
+import { getProposalConfig } from "~/helpers/DAOHelpers";
 import { DaoProposalSingleClient } from "@dao/DaoProposalSingle.client";
 import { DaoPreProposeSingleClient } from "@dao/DaoPreProposeSingle.client";
 import { useAllDues } from "~/hooks/useAllDues";
@@ -114,9 +114,10 @@ export function WagerViewDuesDisplay({
           isClosable: true,
         });
       } else if (isValidContractAddress(team_addr)) {
-        const proposalAddrResponse = await getProposalAddr(
+        const proposalAddrResponse = await getProposalConfig(
           cosmwasmClient,
           team_addr,
+          "dao-proposal-single",
           address
         );
 
