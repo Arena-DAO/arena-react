@@ -20,8 +20,6 @@ import {
 } from "@cw-nfts/Cw721Base.react-query";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { Cw721BaseQueryClient } from "@cw-nfts/Cw721Base.client";
-import { useEffect } from "react";
-import { DataLoadedResult } from "~/types/DataLoadedResult";
 
 interface Cw721CardProps extends CardProps {
   cosmwasmClient: CosmWasmClient;
@@ -31,7 +29,6 @@ interface Cw721CardProps extends CardProps {
   deleteNFTFn?: (token_id: string) => void;
   nftCardProps?: CardProps;
   index?: number;
-  onDataLoaded?: (data: DataLoadedResult) => void;
 }
 
 interface Cw721NFTCardProps extends CardProps {
@@ -89,20 +86,12 @@ export function Cw721Card({
   deleteNFTFn,
   nftCardProps,
   index = 0,
-  onDataLoaded,
   ...cardProps
 }: Cw721CardProps) {
   const { data, isLoading, isError } = useCw721BaseContractInfoQuery({
     client: new Cw721BaseQueryClient(cosmwasmClient, address),
     options: { retry: false, staleTime: Infinity },
   });
-
-  useEffect(() => {
-    onDataLoaded?.({
-      key: address,
-      exponent: !!data ? 0 : undefined,
-    });
-  }, [data, onDataLoaded, address]);
 
   if (isError) return null;
   return (

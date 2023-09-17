@@ -33,7 +33,14 @@ import {
 import { z } from "zod";
 import { AmountSchema, AddressSchema } from "~/helpers/SchemaHelpers";
 import { FormValues } from "~/pages/wager/create";
-import { DataLoadedResult } from "~/types/DataLoadedResult";
+import {
+  getCoinAsset,
+  getBaseCoin,
+  getCw20Asset,
+} from "~/helpers/TokenHelpers";
+import { useChain } from "@cosmos-kit/react";
+import { Asset } from "@chain-registry/types";
+import { Cw721BaseQueryClient } from "@cw-nfts/Cw721Base.client";
 
 interface WagerCreateDueFormProps extends ModalProps {
   cosmwasmClient: CosmWasmClient;
@@ -59,6 +66,7 @@ export const WagerCreateDueForm = ({
   getValues,
   ...modalProps
 }: WagerCreateDueFormProps) => {
+  const { assets } = useChain(env.CHAIN);
   const dueFormSchema = z
     .object({
       type: TokenTypes,
@@ -100,9 +108,6 @@ export const WagerCreateDueForm = ({
   type DueFormValues = z.infer<typeof dueFormSchema>;
   const [key, setKey] = useState<string>(env.DEFAULT_NATIVE);
   const [tokenId, setTokenId] = useState<string | undefined>(undefined);
-  const [dataLoadedResult, setDataLoadedResult] = useState<
-    DataLoadedResult | undefined
-  >(undefined);
 
   const {
     register,
@@ -137,14 +142,11 @@ export const WagerCreateDueForm = ({
   }, [watchType, setValue]);
 
   const onSubmit = async (values: DueFormValues) => {
-    if (
-      !dataLoadedResult ||
-      dataLoadedResult.key != values.key ||
-      dataLoadedResult.exponent === undefined
-    ) {
-      setError("key", { message: "Could not retrieve data" });
+    if (!assets) {
+      setError("key", { message: "Cannot retrieve assets" });
       return;
     }
+    let asset: Asset | undefined;
 
     switch (values.type) {
       case "cw20":
@@ -156,6 +158,13 @@ export const WagerCreateDueForm = ({
           setError("key", { message: "Cannot add duplicates" });
           return;
         }
+
+        asset = await getCw20Asset(values.key, cosmwasmClient, assets.assets);
+        if (!asset) {
+          setError("key", { message: "Cannot find cw20 asset" });
+          return;
+        }
+
         cw20Append({
           address: values.key,
           amount: values.amount!,
@@ -170,6 +179,23 @@ export const WagerCreateDueForm = ({
           setError("key", { message: "Cannot add duplicates" });
           return;
         }
+        if (!values.token_id) {
+          setError("token_id", { message: "Token id is required" });
+          return;
+        }
+
+        const cw721Client = new Cw721BaseQueryClient(
+          cosmwasmClient,
+          values.key
+        );
+
+        try {
+          await cw721Client.nftInfo({ tokenId: values.token_id });
+        } catch {
+          setError("key", { message: "Cannot find cw721 asset" });
+          return;
+        }
+
         cw721Append({
           addr: values.key,
           token_ids: [values.token_id!],
@@ -184,7 +210,21 @@ export const WagerCreateDueForm = ({
           setError("key", { message: "Cannot add duplicates" });
           return;
         }
-        nativeAppend({ denom: values.key, amount: values.amount! });
+
+        asset = await getCoinAsset(values.key, assets.assets);
+        if (!asset) {
+          setError("key", { message: "Cannot find native asset" });
+          return;
+        }
+
+        const nativeBase = getBaseCoin(
+          {
+            denom: values.key,
+            amount: values.amount!,
+          },
+          asset
+        );
+        nativeAppend(nativeBase);
         break;
       default:
         break;
@@ -237,15 +277,10 @@ export const WagerCreateDueForm = ({
                 cosmwasmClient={cosmwasmClient}
                 address={key}
                 amount={watchAmount ?? "0"}
-                onDataLoaded={setDataLoadedResult}
               />
             )}
             {watchType == "native" && (
-              <NativeCard
-                denom={key}
-                amount={watchAmount ?? "0"}
-                onDataLoaded={setDataLoadedResult}
-              />
+              <NativeCard denom={key} amount={watchAmount ?? "0"} />
             )}
             <FormControl
               isInvalid={!!errors.amount}
@@ -284,7 +319,6 @@ export const WagerCreateDueForm = ({
                   address={key}
                   cosmwasmClient={cosmwasmClient}
                   token_ids={[tokenId]}
-                  onDataLoaded={setDataLoadedResult}
                 />
               )}
           </Stack>

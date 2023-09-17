@@ -15,6 +15,7 @@ import { MainWalletBase, SignerOptions } from "@cosmos-kit/core";
 import { GasPrice } from "@cosmjs/stargate";
 import "@interchain-ui/react/styles";
 import env from "@config/env";
+import { AssetList } from "@chain-registry/types";
 
 export default function CreateCosmosApp({ Component, pageProps }: AppProps) {
   const queryClient = new QueryClient({});
@@ -35,7 +36,7 @@ export default function CreateCosmosApp({ Component, pageProps }: AppProps) {
     <ChakraProvider theme={theme}>
       <ChainProvider
         chains={chains}
-        assetLists={assets}
+        assetLists={assets as unknown as AssetList[]}
         wallets={
           [
             ...keplrWallets,

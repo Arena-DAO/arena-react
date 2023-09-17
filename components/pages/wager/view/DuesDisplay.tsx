@@ -3,11 +3,9 @@ import {
   ExecuteInstruction,
   toBinary,
 } from "@cosmjs/cosmwasm-stargate";
-import { useState } from "react";
 import { Button, CardHeader, Heading, Stack, useToast } from "@chakra-ui/react";
 import { UserOrDAOCard } from "@components/cards/UserOrDAOCard";
 import { BalanceCard } from "@components/cards/BalanceCard";
-import { ExponentInfo } from "~/types/ExponentInfo";
 import { useChain } from "@cosmos-kit/react-lite";
 import env from "@config/env";
 import {
@@ -42,7 +40,6 @@ export function WagerViewDuesDisplay({
   initial_dues = [],
 }: WagerViewDuesDisplayProps) {
   const dues = useAllDues(cosmwasmClient, escrow_addr, initial_dues);
-  const [exponentInfo, setExponentInfo] = useState<ExponentInfo>();
   const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
   const toast = useToast();
 
@@ -50,9 +47,6 @@ export function WagerViewDuesDisplay({
     try {
       if (!address) {
         throw "Wallet is not connected";
-      }
-      if (!exponentInfo) {
-        throw "Could not determine exponent info";
       }
       let cosmwasmClient = await getSigningCosmWasmClient();
       if (!cosmwasmClient) {
@@ -224,7 +218,6 @@ export function WagerViewDuesDisplay({
             }
             balance={x.balance}
             variant={"outline"}
-            onDataLoaded={setExponentInfo}
             actions={
               (address == x.addr || isValidContractAddress(x.addr)) && (
                 <Button onClick={() => depositFunds(x.addr, x.balance)}>
