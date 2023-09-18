@@ -37,7 +37,7 @@ export function AssetCard({
       )}
       <CardBody overflowX={"auto"} whiteSpace={"nowrap"}>
         <Text>
-          {amount} {asset.display}
+          {amount.toLocaleString()} {asset.display}
         </Text>
       </CardBody>
       {deleteFn && index !== undefined && (

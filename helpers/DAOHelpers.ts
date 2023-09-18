@@ -4,7 +4,7 @@ import {
   Coin,
   Config,
 } from "@dao/DaoPreProposeSingle.types";
-import { ArrayOfProposalModule } from "@dao/DaoDaoCore.types";
+import { ArrayOfProposalModule, InfoResponse } from "@dao/DaoDaoCore.types";
 import { ProposalCreationPolicy } from "@dao/DaoProposalSingle.types";
 
 export type ProposalAddrType = "proposal_module" | "prepropose";
@@ -32,11 +32,14 @@ export async function getProposalConfig(
     if (x.status != "enabled") continue;
 
     // Check the proposal module's type
-    const proposalModuleType: string = await cosmwasmClient.queryContractSmart(
-      x.address,
-      { info: {} }
-    );
-    if (!proposalModuleType.match(type)) continue;
+    try {
+      const proposalModuleType: InfoResponse =
+        await cosmwasmClient.queryContractSmart(x.address, { info: {} });
+      if (!proposalModuleType || !proposalModuleType.info.contract.match(type))
+        throw "continue";
+    } catch {
+      continue;
+    }
 
     // Check the creation policy
     let creationPolicy: ProposalCreationPolicy =

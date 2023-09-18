@@ -25,6 +25,7 @@ import { useArenaWagerModuleCompetitionQuery } from "@arena/ArenaWagerModule.rea
 import { ArenaWagerModuleQueryClient } from "@arena/ArenaWagerModule.client";
 import {
   Button,
+  ButtonGroup,
   Card,
   CardBody,
   CardHeader,
@@ -55,7 +56,16 @@ function ViewWagerPageContent({
   id,
 }: ViewWagerPageContentProps) {
   const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenProposalModal,
+    onOpen: onOpenProposalModal,
+    onClose: onCloseProposalModal,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenPresetModal,
+    onOpen: onOpenPresetModal,
+    onClose: onClosePresetModal,
+  } = useDisclosure();
   const isValidAddress = useMemo(() => {
     return !!dao && AddressSchema.safeParse(dao).success;
   }, [dao]);
@@ -133,28 +143,26 @@ function ViewWagerPageContent({
     []
   );
 
-  if (query.isError || !isValidAddress) {
+  if (query.isError || !isValidAddress || !data) {
     return null;
   }
   return (
     <Fade in={true}>
       <Skeleton isLoaded={!query.isLoading}>
         <Stack>
-          {!!data && (
-            <DAOCard address={data.dao} cosmwasmClient={cosmwasmClient} />
-          )}
+          <DAOCard address={data.dao} cosmwasmClient={cosmwasmClient} />
           <Heading>
-            {data?.name}{" "}
+            {data.name}{" "}
             <Badge
               variant="solid"
               ml={1}
-              colorScheme={statusColors[data?.status || "inactive"]}
+              colorScheme={statusColors[data.status || "inactive"]}
             >
-              {data?.status}
+              {data.status}
             </Badge>
           </Heading>
-          <Text>{data?.description}</Text>
-          {!!data && (data.ruleset || data.rules.length > 0) && (
+          <Text>{data.description}</Text>
+          {(data.ruleset || data.rules.length > 0) && (
             <Card>
               <CardHeader>
                 <Heading size="md">Rules</Heading>
@@ -184,7 +192,7 @@ function ViewWagerPageContent({
               </CardBody>
             </Card>
           )}
-          {data && data.status != "inactive" && (
+          {data.status != "inactive" && (
             <WagerViewEscrowDisplay
               cosmwasmClient={cosmwasmClient}
               escrow_addr={data.escrow}
@@ -193,43 +201,45 @@ function ViewWagerPageContent({
               notifyIsActive={() => notifyStatusChanged("active")}
             />
           )}
-          {!data?.has_generated_proposals && (
-            <Button
-              maxW="150px"
-              onClick={() => {
-                setPromptAction("Generate Proposals");
-                onOpen();
-              }}
-            >
-              Generate Proposals
-            </Button>
-          )}
-          {data?.status == "active" && data?.is_expired && (
-            <Button
-              maxW="150px"
-              onClick={() => {
-                setPromptAction("Jail Wager");
-                onOpen();
-              }}
-            >
-              Jail Wager
-            </Button>
-          )}
-          {(moduleData as unknown as CompetitionModuleResponse)?.addr &&
-            data && (
-              <WagerViewProposalPromptModal
-                id={id}
-                module_addr={
-                  (moduleData as unknown as CompetitionModuleResponse).addr
-                }
-                dao_addr={data.dao}
-                isOpen={isOpen}
-                onClose={onClose}
-                action={promptAction}
-                setJailedStatus={() => notifyStatusChanged("jailed")}
-                setHasGeneratedProposals={() => notifyHasGeneratedProposals()}
-              />
+          <ButtonGroup overflowX="auto" scrollPaddingBottom="0">
+            {!data.has_generated_proposals && (
+              <Button
+                minW="150px"
+                onClick={() => {
+                  setPromptAction("Generate Proposals");
+                  onOpenProposalModal();
+                }}
+              >
+                Generate Proposals
+              </Button>
             )}
+            {data.status == "active" && data.is_expired && (
+              <Button
+                minW="150px"
+                onClick={() => {
+                  setPromptAction("Jail Wager");
+                  onOpenProposalModal();
+                }}
+              >
+                Jail Wager
+              </Button>
+            )}
+            <Button minW="200px" onClick={() => onOpenPresetModal()}>
+              Create Preset Distribution
+            </Button>
+          </ButtonGroup>
+          <WagerViewProposalPromptModal
+            id={id}
+            module_addr={
+              (moduleData as unknown as CompetitionModuleResponse).addr
+            }
+            dao_addr={data.dao}
+            isOpen={isOpenProposalModal}
+            onClose={onCloseProposalModal}
+            action={promptAction}
+            setJailedStatus={() => notifyStatusChanged("jailed")}
+            setHasGeneratedProposals={() => notifyHasGeneratedProposals()}
+          />
         </Stack>
       </Skeleton>
     </Fade>

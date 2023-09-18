@@ -48,7 +48,6 @@ import {
   convertToRules,
 } from "~/helpers/SchemaHelpers";
 import { InstantiateMsg as DAOProposalMultipleInstantiateMsg } from "@dao/DaoProposalMultiple.types";
-import { InstantiateMsg as DaoPreProposeMultipleInstantiateMsg } from "@dao/DaoPreProposeMultiple.types";
 import { InstantiateMsg as DAOProposalSingleInstantiateMsg } from "@dao/DaoProposalSingle.types";
 import { InstantiateMsg as DaoPreProposeSingleInstantiateMsg } from "@dao/DaoPreProposeSingle.types";
 import { InstantiateMsg as DAOVotingCW4InstantiateMsg } from "@dao/DaoVotingCw4.types";
@@ -72,12 +71,6 @@ const FormSchema = z.object({
   rules: RulesSchema,
   ruleset: z.string().optional(),
   dues: z.array(DueSchema).nonempty({ message: "Dues cannot be empty" }),
-  proposal_title: z
-    .string()
-    .nonempty({ message: "Proposal title cannot be empty" }),
-  proposal_description: z
-    .string()
-    .nonempty({ message: "Proposal description cannot be empty" }),
   competition_dao_name: z
     .string()
     .nonempty({ message: "Competition DAO name cannot be empty" }),
@@ -129,9 +122,6 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
       ],
       competition_dao_name: "Arena Competition DAO",
       competition_dao_description: "A DAO for handling an Arena Competition",
-      proposal_title: "Competition Result",
-      proposal_description:
-        "This proposal allows members to vote on the winner of the competition. Each choice represents a different team. Select the team that you believe should win the competition.",
     },
     resolver: zodResolver(FormSchema),
   });
@@ -203,7 +193,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         },
       })) as unknown as CompetitionModuleResponse;
 
-      if (!wager_module)
+      if (!wager_module || !wager_module.is_enabled)
         throw "The DAO's Arena extension does not have a wager module set.";
 
       let wagerModuleClient = new ArenaWagerModuleClient(
@@ -221,7 +211,6 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         extension: {},
         competitionDao: {
           code_id: env.CODE_ID_DAO_CORE,
-          admin: { address: { addr: values.dao_address } },
           label: "Arena Competition DAO",
           msg: toBinary({
             admin: values.dao_address,
@@ -232,7 +221,6 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
             proposal_modules_instantiate_info: [
               {
                 code_id: env.CODE_ID_DAO_PROPOSAL_MULTIPLE,
-                admin: { address: { addr: values.dao_address } },
                 label: "DAO Proposal Multiple",
                 msg: toBinary({
                   allow_revoting: false,
@@ -240,7 +228,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
                   max_voting_period: { time: 31557600 },
                   only_members_execute: true,
                   pre_propose_info: {
-                    anyone_may_propose: {}, // Cannot set this to an address yet
+                    anyone_may_propose: {},
                   },
                   voting_strategy: {
                     single_choice: { quorum: { percent: "1" } },
@@ -249,7 +237,6 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
               },
               {
                 code_id: env.CODE_ID_DAO_PROPOSAL_SINGLE,
-                admin: { address: { addr: values.dao_address } },
                 label: "DAO Proposal Single",
                 msg: toBinary({
                   allow_revoting: false,
@@ -271,14 +258,13 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
                     },
                   },
                   threshold: {
-                    absolute_percentage: { percentage: { majority: {} } },
+                    absolute_percentage: { percentage: { percent: "1" } },
                   },
                 } as DAOProposalSingleInstantiateMsg),
               },
             ],
             voting_module_instantiate_info: {
               code_id: env.CODE_ID_DAO_VOTING_CW4,
-              admin: { address: { addr: values.dao_address } },
               label: "DAO Voting CW4",
               msg: toBinary({
                 cw4_group_code_id: env.CODE_ID_CW4_GROUP,
@@ -292,7 +278,6 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         },
         escrow: {
           code_id: env.CODE_ID_ESCROW,
-          admin: { address: { addr: values.dao_address } },
           label: "Arena Escrow",
           msg: toBinary({
             dues: values.dues,
@@ -300,6 +285,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         },
       };
 
+      console.log(msg);
       let result = await wagerModuleClient.createCompetition(msg);
 
       toast({
@@ -540,36 +526,6 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
                     </InputGroup>
                     <FormErrorMessage>
                       {errors.competition_dao_description?.message}
-                    </FormErrorMessage>
-                  </FormControl>
-                </Stack>
-              </AccordionPanel>
-            </AccordionItem>
-            <AccordionItem>
-              <AccordionButton>
-                <Box as="span" flex="1" textAlign="left">
-                  Proposal Details <small>(optional)</small>
-                </Box>
-                <AccordionIcon />
-              </AccordionButton>
-              <AccordionPanel>
-                <Stack>
-                  <FormControl isInvalid={!!errors.proposal_title}>
-                    <FormLabel>Title</FormLabel>
-                    <InputGroup>
-                      <Input {...register("proposal_title")} />
-                    </InputGroup>
-                    <FormErrorMessage>
-                      {errors.proposal_title?.message}
-                    </FormErrorMessage>
-                  </FormControl>
-                  <FormControl isInvalid={!!errors.proposal_description}>
-                    <FormLabel>Description</FormLabel>
-                    <InputGroup>
-                      <Textarea {...register("proposal_description")} />
-                    </InputGroup>
-                    <FormErrorMessage>
-                      {errors.proposal_description?.message}
                     </FormErrorMessage>
                   </FormControl>
                 </Stack>

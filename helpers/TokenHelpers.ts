@@ -118,9 +118,11 @@ export function getCoinConversion(
     denom: to_denom,
     amount: isNaN(amount)
       ? "0"
-      : amount.toLocaleString(undefined, {
-          maximumFractionDigits: new_units.exponent,
-        }),
+      : amount
+          .toLocaleString(undefined, {
+            maximumFractionDigits: new_units.exponent,
+          })
+          .replace(/,/g, ""),
   };
 }
 
