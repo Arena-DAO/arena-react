@@ -254,14 +254,7 @@ const ViewWagerPage = () => {
 
   return (
     <Container maxW={{ base: "full", md: "5xl" }} centerContent pb={10}>
-      <Heading
-        as="h1"
-        fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
-        fontWeight="extrabold"
-        mb={3}
-      >
-        Wager {id}
-      </Heading>
+      <Heading>Wager {id}</Heading>
       <Box w="100%">
         {cosmwasmClient &&
           typeof dao === "string" &&

@@ -25,12 +25,7 @@ export default function FeaturedDAOs() {
 
   return (
     <Container maxW={{ base: "full" }} centerContent pb={10}>
-      <Heading
-        as="h1"
-        fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
-        fontWeight="extrabold"
-        mb={3}
-      >
+      <Heading>
         {daoItem.title} {daoItem.children && "Categories"}
       </Heading>
       <SimpleGrid minChildWidth="300px" spacing="5" width="100%">

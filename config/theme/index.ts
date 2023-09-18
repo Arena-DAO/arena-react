@@ -5,6 +5,7 @@ import {
   StyleFunctionProps,
 } from "@chakra-ui/react";
 import { mode } from "@chakra-ui/theme-tools";
+import { Heading } from "./heading";
 
 const theme = extendTheme(
   withDefaultColorScheme({ colorScheme: "primary" }),
@@ -56,6 +57,7 @@ const theme = extendTheme(
         },
       }),
     },
+    components: { Heading },
   },
   baseTheme
 );

@@ -605,14 +605,7 @@ const CreateWagerPage = () => {
 
   return (
     <Container maxW={{ base: "full", md: "5xl" }} centerContent pb={10}>
-      <Heading
-        as="h1"
-        fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
-        fontWeight="extrabold"
-        mb={3}
-      >
-        Create a Wager
-      </Heading>
+      <Heading>Create a Wager</Heading>
       <Box w="100%">
         {cosmwasmClient && <WagerForm cosmwasmClient={cosmwasmClient} />}
       </Box>

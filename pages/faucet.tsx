@@ -54,14 +54,7 @@ export default function Faucet() {
   if (!env.FAUCET_URL) return null;
   return (
     <Container maxW={{ base: "full", md: "5xl" }} centerContent pb={10}>
-      <Heading
-        as="h1"
-        fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
-        fontWeight="extrabold"
-        mb={3}
-      >
-        Juno Testnet Faucet
-      </Heading>
+      <Heading>Juno Testnet Faucet</Heading>
       <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
         <Stack>
           <FormControl isInvalid={!!errors.address}>

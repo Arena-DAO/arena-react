@@ -83,14 +83,7 @@ export default function DAOViewPage({}) {
 
   return (
     <Container maxW={{ base: "full", md: "5xl" }} centerContent pb={10}>
-      <Heading
-        as="h1"
-        fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
-        fontWeight="extrabold"
-        mb={3}
-      >
-        View DAO
-      </Heading>
+      <Heading>View DAO</Heading>
       <Box w="100%">
         {cosmwasmClient && AddressSchema.safeParse(dao as string).success && (
           <DAOViewPageInner

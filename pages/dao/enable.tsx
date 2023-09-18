@@ -28,6 +28,7 @@ import {
   Tooltip,
   useBreakpointValue,
   useToast,
+  Text,
 } from "@chakra-ui/react";
 import {
   useForm,
@@ -125,7 +126,7 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
     defaultValues: {
       dao_address: "",
       rulesets: [],
-      tax: 15,
+      tax: env.DEFAULT_ARENA_TAX,
       allow_revoting: false,
       close_proposal_on_execution_failure: true,
       max_voting_duration: { duration: 1209600, duration_units: "Time" }, //2 weeks in seconds
@@ -620,14 +621,11 @@ const EnableDAOPage = () => {
 
   return (
     <Container maxW={{ base: "full", md: "5xl" }} centerContent pb={10}>
-      <Heading
-        as="h1"
-        fontSize={{ base: "3xl", sm: "4xl", md: "5xl" }}
-        fontWeight="extrabold"
-        mb={3}
-      >
-        Enable the Arena Extension
-      </Heading>
+      <Heading>Enable the Arena Extension</Heading>
+      <Text>
+        This form is for adding a proposal module with the Arena Core extension
+        for handling decentralized competitions.
+      </Text>
       <Box w="100%">
         {cosmwasmClient && <EnableForm cosmwasmClient={cosmwasmClient} />}
       </Box>
