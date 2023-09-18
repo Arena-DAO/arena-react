@@ -24,7 +24,7 @@ import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { debounce } from "lodash";
 import env from "@config/env";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   UseFormGetValues,
   useForm,
@@ -37,7 +37,6 @@ import {
   getCoinAsset,
   getBaseCoin,
   getCw20Asset,
-  getDisplayCoin,
 } from "~/helpers/TokenHelpers";
 import { useChain } from "@cosmos-kit/react";
 import { Asset } from "@chain-registry/types";
@@ -125,16 +124,34 @@ export const WagerCreateDueForm = ({
     },
   });
 
-  const debouncedSetKey = debounce((value: string) => {
-    setValue("key", value);
-  }, 500);
-  const debouncedSetTokenId = debounce((value: string) => {
-    setValue("token_id", value);
-  }, 500);
+  const [key, setKey] = useState<string>();
+  const [tokenId, setTokenId] = useState<string>();
+
+  const debouncedSetKey = useMemo(
+    () =>
+      debounce((value: string) => {
+        setKey(value);
+      }, 1000),
+    [setKey]
+  );
+  const debouncedSetTokenId = useMemo(
+    () =>
+      debounce((value: string | undefined) => {
+        setTokenId(value);
+      }, 1000),
+    [setTokenId]
+  );
   const watchType = watch("type");
   const watchAmount = watch("amount");
   const watchKey = watch("key");
   const watchTokenId = watch("token_id");
+
+  useEffect(() => {
+    debouncedSetKey(watchKey);
+  }, [watchKey, debouncedSetKey]);
+  useEffect(() => {
+    debouncedSetTokenId(watchTokenId);
+  }, [watchTokenId, debouncedSetTokenId]);
 
   const onSubmit = async (values: DueFormValues) => {
     if (!assets) {
@@ -211,6 +228,11 @@ export const WagerCreateDueForm = ({
           asset
         );
 
+        if (!nativeBase) {
+          setError("key", { message: "Could not calculate the base coin" });
+          return;
+        }
+
         if (
           getValues(`dues.${index}.balance.native`).find(
             (x) => x.denom == nativeBase.denom
@@ -258,6 +280,7 @@ export const WagerCreateDueForm = ({
                       "key",
                       e.target.value == "native" ? env.DEFAULT_NATIVE : ""
                     );
+                    setKey(undefined); // Do not wait for debounce here
 
                     setValue("type", e.target.value);
                   },
@@ -273,26 +296,18 @@ export const WagerCreateDueForm = ({
               <FormLabel>
                 {watchType == "native" ? "Denom" : "Address"}
               </FormLabel>
-              <Input
-                id="key"
-                {...register("key", {
-                  onChange: (e: any) => {
-                    e.persist();
-                    debouncedSetKey(e.target.value);
-                  },
-                })}
-              />
+              <Input id="key" {...register("key")} />
               <FormErrorMessage>{errors.key?.message}</FormErrorMessage>
             </FormControl>
-            {watchType == "cw20" && isValidContractAddress(watchKey) && (
+            {watchType == "cw20" && key && isValidContractAddress(key) && (
               <Cw20Card
                 cosmwasmClient={cosmwasmClient}
-                address={watchKey}
+                address={key}
                 amount={watchAmount ?? "0"}
               />
             )}
-            {watchType == "native" && watchKey.length > 0 && (
-              <NativeCard denom={watchKey} amount={watchAmount ?? "0"} />
+            {watchType == "native" && key && key.length > 0 && (
+              <NativeCard denom={key} amount={watchAmount ?? "0"} />
             )}
             <FormControl
               isInvalid={!!errors.amount}
@@ -313,24 +328,17 @@ export const WagerCreateDueForm = ({
               hidden={watchType != "cw721"}
             >
               <FormLabel>Token Id</FormLabel>
-              <Input
-                id="token_id"
-                {...register("token_id", {
-                  onChange: (e) => {
-                    e.persist();
-                    debouncedSetTokenId(e.target.value);
-                  },
-                })}
-              />
+              <Input id="token_id" {...register("token_id")} />
               <FormErrorMessage>{errors.token_id?.message}</FormErrorMessage>
             </FormControl>
             {watchType == "cw721" &&
-              isValidContractAddress(watchKey) &&
-              watchTokenId && (
+              key &&
+              isValidContractAddress(key) &&
+              tokenId && (
                 <Cw721Card
-                  address={watchKey}
+                  address={key}
                   cosmwasmClient={cosmwasmClient}
-                  token_ids={[watchTokenId]}
+                  token_ids={[tokenId]}
                 />
               )}
           </Stack>

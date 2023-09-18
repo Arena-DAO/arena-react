@@ -101,7 +101,7 @@ export function getCoinConversion(
   coin: Coin,
   to_denom: string,
   asset: Asset
-): Coin {
+): Coin | undefined {
   if (coin.denom == to_denom) return coin;
   let original_units = asset.denom_units.find(
     (x) => x.denom.toLowerCase() == coin.denom.toLowerCase()
@@ -109,8 +109,7 @@ export function getCoinConversion(
   let new_units = asset.denom_units.find(
     (x) => x.denom.toLowerCase() == to_denom.toLowerCase()
   );
-  if (!original_units || !new_units)
-    throw `Could not convert ${coin.denom} to ${to_denom}`;
+  if (!original_units || !new_units) return undefined;
 
   let amount =
     Math.pow(10, original_units.exponent - new_units.exponent) *
@@ -125,11 +124,11 @@ export function getCoinConversion(
   };
 }
 
-export function getDisplayCoin(coin: Coin, asset: Asset): Coin {
+export function getDisplayCoin(coin: Coin, asset: Asset): Coin | undefined {
   return getCoinConversion(coin, asset.display, asset);
 }
 
-export function getBaseCoin(coin: Coin, asset: Asset): Coin {
+export function getBaseCoin(coin: Coin, asset: Asset): Coin | undefined {
   return getCoinConversion(coin, asset.base, asset);
 }
 
