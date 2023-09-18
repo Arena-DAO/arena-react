@@ -37,10 +37,12 @@ import {
   getCoinAsset,
   getBaseCoin,
   getCw20Asset,
+  getDisplayCoin,
 } from "~/helpers/TokenHelpers";
 import { useChain } from "@cosmos-kit/react";
 import { Asset } from "@chain-registry/types";
 import { Cw721BaseQueryClient } from "@cw-nfts/Cw721Base.client";
+import { isValidContractAddress } from "~/helpers/AddressHelpers";
 
 interface WagerCreateDueFormProps extends ModalProps {
   cosmwasmClient: CosmWasmClient;
@@ -106,8 +108,6 @@ export const WagerCreateDueForm = ({
     });
 
   type DueFormValues = z.infer<typeof dueFormSchema>;
-  const [key, setKey] = useState<string>(env.DEFAULT_NATIVE);
-  const [tokenId, setTokenId] = useState<string | undefined>(undefined);
 
   const {
     register,
@@ -121,25 +121,20 @@ export const WagerCreateDueForm = ({
     resolver: zodResolver(dueFormSchema),
     defaultValues: {
       type: "native",
-      key: key,
+      key: env.DEFAULT_NATIVE,
     },
   });
 
   const debouncedSetKey = debounce((value: string) => {
-    setKey(value);
+    setValue("key", value);
   }, 500);
   const debouncedSetTokenId = debounce((value: string) => {
-    setTokenId(value);
+    setValue("token_id", value);
   }, 500);
   const watchType = watch("type");
   const watchAmount = watch("amount");
-
-  useEffect(() => {
-    setValue("token_id", undefined);
-    setValue("amount", undefined);
-
-    setValue("key", watchType == "native" ? env.DEFAULT_NATIVE : "");
-  }, [watchType, setValue]);
+  const watchKey = watch("key");
+  const watchTokenId = watch("token_id");
 
   const onSubmit = async (values: DueFormValues) => {
     if (!assets) {
@@ -202,15 +197,6 @@ export const WagerCreateDueForm = ({
         });
         break;
       case "native":
-        if (
-          getValues(`dues.${index}.balance.native`).find(
-            (x) => x.denom == values.key
-          )
-        ) {
-          setError("key", { message: "Cannot add duplicates" });
-          return;
-        }
-
         asset = await getCoinAsset(values.key, assets.assets);
         if (!asset) {
           setError("key", { message: "Cannot find native asset" });
@@ -224,6 +210,16 @@ export const WagerCreateDueForm = ({
           },
           asset
         );
+
+        if (
+          getValues(`dues.${index}.balance.native`).find(
+            (x) => x.denom == nativeBase.denom
+          )
+        ) {
+          setError("key", { message: "Cannot add duplicates" });
+          return;
+        }
+
         nativeAppend(nativeBase);
         break;
       default:
@@ -250,7 +246,23 @@ export const WagerCreateDueForm = ({
           <Stack>
             <FormControl isInvalid={!!errors.type}>
               <FormLabel>Type</FormLabel>
-              <Select id="type" {...register("type")}>
+              <Select
+                id="type"
+                {...register("type", {
+                  onChange: (e: any) => {
+                    e.persist();
+
+                    setValue("token_id", undefined);
+                    setValue("amount", undefined);
+                    setValue(
+                      "key",
+                      e.target.value == "native" ? env.DEFAULT_NATIVE : ""
+                    );
+
+                    setValue("type", e.target.value);
+                  },
+                })}
+              >
                 <option value="native">Native</option>
                 <option value="cw20">Cw20 Token</option>
                 <option value="cw721">Cw721 NFT</option>
@@ -264,7 +276,7 @@ export const WagerCreateDueForm = ({
               <Input
                 id="key"
                 {...register("key", {
-                  onChange: (e) => {
+                  onChange: (e: any) => {
                     e.persist();
                     debouncedSetKey(e.target.value);
                   },
@@ -272,15 +284,15 @@ export const WagerCreateDueForm = ({
               />
               <FormErrorMessage>{errors.key?.message}</FormErrorMessage>
             </FormControl>
-            {watchType == "cw20" && AddressSchema.safeParse(key).success && (
+            {watchType == "cw20" && isValidContractAddress(watchKey) && (
               <Cw20Card
                 cosmwasmClient={cosmwasmClient}
-                address={key}
+                address={watchKey}
                 amount={watchAmount ?? "0"}
               />
             )}
-            {watchType == "native" && (
-              <NativeCard denom={key} amount={watchAmount ?? "0"} />
+            {watchType == "native" && watchKey.length > 0 && (
+              <NativeCard denom={watchKey} amount={watchAmount ?? "0"} />
             )}
             <FormControl
               isInvalid={!!errors.amount}
@@ -313,12 +325,12 @@ export const WagerCreateDueForm = ({
               <FormErrorMessage>{errors.token_id?.message}</FormErrorMessage>
             </FormControl>
             {watchType == "cw721" &&
-              AddressSchema.safeParse(key).success &&
-              tokenId && (
+              isValidContractAddress(watchKey) &&
+              watchTokenId && (
                 <Cw721Card
-                  address={key}
+                  address={watchKey}
                   cosmwasmClient={cosmwasmClient}
-                  token_ids={[tokenId]}
+                  token_ids={[watchTokenId]}
                 />
               )}
           </Stack>

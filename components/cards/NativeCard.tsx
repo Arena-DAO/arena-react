@@ -29,15 +29,14 @@ export function NativeCard({
   useEffect(() => {
     if (assets)
       getCoinAsset(denom, assets.assets).then(
-        (asset) => {
-          setAsset(asset);
-          if (asset) {
-            setCoin(getDisplayCoin({ denom, amount }, asset));
-          }
-        },
+        (asset) => setAsset(asset),
         (_x) => setAsset(undefined)
       );
-  }, [assets, amount, denom]);
+  }, [assets, denom]);
+  useEffect(() => {
+    if (asset) setCoin(getDisplayCoin({ denom, amount }, asset));
+    else setCoin(undefined);
+  }, [asset, denom, amount]);
 
   if (!asset || !coin) return null;
   return (

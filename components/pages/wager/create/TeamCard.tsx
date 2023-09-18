@@ -109,7 +109,7 @@ export function WagerCreateTeamCard({
                   {nativeFields.length > 0 && (
                     <Stack>
                       <Heading size="xs">Native Tokens</Heading>
-                      {nativeFields.map((x, i) => (
+                      {nativeFields.map((x) => (
                         <NativeCard
                           key={x.id}
                           denom={x.denom}
@@ -117,7 +117,7 @@ export function WagerCreateTeamCard({
                           deleteFn={(index: number) => {
                             nativeRemove(index);
                           }}
-                          index={i}
+                          index={index}
                           {...childCardProps}
                         />
                       ))}
@@ -126,16 +126,16 @@ export function WagerCreateTeamCard({
                   {cw20Fields.length > 0 && (
                     <Stack>
                       <Heading size="xs">Cw20 Tokens</Heading>
-                      {cw20Fields.map((x, i) => (
+                      {cw20Fields.map((x) => (
                         <Cw20Card
-                          key={i}
+                          key={x.id}
                           cosmwasmClient={cosmwasmClient}
                           address={x.address}
                           amount={x.amount}
                           deleteFn={(index: number) => {
                             cw20Remove(index);
                           }}
-                          index={i}
+                          index={index}
                           {...childCardProps}
                         />
                       ))}
@@ -144,16 +144,16 @@ export function WagerCreateTeamCard({
                   {cw721Fields.length > 0 && (
                     <Stack>
                       <Heading size="xs">Cw721 Tokens</Heading>
-                      {cw721Fields.map((x, i) => (
+                      {cw721Fields.map((x) => (
                         <Cw721Card
-                          key={i}
+                          key={x.id}
                           cosmwasmClient={cosmwasmClient}
                           address={x.addr}
                           token_ids={x.token_ids}
                           deleteFn={(index: number) => {
                             cw721Remove(index);
                           }}
-                          index={i}
+                          index={index}
                           {...childCardProps}
                         />
                       ))}

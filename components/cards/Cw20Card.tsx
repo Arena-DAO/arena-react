@@ -34,7 +34,7 @@ export function Cw20Card({
         },
         (_x) => setAsset(undefined)
       );
-  }, [assets, amount, cosmwasmClient, address]);
+  }, [assets, cosmwasmClient, address]);
 
   if (!asset) return null;
   return (
