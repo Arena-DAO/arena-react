@@ -113,9 +113,8 @@ export function getCoinConversion(
     throw `Could not convert ${coin.denom} to ${to_denom}`;
 
   let amount =
-    (Math.pow(10, original_units.exponent) / Math.pow(10, new_units.exponent)) *
-    parseFloat(coin.amount);
-
+    Math.pow(10, original_units.exponent - new_units.exponent) *
+    parseFloat(coin.amount.replace(/,/g, ""));
   return {
     denom: to_denom,
     amount: isNaN(amount)

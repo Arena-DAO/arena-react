@@ -40,7 +40,7 @@ export function AssetCard({
           {amount} {asset.display}
         </Text>
       </CardBody>
-      {deleteFn && index && (
+      {deleteFn && index !== undefined && (
         <Tooltip label="Delete Amount">
           <IconButton
             variant="ghost"
