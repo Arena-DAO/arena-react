@@ -43,6 +43,7 @@ import {
 import { WagerViewEscrowDisplay } from "@components/pages/wager/view/EscrowDisplay";
 import { CompetitionStatus } from "@arena/ArenaWagerModule.types";
 import { CompetitionModuleResponse } from "@arena/ArenaCore.types";
+import { WagerViewPresetDistributionModal } from "@components/pages/wager/view/PresetDistributionModal";
 
 interface ViewWagerPageContentProps {
   cosmwasmClient: CosmWasmClient;
@@ -202,16 +203,23 @@ function ViewWagerPageContent({
             />
           )}
           <ButtonGroup overflowX="auto" scrollPaddingBottom="0">
-            {!data.has_generated_proposals && (
-              <Button
-                minW="150px"
-                onClick={() => {
-                  setPromptAction("Generate Proposals");
-                  onOpenProposalModal();
-                }}
-              >
-                Generate Proposals
-              </Button>
+            {data.status !== "inactive" && (
+              <>
+                {!data.has_generated_proposals && (
+                  <Button
+                    minW="150px"
+                    onClick={() => {
+                      setPromptAction("Generate Proposals");
+                      onOpenProposalModal();
+                    }}
+                  >
+                    Generate Proposals
+                  </Button>
+                )}
+                <Button minW="200px" onClick={() => onOpenPresetModal()}>
+                  Create Preset Distribution
+                </Button>
+              </>
             )}
             {data.status == "active" && data.is_expired && (
               <Button
@@ -224,9 +232,6 @@ function ViewWagerPageContent({
                 Jail Wager
               </Button>
             )}
-            <Button minW="200px" onClick={() => onOpenPresetModal()}>
-              Create Preset Distribution
-            </Button>
           </ButtonGroup>
           <WagerViewProposalPromptModal
             id={id}
@@ -239,6 +244,12 @@ function ViewWagerPageContent({
             action={promptAction}
             setJailedStatus={() => notifyStatusChanged("jailed")}
             setHasGeneratedProposals={() => notifyHasGeneratedProposals()}
+          />
+          <WagerViewPresetDistributionModal
+            escrow_addr={data.escrow}
+            isOpen={isOpenPresetModal}
+            onClose={onClosePresetModal}
+            cosmwasmClient={cosmwasmClient}
           />
         </Stack>
       </Skeleton>
