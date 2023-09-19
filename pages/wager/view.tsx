@@ -56,6 +56,7 @@ function ViewWagerPageContent({
   dao,
   id,
 }: ViewWagerPageContentProps) {
+  const { address } = useChain(env.CHAIN);
   const toast = useToast();
   const {
     isOpen: isOpenProposalModal,
@@ -217,7 +218,7 @@ function ViewWagerPageContent({
                   </Button>
                 )}
                 <Button minW="200px" onClick={() => onOpenPresetModal()}>
-                  Create Preset Distribution
+                  Set Preset Distribution
                 </Button>
               </>
             )}
@@ -245,12 +246,15 @@ function ViewWagerPageContent({
             setJailedStatus={() => notifyStatusChanged("jailed")}
             setHasGeneratedProposals={() => notifyHasGeneratedProposals()}
           />
-          <WagerViewPresetDistributionModal
-            escrow_addr={data.escrow}
-            isOpen={isOpenPresetModal}
-            onClose={onClosePresetModal}
-            cosmwasmClient={cosmwasmClient}
-          />
+          {address && (
+            <WagerViewPresetDistributionModal
+              escrow_addr={data.escrow}
+              isOpen={isOpenPresetModal}
+              onClose={onClosePresetModal}
+              cosmwasmClient={cosmwasmClient}
+              address={address}
+            />
+          )}
         </Stack>
       </Skeleton>
     </Fade>

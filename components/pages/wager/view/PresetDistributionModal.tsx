@@ -1,4 +1,9 @@
-import { ArenaEscrowClient } from "@arena/ArenaEscrow.client";
+import {
+  ArenaEscrowClient,
+  ArenaEscrowQueryClient,
+} from "@arena/ArenaEscrow.client";
+import { useArenaEscrowDistributionQuery } from "@arena/ArenaEscrow.react-query";
+import { MemberShareVerified } from "@arena/ArenaEscrow.types";
 import {
   FormControl,
   FormLabel,
@@ -24,6 +29,7 @@ import {
   CardFooter,
   CardHeader,
   CardBody,
+  ButtonGroup,
 } from "@chakra-ui/react";
 import { UserOrDAOCard } from "@components/cards/UserOrDAOCard";
 import env from "@config/env";
@@ -50,6 +56,12 @@ interface WagerViewPresetDistributionModalProps {
   cosmwasmClient: CosmWasmClient;
   isOpen: boolean;
   onClose: () => void;
+  address: string;
+}
+
+interface WagerViewPresetDistributionModalInnerProps
+  extends WagerViewPresetDistributionModalProps {
+  data?: MemberShareVerified[];
 }
 
 interface WagerViewUserOrDAOCardProps {
@@ -74,21 +86,46 @@ export function WagerViewPresetDistributionModal({
   cosmwasmClient,
   isOpen,
   onClose,
+  address,
 }: WagerViewPresetDistributionModalProps) {
-  const toast = useToast();
-  const { isWalletConnected, getSigningCosmWasmClient, address } = useChain(
-    env.CHAIN
+  const { data, isLoading, isError } = useArenaEscrowDistributionQuery({
+    client: new ArenaEscrowQueryClient(cosmwasmClient, escrow_addr),
+    args: { addr: address },
+  });
+
+  if (isLoading || isError) return null;
+  return (
+    <WagerViewPresetDistributionModalInner
+      escrow_addr={escrow_addr}
+      cosmwasmClient={cosmwasmClient}
+      isOpen={isOpen}
+      onClose={onClose}
+      address={address}
+      data={data || undefined}
+    />
   );
+}
+
+function WagerViewPresetDistributionModalInner({
+  escrow_addr,
+  cosmwasmClient,
+  isOpen,
+  onClose,
+  address,
+  data,
+}: WagerViewPresetDistributionModalInnerProps) {
+  const toast = useToast();
+  const { isWalletConnected, getSigningCosmWasmClient } = useChain(env.CHAIN);
+
   const {
     formState: { isSubmitting, errors },
     handleSubmit,
     control,
     register,
     reset,
-    watch,
   } = useForm<FormValues>({
     defaultValues: {
-      member_shares: [],
+      member_shares: data,
     },
     resolver: zodResolver(FormSchema),
   });
@@ -118,9 +155,9 @@ export function WagerViewPresetDistributionModal({
         title: "Success",
         isClosable: true,
         status: "success",
-        description: "The competition has been jailed.",
+        description:
+          "The escrow has been assigned a preset distribution for your address",
       });
-      reset();
     } catch (e: any) {
       toast({
         status: "error",
@@ -136,7 +173,7 @@ export function WagerViewPresetDistributionModal({
       <ModalOverlay />
       <ModalContent>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <ModalHeader>Create Preset Distribution</ModalHeader>
+          <ModalHeader>Set Preset Distribution</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Stack>
@@ -204,13 +241,18 @@ export function WagerViewPresetDistributionModal({
             </Stack>
           </ModalBody>
           <ModalFooter>
-            <Button
-              type="submit"
-              isDisabled={!isWalletConnected}
-              isLoading={isSubmitting}
-            >
-              Submit
-            </Button>
+            <ButtonGroup>
+              <Button variant="ghost" onClick={() => reset()}>
+                Reset
+              </Button>
+              <Button
+                type="submit"
+                isDisabled={!isWalletConnected}
+                isLoading={isSubmitting}
+              >
+                Submit
+              </Button>
+            </ButtonGroup>
           </ModalFooter>
         </form>
       </ModalContent>
