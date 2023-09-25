@@ -45,6 +45,16 @@ export const DAORoot: DAOItem = {
           img: "/category_images/overwatch-2.webp",
         },
         {
+          url: "rocket-league",
+          title: "Rocket League",
+          img: "/category_images/rocket-league.webp",
+        },
+        {
+          url: "counter-strike",
+          title: "Counter Strike",
+          img: "/category_images/counter-strike.webp",
+        },
+        {
           url: "call-of-duty",
           title: "Call of Duty",
           img: "/category_images/call-of-duty.webp",
@@ -74,6 +84,16 @@ export const DAORoot: DAOItem = {
           url: "basketball",
           title: "Basketball",
           img: "/category_images/basketball.jpg",
+        },
+        {
+          url: "baseball",
+          title: "Baseball",
+          img: "/category_images/baseball.webp",
+        },
+        {
+          url: "volleyball",
+          title: "Volleyball",
+          img: "/category_images/volleyball.webp",
         },
       ],
     },
