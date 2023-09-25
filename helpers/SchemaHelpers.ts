@@ -180,7 +180,7 @@ export const BalanceSchema = z.object({
   ),
   cw721: z.array(
     z.object({
-      addr: AddressSchema,
+      address: AddressSchema,
       token_ids: z.array(z.string().nonempty()).min(1),
     })
   ),

@@ -148,7 +148,7 @@ export function WagerCreateTeamCard({
                         <Cw721Card
                           key={x.id}
                           cosmwasmClient={cosmwasmClient}
-                          address={x.addr}
+                          address={x.address}
                           token_ids={x.token_ids}
                           deleteFn={(index: number) => {
                             cw721Remove(index);

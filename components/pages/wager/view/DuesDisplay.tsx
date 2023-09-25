@@ -79,7 +79,7 @@ export function WagerViewDuesDisplay({
         balance.cw721.map((x) => {
           x.token_ids.map((token_id) => {
             msgs.push({
-              contractAddress: x.addr,
+              contractAddress: x.address,
               msg: {
                 send_nft: {
                   contract: escrow_addr,

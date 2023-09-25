@@ -23,7 +23,7 @@ export type ExecuteMsg = {
   create_competition: {
     competition_dao: ModuleInstantiateInfo;
     description: string;
-    escrow: ModuleInstantiateInfo;
+    escrow?: ModuleInstantiateInfo | null;
     expiration: Expiration;
     extension: Empty;
     name: string;
@@ -38,7 +38,7 @@ export type ExecuteMsg = {
   };
 } | {
   process_competition: {
-    distribution?: MemberShare[] | null;
+    distribution?: MemberShareForString[] | null;
     id: Uint128;
   };
 } | {
@@ -82,7 +82,7 @@ export interface ModuleInstantiateInfo {
   label: string;
   msg: Binary;
 }
-export interface MemberShare {
+export interface MemberShareForString {
   addr: string;
   shares: Uint128;
 }
@@ -100,6 +100,7 @@ export type QueryMsg = {
     include_ruleset?: boolean | null;
     limit?: number | null;
     start_after?: Uint128 | null;
+    status?: CompetitionStatus | null;
   };
 } | {
   query_extension: {
@@ -108,26 +109,31 @@ export type QueryMsg = {
 } | {
   ownership: {};
 };
+export type CompetitionStatus = "pending" | "active" | "inactive" | "jailed";
 export type MigrateMsg = {
   from_compatible: {};
 };
 export type Null = null;
 export type Addr = string;
-export type CompetitionStatus = "pending" | "active" | "inactive" | "jailed";
 export interface CompetitionResponseForEmpty {
   dao: Addr;
   description: string;
-  escrow: Addr;
+  escrow?: Addr | null;
   expiration: Expiration;
   extension: Empty;
   has_generated_proposals: boolean;
   id: Uint128;
   is_expired: boolean;
   name: string;
+  result?: MemberShareForAddr[] | null;
   rules: string[];
   ruleset?: Ruleset | null;
   start_height: number;
   status: CompetitionStatus;
+}
+export interface MemberShareForAddr {
+  addr: Addr;
+  shares: Uint128;
 }
 export interface Ruleset {
   description: string;

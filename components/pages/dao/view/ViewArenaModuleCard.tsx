@@ -5,7 +5,7 @@ import {
   FormLabel,
 } from "@chakra-ui/form-control";
 import { Flex, Heading, Spacer } from "@chakra-ui/layout";
-import { Input, Button } from "@chakra-ui/react";
+import { Input, Button, ButtonGroup } from "@chakra-ui/react";
 import env from "@config/env";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
@@ -62,7 +62,12 @@ export function DAOViewViewArenaModuleCard({
           </FormControl>
         </CardBody>
         <CardFooter>
-          <Button type="submit">View</Button>
+          <ButtonGroup>
+            <Button onClick={() => router.push(`/${path}/create?dao=${dao}`)}>
+              Create
+            </Button>
+            <Button type="submit">View</Button>
+          </ButtonGroup>
         </CardFooter>
       </form>
     </Card>

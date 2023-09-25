@@ -32,6 +32,14 @@ export const DAORoot: DAOItem = {
           img: "/category_images/fortnite.webp",
         },
         {
+          url: "ea-sports-fc-24",
+          title: "EA Sports FC 24",
+          img: "/category_images/ea-sports-fc-24.webp",
+          addrs: [
+            "juno1npqq7rlqmuhev9r6r7lx0dd6gjuhtmdkcnrrfxmtyzmpkasdy53syjqhfj",
+          ],
+        },
+        {
           url: "overwatch-2",
           title: "Overwatch 2",
           img: "/category_images/overwatch-2.webp",
@@ -52,9 +60,7 @@ export const DAORoot: DAOItem = {
           url: "soccer",
           title: "Soccer",
           img: "/category_images/soccer.jpg",
-          addrs: [
-            "juno1v9s28a6cewjqsdqhva27jl8kzm7h39j6rje90du5admp8n0xcneszexzn5",
-          ],
+          addrs: [],
           children: [
             {
               url: "soccer-kc",

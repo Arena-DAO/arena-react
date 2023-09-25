@@ -66,7 +66,7 @@ export function BalanceCard({
                   <Cw721Card
                     key={i}
                     cosmwasmClient={cosmwasmClient}
-                    address={x.addr}
+                    address={x.address}
                     token_ids={x.token_ids}
                     {...childCardProps}
                   />

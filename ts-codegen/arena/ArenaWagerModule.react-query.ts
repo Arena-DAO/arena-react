@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee, Coin } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, ProposalDetails, ModuleInstantiateInfo, MemberShare, QueryMsg, MigrateMsg, Null, Addr, CompetitionStatus, CompetitionResponseForEmpty, Ruleset, ArrayOfCompetitionResponseForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, ProposalDetails, ModuleInstantiateInfo, MemberShareForString, QueryMsg, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, MemberShareForAddr, Ruleset, ArrayOfCompetitionResponseForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
 import { ArenaWagerModuleQueryClient, ArenaWagerModuleClient } from "./ArenaWagerModule.client";
 export const arenaWagerModuleQueryKeys = {
   contract: ([{
@@ -82,7 +82,8 @@ export const arenaWagerModuleQueries = {
     queryFn: () => client ? client.competitions({
       includeRuleset: args.includeRuleset,
       limit: args.limit,
-      startAfter: args.startAfter
+      startAfter: args.startAfter,
+      status: args.status
     }) : Promise.reject(new Error("Invalid client")),
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
@@ -145,6 +146,7 @@ export interface ArenaWagerModuleCompetitionsQuery<TData> extends ArenaWagerModu
     includeRuleset?: boolean;
     limit?: number;
     startAfter?: Uint128;
+    status?: CompetitionStatus;
   };
 }
 export function useArenaWagerModuleCompetitionsQuery<TData = ArrayOfCompetitionResponseForEmpty>({
@@ -155,7 +157,8 @@ export function useArenaWagerModuleCompetitionsQuery<TData = ArrayOfCompetitionR
   return useQuery<ArrayOfCompetitionResponseForEmpty, Error, TData>(arenaWagerModuleQueryKeys.competitions(client?.contractAddress, args), () => client ? client.competitions({
     includeRuleset: args.includeRuleset,
     limit: args.limit,
-    startAfter: args.startAfter
+    startAfter: args.startAfter,
+    status: args.status
   }) : Promise.reject(new Error("Invalid client")), { ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
@@ -241,7 +244,7 @@ export function useArenaWagerModuleExtensionMutation(options?: Omit<UseMutationO
 export interface ArenaWagerModuleProcessCompetitionMutation {
   client: ArenaWagerModuleClient;
   msg: {
-    distribution?: MemberShare[];
+    distribution?: MemberShareForString[];
     id: Uint128;
   };
   args?: {
@@ -290,7 +293,7 @@ export interface ArenaWagerModuleCreateCompetitionMutation {
   msg: {
     competitionDao: ModuleInstantiateInfo;
     description: string;
-    escrow: ModuleInstantiateInfo;
+    escrow?: ModuleInstantiateInfo;
     expiration: Expiration;
     extension: Empty;
     name: string;

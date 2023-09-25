@@ -3,7 +3,7 @@ import {
   ArenaEscrowQueryClient,
 } from "@arena/ArenaEscrow.client";
 import { useArenaEscrowDistributionQuery } from "@arena/ArenaEscrow.react-query";
-import { MemberShareVerified } from "@arena/ArenaEscrow.types";
+import { MemberShareForString } from "@arena/ArenaEscrow.types";
 import {
   FormControl,
   FormLabel,
@@ -61,7 +61,7 @@ interface WagerViewPresetDistributionModalProps {
 
 interface WagerViewPresetDistributionModalInnerProps
   extends WagerViewPresetDistributionModalProps {
-  data?: MemberShareVerified[];
+  data?: MemberShareForString[];
 }
 
 interface WagerViewUserOrDAOCardProps {

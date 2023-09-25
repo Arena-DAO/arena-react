@@ -194,7 +194,7 @@ function ViewWagerPageContent({
               </CardBody>
             </Card>
           )}
-          {data.status != "inactive" && (
+          {data.status != "inactive" && data.escrow && (
             <WagerViewEscrowDisplay
               cosmwasmClient={cosmwasmClient}
               escrow_addr={data.escrow}
@@ -246,7 +246,7 @@ function ViewWagerPageContent({
             setJailedStatus={() => notifyStatusChanged("jailed")}
             setHasGeneratedProposals={() => notifyHasGeneratedProposals()}
           />
-          {address && (
+          {address && data.escrow && (
             <WagerViewPresetDistributionModal
               escrow_addr={data.escrow}
               isOpen={isOpenPresetModal}

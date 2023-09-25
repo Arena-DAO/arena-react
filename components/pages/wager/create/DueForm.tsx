@@ -185,7 +185,7 @@ export const WagerCreateDueForm = ({
       case "cw721":
         if (
           getValues(`dues.${index}.balance.cw721`).find(
-            (x) => x.addr == values.key
+            (x) => x.address == values.key
           )
         ) {
           setError("key", { message: "Cannot add duplicates" });
@@ -209,7 +209,7 @@ export const WagerCreateDueForm = ({
         }
 
         cw721Append({
-          addr: values.key,
+          address: values.key,
           token_ids: [values.token_id!],
         });
         break;

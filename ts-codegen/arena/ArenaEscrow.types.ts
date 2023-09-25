@@ -22,7 +22,7 @@ export interface Cw20Coin {
   amount: Uint128;
 }
 export interface Cw721Collection {
-  addr: string;
+  address: string;
   token_ids: string[];
 }
 export interface Coin {
@@ -37,7 +37,7 @@ export type ExecuteMsg = {
   };
 } | {
   set_distribution: {
-    distribution: MemberShare[];
+    distribution: MemberShareForString[];
   };
 } | {
   receive_native: {};
@@ -70,7 +70,7 @@ export type Expiration = {
 };
 export type Timestamp = Uint64;
 export type Uint64 = string;
-export interface MemberShare {
+export interface MemberShareForString {
   addr: string;
   shares: Uint128;
 }
@@ -85,7 +85,7 @@ export interface Cw721ReceiveMsg {
   token_id: string;
 }
 export interface CompetitionEscrowDistributeMsg {
-  distribution?: MemberShare[] | null;
+  distribution?: MemberShareForString[] | null;
   remainder_addr: string;
 }
 export type QueryMsg = {
@@ -141,7 +141,7 @@ export interface Cw20CoinVerified {
   amount: Uint128;
 }
 export interface Cw721CollectionVerified {
-  addr: Addr;
+  address: Addr;
   token_ids: string[];
 }
 export type ArrayOfMemberBalanceVerified = MemberBalanceVerified[];
@@ -149,11 +149,7 @@ export interface MemberBalanceVerified {
   addr: Addr;
   balance: BalanceVerified;
 }
-export type NullableArrayOfMemberShareVerified = MemberShareVerified[] | null;
-export interface MemberShareVerified {
-  addr: Addr;
-  shares: Uint128;
-}
+export type NullableArrayOfMemberShareForString = MemberShareForString[] | null;
 export interface DumpStateResponse {
   balance: BalanceVerified;
   dues: MemberBalanceVerified[];
