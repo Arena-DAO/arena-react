@@ -30,6 +30,9 @@ export const DAORoot: DAOItem = {
           url: "fortnite",
           title: "Fortnite",
           img: "/category_images/fortnite.webp",
+          addrs: [
+            "juno10zsxksj840avnujk3ft7kuqn52dqt3ekgz6ttdh9wx30wu3f063qfxllaa",
+          ],
         },
         {
           url: "ea-sports-fc-24",
