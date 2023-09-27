@@ -63,7 +63,7 @@ export default function Home() {
         <Feature
           title="Secure and Transparent Escrows"
           icon={BsShieldFillCheck}
-          description="Our platform offers a robust, trustless escrow solution. When conflicts arise, the Arena DAO intervenes, ensuring fair and transparent outcomes through decentralized governance. "
+          description="Our platform offers a robust, trust-minimized escrow solution. When conflicts arise, the Arena DAO intervenes, ensuring fair and transparent outcomes through decentralized governance. "
         />
         <Feature
           title="Dynamic Community Engagement"
@@ -76,7 +76,7 @@ export default function Home() {
           description="Leverage the advantages of the Juno network with Arena DAO. Our platform offers significantly reduced transaction fees, making it economical for users to engage in competitions and related activities."
         />
         <Feature
-          title="Rewarding Active Engagement"
+          title="Rewarding Participation"
           icon={BsLightningFill}
           description="Arena DAO acknowledges and rewards its active members with a portion of the protocol revenue. This incentive-driven model motivates users to contribute actively, nurturing a lively ecosystem that benefits every participant."
         />
