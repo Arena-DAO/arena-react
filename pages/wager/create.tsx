@@ -44,14 +44,14 @@ import {
   DueSchema,
   ExpirationSchema,
   RulesSchema,
+  RulesetsSchema,
   convertToExpiration,
   convertToRules,
+  convertToRulesets,
 } from "~/helpers/SchemaHelpers";
-import { InstantiateMsg as DAOProposalMultipleInstantiateMsg } from "@dao/DaoProposalMultiple.types";
 import { InstantiateMsg as DAOProposalSingleInstantiateMsg } from "@dao/DaoProposalSingle.types";
-import { InstantiateMsg as DaoPreProposeSingleInstantiateMsg } from "@dao/DaoPreProposeSingle.types";
 import { InstantiateMsg as DAOVotingCW4InstantiateMsg } from "@dao/DaoVotingCw4.types";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import moment from "moment-timezone";
 import { CosmWasmClient, toBinary } from "@cosmjs/cosmwasm-stargate";
@@ -69,7 +69,7 @@ const FormSchema = z.object({
   expiration: ExpirationSchema,
   name: z.string().nonempty({ message: "Name is required " }),
   rules: RulesSchema,
-  ruleset: z.string().optional(),
+  rulesets: RulesetsSchema,
   dues: z.array(DueSchema).nonempty({ message: "Dues cannot be empty" }),
   competition_dao_name: z
     .string()
@@ -140,13 +140,6 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
 
   const watchExpirationUnits = watch("expiration.expiration_units");
 
-  const onRulesetSelect = useCallback(
-    (id: string | undefined) => {
-      setValue("ruleset", id);
-    },
-    [setValue]
-  );
-
   const {
     fields: duesFields,
     append: duesAppend,
@@ -207,7 +200,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         expiration: convertToExpiration(values.expiration),
         name: values.name,
         rules: convertToRules(values.rules),
-        ruleset: values.ruleset,
+        rulesets: convertToRulesets(values.rulesets),
         extension: {},
         competitionDao: {
           code_id: env.CODE_ID_DAO_CORE,
@@ -220,22 +213,6 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
             name: values.competition_dao_name,
             proposal_modules_instantiate_info: [
               {
-                code_id: env.CODE_ID_DAO_PROPOSAL_MULTIPLE,
-                label: "DAO Proposal Multiple",
-                msg: toBinary({
-                  allow_revoting: false,
-                  close_proposal_on_execution_failure: true,
-                  max_voting_period: { time: 31557600 },
-                  only_members_execute: true,
-                  pre_propose_info: {
-                    anyone_may_propose: {},
-                  },
-                  voting_strategy: {
-                    single_choice: { quorum: { percent: "1" } },
-                  },
-                } as DAOProposalMultipleInstantiateMsg),
-              },
-              {
                 code_id: env.CODE_ID_DAO_PROPOSAL_SINGLE,
                 label: "DAO Proposal Single",
                 msg: toBinary({
@@ -246,16 +223,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
                   },
                   only_members_execute: true,
                   pre_propose_info: {
-                    module_may_propose: {
-                      info: {
-                        code_id: env.CODE_ID_DAO_PREPROPOSE_SINGLE,
-                        label: "DAO Prepropose Single",
-                        msg: toBinary({
-                          extension: {},
-                          open_proposal_submission: false,
-                        } as DaoPreProposeSingleInstantiateMsg),
-                      },
-                    },
+                    anyone_may_propose: {}, // Ideally want a module_can_propose and module_sender
                   },
                   threshold: {
                     absolute_percentage: { percentage: { percent: "1" } },
@@ -285,7 +253,6 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         },
       };
 
-      console.log(msg);
       let result = await wagerModuleClient.createCompetition(msg);
 
       toast({
@@ -421,7 +388,6 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
           </Grid>
           <WagerCreateRulesetTable
             cosmwasmClient={cosmwasmClient}
-            onRulesetSelect={onRulesetSelect}
             control={control}
           />
           <FormControl isInvalid={!!errors.rules}>

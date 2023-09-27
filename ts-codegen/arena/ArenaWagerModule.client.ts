@@ -6,25 +6,21 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, ProposalDetails, ModuleInstantiateInfo, MemberShareForString, QueryMsg, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, MemberShareForAddr, Ruleset, ArrayOfCompetitionResponseForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, ProposeMessage, MemberShareForString, ModuleInstantiateInfo, QueryMsg, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, MemberShareForAddr, ArrayOfCompetitionResponseForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
 export interface ArenaWagerModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<Config>;
   competitionCount: () => Promise<Uint128>;
   competition: ({
-    id,
-    includeRuleset
+    id
   }: {
     id: Uint128;
-    includeRuleset?: boolean;
   }) => Promise<CompetitionResponseForEmpty>;
   competitions: ({
-    includeRuleset,
     limit,
     startAfter,
     status
   }: {
-    includeRuleset?: boolean;
     limit?: number;
     startAfter?: Uint128;
     status?: CompetitionStatus;
@@ -62,33 +58,27 @@ export class ArenaWagerModuleQueryClient implements ArenaWagerModuleReadOnlyInte
     });
   };
   competition = async ({
-    id,
-    includeRuleset
+    id
   }: {
     id: Uint128;
-    includeRuleset?: boolean;
   }): Promise<CompetitionResponseForEmpty> => {
     return this.client.queryContractSmart(this.contractAddress, {
       competition: {
-        id,
-        include_ruleset: includeRuleset
+        id
       }
     });
   };
   competitions = async ({
-    includeRuleset,
     limit,
     startAfter,
     status
   }: {
-    includeRuleset?: boolean;
     limit?: number;
     startAfter?: Uint128;
     status?: CompetitionStatus;
   }): Promise<ArrayOfCompetitionResponseForEmpty> => {
     return this.client.queryContractSmart(this.contractAddress, {
       competitions: {
-        include_ruleset: includeRuleset,
         limit,
         start_after: startAfter,
         status
@@ -116,13 +106,16 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
   contractAddress: string;
   sender: string;
   jailCompetition: ({
-    id,
-    proposalDetails
+    proposeMessage
   }: {
-    id: Uint128;
-    proposalDetails: ProposalDetails;
+    proposeMessage: ProposeMessage;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   activate: (fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  proposeResult: ({
+    proposeMessage
+  }: {
+    proposeMessage: ProposeMessage;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   createCompetition: ({
     competitionDao,
     description,
@@ -131,7 +124,7 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
     extension,
     name,
     rules,
-    ruleset
+    rulesets
   }: {
     competitionDao: ModuleInstantiateInfo;
     description: string;
@@ -140,22 +133,13 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
     extension: Empty;
     name: string;
     rules: string[];
-    ruleset?: Uint128;
-  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
-  generateProposals: ({
-    id,
-    proposalDetails,
-    proposalModuleAddr
-  }: {
-    id: Uint128;
-    proposalDetails: ProposalDetails;
-    proposalModuleAddr: string;
+    rulesets: Uint128[];
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   processCompetition: ({
     distribution,
     id
   }: {
-    distribution?: MemberShareForString[];
+    distribution: MemberShareForString[];
     id: Uint128;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   extension: ({
@@ -177,30 +161,38 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
     this.contractAddress = contractAddress;
     this.jailCompetition = this.jailCompetition.bind(this);
     this.activate = this.activate.bind(this);
+    this.proposeResult = this.proposeResult.bind(this);
     this.createCompetition = this.createCompetition.bind(this);
-    this.generateProposals = this.generateProposals.bind(this);
     this.processCompetition = this.processCompetition.bind(this);
     this.extension = this.extension.bind(this);
     this.updateOwnership = this.updateOwnership.bind(this);
   }
 
   jailCompetition = async ({
-    id,
-    proposalDetails
+    proposeMessage
   }: {
-    id: Uint128;
-    proposalDetails: ProposalDetails;
+    proposeMessage: ProposeMessage;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       jail_competition: {
-        id,
-        proposal_details: proposalDetails
+        propose_message: proposeMessage
       }
     }, fee, memo, _funds);
   };
   activate = async (fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       activate: {}
+    }, fee, memo, _funds);
+  };
+  proposeResult = async ({
+    proposeMessage
+  }: {
+    proposeMessage: ProposeMessage;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      propose_result: {
+        propose_message: proposeMessage
+      }
     }, fee, memo, _funds);
   };
   createCompetition = async ({
@@ -211,7 +203,7 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
     extension,
     name,
     rules,
-    ruleset
+    rulesets
   }: {
     competitionDao: ModuleInstantiateInfo;
     description: string;
@@ -220,7 +212,7 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
     extension: Empty;
     name: string;
     rules: string[];
-    ruleset?: Uint128;
+    rulesets: Uint128[];
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       create_competition: {
@@ -231,24 +223,7 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
         extension,
         name,
         rules,
-        ruleset
-      }
-    }, fee, memo, _funds);
-  };
-  generateProposals = async ({
-    id,
-    proposalDetails,
-    proposalModuleAddr
-  }: {
-    id: Uint128;
-    proposalDetails: ProposalDetails;
-    proposalModuleAddr: string;
-  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
-    return await this.client.execute(this.sender, this.contractAddress, {
-      generate_proposals: {
-        id,
-        proposal_details: proposalDetails,
-        proposal_module_addr: proposalModuleAddr
+        rulesets
       }
     }, fee, memo, _funds);
   };
@@ -256,7 +231,7 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
     distribution,
     id
   }: {
-    distribution?: MemberShareForString[];
+    distribution: MemberShareForString[];
     id: Uint128;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {

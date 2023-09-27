@@ -1,12 +1,5 @@
-import { Flex, Heading } from "@chakra-ui/layout";
-import {
-  Image,
-  Box,
-  VStack,
-  useColorModeValue,
-  LinkBox,
-  LinkOverlay,
-} from "@chakra-ui/react";
+import { Heading } from "@chakra-ui/layout";
+import { Image, VStack, useColorModeValue, LinkBox } from "@chakra-ui/react";
 import { Card, CardBody } from "@chakra-ui/card";
 import { DAOItem } from "@config/featured";
 import NextLink from "next/link";

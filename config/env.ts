@@ -24,8 +24,6 @@ interface Env {
   // Variables specific to .env.development
   CODE_ID_DAO_PROPOSAL_SINGLE: number;
   CODE_ID_DAO_PREPROPOSE_SINGLE: number;
-  CODE_ID_DAO_PROPOSAL_MULTIPLE: number;
-  CODE_ID_DAO_PREPROPOSE_MULTIPLE: number;
   CODE_ID_DAO_CORE: number;
   CODE_ID_DAO_VOTING_CW4: number;
   CODE_ID_CW4_GROUP: number;
@@ -61,12 +59,6 @@ const env: Env = {
   FAUCET_URL: process.env.NEXT_PUBLIC_FAUCET_URL,
   ENV: process.env.NEXT_PUBLIC_ENV!,
 
-  CODE_ID_DAO_PROPOSAL_MULTIPLE: parseInt(
-    process.env.NEXT_PUBLIC_CODE_ID_DAO_PROPOSAL_MULTIPLE!
-  ),
-  CODE_ID_DAO_PREPROPOSE_MULTIPLE: parseInt(
-    process.env.NEXT_PUBLIC_CODE_ID_DAO_PREPROPOSE_MULTIPLE!
-  ),
   CODE_ID_DAO_PROPOSAL_SINGLE: parseInt(
     process.env.NEXT_PUBLIC_CODE_ID_DAO_PROPOSAL_SINGLE!
   ),

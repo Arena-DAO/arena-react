@@ -1,10 +1,15 @@
 import { ArenaWagerModuleClient } from "@arena/ArenaWagerModule.client";
-import { CompetitionStatus } from "@arena/ArenaWagerModule.types";
+import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import {
   Button,
+  ButtonGroup,
+  Card,
+  CardBody,
+  CardFooter,
   FormControl,
   FormErrorMessage,
   FormLabel,
+  IconButton,
   Input,
   InputGroup,
   Modal,
@@ -16,35 +21,37 @@ import {
   ModalOverlay,
   Stack,
   Textarea,
+  Tooltip,
   useToast,
 } from "@chakra-ui/react";
 import env from "@config/env";
 import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
-import { getProposalConfig } from "~/helpers/DAOHelpers";
+import { DistributionSchema } from "~/helpers/SchemaHelpers";
+import { ProposalPromptUserOrDAOCard } from "./UserOrDAOCard";
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 
 const FormSchema = z.object({
-  proposal_title: z
-    .string()
-    .nonempty({ message: "Proposal Title cannot be empty" }),
-  proposal_description: z
+  title: z.string().nonempty({ message: "Proposal Title cannot be empty" }),
+  description: z
     .string()
     .nonempty({ message: "Proposal Description cannot be empty" }),
+  distribution: DistributionSchema,
 });
-type FormValues = z.infer<typeof FormSchema>;
+export type FormValues = z.infer<typeof FormSchema>;
 
 export type WagerViewProposalPromptModalAction =
   | "Jail Wager"
-  | "Generate Proposals";
+  | "Propose Result";
 
 interface WagerViewProposalPromptModalProps {
   id: string;
   module_addr: string;
-  dao_addr: string;
   isOpen: boolean;
   onClose: () => void;
+  cosmwasmClient: CosmWasmClient;
   action: WagerViewProposalPromptModalAction;
   setJailedStatus: () => void;
   setHasGeneratedProposals: () => void;
@@ -54,8 +61,8 @@ export function WagerViewProposalPromptModal({
   id,
   isOpen,
   module_addr,
-  dao_addr,
   onClose,
+  cosmwasmClient,
   setJailedStatus,
   setHasGeneratedProposals,
   action,
@@ -78,10 +85,11 @@ export function WagerViewProposalPromptModal({
       );
 
       await wagerModuleClient.jailCompetition({
-        id: id,
-        proposalDetails: {
-          title: values.proposal_title,
-          description: values.proposal_description,
+        proposeMessage: {
+          id,
+          title: values.title,
+          description: values.description,
+          distribution: values.distribution,
         },
       });
 
@@ -93,6 +101,7 @@ export function WagerViewProposalPromptModal({
       });
 
       setJailedStatus();
+      onClose();
     } catch (e: any) {
       toast({
         status: "error",
@@ -103,7 +112,7 @@ export function WagerViewProposalPromptModal({
     }
   };
 
-  const generateProposals = async (values: FormValues) => {
+  const proposeResult = async (values: FormValues) => {
     try {
       let cosmwasmClient = await getSigningCosmWasmClient();
       if (!cosmwasmClient) throw "Could not get the CosmWasm client";
@@ -115,23 +124,12 @@ export function WagerViewProposalPromptModal({
         module_addr
       );
 
-      let config = await getProposalConfig(
-        cosmwasmClient,
-        dao_addr,
-        "dao-proposal-multiple",
-        address,
-        true
-      );
-
-      if (!config)
-        throw "Could not find an active dao-proposal-multiple module";
-
-      await wagerModuleClient.generateProposals({
-        id: id,
-        proposalModuleAddr: config.addr,
-        proposalDetails: {
-          title: values.proposal_title,
-          description: values.proposal_description,
+      await wagerModuleClient.proposeResult({
+        proposeMessage: {
+          id: id,
+          title: values.title,
+          description: values.description,
+          distribution: values.distribution,
         },
       });
 
@@ -143,6 +141,7 @@ export function WagerViewProposalPromptModal({
       });
 
       setHasGeneratedProposals();
+      onClose();
     } catch (e: any) {
       toast({
         status: "error",
@@ -154,24 +153,32 @@ export function WagerViewProposalPromptModal({
   };
   const actionHandlers = {
     "Jail Wager": jailWager,
-    "Generate Proposals": generateProposals,
+    "Propose Result": proposeResult,
   };
 
   const {
     formState: { isSubmitting, errors },
     handleSubmit,
     register,
+    control,
+    reset,
   } = useForm<FormValues>({
     defaultValues: {
-      proposal_title: "Competition Result",
-      proposal_description:
+      title: "Competition Result",
+      description:
         "This proposal allows members to vote on the winner of the competition. Each choice represents a different team. Select the team that you believe should win the competition.",
+      distribution: [{ addr: address, shares: "1" }],
     },
     resolver: zodResolver(FormSchema),
   });
 
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "distribution",
+  });
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
       <ModalContent>
         <form onSubmit={handleSubmit(actionHandlers[action])}>
@@ -179,34 +186,106 @@ export function WagerViewProposalPromptModal({
           <ModalCloseButton />
           <ModalBody>
             <Stack>
-              <FormControl isInvalid={!!errors.proposal_title}>
+              <FormControl isInvalid={!!errors.title}>
                 <FormLabel>Proposal Title</FormLabel>
                 <InputGroup>
-                  <Input {...register("proposal_title")} />
+                  <Input {...register("title")} />
                 </InputGroup>
-                <FormErrorMessage>
-                  {errors.proposal_title?.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.title?.message}</FormErrorMessage>
               </FormControl>
-              <FormControl isInvalid={!!errors.proposal_description}>
+              <FormControl isInvalid={!!errors.description}>
                 <FormLabel>Proposal Description</FormLabel>
                 <InputGroup>
-                  <Textarea {...register("proposal_description")} />
+                  <Textarea {...register("description")} />
                 </InputGroup>
                 <FormErrorMessage>
-                  {errors.proposal_description?.message}
+                  {errors.description?.message}
+                </FormErrorMessage>
+              </FormControl>
+              <FormControl isInvalid={!!errors.distribution}>
+                <FormLabel>Distribution</FormLabel>
+                <Stack>
+                  {fields.map((x, i) => (
+                    <Card key={x.id} variant="outline">
+                      <CardBody>
+                        <Stack>
+                          <FormControl
+                            isInvalid={!!errors.distribution?.[i]?.addr}
+                          >
+                            <FormLabel>Address</FormLabel>
+                            <InputGroup>
+                              <Input {...register(`distribution.${i}.addr`)} />
+                            </InputGroup>
+                            <FormErrorMessage>
+                              {errors.distribution?.[i]?.addr?.message}
+                            </FormErrorMessage>
+                          </FormControl>
+                          <ProposalPromptUserOrDAOCard
+                            cosmwasmClient={cosmwasmClient}
+                            control={control}
+                            index={i}
+                          />
+                          <FormControl
+                            isInvalid={!!errors.distribution?.[i]?.shares}
+                          >
+                            <FormLabel>Shares</FormLabel>
+                            <InputGroup>
+                              <Input
+                                {...register(`distribution.${i}.shares`)}
+                              />
+                            </InputGroup>
+                            <FormErrorMessage>
+                              {errors.distribution?.[i]?.shares?.message}
+                            </FormErrorMessage>
+                          </FormControl>
+                        </Stack>
+                      </CardBody>
+                      <CardFooter>
+                        <Tooltip label="Delete Shares">
+                          <IconButton
+                            variant="ghost"
+                            aria-label="Delete Shares"
+                            icon={<DeleteIcon />}
+                            onClick={() => remove(i)}
+                          />
+                        </Tooltip>
+                      </CardFooter>
+                    </Card>
+                  ))}
+                </Stack>
+                <Tooltip label="Add Shares">
+                  <IconButton
+                    mt="2"
+                    variant="ghost"
+                    aria-label="Add Shares"
+                    onClick={() =>
+                      append({
+                        addr: "",
+                        shares: "1",
+                      })
+                    }
+                    icon={<AddIcon />}
+                  />
+                </Tooltip>
+                <FormErrorMessage>
+                  {errors.distribution?.message}
                 </FormErrorMessage>
               </FormControl>
             </Stack>
           </ModalBody>
           <ModalFooter>
-            <Button
-              type="submit"
-              isDisabled={!isWalletConnected}
-              isLoading={isSubmitting}
-            >
-              Submit
-            </Button>
+            <ButtonGroup>
+              <Button variant="ghost" onClick={() => reset()}>
+                Reset
+              </Button>
+              <Button
+                type="submit"
+                isDisabled={!isWalletConnected}
+                isLoading={isSubmitting}
+              >
+                Submit
+              </Button>
+            </ButtonGroup>
           </ModalFooter>
         </form>
       </ModalContent>

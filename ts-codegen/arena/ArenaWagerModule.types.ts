@@ -14,11 +14,14 @@ export interface Empty {
 }
 export type ExecuteMsg = {
   jail_competition: {
-    id: Uint128;
-    proposal_details: ProposalDetails;
+    propose_message: ProposeMessage;
   };
 } | {
   activate: {};
+} | {
+  propose_result: {
+    propose_message: ProposeMessage;
+  };
 } | {
   create_competition: {
     competition_dao: ModuleInstantiateInfo;
@@ -28,17 +31,11 @@ export type ExecuteMsg = {
     extension: Empty;
     name: string;
     rules: string[];
-    ruleset?: Uint128 | null;
-  };
-} | {
-  generate_proposals: {
-    id: Uint128;
-    proposal_details: ProposalDetails;
-    proposal_module_addr: string;
+    rulesets: Uint128[];
   };
 } | {
   process_competition: {
-    distribution?: MemberShareForString[] | null;
+    distribution: MemberShareForString[];
     id: Uint128;
   };
 } | {
@@ -72,19 +69,21 @@ export type Action = {
     new_owner: string;
   };
 } | "accept_ownership" | "renounce_ownership";
-export interface ProposalDetails {
+export interface ProposeMessage {
   description: string;
+  distribution: MemberShareForString[];
+  id: Uint128;
   title: string;
+}
+export interface MemberShareForString {
+  addr: string;
+  shares: Uint128;
 }
 export interface ModuleInstantiateInfo {
   admin?: Admin | null;
   code_id: number;
   label: string;
   msg: Binary;
-}
-export interface MemberShareForString {
-  addr: string;
-  shares: Uint128;
 }
 export type QueryMsg = {
   config: {};
@@ -93,11 +92,9 @@ export type QueryMsg = {
 } | {
   competition: {
     id: Uint128;
-    include_ruleset?: boolean | null;
   };
 } | {
   competitions: {
-    include_ruleset?: boolean | null;
     limit?: number | null;
     start_after?: Uint128 | null;
     status?: CompetitionStatus | null;
@@ -127,19 +124,13 @@ export interface CompetitionResponseForEmpty {
   name: string;
   result?: MemberShareForAddr[] | null;
   rules: string[];
-  ruleset?: Ruleset | null;
+  rulesets: Uint128[];
   start_height: number;
   status: CompetitionStatus;
 }
 export interface MemberShareForAddr {
   addr: Addr;
   shares: Uint128;
-}
-export interface Ruleset {
-  description: string;
-  id: Uint128;
-  is_enabled: boolean;
-  rules: string[];
 }
 export type ArrayOfCompetitionResponseForEmpty = CompetitionResponseForEmpty[];
 export interface Config {

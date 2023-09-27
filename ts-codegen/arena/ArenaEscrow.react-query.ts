@@ -388,7 +388,7 @@ export function useArenaEscrowLockMutation(options?: Omit<UseMutationOptions<Exe
 export interface ArenaEscrowDistributeMutation {
   client: ArenaEscrowClient;
   msg: {
-    distribution?: MemberShareForString[];
+    distribution: MemberShareForString[];
     remainderAddr: string;
   };
   args?: {

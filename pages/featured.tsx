@@ -1,10 +1,16 @@
-import { Container, Heading, SimpleGrid, Stack } from "@chakra-ui/react";
+import {
+  Container,
+  Heading,
+  SimpleGrid,
+  Stack,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 import { DAOMap, DAORoot } from "@config/featured";
 import { useRouter } from "next/router";
 import { DAOCard } from "@components/cards/DAOCard";
 import { useChain } from "@cosmos-kit/react";
 import env from "@config/env";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { FeaturedDAOItemCard } from "@components/pages/featured/DAOItemCard";
 
@@ -21,14 +27,22 @@ export default function FeaturedDAOs() {
     }
     fetchClient();
   }, [getCosmWasmClient]);
-  const daoItem = id ? DAOMap.get(id as string) ?? DAORoot : DAORoot;
+  const minChildWidth = useBreakpointValue({
+    base: "200px",
+    sm: "300px",
+    md: "400px",
+  });
+  const daoItem = useMemo(
+    () => (id ? DAOMap.get(id as string) ?? DAORoot : DAORoot),
+    [id]
+  );
 
   return (
     <Container maxW={{ base: "full" }} centerContent pb={10}>
       <Heading>
         {daoItem.title} {daoItem.children && "Categories"}
       </Heading>
-      <SimpleGrid minChildWidth="300px" spacing="5" width="100%">
+      <SimpleGrid minChildWidth={minChildWidth} spacing="5" width="100%">
         {daoItem.children?.map((x) => {
           return <FeaturedDAOItemCard item={x} key={x.url} />;
         })}
@@ -38,7 +52,7 @@ export default function FeaturedDAOs() {
           DAO&apos;s
         </Heading>
       )}
-      <SimpleGrid minChildWidth="300px" spacing="5" width="100%">
+      <SimpleGrid minChildWidth={minChildWidth} spacing="5" width="100%">
         {cosmwasmClient &&
           daoItem.addrs?.map((x, i) => {
             return (

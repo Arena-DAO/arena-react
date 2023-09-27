@@ -39,15 +39,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Control, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { isValidBech32Address } from "~/helpers/AddressHelpers";
+import { DistributionSchema } from "~/helpers/SchemaHelpers";
 
 const FormSchema = z.object({
-  member_shares: z
-    .object({
-      addr: z.string().nonempty({ message: "Address is required" }),
-      shares: z.string().nonempty({ message: "Shares are required" }),
-    })
-    .array()
-    .min(1, { message: "At least one member share must be provided" }),
+  member_shares: DistributionSchema,
 });
 type FormValues = z.infer<typeof FormSchema>;
 

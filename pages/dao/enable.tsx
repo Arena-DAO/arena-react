@@ -48,7 +48,7 @@ import { useChain } from "@cosmos-kit/react-lite";
 import { ExecuteMsg as DaoDaoCoreExecuteMsg } from "@dao/DaoDaoCore.types";
 import { DaoProposalSingleClient } from "@dao/DaoProposalSingle.client";
 import { InstantiateMsg as ArenaWagerModuleInstantiateMsg } from "@arena/ArenaWagerModule.types";
-import { InstantiateMsg as DAOProposalMultipleInstantiateMsg } from "@dao/DaoProposalMultiple.types";
+import { InstantiateMsg as DAOProposalSingleInstantiateMsg } from "@dao/DaoProposalSingle.types";
 import { getProposalConfig } from "~/helpers/DAOHelpers";
 import { DaoPreProposeSingleClient } from "@dao/DaoPreProposeSingle.client";
 import {
@@ -217,9 +217,9 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
         admin: { core_module: {} },
       };
 
-      let dao_proposal_multiple_instantiate = {
-        code_id: env.CODE_ID_DAO_PROPOSAL_MULTIPLE,
-        label: "Arena Proposal Multiple Module",
+      let dao_proposal_single_instantiate = {
+        code_id: env.CODE_ID_DAO_PROPOSAL_SINGLE,
+        label: "Arena Proposal Single Module",
         msg: toBinary({
           allow_revoting: values.allow_revoting,
           close_proposal_on_execution_failure:
@@ -234,21 +234,21 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
           pre_propose_info: {
             module_may_propose: { info: arena_core_instantiate },
           },
-          voting_strategy: {
-            single_choice: {
-              quorum:
+          threshold: {
+            absolute_percentage: {
+              percentage:
                 values.quorum.percentage_threshold == "Majority"
                   ? { majority: {} }
                   : { percent: values.quorum.percent },
             },
           },
-        } as DAOProposalMultipleInstantiateMsg),
+        } as DAOProposalSingleInstantiateMsg),
         admin: { core_module: {} },
       };
 
       const executeMsg: DaoDaoCoreExecuteMsg = {
         update_proposal_modules: {
-          to_add: [dao_proposal_multiple_instantiate],
+          to_add: [dao_proposal_single_instantiate],
           to_disable: [],
         },
       };
@@ -543,7 +543,6 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
                       <Tooltip label="Delete Ruleset">
                         <IconButton
                           variant="ghost"
-                          colorScheme="secondary"
                           aria-label="Delete Ruleset"
                           icon={<DeleteIcon />}
                           onClick={() => rulesetsRemove(rulesetIndex)}
@@ -579,7 +578,6 @@ function EnableForm({ cosmwasmClient }: EnableFormProps) {
               <IconButton
                 mt="2"
                 variant="ghost"
-                colorScheme="secondary"
                 aria-label="Add Ruleset"
                 onClick={() =>
                   rulesetsAppend({

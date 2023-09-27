@@ -59,6 +59,11 @@ export const DAORoot: DAOItem = {
           title: "Call of Duty",
           img: "/category_images/call-of-duty.webp",
         },
+        {
+          url: "apex-legends",
+          title: "Apex Legends",
+          img: "/category_images/apex-legends.webp",
+        },
       ],
     },
     {

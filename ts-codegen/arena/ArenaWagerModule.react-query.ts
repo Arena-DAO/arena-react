@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee, Coin } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, ProposalDetails, ModuleInstantiateInfo, MemberShareForString, QueryMsg, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, MemberShareForAddr, Ruleset, ArrayOfCompetitionResponseForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, ProposeMessage, MemberShareForString, ModuleInstantiateInfo, QueryMsg, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, MemberShareForAddr, ArrayOfCompetitionResponseForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
 import { ArenaWagerModuleQueryClient, ArenaWagerModuleClient } from "./ArenaWagerModule.client";
 export const arenaWagerModuleQueryKeys = {
   contract: ([{
@@ -67,8 +67,7 @@ export const arenaWagerModuleQueries = {
   }: ArenaWagerModuleCompetitionQuery<TData>): UseQueryOptions<CompetitionResponseForEmpty, Error, TData> => ({
     queryKey: arenaWagerModuleQueryKeys.competition(client?.contractAddress, args),
     queryFn: () => client ? client.competition({
-      id: args.id,
-      includeRuleset: args.includeRuleset
+      id: args.id
     }) : Promise.reject(new Error("Invalid client")),
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
@@ -80,7 +79,6 @@ export const arenaWagerModuleQueries = {
   }: ArenaWagerModuleCompetitionsQuery<TData>): UseQueryOptions<ArrayOfCompetitionResponseForEmpty, Error, TData> => ({
     queryKey: arenaWagerModuleQueryKeys.competitions(client?.contractAddress, args),
     queryFn: () => client ? client.competitions({
-      includeRuleset: args.includeRuleset,
       limit: args.limit,
       startAfter: args.startAfter,
       status: args.status
@@ -143,7 +141,6 @@ export function useArenaWagerModuleQueryExtensionQuery<TData = Binary>({
 }
 export interface ArenaWagerModuleCompetitionsQuery<TData> extends ArenaWagerModuleReactQuery<ArrayOfCompetitionResponseForEmpty, TData> {
   args: {
-    includeRuleset?: boolean;
     limit?: number;
     startAfter?: Uint128;
     status?: CompetitionStatus;
@@ -155,7 +152,6 @@ export function useArenaWagerModuleCompetitionsQuery<TData = ArrayOfCompetitionR
   options
 }: ArenaWagerModuleCompetitionsQuery<TData>) {
   return useQuery<ArrayOfCompetitionResponseForEmpty, Error, TData>(arenaWagerModuleQueryKeys.competitions(client?.contractAddress, args), () => client ? client.competitions({
-    includeRuleset: args.includeRuleset,
     limit: args.limit,
     startAfter: args.startAfter,
     status: args.status
@@ -166,7 +162,6 @@ export function useArenaWagerModuleCompetitionsQuery<TData = ArrayOfCompetitionR
 export interface ArenaWagerModuleCompetitionQuery<TData> extends ArenaWagerModuleReactQuery<CompetitionResponseForEmpty, TData> {
   args: {
     id: Uint128;
-    includeRuleset?: boolean;
   };
 }
 export function useArenaWagerModuleCompetitionQuery<TData = CompetitionResponseForEmpty>({
@@ -175,8 +170,7 @@ export function useArenaWagerModuleCompetitionQuery<TData = CompetitionResponseF
   options
 }: ArenaWagerModuleCompetitionQuery<TData>) {
   return useQuery<CompetitionResponseForEmpty, Error, TData>(arenaWagerModuleQueryKeys.competition(client?.contractAddress, args), () => client ? client.competition({
-    id: args.id,
-    includeRuleset: args.includeRuleset
+    id: args.id
   }) : Promise.reject(new Error("Invalid client")), { ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
@@ -244,7 +238,7 @@ export function useArenaWagerModuleExtensionMutation(options?: Omit<UseMutationO
 export interface ArenaWagerModuleProcessCompetitionMutation {
   client: ArenaWagerModuleClient;
   msg: {
-    distribution?: MemberShareForString[];
+    distribution: MemberShareForString[];
     id: Uint128;
   };
   args?: {
@@ -264,30 +258,6 @@ export function useArenaWagerModuleProcessCompetitionMutation(options?: Omit<Use
     } = {}
   }) => client.processCompetition(msg, fee, memo, funds), options);
 }
-export interface ArenaWagerModuleGenerateProposalsMutation {
-  client: ArenaWagerModuleClient;
-  msg: {
-    id: Uint128;
-    proposalDetails: ProposalDetails;
-    proposalModuleAddr: string;
-  };
-  args?: {
-    fee?: number | StdFee | "auto";
-    memo?: string;
-    funds?: Coin[];
-  };
-}
-export function useArenaWagerModuleGenerateProposalsMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleGenerateProposalsMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaWagerModuleGenerateProposalsMutation>(({
-    client,
-    msg,
-    args: {
-      fee,
-      memo,
-      funds
-    } = {}
-  }) => client.generateProposals(msg, fee, memo, funds), options);
-}
 export interface ArenaWagerModuleCreateCompetitionMutation {
   client: ArenaWagerModuleClient;
   msg: {
@@ -298,7 +268,7 @@ export interface ArenaWagerModuleCreateCompetitionMutation {
     extension: Empty;
     name: string;
     rules: string[];
-    ruleset?: Uint128;
+    rulesets: Uint128[];
   };
   args?: {
     fee?: number | StdFee | "auto";
@@ -316,6 +286,28 @@ export function useArenaWagerModuleCreateCompetitionMutation(options?: Omit<UseM
       funds
     } = {}
   }) => client.createCompetition(msg, fee, memo, funds), options);
+}
+export interface ArenaWagerModuleProposeResultMutation {
+  client: ArenaWagerModuleClient;
+  msg: {
+    proposeMessage: ProposeMessage;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaWagerModuleProposeResultMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleProposeResultMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaWagerModuleProposeResultMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.proposeResult(msg, fee, memo, funds), options);
 }
 export interface ArenaWagerModuleActivateMutation {
   client: ArenaWagerModuleClient;
@@ -338,8 +330,7 @@ export function useArenaWagerModuleActivateMutation(options?: Omit<UseMutationOp
 export interface ArenaWagerModuleJailCompetitionMutation {
   client: ArenaWagerModuleClient;
   msg: {
-    id: Uint128;
-    proposalDetails: ProposalDetails;
+    proposeMessage: ProposeMessage;
   };
   args?: {
     fee?: number | StdFee | "auto";

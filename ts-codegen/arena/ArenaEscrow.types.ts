@@ -85,7 +85,7 @@ export interface Cw721ReceiveMsg {
   token_id: string;
 }
 export interface CompetitionEscrowDistributeMsg {
-  distribution?: MemberShareForString[] | null;
+  distribution: MemberShareForString[];
   remainder_addr: string;
 }
 export type QueryMsg = {

@@ -9,7 +9,7 @@ export default class Document extends NextDocument {
         <Head>
           <meta
             name="description"
-            content="The Decentralized Competition DAO"
+            content="The Ultimate Arena 🏆 | Where wagers ignite rivalries, tournaments crown champions, and leagues forge legends."
           />
           <link rel="icon" href="/favicon.ico" />
           <link
@@ -28,6 +28,10 @@ export default class Document extends NextDocument {
             type="image/png"
             sizes="16x16"
             href="/favicon-16x16.png"
+          />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
           />
           <link rel="manifest" href="/site.webmanifest"></link>
         </Head>

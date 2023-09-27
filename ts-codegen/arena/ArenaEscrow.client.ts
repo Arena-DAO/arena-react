@@ -215,7 +215,7 @@ export interface ArenaEscrowInterface extends ArenaEscrowReadOnlyInterface {
     distribution,
     remainderAddr
   }: {
-    distribution?: MemberShareForString[];
+    distribution: MemberShareForString[];
     remainderAddr: string;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   lock: ({
@@ -313,7 +313,7 @@ export class ArenaEscrowClient extends ArenaEscrowQueryClient implements ArenaEs
     distribution,
     remainderAddr
   }: {
-    distribution?: MemberShareForString[];
+    distribution: MemberShareForString[];
     remainderAddr: string;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {

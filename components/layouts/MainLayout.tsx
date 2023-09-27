@@ -463,7 +463,7 @@ export default function MainLayout({ children }: PropsWithChildren) {
   return (
     <SimpleLayout connectWalletToggle={<WalletConnectToggle />} navbarH="60px">
       <Head>
-        <title>Arena Protocol</title>
+        <title>The Arena</title>
       </Head>
       <Box mx="auto" w="full" pb={10}>
         {children}

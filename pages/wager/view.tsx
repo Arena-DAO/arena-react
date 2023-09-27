@@ -2,12 +2,10 @@ import {
   Badge,
   Box,
   Container,
-  Divider,
-  Flex,
   Heading,
   List,
   ListItem,
-  Spacer,
+  ListProps,
   Stack,
   Text,
 } from "@chakra-ui/layout";
@@ -44,6 +42,7 @@ import { WagerViewEscrowDisplay } from "@components/pages/wager/view/EscrowDispl
 import { CompetitionStatus } from "@arena/ArenaWagerModule.types";
 import { CompetitionModuleResponse } from "@arena/ArenaCore.types";
 import { WagerViewPresetDistributionModal } from "@components/pages/wager/view/PresetDistributionModal";
+import { RulesetDisplay } from "@components/pages/wager/view/RulesetDisplay";
 
 interface ViewWagerPageContentProps {
   cosmwasmClient: CosmWasmClient;
@@ -72,7 +71,7 @@ function ViewWagerPageContent({
     return !!dao && AddressSchema.safeParse(dao).success;
   }, [dao]);
   const [promptAction, setPromptAction] =
-    useState<WagerViewProposalPromptModalAction>("Generate Proposals");
+    useState<WagerViewProposalPromptModalAction>("Propose Result");
   const { data: itemData, isFetched: isItemFetched } =
     useDaoDaoCoreGetItemQuery({
       client: new DaoDaoCoreQueryClient(cosmwasmClient, dao),
@@ -145,6 +144,8 @@ function ViewWagerPageContent({
     []
   );
 
+  const listProps: ListProps = { spacing: 2 };
+
   if (query.isError || !isValidAddress || !data) {
     return null;
   }
@@ -164,33 +165,32 @@ function ViewWagerPageContent({
             </Badge>
           </Heading>
           <Text>{data.description}</Text>
-          {(data.ruleset || data.rules.length > 0) && (
+          {(data.rulesets.length > 0 || data.rules.length > 0) && (
             <Card>
-              <CardHeader>
-                <Heading size="md">Rules</Heading>
+              <CardHeader pb="0">
+                <Heading mb="0" size="md">
+                  Rules
+                </Heading>
               </CardHeader>
               <CardBody>
-                {data.ruleset && (
-                  <>
-                    <Flex>
-                      <Heading size="sm">Ruleset</Heading> <Spacer />
-                      <small>Ruleset Id: {data.ruleset.id}</small>
-                    </Flex>
-                    <List spacing={2}>
-                      {data.ruleset.rules.map((rule, idx) => (
+                <Stack>
+                  {data.rulesets.map((x) => (
+                    <RulesetDisplay
+                      key={x}
+                      cosmwasmClient={cosmwasmClient}
+                      arena_core_addr={itemData!.item!}
+                      ruleset_id={x}
+                      listProps={listProps}
+                    />
+                  ))}
+                  {data.rules.length > 0 && (
+                    <List {...listProps}>
+                      {data.rules.map((rule, idx) => (
                         <ListItem key={idx}>{rule}</ListItem>
                       ))}
                     </List>
-                  </>
-                )}
-                {data.ruleset && data.rules.length > 0 && <Divider />}
-                {data.rules.length > 0 && (
-                  <List spacing={2}>
-                    {data.rules.map((rule, idx) => (
-                      <ListItem key={idx}>{rule}</ListItem>
-                    ))}
-                  </List>
-                )}
+                  )}
+                </Stack>
               </CardBody>
             </Card>
           )}
@@ -210,11 +210,11 @@ function ViewWagerPageContent({
                   <Button
                     minW="150px"
                     onClick={() => {
-                      setPromptAction("Generate Proposals");
+                      setPromptAction("Propose Result");
                       onOpenProposalModal();
                     }}
                   >
-                    Generate Proposals
+                    Propose Result
                   </Button>
                 )}
                 <Button minW="200px" onClick={() => onOpenPresetModal()}>
@@ -239,7 +239,7 @@ function ViewWagerPageContent({
             module_addr={
               (moduleData as unknown as CompetitionModuleResponse).addr
             }
-            dao_addr={data.dao}
+            cosmwasmClient={cosmwasmClient}
             isOpen={isOpenProposalModal}
             onClose={onCloseProposalModal}
             action={promptAction}

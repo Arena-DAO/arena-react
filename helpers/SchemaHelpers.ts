@@ -12,6 +12,12 @@ export const RulesSchema = z
   })
   .array();
 
+export const RulesetsSchema = z
+  .object({
+    ruleset_id: z.string().nonempty({ message: "Id cannot be empty" }),
+  })
+  .array();
+
 export const DurationSchema = z.object({
   duration: z
     .number({
@@ -63,6 +69,18 @@ export const AddressSchema = z
   .refine((value) => isValidBech32Address(value), {
     message: "Invalid Bech32 address",
   });
+
+export const DistributionSchema = z
+  .object({
+    addr: AddressSchema,
+    shares: z
+      .string()
+      .nonempty({ message: "Shares are required" })
+      .refine((value) => !isNaN(parseInt(value)), {
+        message: "Shares must be a valid number",
+      }),
+  })
+  .array();
 
 export const ExpirationSchema = z
   .object({
@@ -160,6 +178,12 @@ export function convertToRules(
   rulesSchema: z.infer<typeof RulesSchema>
 ): string[] {
   return rulesSchema.map((x) => x.rule);
+}
+
+export function convertToRulesets(
+  rulesetsSchema: z.infer<typeof RulesetsSchema>
+): string[] {
+  return rulesetsSchema.map((x) => x.ruleset_id);
 }
 
 export const AmountSchema = z
