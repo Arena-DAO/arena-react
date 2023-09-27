@@ -29,6 +29,13 @@ import {
   CardHeader,
   Fade,
   Skeleton,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
@@ -43,6 +50,7 @@ import { CompetitionStatus } from "@arena/ArenaWagerModule.types";
 import { CompetitionModuleResponse } from "@arena/ArenaCore.types";
 import { WagerViewPresetDistributionModal } from "@components/pages/wager/view/PresetDistributionModal";
 import { RulesetDisplay } from "@components/pages/wager/view/RulesetDisplay";
+import { UserOrDAOCard } from "@components/cards/UserOrDAOCard";
 
 interface ViewWagerPageContentProps {
   cosmwasmClient: CosmWasmClient;
@@ -254,6 +262,41 @@ function ViewWagerPageContent({
               cosmwasmClient={cosmwasmClient}
               address={address}
             />
+          )}
+          {data.result && (
+            <Card>
+              <CardHeader pb="0">
+                <Heading mb="0" size="md">
+                  Result
+                </Heading>
+              </CardHeader>
+              <CardBody>
+                <TableContainer>
+                  <Table variant="unstyled">
+                    <Thead>
+                      <Tr>
+                        <Th>Member</Th>
+                        <Th>Shares</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {data.result.map((x, i) => (
+                        <Tr key={i}>
+                          <Td>
+                            <UserOrDAOCard
+                              cosmwasmClient={cosmwasmClient}
+                              address={x.addr}
+                              variant="outline"
+                            />
+                          </Td>
+                          <Td>{x.shares}</Td>
+                        </Tr>
+                      ))}
+                    </Tbody>
+                  </Table>
+                </TableContainer>
+              </CardBody>
+            </Card>
           )}
         </Stack>
       </Skeleton>
