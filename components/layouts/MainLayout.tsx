@@ -14,14 +14,20 @@ import {
   useDisclosure,
   Link,
   useColorModeValue,
+  VStack,
+  Collapse,
+  Icon,
+  ButtonProps,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
-import React, { PropsWithChildren } from "react";
+import React, { PropsWithChildren, ReactNode } from "react";
 import { FiChevronLeft, FiMenu, FiMoon, FiSun } from "react-icons/fi";
 import WalletConnectToggle from "@components/buttons/WalletConnectToggle";
 import { BsDiscord, BsGithub, BsTwitter } from "react-icons/bs";
 import Head from "next/head";
 import env from "config/env";
+import { LINK_ITEMS, LinkItem } from "@config/links";
+import { ChevronDownIcon, ChevronRightIcon } from "@chakra-ui/icons";
 
 type DefaultLinkItemType = {
   text: string;
@@ -32,6 +38,21 @@ interface SimpleLayoutType extends PropsWithChildren {
   connectWalletToggle: React.ReactNode;
   navbarH: string;
 }
+
+const MENU_BUTTON_STYLE: ButtonProps = {
+  variant: "ghost",
+  justifyContent: "start",
+  alignItems: "center",
+  fontSize: "lg",
+  fontWeight: "medium",
+  textAlign: "start",
+  colorScheme: "primary",
+  px: 2,
+  mb: 0,
+  w: "full",
+  minH: 10,
+  whiteSpace: "break-spaces",
+};
 
 function SocialMediaButtons() {
   return (
@@ -88,23 +109,7 @@ const ColorModeSwitch = () => {
 
 const MenuButton = ({ text }: DefaultLinkItemType) => {
   return (
-    <Button
-      title={text}
-      display="flex"
-      variant="ghost"
-      justifyContent="start"
-      alignItems="center"
-      fontSize="lg"
-      fontWeight="medium"
-      textAlign="start"
-      colorScheme="primary"
-      px={2}
-      w="full"
-      h="full"
-      minH={10}
-      maxH="fit-content"
-      whiteSpace="break-spaces"
-    >
+    <Button title={text} display="flex" {...MENU_BUTTON_STYLE}>
       <Text>{text}</Text>
     </Button>
   );
@@ -204,7 +209,7 @@ const MobileMenu = ({
                   },
                 }}
               >
-                <MenuItems />
+                {renderLinkItems(LINK_ITEMS)}
                 <ColorModeSwitch />
                 <SocialMediaButtons />
               </Stack>
@@ -298,7 +303,7 @@ const DesktopMenu = ({
             },
           }}
         >
-          <MenuItems />
+          {renderLinkItems(LINK_ITEMS)}
           <ColorModeSwitch />
           <SocialMediaButtons />
         </Stack>
@@ -356,63 +361,79 @@ const DesktopMenu = ({
   );
 };
 
-function MenuItems() {
-  const linkItems = [
-    {
-      label: "🏠 Home",
-      href: "/",
-    },
-    {
-      label: "🔥 Featured",
-      href: "/featured",
-    },
-    {
-      label: "⚡ Enable DAO",
-      href: "/dao/enable",
-    },
-    {
-      label: "⚔️ Create Wager",
-      href: "/wager/create",
-    },
-    {
-      label: "☯️ Create Team",
-      href: env.DAO_DAO_URL + "/dao/create",
-      target: "_blank",
-    },
-    {
-      label: "🗳️ Participate",
-      href: env.DAO_DAO_URL + "/dao/" + env.ARENA_DAO_ADDRESS + "#proposals",
-      target: "_blank",
-    },
-    {
-      label: "🚀 Buy",
-      href: env.OSMOSIS_URL,
-      target: "_blank",
-      env: "production",
-    },
-    {
-      label: "💧 Faucet",
-      href: "/faucet",
-      env: "development",
-    },
-  ];
+interface CollapsibleLinkItemProps extends PropsWithChildren {
+  label: string;
+  isDefaultOpen: boolean;
+}
+
+const CollapsibleLinkItem = ({
+  label,
+  children,
+  isDefaultOpen,
+}: CollapsibleLinkItemProps) => {
+  console.log("RERENDER");
+  const { isOpen, onToggle } = useDisclosure({ defaultIsOpen: isDefaultOpen });
+  const iconStyles = {
+    transition: "transform 0.2s ease-in-out",
+    transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+  };
+
+  return (
+    <VStack align="start" w="full" spacing={0}>
+      <Button
+        onClick={onToggle}
+        justifyContent="space-between"
+        mb="2"
+        {...MENU_BUTTON_STYLE}
+        rightIcon={
+          <Icon
+            as={isOpen ? ChevronDownIcon : ChevronRightIcon}
+            sx={iconStyles}
+          />
+        }
+      >
+        {label}
+      </Button>
+      <Collapse in={isOpen} animateOpacity className="w-100">
+        <VStack align="start" pl={8} w="full">
+          {children}
+        </VStack>
+      </Collapse>
+    </VStack>
+  );
+};
+
+function renderLinkItems(linkItems: LinkItem[]): ReactNode {
   return (
     <>
       {linkItems
         ?.filter(({ env: e }) => !e || e === env.ENV)
-        .map(({ label, href, target }, i) => {
-          return (
-            <Link
-              key={i}
-              as={NextLink}
-              href={href}
-              _hover={{ textDecoration: "none" }}
-              _focus={{ outline: "none" }}
-              target={target}
-            >
-              <MenuButton text={label} />
-            </Link>
-          );
+        .map(({ label, href, target, children, isDefaultOpen }, i) => {
+          if (children) {
+            return (
+              <CollapsibleLinkItem
+                key={i}
+                label={label}
+                isDefaultOpen={isDefaultOpen ?? false}
+              >
+                {renderLinkItems(children)}
+              </CollapsibleLinkItem>
+            );
+          } else {
+            return (
+              <Link
+                key={i}
+                as={NextLink}
+                href={href}
+                _hover={{ textDecoration: "none" }}
+                _focus={{ outline: "none" }}
+                target={target}
+                className="w-100"
+              >
+                <MenuButton text={label} />
+              </Link>
+            );
+          }
         })}
     </>
   );
