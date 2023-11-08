@@ -44,7 +44,7 @@ import {
   NewRuleset,
 } from "~/ts-codegen/arena/ArenaCore.types";
 import { BsPercent } from "react-icons/bs";
-import { useChain } from "@cosmos-kit/react-lite";
+import { useChain } from "@cosmos-kit/react";
 import { ExecuteMsg as DaoDaoCoreExecuteMsg } from "@dao/DaoDaoCore.types";
 import { DaoProposalSingleClient } from "@dao/DaoProposalSingle.client";
 import { InstantiateMsg as ArenaWagerModuleInstantiateMsg } from "@arena/ArenaWagerModule.types";

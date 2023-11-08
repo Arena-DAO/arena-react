@@ -7,9 +7,10 @@ export default class Document extends NextDocument {
     return (
       <Html lang="en">
         <Head>
+          <meta charSet="UTF-8" />
           <meta
             name="description"
-            content="The Ultimate Arena 🏆 | Where wagers ignite rivalries, tournaments crown champions, and leagues forge legends."
+            content="Where wagers ignite rivalries, tournaments crown champions, and leagues forge legends."
           />
           <link rel="icon" href="/favicon.ico" />
           <link

@@ -1,6 +1,6 @@
 {
-  "name": "Arena DAO",
-  "short_name": "Arena",
+  "name": "The Ultimate Arena 🏆",
+  "short_name": "Arena DAO",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
@@ -15,5 +15,7 @@
   ],
   "theme_color": "#FF6600",
   "background_color": "#FDF5E6",
-  "display": "standalone"
+  "display": "standalone",
+  "lang": "en",
+  "categories": ["finance", "gaming", "social"]
 }

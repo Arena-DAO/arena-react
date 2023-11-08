@@ -6,7 +6,7 @@ import {
 import { Button, CardHeader, Heading, Stack, useToast } from "@chakra-ui/react";
 import { UserOrDAOCard } from "@components/cards/UserOrDAOCard";
 import { BalanceCard } from "@components/cards/BalanceCard";
-import { useChain } from "@cosmos-kit/react-lite";
+import { useChain } from "@cosmos-kit/react";
 import env from "@config/env";
 import {
   ArrayOfMemberBalanceVerified,

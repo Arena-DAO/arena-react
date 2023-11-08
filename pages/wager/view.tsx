@@ -9,7 +9,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/layout";
-import { useChain } from "@cosmos-kit/react-lite";
+import { useChain } from "@cosmos-kit/react";
 import env from "@config/env";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";

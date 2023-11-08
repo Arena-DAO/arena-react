@@ -1,5 +1,5 @@
 import { CardProps } from "@chakra-ui/card";
-import { useChain } from "@cosmos-kit/react-lite";
+import { useChain } from "@cosmos-kit/react";
 import env from "@config/env";
 import { useState, useEffect } from "react";
 import { Asset } from "@chain-registry/types";
