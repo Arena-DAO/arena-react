@@ -2,7 +2,6 @@ import {
   Container,
   Heading,
   SimpleGrid,
-  Stack,
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { DAOMap, DAORoot } from "@config/featured";

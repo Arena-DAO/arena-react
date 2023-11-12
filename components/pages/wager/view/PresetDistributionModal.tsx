@@ -33,13 +33,13 @@ import {
 } from "@chakra-ui/react";
 import { UserOrDAOCard } from "@components/cards/UserOrDAOCard";
 import env from "@config/env";
+import { DistributionSchema } from "@config/schemas";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Control, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { isValidBech32Address } from "~/helpers/AddressHelpers";
-import { DistributionSchema } from "~/helpers/SchemaHelpers";
 
 const FormSchema = z.object({
   member_shares: DistributionSchema,

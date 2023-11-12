@@ -51,14 +51,7 @@ import { InstantiateMsg as ArenaWagerModuleInstantiateMsg } from "@arena/ArenaWa
 import { InstantiateMsg as DAOProposalSingleInstantiateMsg } from "@dao/DaoProposalSingle.types";
 import { getProposalConfig } from "~/helpers/DAOHelpers";
 import { DaoPreProposeSingleClient } from "@dao/DaoPreProposeSingle.client";
-import {
-  AddressSchema,
-  DurationSchema,
-  PercentageThresholdSchema,
-  RulesSchema,
-  convertToDuration,
-  convertToRules,
-} from "~/helpers/SchemaHelpers";
+import { convertToDuration, convertToRules } from "~/helpers/SchemaHelpers";
 import { useEffect, useState } from "react";
 import { DAOCard } from "@components/cards/DAOCard";
 import { CosmWasmClient, toBinary } from "@cosmjs/cosmwasm-stargate";
@@ -66,6 +59,12 @@ import env from "@config/env";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 import { DAOEnableRulesetRules } from "@components/pages/dao/enable/RulesetRules";
+import {
+  AddressSchema,
+  DurationSchema,
+  PercentageThresholdSchema,
+  RulesSchema,
+} from "@config/schemas";
 
 const FormSchema = z
   .object({

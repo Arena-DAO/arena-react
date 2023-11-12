@@ -7,9 +7,7 @@ import { useState, useEffect } from "react";
 const CreateLeaguePage = () => {
   const { getCosmWasmClient } = useChain(env.CHAIN);
 
-  const [cosmwasmClient, setCosmwasmClient] = useState<
-    CosmWasmClient | undefined
-  >(undefined);
+  const [, setCosmwasmClient] = useState<CosmWasmClient | undefined>(undefined);
   useEffect(() => {
     async function fetchClient() {
       setCosmwasmClient(await getCosmWasmClient());

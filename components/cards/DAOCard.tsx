@@ -17,9 +17,9 @@ import NextLink from "next/link";
 import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { CopyAddressButton } from "@components/buttons/CopyAddressButton";
-import { AddressSchema } from "~/helpers/SchemaHelpers";
 import env from "@config/env";
 import { BsYinYang } from "react-icons/bs";
+import { AddressSchema } from "@config/schemas";
 
 interface DAOCardProps extends CardProps {
   address: string;

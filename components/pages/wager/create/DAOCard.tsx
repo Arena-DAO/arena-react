@@ -1,7 +1,7 @@
 import { DAOCard } from "@components/cards/DAOCard";
+import { AddressSchema } from "@config/schemas";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { Control, useWatch } from "react-hook-form";
-import { AddressSchema } from "~/helpers/SchemaHelpers";
 import { FormValues } from "~/pages/wager/create";
 
 interface WagerCreateDAOCardProps {

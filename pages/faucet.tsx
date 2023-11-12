@@ -6,10 +6,10 @@ import {
 import { Container, Heading, Stack } from "@chakra-ui/layout";
 import { Button, Input, useToast } from "@chakra-ui/react";
 import env from "@config/env";
+import { AddressSchema } from "@config/schemas";
 import { useChain } from "@cosmos-kit/react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { AddressSchema } from "~/helpers/SchemaHelpers";
 
 const FormSchema = z.object({
   address: AddressSchema,

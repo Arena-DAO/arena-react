@@ -1,14 +1,12 @@
-import React, { MouseEventHandler, ReactNode, useEffect } from "react";
+import React, { MouseEventHandler, ReactNode } from "react";
 import {
   IconButton,
   Menu,
   MenuButton,
   MenuList,
-  Image,
   Link,
   MenuItem,
   Avatar,
-  Button,
 } from "@chakra-ui/react";
 import { IconType } from "react-icons";
 import { useChain } from "@cosmos-kit/react";

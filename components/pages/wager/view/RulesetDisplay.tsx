@@ -4,7 +4,7 @@ import { Ruleset } from "@arena/ArenaCore.types";
 import { Card, CardBody, CardHeader } from "@chakra-ui/card";
 import { Heading, List, ListItem, ListProps } from "@chakra-ui/layout";
 import { Skeleton } from "@chakra-ui/react";
-import { CosmWasmClient, fromBinary } from "@cosmjs/cosmwasm-stargate";
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useEffect, useState } from "react";
 
 interface RulesetDisplayProps {

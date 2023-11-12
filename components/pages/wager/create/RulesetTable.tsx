@@ -75,9 +75,7 @@ function RulesetTableInner({
           </Thead>
           <Tbody>
             {rulesets.map((ruleset, i) => {
-              const isRulesetSelected = fields.find(
-                (x) => x.ruleset_id == ruleset.id
-              );
+              const isRulesetSelected = fields.find((x) => x.id == ruleset.id);
 
               return (
                 <Tr key={i}>
@@ -100,7 +98,7 @@ function RulesetTableInner({
                         onClick={() =>
                           remove(
                             fields.indexOf(
-                              fields.find((x) => x.ruleset_id == ruleset.id)!
+                              fields.find((x) => x.id == ruleset.id)!
                             )
                           )
                         }
@@ -128,18 +126,17 @@ function RulesetTableInner({
             </UnorderedList>
           </ModalBody>
           <ModalFooter>
-            {modalRuleset &&
-              !fields.find((x) => x.ruleset_id == modalRuleset.id) && (
-                <Button
-                  {...buttonProps}
-                  onClick={() => {
-                    append({ ruleset_id: modalRuleset.id });
-                    onClose();
-                  }}
-                >
-                  Select
-                </Button>
-              )}
+            {modalRuleset && !fields.find((x) => x.id == modalRuleset.id) && (
+              <Button
+                {...buttonProps}
+                onClick={() => {
+                  append({ ruleset_id: modalRuleset.id });
+                  onClose();
+                }}
+              >
+                Select
+              </Button>
+            )}
           </ModalFooter>
         </ModalContent>
       </Modal>

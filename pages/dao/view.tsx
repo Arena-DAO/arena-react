@@ -6,13 +6,13 @@ import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { AddressSchema } from "~/helpers/SchemaHelpers";
 import { DAOViewViewArenaModuleCard } from "@components/pages/dao/view/ViewArenaModuleCard";
 import { useDaoDaoCoreGetItemQuery } from "@dao/DaoDaoCore.react-query";
 import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 import { useArenaCoreQueryExtensionQuery } from "@arena/ArenaCore.react-query";
 import { ArenaCoreQueryClient } from "@arena/ArenaCore.client";
 import { DumpStateResponse } from "@arena/ArenaCore.types";
+import { AddressSchema } from "@config/schemas";
 
 interface DAOViewPageInnerProps {
   cosmwasmClient: CosmWasmClient;

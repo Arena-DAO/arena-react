@@ -1,8 +1,8 @@
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { AddressSchema } from "~/helpers/SchemaHelpers";
 import { DAOCard } from "./DAOCard";
 import { UserCard } from "./UserCard";
 import { CardProps } from "@chakra-ui/card";
+import { AddressSchema } from "@config/schemas";
 
 interface UserOrDAOCardProps extends CardProps {
   cosmwasmClient: CosmWasmClient;

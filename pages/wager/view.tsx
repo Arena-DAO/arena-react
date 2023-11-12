@@ -40,7 +40,6 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { statusColors } from "~/helpers/ArenaHelpers";
-import { AddressSchema } from "~/helpers/SchemaHelpers";
 import {
   WagerViewProposalPromptModal,
   WagerViewProposalPromptModalAction,
@@ -51,6 +50,7 @@ import { CompetitionModuleResponseForString } from "@arena/ArenaCore.types";
 import { WagerViewPresetDistributionModal } from "@components/pages/wager/view/PresetDistributionModal";
 import { RulesetDisplay } from "@components/pages/wager/view/RulesetDisplay";
 import { UserOrDAOCard } from "@components/cards/UserOrDAOCard";
+import { AddressSchema } from "@config/schemas";
 
 interface ViewWagerPageContentProps {
   cosmwasmClient: CosmWasmClient;

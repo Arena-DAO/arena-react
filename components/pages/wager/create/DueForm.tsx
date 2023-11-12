@@ -31,7 +31,6 @@ import {
   UseFieldArrayAppend,
 } from "react-hook-form";
 import { z } from "zod";
-import { AmountSchema, AddressSchema } from "~/helpers/SchemaHelpers";
 import { FormValues } from "~/pages/wager/create";
 import {
   getCoinAsset,
@@ -42,6 +41,7 @@ import { useChain } from "@cosmos-kit/react";
 import { Asset } from "@chain-registry/types";
 import { Cw721BaseQueryClient } from "@cw-nfts/Cw721Base.client";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
+import { AmountSchema, AddressSchema } from "@config/schemas";
 
 interface WagerCreateDueFormProps extends ModalProps {
   cosmwasmClient: CosmWasmClient;

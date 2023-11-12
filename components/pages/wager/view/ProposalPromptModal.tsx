@@ -29,15 +29,15 @@ import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
-import { DistributionSchema } from "~/helpers/SchemaHelpers";
 import { ProposalPromptUserOrDAOCard } from "./UserOrDAOCard";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { DistributionSchema } from "@config/schemas";
 
 const FormSchema = z.object({
-  title: z.string().nonempty({ message: "Proposal Title cannot be empty" }),
+  title: z.string().min(1, { message: "Proposal Title cannot be empty" }),
   description: z
     .string()
-    .nonempty({ message: "Proposal Description cannot be empty" }),
+    .min(1, { message: "Proposal Description cannot be empty" }),
   distribution: DistributionSchema,
 });
 export type FormValues = z.infer<typeof FormSchema>;

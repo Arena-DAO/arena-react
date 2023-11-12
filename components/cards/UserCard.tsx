@@ -3,7 +3,7 @@ import { Skeleton, Avatar, Text } from "@chakra-ui/react";
 import { BsPerson } from "react-icons/bs";
 import { useProfileData } from "~/hooks/useProfileData";
 import { CopyAddressButton } from "@components/buttons/CopyAddressButton";
-import { AddressSchema } from "~/helpers/SchemaHelpers";
+import { AddressSchema } from "@config/schemas";
 
 interface UserCardProps extends CardProps {
   addr: string;

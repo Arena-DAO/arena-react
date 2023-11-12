@@ -40,11 +40,6 @@ import { useRouter } from "next/router";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import {
-  AddressSchema,
-  DueSchema,
-  ExpirationSchema,
-  RulesSchema,
-  RulesetsSchema,
   convertToExpiration,
   convertToRules,
   convertToRulesets,
@@ -62,21 +57,28 @@ import { WagerCreateDAOCard } from "@components/pages/wager/create/DAOCard";
 import { WagerCreateTeamCard } from "@components/pages/wager/create/TeamCard";
 import { CompetitionModuleResponseForString } from "@arena/ArenaCore.types";
 import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
+import {
+  AddressSchema,
+  ExpirationSchema,
+  RulesSchema,
+  RulesetsSchema,
+  DueSchema,
+} from "@config/schemas";
 
 const FormSchema = z.object({
   dao_address: AddressSchema,
-  description: z.string().nonempty({ message: "Description is required" }),
+  description: z.string().min(1, { message: "Description is required" }),
   expiration: ExpirationSchema,
-  name: z.string().nonempty({ message: "Name is required " }),
+  name: z.string().min(1, { message: "Name is required " }),
   rules: RulesSchema,
   rulesets: RulesetsSchema,
   dues: z.array(DueSchema).nonempty({ message: "Dues cannot be empty" }),
   competition_dao_name: z
     .string()
-    .nonempty({ message: "Competition DAO name cannot be empty" }),
+    .min(1, { message: "Competition DAO name cannot be empty" }),
   competition_dao_description: z
     .string()
-    .nonempty({ message: "Competition DAO description cannot be empty" }),
+    .min(1, { message: "Competition DAO description cannot be empty" }),
 });
 export type FormValues = z.infer<typeof FormSchema>;
 
