@@ -47,7 +47,7 @@ import {
 } from "@components/pages/wager/view/ProposalPromptModal";
 import { WagerViewEscrowDisplay } from "@components/pages/wager/view/EscrowDisplay";
 import { CompetitionStatus } from "@arena/ArenaWagerModule.types";
-import { CompetitionModuleResponse } from "@arena/ArenaCore.types";
+import { CompetitionModuleResponseForString } from "@arena/ArenaCore.types";
 import { WagerViewPresetDistributionModal } from "@components/pages/wager/view/PresetDistributionModal";
 import { RulesetDisplay } from "@components/pages/wager/view/RulesetDisplay";
 import { UserOrDAOCard } from "@components/cards/UserOrDAOCard";
@@ -89,7 +89,11 @@ function ViewWagerPageContent({
   const { data: moduleData, isFetched: isModuleFetched } =
     useArenaCoreQueryExtensionQuery({
       client: new ArenaCoreQueryClient(cosmwasmClient, itemData?.item!),
-      args: { msg: { competition_module: { key: env.WAGER_MODULE_KEY } } },
+      args: {
+        msg: {
+          competition_module: { query: { key: [env.WAGER_MODULE_KEY, null] } },
+        },
+      },
       options: {
         enabled: isItemFetched && !!itemData && !!itemData.item,
         staleTime: Infinity,
@@ -98,7 +102,7 @@ function ViewWagerPageContent({
   const query = useArenaWagerModuleCompetitionQuery({
     client: new ArenaWagerModuleQueryClient(
       cosmwasmClient,
-      (moduleData as unknown as CompetitionModuleResponse)?.addr
+      (moduleData as unknown as CompetitionModuleResponseForString)?.addr
     ),
     args: { id: id },
     options: {
@@ -245,7 +249,7 @@ function ViewWagerPageContent({
           <WagerViewProposalPromptModal
             id={id}
             module_addr={
-              (moduleData as unknown as CompetitionModuleResponse).addr
+              (moduleData as unknown as CompetitionModuleResponseForString).addr
             }
             cosmwasmClient={cosmwasmClient}
             isOpen={isOpenProposalModal}

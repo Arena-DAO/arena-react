@@ -30,8 +30,6 @@ import { FormValues } from "~/pages/wager/create";
 import { useAllRulesets } from "~/hooks/useAllRulesets";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { Ruleset } from "@arena/ArenaCore.types";
-import { RulesetsSchema } from "~/helpers/SchemaHelpers";
-import z from "zod";
 
 interface RulesetTableProps {
   cosmwasmClient: CosmWasmClient;

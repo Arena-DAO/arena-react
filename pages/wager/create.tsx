@@ -60,7 +60,7 @@ import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { WagerCreateRulesetTable } from "@components/pages/wager/create/RulesetTable";
 import { WagerCreateDAOCard } from "@components/pages/wager/create/DAOCard";
 import { WagerCreateTeamCard } from "@components/pages/wager/create/TeamCard";
-import { CompetitionModuleResponse } from "@arena/ArenaCore.types";
+import { CompetitionModuleResponseForString } from "@arena/ArenaCore.types";
 import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 
 const FormSchema = z.object({
@@ -181,10 +181,12 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
       let wager_module = (await arenaCoreClient.queryExtension({
         msg: {
           competition_module: {
-            key: env.WAGER_MODULE_KEY,
+            query: {
+              key: [env.WAGER_MODULE_KEY, null],
+            },
           },
         },
-      })) as unknown as CompetitionModuleResponse;
+      })) as unknown as CompetitionModuleResponseForString;
 
       if (!wager_module || !wager_module.is_enabled)
         throw "The DAO's Arena extension does not have a wager module set.";
@@ -202,6 +204,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         rules: convertToRules(values.rules),
         rulesets: convertToRulesets(values.rulesets),
         extension: {},
+        instantiateExtension: {},
         competitionDao: {
           code_id: env.CODE_ID_DAO_CORE,
           label: "Arena Competition DAO",

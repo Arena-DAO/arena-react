@@ -103,6 +103,7 @@ const ColorModeSwitch = () => {
       variant="outline"
       icon={colorMode === "light" ? <FiMoon /> : <FiSun />}
       onClick={toggleColorMode}
+      mt="2"
     />
   );
 };
@@ -371,7 +372,6 @@ const CollapsibleLinkItem = ({
   children,
   isDefaultOpen,
 }: CollapsibleLinkItemProps) => {
-  console.log("RERENDER");
   const { isOpen, onToggle } = useDisclosure({ defaultIsOpen: isDefaultOpen });
   const iconStyles = {
     transition: "transform 0.2s ease-in-out",
@@ -395,7 +395,7 @@ const CollapsibleLinkItem = ({
         {label}
       </Button>
       <Collapse in={isOpen} animateOpacity className="w-100">
-        <VStack align="start" pl={8} w="full">
+        <VStack align="start" pl={8} w="full" mt="2">
           {children}
         </VStack>
       </Collapse>

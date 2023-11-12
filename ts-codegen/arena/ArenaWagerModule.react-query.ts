@@ -265,7 +265,7 @@ export interface ArenaWagerModuleCreateCompetitionMutation {
     description: string;
     escrow?: ModuleInstantiateInfo;
     expiration: Expiration;
-    extension: Empty;
+    instantiateExtension: Empty;
     name: string;
     rules: string[];
     rulesets: Uint128[];
@@ -286,6 +286,73 @@ export function useArenaWagerModuleCreateCompetitionMutation(options?: Omit<UseM
       funds
     } = {}
   }) => client.createCompetition(msg, fee, memo, funds), options);
+}
+export interface ArenaWagerModuleExecuteCompetitionHookMutation {
+  client: ArenaWagerModuleClient;
+  msg: {
+    distribution: MemberShareForString[];
+    id: Uint128;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaWagerModuleExecuteCompetitionHookMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleExecuteCompetitionHookMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaWagerModuleExecuteCompetitionHookMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.executeCompetitionHook(msg, fee, memo, funds), options);
+}
+export interface ArenaWagerModuleRemoveCompetitionHookMutation {
+  client: ArenaWagerModuleClient;
+  msg: {
+    id: Uint128;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaWagerModuleRemoveCompetitionHookMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleRemoveCompetitionHookMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaWagerModuleRemoveCompetitionHookMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.removeCompetitionHook(msg, fee, memo, funds), options);
+}
+export interface ArenaWagerModuleAddCompetitionHookMutation {
+  client: ArenaWagerModuleClient;
+  msg: {
+    id: Uint128;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaWagerModuleAddCompetitionHookMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleAddCompetitionHookMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaWagerModuleAddCompetitionHookMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.addCompetitionHook(msg, fee, memo, funds), options);
 }
 export interface ArenaWagerModuleProposeResultMutation {
   client: ArenaWagerModuleClient;

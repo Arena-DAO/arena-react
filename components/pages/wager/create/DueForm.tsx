@@ -24,7 +24,7 @@ import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { debounce } from "lodash";
 import env from "@config/env";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   UseFormGetValues,
   useForm,

@@ -148,25 +148,29 @@ export type QueryExt = {
   };
 } | {
   competition_module: {
-    key: string;
+    query: CompetitionModuleQuery;
   };
 } | {
   dump_state: {};
 };
+export type CompetitionModuleQuery = {
+  key: [string, number | null];
+} | {
+  addr: string;
+};
 export type MigrateMsg = {
   from_compatible: {};
 };
-export type Addr = string;
 export interface SudoMsg {
   dump_state_response: DumpStateResponse;
 }
 export interface DumpStateResponse {
-  competition_modules: CompetitionModuleResponse[];
+  competition_modules: CompetitionModuleResponseForString[];
   rulesets: Ruleset[];
   tax: Decimal;
 }
-export interface CompetitionModuleResponse {
-  addr: Addr;
+export interface CompetitionModuleResponseForString {
+  addr: string;
   competition_count: Uint128;
   is_enabled: boolean;
   key: string;
@@ -182,6 +186,7 @@ export type CheckedDenom = {
 } | {
   cw20: Addr;
 };
+export type Addr = string;
 export interface Config {
   deposit_info?: CheckedDepositInfo | null;
   open_proposal_submission: boolean;

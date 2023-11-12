@@ -41,7 +41,7 @@ export type ExecuteMsg = {
     description: string;
     escrow?: ModuleInstantiateInfo | null;
     expiration: Expiration;
-    instantiate_extension: Empty;
+    instantiate_extension: CompetitionInstantiateExt;
     name: string;
     rules: string[];
     rulesets: Uint128[];
@@ -53,7 +53,7 @@ export type ExecuteMsg = {
   };
 } | {
   extension: {
-    msg: Empty;
+    msg: ExecuteExt;
   };
 } | {
   update_ownership: Action;
@@ -76,6 +76,19 @@ export type Expiration = {
 };
 export type Timestamp = Uint64;
 export type Uint64 = string;
+export type Duration = {
+  height: number;
+} | {
+  time: number;
+};
+export type ExecuteExt = {
+  process_match: {
+    league_id: Uint128;
+    match_results: MatchResult[];
+    round_number: Uint64;
+  };
+};
+export type Result = "team1" | "team2" | "draw";
 export type Action = {
   transfer_ownership: {
     expiry?: Expiration | null;
@@ -98,6 +111,18 @@ export interface ModuleInstantiateInfo {
   label: string;
   msg: Binary;
 }
+export interface CompetitionInstantiateExt {
+  match_draw_points: Uint128;
+  match_lose_points: Uint128;
+  match_win_points: Uint128;
+  round_duration: Duration;
+  teams: string[];
+  wager_dao: ModuleInstantiateInfo;
+}
+export interface MatchResult {
+  match_number: Uint128;
+  result?: Result | null;
+}
 export type QueryMsg = {
   config: {};
 } | {
@@ -114,23 +139,33 @@ export type QueryMsg = {
   };
 } | {
   query_extension: {
-    msg: Empty;
+    msg: QueryExt;
   };
 } | {
   ownership: {};
 };
 export type CompetitionStatus = "pending" | "active" | "inactive" | "jailed";
+export type QueryExt = {
+  leaderboard: {
+    league_id: Uint128;
+  };
+} | {
+  round: {
+    league_id: Uint128;
+    round_number: Uint64;
+  };
+};
 export type MigrateMsg = {
   from_compatible: {};
 };
 export type Null = null;
 export type Addr = string;
-export interface CompetitionResponseForEmpty {
+export interface CompetitionResponseForCompetitionExt {
   dao: Addr;
   description: string;
   escrow?: Addr | null;
   expiration: Expiration;
-  extension: Empty;
+  extension: CompetitionExt;
   has_generated_proposals: boolean;
   id: Uint128;
   is_expired: boolean;
@@ -141,11 +176,17 @@ export interface CompetitionResponseForEmpty {
   start_height: number;
   status: CompetitionStatus;
 }
+export interface CompetitionExt {
+  match_draw_points: Uint128;
+  match_lose_points: Uint128;
+  match_win_points: Uint128;
+  rounds: Uint64;
+}
 export interface MemberShareForAddr {
   addr: Addr;
   shares: Uint128;
 }
-export type ArrayOfCompetitionResponseForEmpty = CompetitionResponseForEmpty[];
+export type ArrayOfCompetitionResponseForCompetitionExt = CompetitionResponseForCompetitionExt[];
 export interface Config {
   description: string;
   key: string;
