@@ -27,11 +27,11 @@ import {
 import env from "@config/env";
 import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFieldArray, useForm } from "react-hook-form";
+import { Control, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
-import { ProposalPromptUserOrDAOCard } from "./UserOrDAOCard";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { DistributionSchema } from "@config/schemas";
+import { UserOrDAOCard } from "@components/cards/UserOrDAOCard";
 
 const FormSchema = z.object({
   title: z.string().min(1, { message: "Proposal Title cannot be empty" }),
@@ -42,22 +42,38 @@ const FormSchema = z.object({
 });
 export type FormValues = z.infer<typeof FormSchema>;
 
-export type WagerViewProposalPromptModalAction =
-  | "Jail Wager"
-  | "Propose Result";
+interface WrapperUserOrDAOCardProps {
+  cosmwasmClient: CosmWasmClient;
+  control: Control<FormValues>;
+  index: number;
+}
 
-interface WagerViewProposalPromptModalProps {
+function WrapperUserOrDAOCard({
+  cosmwasmClient,
+  control,
+  index,
+}: WrapperUserOrDAOCardProps) {
+  let watchAddress = useWatch({ control, name: `distribution.${index}.addr` });
+
+  return (
+    <UserOrDAOCard cosmwasmClient={cosmwasmClient} address={watchAddress} />
+  );
+}
+
+export type ProposalPromptModalAction = "Jail Wager" | "Propose Result";
+
+interface ProposalPromptModalProps {
   id: string;
   module_addr: string;
   isOpen: boolean;
   onClose: () => void;
   cosmwasmClient: CosmWasmClient;
-  action: WagerViewProposalPromptModalAction;
+  action: ProposalPromptModalAction;
   setJailedStatus: () => void;
   setHasGeneratedProposals: () => void;
 }
 
-export function WagerViewProposalPromptModal({
+export function ProposalPromptModal({
   id,
   isOpen,
   module_addr,
@@ -66,7 +82,7 @@ export function WagerViewProposalPromptModal({
   setJailedStatus,
   setHasGeneratedProposals,
   action,
-}: WagerViewProposalPromptModalProps) {
+}: ProposalPromptModalProps) {
   const toast = useToast();
   const { getSigningCosmWasmClient, address, isWalletConnected } = useChain(
     env.CHAIN
@@ -220,7 +236,7 @@ export function WagerViewProposalPromptModal({
                               {errors.distribution?.[i]?.addr?.message}
                             </FormErrorMessage>
                           </FormControl>
-                          <ProposalPromptUserOrDAOCard
+                          <WrapperUserOrDAOCard
                             cosmwasmClient={cosmwasmClient}
                             control={control}
                             index={i}

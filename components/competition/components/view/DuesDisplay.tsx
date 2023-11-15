@@ -22,7 +22,7 @@ import { DaoPreProposeSingleClient } from "@dao/DaoPreProposeSingle.client";
 import { useAllDues } from "~/hooks/useAllDues";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 
-interface WagerViewDuesDisplayProps {
+interface DuesDisplayProps {
   cosmwasmClient: CosmWasmClient;
   escrow_addr: string;
   wager_id: string;
@@ -31,14 +31,14 @@ interface WagerViewDuesDisplayProps {
   initial_dues?: ArrayOfMemberBalanceVerified;
 }
 
-export function WagerViewDuesDisplay({
+export function DuesDisplay({
   cosmwasmClient,
   escrow_addr,
   wager_id,
   notifyBalancesChanged,
   notifyIsActive,
   initial_dues = [],
-}: WagerViewDuesDisplayProps) {
+}: DuesDisplayProps) {
   const dues = useAllDues(cosmwasmClient, escrow_addr, initial_dues);
   const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
   const toast = useToast();

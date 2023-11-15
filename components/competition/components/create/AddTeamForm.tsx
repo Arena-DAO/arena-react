@@ -19,30 +19,30 @@ import {
   useFieldArray,
   useFormContext,
 } from "react-hook-form";
-import { WagerCreateUserOrDAOCard } from "./UserOrDAOCard";
-import { FormValues } from "~/pages/wager/create";
-import { WagerCreateDueForm } from "./DueForm";
+import { WrapperUserOrDAOCard } from "./WrapperUserOrDAOCard";
+import { AddDueForm } from "./AddDueForm";
 import { NativeCard } from "@components/cards/NativeCard";
 import { Cw20Card } from "@components/cards/Cw20Card";
 import { Cw721Card } from "@components/cards/Cw721Card";
+import { CreateCompetitionFormValues } from "@components/competition/CreateCompetitionForm";
 
-interface WagerCreateTeamCard {
+interface AddTeamFormProps {
   cosmwasmClient: CosmWasmClient;
   duesRemove: UseFieldArrayRemove;
   index: number;
 }
 
-export function WagerCreateTeamCard({
+export function AddTeamForm({
   cosmwasmClient,
   duesRemove,
   index,
-}: WagerCreateTeamCard) {
+}: AddTeamFormProps) {
   const {
     formState: { errors },
     control,
     register,
     getValues,
-  } = useFormContext<FormValues, any>();
+  } = useFormContext<CreateCompetitionFormValues, any>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     fields: nativeFields,
@@ -96,7 +96,7 @@ export function WagerCreateTeamCard({
               {errors.dues?.[index]?.addr?.message}
             </FormErrorMessage>
           </FormControl>
-          <WagerCreateUserOrDAOCard
+          <WrapperUserOrDAOCard
             cosmwasmClient={cosmwasmClient}
             control={control}
             index={index}
@@ -179,7 +179,7 @@ export function WagerCreateTeamCard({
             }}
           />
         </Tooltip>
-        <WagerCreateDueForm
+        <AddDueForm
           isOpen={isOpen}
           onClose={onClose}
           cosmwasmClient={cosmwasmClient}
@@ -190,7 +190,7 @@ export function WagerCreateTeamCard({
           cw721Append={cw721Append}
         >
           <></>
-        </WagerCreateDueForm>
+        </AddDueForm>
       </CardFooter>
     </Card>
   );

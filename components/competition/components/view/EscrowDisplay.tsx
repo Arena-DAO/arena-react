@@ -1,5 +1,5 @@
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { WagerViewDuesDisplay } from "./DuesDisplay";
+import { DuesDisplay } from "./DuesDisplay";
 import { useChain } from "@cosmos-kit/react";
 import env from "@config/env";
 import { useCallback, useEffect, useState } from "react";
@@ -20,7 +20,7 @@ import {
 import { BalanceCard } from "@components/cards/BalanceCard";
 import { isBalanceEmpty } from "~/helpers/ArenaHelpers";
 
-interface WagerViewEscrowDisplayProps {
+interface EscrowDisplayProps {
   cosmwasmClient: CosmWasmClient;
   escrow_addr: string;
   wager_id: string;
@@ -28,13 +28,13 @@ interface WagerViewEscrowDisplayProps {
   notifyIsActive: () => void;
 }
 
-export function WagerViewEscrowDisplay({
+export function EscrowDisplay({
   cosmwasmClient,
   escrow_addr,
   wager_id,
   wager_status,
   notifyIsActive,
-}: WagerViewEscrowDisplayProps) {
+}: EscrowDisplayProps) {
   const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
   const [balanceChanged, setBalanceChanged] = useState<number>(0);
   const notifyBalancesChanged = useCallback(
@@ -99,7 +99,7 @@ export function WagerViewEscrowDisplay({
     <Skeleton isLoaded={!isLoading}>
       {data && (
         <Stack>
-          <WagerViewDuesDisplay
+          <DuesDisplay
             cosmwasmClient={cosmwasmClient}
             escrow_addr={escrow_addr}
             notifyBalancesChanged={notifyBalancesChanged}

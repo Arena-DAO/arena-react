@@ -9,7 +9,6 @@ import ExpirationSchema from "./ExpirationSchema";
 import PercentageThresholdSchema from "./PercentageThresholdSchema";
 import RulesetsSchema from "./RulesetsSchema";
 import RulesSchema from "./RulesSchema";
-import Uint128Schema from "./Uint128Schema";
 
 export {
   AddressSchema,
@@ -23,5 +22,4 @@ export {
   PercentageThresholdSchema,
   RulesetsSchema,
   RulesSchema,
-  Uint128Schema,
 };

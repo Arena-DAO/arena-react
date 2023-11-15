@@ -3,22 +3,9 @@ import DurationSchema from "@config/schemas/DurationSchema";
 import ExpirationSchema from "@config/schemas/ExpirationSchema";
 import RulesSchema from "@config/schemas/RulesSchema";
 import RulesetsSchema from "@config/schemas/RulesetsSchema";
-import Uint128Schema from "@config/schemas/Uint128Schema";
 import { Duration } from "@dao/DaoProposalMultiple.types";
 import { utcToZonedTime } from "date-fns-tz";
 import { z } from "zod";
-
-export function convertToUint128(
-  uint128Schema: z.infer<typeof Uint128Schema>,
-  decimals: number
-): string {
-  // Convert to BigInt with appropriate scaling for decimals
-  const scaleFactor = BigInt(10 ** decimals);
-  const bigNum = BigInt(uint128Schema) * scaleFactor;
-
-  // Convert to string
-  return bigNum.toString();
-}
 
 export function convertToExpiration(
   expirationSchema: z.infer<typeof ExpirationSchema>

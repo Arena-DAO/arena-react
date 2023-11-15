@@ -21,21 +21,41 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { FormProvider, useFieldArray, useFormContext } from "react-hook-form";
+import {
+  Control,
+  FormProvider,
+  useFieldArray,
+  useFormContext,
+  useWatch,
+} from "react-hook-form";
 import { z } from "zod";
 import { useEffect } from "react";
 import moment from "moment-timezone";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
-import { WagerCreateRulesetTable } from "@components/pages/wager/create/RulesetTable";
-import { WagerCreateDAOCard } from "@components/pages/wager/create/DAOCard";
-import { WagerCreateTeamCard } from "@components/pages/wager/create/TeamCard";
-import { CreateCompetitionSchema } from "@config/schemas";
+import { AddressSchema, CreateCompetitionSchema } from "@config/schemas";
+import { AddRulesetForm } from "./components/create/AddRulesetForm";
+import { AddTeamForm } from "./components/create/AddTeamForm";
+import { DAOCard } from "@components/cards/DAOCard";
 
-export type FormValues = z.infer<typeof CreateCompetitionSchema>;
+export type CreateCompetitionFormValues = z.infer<
+  typeof CreateCompetitionSchema
+>;
+
+export interface FormComponentProps {
+  cosmwasmClient: CosmWasmClient;
+  control: Control<CreateCompetitionFormValues>;
+}
 
 interface CreateCompetitionFormProps {
   cosmwasmClient: CosmWasmClient;
+}
+
+function FormDAOCard({ cosmwasmClient, control }: FormComponentProps) {
+  let watchDAOAddress = useWatch({ control, name: "dao_address" });
+
+  if (!AddressSchema.safeParse(watchDAOAddress).success) return null;
+  return <DAOCard address={watchDAOAddress} cosmwasmClient={cosmwasmClient} />;
 }
 
 export default function CreateCompetitionForm({
@@ -43,7 +63,7 @@ export default function CreateCompetitionForm({
 }: CreateCompetitionFormProps) {
   const router = useRouter();
 
-  const formMethods = useFormContext<FormValues, any>();
+  const formMethods = useFormContext<CreateCompetitionFormValues, any>();
   const {
     register,
     control,
@@ -80,7 +100,7 @@ export default function CreateCompetitionForm({
         <Input id="dao_address" {...register("dao_address")} />
         <FormErrorMessage>{errors.dao_address?.message}</FormErrorMessage>
       </FormControl>
-      <WagerCreateDAOCard cosmwasmClient={cosmwasmClient} control={control} />
+      <FormDAOCard cosmwasmClient={cosmwasmClient} control={control} />
       <FormControl isInvalid={!!errors.name}>
         <FormLabel>Name</FormLabel>
         <Input id="name" {...register("name")} />
@@ -166,10 +186,7 @@ export default function CreateCompetitionForm({
           </GridItem>
         )}
       </Grid>
-      <WagerCreateRulesetTable
-        cosmwasmClient={cosmwasmClient}
-        control={control}
-      />
+      <AddRulesetForm cosmwasmClient={cosmwasmClient} control={control} />
       <FormControl isInvalid={!!errors.rules}>
         <FormLabel>Rules</FormLabel>
         <Stack>
@@ -215,7 +232,7 @@ export default function CreateCompetitionForm({
           <FormProvider {...formMethods}>
             {duesFields.map((dues, dueIndex: number) => {
               return (
-                <WagerCreateTeamCard
+                <AddTeamForm
                   key={dues.id}
                   index={dueIndex}
                   cosmwasmClient={cosmwasmClient}

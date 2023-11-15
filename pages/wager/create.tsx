@@ -1,35 +1,5 @@
-import {
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-} from "@chakra-ui/form-control";
-import {
-  Box,
-  Container,
-  Grid,
-  GridItem,
-  Heading,
-  Stack,
-} from "@chakra-ui/layout";
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Button,
-  Fade,
-  IconButton,
-  Input,
-  InputGroup,
-  InputRightAddon,
-  InputRightElement,
-  Select,
-  Textarea,
-  Tooltip,
-  useBreakpointValue,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Container, Heading, Stack } from "@chakra-ui/layout";
+import { Button, useToast } from "@chakra-ui/react";
 import { useChain } from "@cosmos-kit/react";
 import { InstantiateMsg as DaoDaoCoreInstantiateMsg } from "@dao/DaoDaoCore.types";
 import { InstantiateMsg as ArenaEscrowInstantiateMsg } from "@arena/ArenaEscrow.types";
@@ -37,8 +7,7 @@ import { ArenaCoreQueryClient } from "@arena/ArenaCore.client";
 import { ArenaWagerModuleClient } from "@arena/ArenaWagerModule.client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
-import { FormProvider, useFieldArray, useForm } from "react-hook-form";
-import { z } from "zod";
+import { FormProvider, useForm } from "react-hook-form";
 import {
   convertToExpiration,
   convertToRules,
@@ -51,36 +20,12 @@ import { format } from "date-fns";
 import moment from "moment-timezone";
 import { CosmWasmClient, toBinary } from "@cosmjs/cosmwasm-stargate";
 import env from "config/env";
-import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
-import { WagerCreateRulesetTable } from "@components/pages/wager/create/RulesetTable";
-import { WagerCreateDAOCard } from "@components/pages/wager/create/DAOCard";
-import { WagerCreateTeamCard } from "@components/pages/wager/create/TeamCard";
 import { CompetitionModuleResponseForString } from "@arena/ArenaCore.types";
 import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
-import {
-  AddressSchema,
-  ExpirationSchema,
-  RulesSchema,
-  RulesetsSchema,
-  DueSchema,
-} from "@config/schemas";
-
-const FormSchema = z.object({
-  dao_address: AddressSchema,
-  description: z.string().min(1, { message: "Description is required" }),
-  expiration: ExpirationSchema,
-  name: z.string().min(1, { message: "Name is required " }),
-  rules: RulesSchema,
-  rulesets: RulesetsSchema,
-  dues: z.array(DueSchema).nonempty({ message: "Dues cannot be empty" }),
-  competition_dao_name: z
-    .string()
-    .min(1, { message: "Competition DAO name cannot be empty" }),
-  competition_dao_description: z
-    .string()
-    .min(1, { message: "Competition DAO description cannot be empty" }),
-});
-export type FormValues = z.infer<typeof FormSchema>;
+import { CreateCompetitionSchema } from "@config/schemas";
+import CreateCompetitionForm, {
+  CreateCompetitionFormValues,
+} from "@components/competition/CreateCompetitionForm";
 
 interface WagerFormProps {
   cosmwasmClient: CosmWasmClient;
@@ -93,7 +38,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
     env.CHAIN
   );
 
-  const formMethods = useForm<FormValues>({
+  const formMethods = useForm<CreateCompetitionFormValues>({
     defaultValues: {
       dao_address: "",
       expiration: {
@@ -125,39 +70,20 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
       competition_dao_name: "Arena Competition DAO",
       competition_dao_description: "A DAO for handling an Arena Competition",
     },
-    resolver: zodResolver(FormSchema),
+    resolver: zodResolver(CreateCompetitionSchema),
   });
   const {
-    register,
     handleSubmit,
-    control,
     setValue,
-    watch,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
   } = formMethods;
+
   useEffect(() => {
     if (router.query.dao as string | undefined)
       setValue("dao_address", router.query.dao as string);
   }, [router.query.dao, setValue]);
 
-  const watchExpirationUnits = watch("expiration.expiration_units");
-
-  const {
-    fields: duesFields,
-    append: duesAppend,
-    remove: duesRemove,
-  } = useFieldArray({
-    name: "dues",
-    control,
-  });
-
-  const {
-    fields: rulesFields,
-    append: rulesAppend,
-    remove: rulesRemove,
-  } = useFieldArray({ name: "rules", control });
-
-  const onSubmit = async (values: FormValues) => {
+  const onSubmit = async (values: CreateCompetitionFormValues) => {
     try {
       let cosmwasmClient = await getSigningCosmWasmClient();
       if (!cosmwasmClient) throw "Could not get the CosmWasm client";
@@ -205,7 +131,6 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         name: values.name,
         rules: convertToRules(values.rules),
         rulesets: convertToRulesets(values.rulesets),
-        extension: {},
         instantiateExtension: {},
         competitionDao: {
           code_id: env.CODE_ID_DAO_CORE,
@@ -291,218 +216,10 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Fade in={true}>
+    <FormProvider {...formMethods}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Stack>
-          <FormControl isInvalid={!!errors.dao_address}>
-            <FormLabel>DAO</FormLabel>
-            <Input id="dao_address" {...register("dao_address")} />
-            <FormErrorMessage>{errors.dao_address?.message}</FormErrorMessage>
-          </FormControl>
-          <WagerCreateDAOCard
-            cosmwasmClient={cosmwasmClient}
-            control={control}
-          />
-          <FormControl isInvalid={!!errors.name}>
-            <FormLabel>Name</FormLabel>
-            <Input id="name" {...register("name")} />
-            <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
-          </FormControl>
-          <FormControl isInvalid={!!errors.description}>
-            <FormLabel>Description</FormLabel>
-            <Textarea id="description" {...register("description")} />
-            <FormErrorMessage>{errors.description?.message}</FormErrorMessage>
-          </FormControl>
-          <Grid
-            templateColumns={useBreakpointValue({
-              base: "1fr",
-              sm: "repeat(2, 1fr)",
-              xl: "repeat(4, 1fr)",
-            })}
-            gap="2"
-            alignItems="flex-start"
-          >
-            <GridItem>
-              <FormControl
-                isInvalid={
-                  !!errors.expiration?.expiration_units || !!errors.expiration
-                }
-              >
-                <FormLabel>Expiration</FormLabel>
-                <Select {...register("expiration.expiration_units")}>
-                  <option value="At Time">At Time</option>
-                  <option value="At Height">At Height</option>
-                  <option value="Never">Never</option>
-                </Select>
-                <FormErrorMessage>
-                  {errors.expiration?.expiration_units?.message ??
-                    errors.expiration?.message}
-                </FormErrorMessage>
-              </FormControl>
-            </GridItem>
-            {watchExpirationUnits == "At Time" && (
-              <>
-                <GridItem>
-                  <FormControl isInvalid={!!errors.expiration?.time}>
-                    <FormLabel>Time</FormLabel>
-                    <Input
-                      type="datetime-local"
-                      {...register("expiration.time")}
-                    />
-                    <FormErrorMessage>
-                      {errors.expiration?.time?.message}
-                    </FormErrorMessage>
-                  </FormControl>
-                </GridItem>
-                <GridItem>
-                  <FormControl isInvalid={!!errors.expiration?.timezone}>
-                    <FormLabel>Timezone</FormLabel>
-                    <Select {...register("expiration.timezone")}>
-                      {moment.tz.names().map((timezone) => (
-                        <option key={timezone} value={timezone}>
-                          {timezone}
-                        </option>
-                      ))}
-                    </Select>
-                    <FormErrorMessage>
-                      {errors.expiration?.timezone?.message}
-                    </FormErrorMessage>
-                  </FormControl>
-                </GridItem>
-              </>
-            )}
-            {watchExpirationUnits == "At Height" && (
-              <GridItem>
-                <FormControl isInvalid={!!errors.expiration?.height}>
-                  <FormLabel>Height</FormLabel>
-                  <InputGroup>
-                    <Input
-                      type="number"
-                      {...register("expiration.height", {
-                        setValueAs: (x) => (x === "" ? undefined : parseInt(x)),
-                      })}
-                    />
-                    <InputRightAddon>blocks</InputRightAddon>
-                  </InputGroup>
-                  <FormErrorMessage>
-                    {errors.expiration?.height?.message}
-                  </FormErrorMessage>
-                </FormControl>
-              </GridItem>
-            )}
-          </Grid>
-          <WagerCreateRulesetTable
-            cosmwasmClient={cosmwasmClient}
-            control={control}
-          />
-          <FormControl isInvalid={!!errors.rules}>
-            <FormLabel>Rules</FormLabel>
-            <Stack>
-              {rulesFields?.map((rule, ruleIndex) => (
-                <FormControl
-                  key={rule.id}
-                  isInvalid={!!errors.rules?.[ruleIndex]?.rule}
-                >
-                  <InputGroup>
-                    <Input {...register(`rules.${ruleIndex}.rule`)} />
-                    <InputRightElement>
-                      <Tooltip label="Delete Rule">
-                        <IconButton
-                          aria-label="delete"
-                          variant="ghost"
-                          icon={<DeleteIcon />}
-                          onClick={() => rulesRemove(ruleIndex)}
-                        />
-                      </Tooltip>
-                    </InputRightElement>
-                  </InputGroup>
-                  <FormErrorMessage>
-                    {errors.rules?.[ruleIndex]?.rule?.message}
-                  </FormErrorMessage>
-                </FormControl>
-              ))}
-              <Tooltip label="Add Rule">
-                <IconButton
-                  variant="ghost"
-                  colorScheme="secondary"
-                  aria-label="Add Rule"
-                  alignSelf="flex-start"
-                  onClick={() => rulesAppend({ rule: "" })}
-                  icon={<AddIcon />}
-                />
-              </Tooltip>
-            </Stack>
-            <FormErrorMessage>{errors.rules?.message}</FormErrorMessage>
-          </FormControl>
-          <FormControl isInvalid={!!errors.dues}>
-            <FormLabel>Dues</FormLabel>
-            <Stack>
-              <FormProvider {...formMethods}>
-                {duesFields.map((dues, dueIndex: number) => {
-                  return (
-                    <WagerCreateTeamCard
-                      key={dues.id}
-                      index={dueIndex}
-                      cosmwasmClient={cosmwasmClient}
-                      duesRemove={() => duesRemove(dueIndex)}
-                    />
-                  );
-                })}
-              </FormProvider>
-            </Stack>
-            <Tooltip label="Add Team">
-              <IconButton
-                mt="2"
-                variant="ghost"
-                colorScheme="secondary"
-                aria-label="Add Team"
-                onClick={() =>
-                  duesAppend({
-                    addr: "",
-                    balance: {
-                      cw20: [],
-                      cw721: [],
-                      native: [],
-                    },
-                  })
-                }
-                icon={<AddIcon />}
-              />
-            </Tooltip>
-            <FormErrorMessage>{errors.dues?.message}</FormErrorMessage>
-          </FormControl>
-          <Accordion allowMultiple>
-            <AccordionItem>
-              <AccordionButton>
-                <Box as="span" flex="1" textAlign="left">
-                  Competition DAO Details <small>(optional)</small>
-                </Box>
-                <AccordionIcon />
-              </AccordionButton>
-              <AccordionPanel>
-                <Stack>
-                  <FormControl isInvalid={!!errors.competition_dao_name}>
-                    <FormLabel>Name</FormLabel>
-                    <InputGroup>
-                      <Input {...register("competition_dao_name")} />
-                    </InputGroup>
-                    <FormErrorMessage>
-                      {errors.competition_dao_name?.message}
-                    </FormErrorMessage>
-                  </FormControl>
-                  <FormControl isInvalid={!!errors.competition_dao_description}>
-                    <FormLabel>Description</FormLabel>
-                    <InputGroup>
-                      <Textarea {...register("competition_dao_description")} />
-                    </InputGroup>
-                    <FormErrorMessage>
-                      {errors.competition_dao_description?.message}
-                    </FormErrorMessage>
-                  </FormControl>
-                </Stack>
-              </AccordionPanel>
-            </AccordionItem>
-          </Accordion>
+          <CreateCompetitionForm cosmwasmClient={cosmwasmClient} />
           <Button
             type="submit"
             isDisabled={!isWalletConnected}
@@ -512,8 +229,8 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
             Submit
           </Button>
         </Stack>
-      </Fade>
-    </form>
+      </form>
+    </FormProvider>
   );
 }
 

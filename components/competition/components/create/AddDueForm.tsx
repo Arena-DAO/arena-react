@@ -31,7 +31,6 @@ import {
   UseFieldArrayAppend,
 } from "react-hook-form";
 import { z } from "zod";
-import { FormValues } from "~/pages/wager/create";
 import {
   getCoinAsset,
   getBaseCoin,
@@ -42,21 +41,31 @@ import { Asset } from "@chain-registry/types";
 import { Cw721BaseQueryClient } from "@cw-nfts/Cw721Base.client";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { AmountSchema, AddressSchema } from "@config/schemas";
+import { CreateCompetitionFormValues } from "@components/competition/CreateCompetitionForm";
 
-interface WagerCreateDueFormProps extends ModalProps {
+interface AddDueFormProps extends ModalProps {
   cosmwasmClient: CosmWasmClient;
   isOpen: boolean;
   onClose: () => void;
   index: number;
-  getValues: UseFormGetValues<FormValues>;
-  cw20Append: UseFieldArrayAppend<FormValues, `dues.0.balance.cw20`>;
-  nativeAppend: UseFieldArrayAppend<FormValues, `dues.0.balance.native`>;
-  cw721Append: UseFieldArrayAppend<FormValues, `dues.0.balance.cw721`>;
+  getValues: UseFormGetValues<CreateCompetitionFormValues>;
+  cw20Append: UseFieldArrayAppend<
+    CreateCompetitionFormValues,
+    `dues.0.balance.cw20`
+  >;
+  nativeAppend: UseFieldArrayAppend<
+    CreateCompetitionFormValues,
+    `dues.0.balance.native`
+  >;
+  cw721Append: UseFieldArrayAppend<
+    CreateCompetitionFormValues,
+    `dues.0.balance.cw721`
+  >;
 }
 
 export const TokenTypes = z.enum(["cw20", "cw721", "native"]);
 
-export const WagerCreateDueForm = ({
+export const AddDueForm = ({
   isOpen,
   cosmwasmClient,
   onClose,
@@ -66,7 +75,7 @@ export const WagerCreateDueForm = ({
   cw721Append,
   getValues,
   ...modalProps
-}: WagerCreateDueFormProps) => {
+}: AddDueFormProps) => {
   const { assets } = useChain(env.CHAIN);
   const dueFormSchema = z
     .object({

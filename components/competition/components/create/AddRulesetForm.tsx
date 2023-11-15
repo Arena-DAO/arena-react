@@ -22,31 +22,25 @@ import {
 } from "@chakra-ui/react";
 import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 import { useDaoDaoCoreGetItemQuery } from "@dao/DaoDaoCore.react-query";
-import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import env from "@config/env";
 import { useEffect, useState } from "react";
-import { Control, useFieldArray, useWatch } from "react-hook-form";
-import { FormValues } from "~/pages/wager/create";
+import { useFieldArray, useWatch } from "react-hook-form";
 import { useAllRulesets } from "~/hooks/useAllRulesets";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { Ruleset } from "@arena/ArenaCore.types";
+import { FormComponentProps } from "../../CreateCompetitionForm";
 
-interface RulesetTableProps {
-  cosmwasmClient: CosmWasmClient;
-  control: Control<FormValues>;
-}
-
-interface RulesetTableInnerProps extends RulesetTableProps {
+interface AddRulesetFormInnerProps extends FormComponentProps {
   arenaCoreAddr: string;
   setRulesetsCount: (count: number) => void;
 }
 
-function RulesetTableInner({
+function AddRulesetFormInner({
   arenaCoreAddr,
   cosmwasmClient,
   setRulesetsCount,
   control,
-}: RulesetTableInnerProps) {
+}: AddRulesetFormInnerProps) {
   const rulesets = useAllRulesets(
     cosmwasmClient,
     arenaCoreAddr,
@@ -144,10 +138,10 @@ function RulesetTableInner({
   );
 }
 
-export function WagerCreateRulesetTable({
+export function AddRulesetForm({
   cosmwasmClient,
   control,
-}: RulesetTableProps) {
+}: FormComponentProps) {
   let watchDAOAddress = useWatch({ control, name: "dao_address" });
   const { data, isError, isFetched, refetch } = useDaoDaoCoreGetItemQuery({
     client: new DaoDaoCoreQueryClient(cosmwasmClient, watchDAOAddress),
@@ -167,7 +161,7 @@ export function WagerCreateRulesetTable({
     <FormControl>
       <FormLabel>Rulesets</FormLabel>
       {data && data.item && (
-        <RulesetTableInner
+        <AddRulesetFormInner
           arenaCoreAddr={data.item}
           setRulesetsCount={(count: number) => setRulesetsCount(count)}
           cosmwasmClient={cosmwasmClient}

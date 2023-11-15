@@ -46,7 +46,7 @@ const FormSchema = z.object({
 });
 type FormValues = z.infer<typeof FormSchema>;
 
-interface WagerViewPresetDistributionModalProps {
+interface PresetDistributionModalProps {
   escrow_addr: string;
   cosmwasmClient: CosmWasmClient;
   isOpen: boolean;
@@ -54,35 +54,34 @@ interface WagerViewPresetDistributionModalProps {
   address: string;
 }
 
-interface WagerViewPresetDistributionModalInnerProps
-  extends WagerViewPresetDistributionModalProps {
+interface PresetDistributionInnerProps extends PresetDistributionModalProps {
   data?: MemberShareForString[];
 }
 
-interface WagerViewUserOrDAOCardProps {
+interface WrapperUserOrDAOCardProps {
   control: Control<FormValues, any>;
   index: number;
   cosmwasmClient: CosmWasmClient;
 }
 
-function WagerViewUserOrDAOCard({
+function WrapperUserOrDAOCard({
   control,
   index,
   cosmwasmClient,
-}: WagerViewUserOrDAOCardProps) {
+}: WrapperUserOrDAOCardProps) {
   const address = useWatch({ control, name: `member_shares.${index}.addr` });
 
   if (!isValidBech32Address(address)) return null;
   return <UserOrDAOCard cosmwasmClient={cosmwasmClient} address={address} />;
 }
 
-export function WagerViewPresetDistributionModal({
+export function PresetDistributionModal({
   escrow_addr,
   cosmwasmClient,
   isOpen,
   onClose,
   address,
-}: WagerViewPresetDistributionModalProps) {
+}: PresetDistributionModalProps) {
   const { data, isLoading, isError } = useArenaEscrowDistributionQuery({
     client: new ArenaEscrowQueryClient(cosmwasmClient, escrow_addr),
     args: { addr: address },
@@ -90,7 +89,7 @@ export function WagerViewPresetDistributionModal({
 
   if (isLoading || isError) return null;
   return (
-    <WagerViewPresetDistributionModalInner
+    <PresetDistributionInner
       escrow_addr={escrow_addr}
       cosmwasmClient={cosmwasmClient}
       isOpen={isOpen}
@@ -101,14 +100,14 @@ export function WagerViewPresetDistributionModal({
   );
 }
 
-function WagerViewPresetDistributionModalInner({
+function PresetDistributionInner({
   escrow_addr,
   cosmwasmClient,
   isOpen,
   onClose,
   address,
   data,
-}: WagerViewPresetDistributionModalInnerProps) {
+}: PresetDistributionInnerProps) {
   const toast = useToast();
   const { isWalletConnected, getSigningCosmWasmClient } = useChain(env.CHAIN);
 
@@ -190,7 +189,7 @@ function WagerViewPresetDistributionModalInner({
                           {errors.member_shares?.[i]?.addr?.message}
                         </FormErrorMessage>
                       </FormControl>
-                      <WagerViewUserOrDAOCard
+                      <WrapperUserOrDAOCard
                         cosmwasmClient={cosmwasmClient}
                         index={i}
                         control={control}

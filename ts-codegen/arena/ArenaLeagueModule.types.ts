@@ -117,7 +117,6 @@ export interface CompetitionInstantiateExt {
   match_win_points: Uint128;
   round_duration: Duration;
   teams: string[];
-  wager_dao: ModuleInstantiateInfo;
 }
 export interface MatchResult {
   match_number: Uint128;
