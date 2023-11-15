@@ -8,6 +8,7 @@ import {
   Stack,
   useColorModeValue,
   Text,
+  Image,
 } from "@chakra-ui/react";
 import {
   BsChatFill,
@@ -40,8 +41,11 @@ function Feature({ icon, title, description }: FeatureProps) {
 }
 
 export default function Home() {
+  const trophy_cursor = encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="48" viewBox="0 0 100 100" style="fill:black;font-size:24px;"><text y="50%">🏆</text></svg>'
+  );
   return (
-    <Container maxW="container.xl" py={12}>
+    <Container maxW="container.xl" pb={12}>
       <Box textAlign="center" mb={10}>
         <Heading
           as="h1"
@@ -53,12 +57,12 @@ export default function Home() {
           <chakra.span color="secondary.400">competition</chakra.span>!
         </Heading>
       </Box>
-
       <Stack
         spacing={8}
         display="grid"
         gridTemplateColumns="repeat(auto-fill, minmax(240px, 1fr))"
         gap={6}
+        mb={6}
       >
         <Feature
           title="Secure and Transparent Escrows"
@@ -81,6 +85,12 @@ export default function Home() {
           description="Arena DAO acknowledges and rewards its active members with a portion of the protocol revenue. This incentive-driven model motivates users to contribute actively, nurturing a lively ecosystem that benefits every participant."
         />
       </Stack>
+      <Image
+        src="/future_of_competition.png"
+        alt="The future of competition"
+        className="hover_trophy"
+        borderRadius="lg"
+      />
     </Container>
   );
 }
