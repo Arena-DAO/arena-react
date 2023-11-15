@@ -41,9 +41,6 @@ function Feature({ icon, title, description }: FeatureProps) {
 }
 
 export default function Home() {
-  const trophy_cursor = encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="48" viewBox="0 0 100 100" style="fill:black;font-size:24px;"><text y="50%">🏆</text></svg>'
-  );
   return (
     <Container maxW="container.xl" pb={12}>
       <Box textAlign="center" mb={10}>
@@ -88,7 +85,7 @@ export default function Home() {
       <Image
         src="/future_of_competition.png"
         alt="The future of competition"
-        className="hover_trophy"
+        className="trophy_cursor"
         borderRadius="lg"
       />
     </Container>
