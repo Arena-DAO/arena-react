@@ -51,7 +51,6 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
 
   const formMethods = useForm<FormValues>({
     defaultValues: {
-      dao_address: "",
       expiration: {
         expiration_units: "At Time",
         time: format(
@@ -92,11 +91,6 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
     formState: { isSubmitting },
   } = formMethods;
 
-  useEffect(() => {
-    if (router.query.dao as string | undefined)
-      setValue("dao_address", router.query.dao as string);
-  }, [router.query.dao, setValue]);
-
   const onSubmit = async (values: FormValues) => {
     try {
       let cosmwasmClient = await getSigningCosmWasmClient();
@@ -127,7 +121,7 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
           code_id: env.CODE_ID_DAO_CORE,
           label: "Arena Competition DAO",
           msg: toBinary({
-            admin: values.dao_address,
+            admin: env.ARENA_DAO_ADDRESS,
             automatically_add_cw20s: true,
             automatically_add_cw721s: true,
             description: values.competition_dao_description,
@@ -194,7 +188,10 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
         if (id) break;
       }
 
-      if (id) router.push(`/wager/view?dao=${values.dao_address}&id=${id}`);
+      if (id)
+        router.push(
+          `/wager/view?category=${categoryItem.category_id!}&id=${id}`
+        );
     } catch (e: any) {
       console.error(e);
       toast({

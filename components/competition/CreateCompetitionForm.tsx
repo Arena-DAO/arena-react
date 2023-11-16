@@ -52,13 +52,6 @@ interface CreateCompetitionFormProps {
   category_id: string;
 }
 
-function FormDAOCard({ cosmwasmClient, control }: FormComponentProps) {
-  let watchDAOAddress = useWatch({ control, name: "dao_address" });
-
-  if (!AddressSchema.safeParse(watchDAOAddress).success) return null;
-  return <DAOCard address={watchDAOAddress} cosmwasmClient={cosmwasmClient} />;
-}
-
 export default function CreateCompetitionForm({
   cosmwasmClient,
   category_id,
@@ -73,10 +66,6 @@ export default function CreateCompetitionForm({
     watch,
     formState: { errors },
   } = formMethods;
-  useEffect(() => {
-    if (router.query.dao as string | undefined)
-      setValue("dao_address", router.query.dao as string);
-  }, [router.query.dao, setValue]);
 
   const watchExpirationUnits = watch("expiration.expiration_units");
 
@@ -97,12 +86,6 @@ export default function CreateCompetitionForm({
 
   return (
     <>
-      <FormControl isInvalid={!!errors.dao_address}>
-        <FormLabel>DAO</FormLabel>
-        <Input id="dao_address" {...register("dao_address")} />
-        <FormErrorMessage>{errors.dao_address?.message}</FormErrorMessage>
-      </FormControl>
-      <FormDAOCard cosmwasmClient={cosmwasmClient} control={control} />
       <FormControl isInvalid={!!errors.name}>
         <FormLabel>Name</FormLabel>
         <Input id="name" {...register("name")} />

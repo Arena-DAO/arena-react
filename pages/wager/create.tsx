@@ -45,7 +45,6 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
 
   const formMethods = useForm<CreateCompetitionFormValues>({
     defaultValues: {
-      dao_address: "",
       expiration: {
         expiration_units: "At Time",
         time: format(
@@ -79,14 +78,8 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
   });
   const {
     handleSubmit,
-    setValue,
     formState: { isSubmitting },
   } = formMethods;
-
-  useEffect(() => {
-    if (router.query.dao as string | undefined)
-      setValue("dao_address", router.query.dao as string);
-  }, [router.query.dao, setValue]);
 
   const onSubmit = async (values: CreateCompetitionFormValues) => {
     try {
@@ -112,7 +105,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
           code_id: env.CODE_ID_DAO_CORE,
           label: "Arena Competition DAO",
           msg: toBinary({
-            admin: values.dao_address,
+            admin: env.ARENA_DAO_ADDRESS,
             automatically_add_cw20s: true,
             automatically_add_cw721s: true,
             description: values.competition_dao_description,
@@ -179,7 +172,10 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         if (id) break;
       }
 
-      if (id) router.push(`/wager/view?dao=${values.dao_address}&id=${id}`);
+      if (id)
+        router.push(
+          `/wager/view?category=${categoryItem.category_id!}&id=${id}`
+        );
     } catch (e: any) {
       console.error(e);
       toast({

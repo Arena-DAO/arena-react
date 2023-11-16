@@ -1,12 +1,10 @@
 import { z } from "zod";
-import AddressSchema from "./AddressSchema";
 import DueSchema from "./DueSchema";
 import ExpirationSchema from "./ExpirationSchema";
 import RulesSchema from "./RulesSchema";
 import RulesetsSchema from "./RulesetsSchema";
 
 const CreateCompetitionSchema = z.object({
-  dao_address: AddressSchema,
   description: z.string().min(1, { message: "Description is required" }),
   expiration: ExpirationSchema,
   name: z.string().min(1, { message: "Name is required " }),

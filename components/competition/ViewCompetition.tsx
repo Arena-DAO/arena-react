@@ -9,13 +9,8 @@ import {
 } from "@chakra-ui/layout";
 import { useChain } from "@cosmos-kit/react";
 import env from "@config/env";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { DAOCard } from "@components/cards/DAOCard";
-import { useDaoDaoCoreGetItemQuery } from "@dao/DaoDaoCore.react-query";
-import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
-import { useArenaCoreQueryExtensionQuery } from "@arena/ArenaCore.react-query";
-import { ArenaCoreQueryClient } from "@arena/ArenaCore.client";
 import { useArenaWagerModuleCompetitionQuery } from "@arena/ArenaWagerModule.react-query";
 import { ArenaWagerModuleQueryClient } from "@arena/ArenaWagerModule.client";
 import {
@@ -120,7 +115,6 @@ export default function ViewCompetition({
     <Fade in={true}>
       <Skeleton isLoaded={!query.isLoading}>
         <Stack>
-          <DAOCard address={data.dao} cosmwasmClient={cosmwasmClient} />
           <Heading>
             {data.name}{" "}
             <Badge
