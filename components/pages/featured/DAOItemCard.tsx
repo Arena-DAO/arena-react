@@ -1,11 +1,11 @@
 import { Heading } from "@chakra-ui/layout";
 import { Image, VStack, useColorModeValue, LinkBox } from "@chakra-ui/react";
 import { Card, CardBody } from "@chakra-ui/card";
-import { DAOItem } from "@config/featured";
+import { CategoryItem } from "@config/featured";
 import NextLink from "next/link";
 
 interface FeaturedDAOItemCardProps {
-  item: DAOItem;
+  item: CategoryItem;
 }
 
 export function FeaturedDAOItemCard({ item }: FeaturedDAOItemCardProps) {
@@ -14,7 +14,7 @@ export function FeaturedDAOItemCard({ item }: FeaturedDAOItemCardProps) {
   return (
     <LinkBox
       as={NextLink}
-      href={"/featured?id=" + item.url}
+      href={"/compete?category=" + item.url}
       passHref
       _focus={{ boxShadow: "none" }}
     >

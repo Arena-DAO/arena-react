@@ -49,6 +49,7 @@ export interface FormComponentProps {
 
 interface CreateCompetitionFormProps {
   cosmwasmClient: CosmWasmClient;
+  category_id: string;
 }
 
 function FormDAOCard({ cosmwasmClient, control }: FormComponentProps) {
@@ -60,6 +61,7 @@ function FormDAOCard({ cosmwasmClient, control }: FormComponentProps) {
 
 export default function CreateCompetitionForm({
   cosmwasmClient,
+  category_id,
 }: CreateCompetitionFormProps) {
   const router = useRouter();
 
@@ -186,7 +188,11 @@ export default function CreateCompetitionForm({
           </GridItem>
         )}
       </Grid>
-      <AddRulesetForm cosmwasmClient={cosmwasmClient} control={control} />
+      <AddRulesetForm
+        cosmwasmClient={cosmwasmClient}
+        category_id={category_id}
+        control={control}
+      />
       <FormControl isInvalid={!!errors.rules}>
         <FormLabel>Rules</FormLabel>
         <Stack>

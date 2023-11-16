@@ -37,6 +37,7 @@ export type ExecuteMsg = {
   };
 } | {
   create_competition: {
+    category_id: Uint128;
     competition_dao: ModuleInstantiateInfo;
     description: string;
     escrow?: ModuleInstantiateInfo | null;

@@ -20,7 +20,7 @@ import env from "config/env";
 import { LINK_ITEMS } from "@config/links";
 import SocialMediaButtons from "./components/SocialMediaButtons";
 import ColorModeSwitch from "./components/ColorModeSwitch";
-import { renderLinkItems } from "./components/LinkItems";
+import NavMenu from "./components/LinkItems";
 
 interface SimpleLayoutType extends PropsWithChildren {
   logo?: React.ReactNode;
@@ -122,7 +122,7 @@ const MobileMenu = ({
                   },
                 }}
               >
-                {renderLinkItems(LINK_ITEMS)}
+                <NavMenu menuItems={LINK_ITEMS} />
                 <ColorModeSwitch />
                 <SocialMediaButtons />
               </Stack>
@@ -216,7 +216,7 @@ const DesktopMenu = ({
             },
           }}
         >
-          {renderLinkItems(LINK_ITEMS)}
+          <NavMenu menuItems={LINK_ITEMS} />
           <ColorModeSwitch />
           <SocialMediaButtons />
         </Stack>

@@ -261,6 +261,7 @@ export function useArenaWagerModuleProcessCompetitionMutation(options?: Omit<Use
 export interface ArenaWagerModuleCreateCompetitionMutation {
   client: ArenaWagerModuleClient;
   msg: {
+    categoryId: Uint128;
     competitionDao: ModuleInstantiateInfo;
     description: string;
     escrow?: ModuleInstantiateInfo;

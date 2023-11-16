@@ -261,6 +261,7 @@ export function useArenaLeagueModuleProcessCompetitionMutation(options?: Omit<Us
 export interface ArenaLeagueModuleCreateCompetitionMutation {
   client: ArenaLeagueModuleClient;
   msg: {
+    categoryId: Uint128;
     competitionDao: ModuleInstantiateInfo;
     description: string;
     escrow?: ModuleInstantiateInfo;

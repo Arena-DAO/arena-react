@@ -149,7 +149,7 @@ export interface MemberBalanceVerified {
   addr: Addr;
   balance: BalanceVerified;
 }
-export type NullableArrayOfMemberShareForString = MemberShareForString[] | null;
+export type ArrayOfMemberShareForString = MemberShareForString[];
 export interface DumpStateResponse {
   balance: BalanceVerified;
   dues: MemberBalanceVerified[];

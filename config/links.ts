@@ -5,8 +5,6 @@ export interface LinkItem {
   href?: string;
   target?: string;
   env?: string;
-  children?: LinkItem[];
-  isDefaultOpen?: boolean;
 }
 
 export const LINK_ITEMS: LinkItem[] = [
@@ -15,19 +13,8 @@ export const LINK_ITEMS: LinkItem[] = [
     href: "/",
   },
   {
-    label: "🔥 Featured",
-    href: "/featured",
-  },
-  {
     label: "⚔️ Compete",
-    isDefaultOpen: true,
-    children: [
-      {
-        label: "Wager",
-        href: "/wager/create",
-      },
-      { label: "League", href: "/league/create" },
-    ],
+    href: "/compete",
   },
   {
     label: "☯️ Create Team",

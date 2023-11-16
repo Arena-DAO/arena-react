@@ -38,9 +38,13 @@ export interface UncheckedDepositInfo {
   refund_policy: DepositRefundPolicy;
 }
 export interface InstantiateExt {
+  categories: NewCompetitionCategory[];
   competition_modules_instantiate_info: ModuleInstantiateInfo[];
   rulesets: NewRuleset[];
   tax: Decimal;
+}
+export interface NewCompetitionCategory {
+  name: string;
 }
 export interface ModuleInstantiateInfo {
   admin?: Admin | null;
@@ -49,6 +53,7 @@ export interface ModuleInstantiateInfo {
   msg: Binary;
 }
 export interface NewRuleset {
+  category_id: Uint128;
   description: string;
   rules: string[];
 }
@@ -97,6 +102,11 @@ export type ExecuteExt = {
     to_add: NewRuleset[];
     to_disable: Uint128[];
   };
+} | {
+  update_categories: {
+    to_add: NewCompetitionCategory[];
+    to_disable: Uint128[];
+  };
 };
 export type Status = "open" | "rejected" | "passed" | "executed" | "closed" | "execution_failed";
 export interface ProposeMessage {
@@ -138,6 +148,7 @@ export type QueryExt = {
   };
 } | {
   rulesets: {
+    category_id: Uint128;
     include_disabled?: boolean | null;
     limit?: number | null;
     start_after?: Uint128 | null;
@@ -151,6 +162,21 @@ export type QueryExt = {
     query: CompetitionModuleQuery;
   };
 } | {
+  category: {
+    id: Uint128;
+  };
+} | {
+  categories: {
+    include_disabled?: boolean | null;
+    limit?: number | null;
+    start_after?: Uint128 | null;
+  };
+} | {
+  is_valid_category_and_rulesets: {
+    category_id: Uint128;
+    rulesets: Uint128[];
+  };
+} | {
   dump_state: {};
 };
 export type CompetitionModuleQuery = {
@@ -162,11 +188,17 @@ export type MigrateMsg = {
   from_compatible: {};
 };
 export interface SudoMsg {
+  competition_category: CompetitionCategory;
   dump_state_response: DumpStateResponse;
+  ruleset: Ruleset;
+}
+export interface CompetitionCategory {
+  id: Uint128;
+  is_enabled: boolean;
+  name: string;
 }
 export interface DumpStateResponse {
   competition_modules: CompetitionModuleResponseForString[];
-  rulesets: Ruleset[];
   tax: Decimal;
 }
 export interface CompetitionModuleResponseForString {
@@ -176,6 +208,7 @@ export interface CompetitionModuleResponseForString {
   key: string;
 }
 export interface Ruleset {
+  category_id: Uint128;
   description: string;
   id: Uint128;
   is_enabled: boolean;

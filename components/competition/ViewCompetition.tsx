@@ -38,30 +38,30 @@ import {
 } from "@chakra-ui/react";
 import { statusColors } from "~/helpers/ArenaHelpers";
 import { CompetitionStatus } from "@arena/ArenaWagerModule.types";
-import { CompetitionModuleResponseForString } from "@arena/ArenaCore.types";
 import { UserOrDAOCard } from "@components/cards/UserOrDAOCard";
-import { AddressSchema } from "@config/schemas";
 import { EscrowDisplay } from "./components/view/EscrowDisplay";
 import { PresetDistributionModal } from "./components/view/PresetDistributionModal";
 import {
-  ProposalPromptModalAction,
   ProposalPromptModal,
+  ProposalPromptModalAction,
 } from "./components/view/ProposalPromptModal";
 import { RulesetDisplay } from "./components/view/RulesetDisplay";
 
 interface ViewCompetitionProps {
   cosmwasmClient: CosmWasmClient;
-  dao: string;
+  module_addr: string;
   id: string;
 }
 
 export default function ViewCompetition({
   cosmwasmClient,
-  dao,
+  module_addr,
   id,
 }: ViewCompetitionProps) {
   const { address } = useChain(env.CHAIN);
   const toast = useToast();
+  const [promptAction, setPromptAction] =
+    useState<ProposalPromptModalAction>("Propose Result");
   const {
     isOpen: isOpenProposalModal,
     onOpen: onOpenProposalModal,
@@ -72,41 +72,9 @@ export default function ViewCompetition({
     onOpen: onOpenPresetModal,
     onClose: onClosePresetModal,
   } = useDisclosure();
-  const isValidAddress = useMemo(() => {
-    return !!dao && AddressSchema.safeParse(dao).success;
-  }, [dao]);
-  const [promptAction, setPromptAction] =
-    useState<ProposalPromptModalAction>("Propose Result");
-  const { data: itemData, isFetched: isItemFetched } =
-    useDaoDaoCoreGetItemQuery({
-      client: new DaoDaoCoreQueryClient(cosmwasmClient, dao),
-      args: { key: env.ARENA_ITEM_KEY },
-      options: { enabled: isValidAddress, staleTime: Infinity },
-    });
-  const { data: moduleData, isFetched: isModuleFetched } =
-    useArenaCoreQueryExtensionQuery({
-      client: new ArenaCoreQueryClient(cosmwasmClient, itemData?.item!),
-      args: {
-        msg: {
-          competition_module: { query: { key: [env.WAGER_MODULE_KEY, null] } },
-        },
-      },
-      options: {
-        enabled: isItemFetched && !!itemData && !!itemData.item,
-        staleTime: Infinity,
-      },
-    });
   const query = useArenaWagerModuleCompetitionQuery({
-    client: new ArenaWagerModuleQueryClient(
-      cosmwasmClient,
-      (moduleData as unknown as CompetitionModuleResponseForString)?.addr
-    ),
+    client: new ArenaWagerModuleQueryClient(cosmwasmClient, module_addr),
     args: { id: id },
-    options: {
-      enabled: !!id && !isNaN(parseInt(id)) && isModuleFetched && !!moduleData,
-      staleTime: 0,
-      retry: false,
-    },
   });
   const [data, setData] = useState(query.data);
   useEffect(() => {
@@ -122,16 +90,6 @@ export default function ViewCompetition({
         description: `Could not retrieve competition ${id}`,
       });
   }, [query.isError, toast, id]);
-  useEffect(() => {
-    if (!isValidAddress) {
-      toast({
-        title: "Error",
-        isClosable: false,
-        status: "error",
-        description: "DAO address is invalid",
-      });
-    }
-  }, [isValidAddress, toast]);
   const notifyStatusChanged = useCallback(
     (new_status: CompetitionStatus) =>
       setData((prevData) => {
@@ -155,7 +113,7 @@ export default function ViewCompetition({
 
   const listProps: ListProps = { spacing: 2 };
 
-  if (query.isError || !isValidAddress || !data) {
+  if (query.isError || !data) {
     return null;
   }
   return (
@@ -187,7 +145,6 @@ export default function ViewCompetition({
                     <RulesetDisplay
                       key={x}
                       cosmwasmClient={cosmwasmClient}
-                      arena_core_addr={itemData!.item!}
                       ruleset_id={x}
                       listProps={listProps}
                     />
@@ -245,9 +202,7 @@ export default function ViewCompetition({
           </ButtonGroup>
           <ProposalPromptModal
             id={id}
-            module_addr={
-              (moduleData as unknown as CompetitionModuleResponseForString).addr
-            }
+            module_addr={module_addr}
             cosmwasmClient={cosmwasmClient}
             isOpen={isOpenProposalModal}
             onClose={onCloseProposalModal}

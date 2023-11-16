@@ -4,24 +4,23 @@ import { Ruleset } from "@arena/ArenaCore.types";
 import { Card, CardBody, CardHeader } from "@chakra-ui/card";
 import { Heading, List, ListItem, ListProps } from "@chakra-ui/layout";
 import { Skeleton } from "@chakra-ui/react";
+import env from "@config/env";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useEffect, useState } from "react";
 
 interface RulesetDisplayProps {
   cosmwasmClient: CosmWasmClient;
-  arena_core_addr: string;
   ruleset_id: string;
   listProps: ListProps;
 }
 
 export function RulesetDisplay({
   cosmwasmClient,
-  arena_core_addr,
   ruleset_id,
   listProps,
 }: RulesetDisplayProps) {
   let { data, isLoading, isError } = useArenaCoreQueryExtensionQuery({
-    client: new ArenaCoreQueryClient(cosmwasmClient, arena_core_addr),
+    client: new ArenaCoreQueryClient(cosmwasmClient, env.ARENA_CORE_ADDRESS),
     args: { msg: { ruleset: { id: ruleset_id } } },
   });
   const [ruleset, setRuleset] = useState<Ruleset>();

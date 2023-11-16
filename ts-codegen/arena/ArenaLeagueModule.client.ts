@@ -134,6 +134,7 @@ export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInt
     id: Uint128;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   createCompetition: ({
+    categoryId,
     competitionDao,
     description,
     escrow,
@@ -143,6 +144,7 @@ export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInt
     rules,
     rulesets
   }: {
+    categoryId: Uint128;
     competitionDao: ModuleInstantiateInfo;
     description: string;
     escrow?: ModuleInstantiateInfo;
@@ -252,6 +254,7 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
     }, fee, memo, _funds);
   };
   createCompetition = async ({
+    categoryId,
     competitionDao,
     description,
     escrow,
@@ -261,6 +264,7 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
     rules,
     rulesets
   }: {
+    categoryId: Uint128;
     competitionDao: ModuleInstantiateInfo;
     description: string;
     escrow?: ModuleInstantiateInfo;
@@ -272,6 +276,7 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       create_competition: {
+        category_id: categoryId,
         competition_dao: competitionDao,
         description,
         escrow,

@@ -26,6 +26,7 @@ import { CreateCompetitionSchema } from "@config/schemas";
 import CreateCompetitionForm, {
   CreateCompetitionFormValues,
 } from "@components/competition/CreateCompetitionForm";
+import { CategoryMap } from "@config/featured";
 
 interface WagerFormProps {
   cosmwasmClient: CosmWasmClient;
@@ -33,6 +34,10 @@ interface WagerFormProps {
 
 function WagerForm({ cosmwasmClient }: WagerFormProps) {
   const router = useRouter();
+  const category = router.query.category;
+  if (!category) throw "No category provided";
+  const categoryItem = CategoryMap.get(category as string);
+  if (!categoryItem || !categoryItem.category_id) throw "No category_id found";
   const toast = useToast();
   const { getSigningCosmWasmClient, address, isWalletConnected } = useChain(
     env.CHAIN
@@ -89,43 +94,14 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
       if (!cosmwasmClient) throw "Could not get the CosmWasm client";
       if (!address) throw "Could not get user address";
 
-      let daoDaoCoreClient = new DaoDaoCoreQueryClient(
-        cosmwasmClient,
-        values.dao_address
-      );
-      let getItemResponse = await daoDaoCoreClient.getItem({
-        key: env.ARENA_ITEM_KEY,
-      });
-
-      if (!getItemResponse || !getItemResponse.item) {
-        throw "The DAO does not have an Arena extension.";
-      }
-
-      let arenaCoreClient = new ArenaCoreQueryClient(
-        cosmwasmClient,
-        getItemResponse.item
-      );
-
-      let wager_module = (await arenaCoreClient.queryExtension({
-        msg: {
-          competition_module: {
-            query: {
-              key: [env.WAGER_MODULE_KEY, null],
-            },
-          },
-        },
-      })) as unknown as CompetitionModuleResponseForString;
-
-      if (!wager_module || !wager_module.is_enabled)
-        throw "The DAO's Arena extension does not have a wager module set.";
-
       let wagerModuleClient = new ArenaWagerModuleClient(
         cosmwasmClient,
         address,
-        wager_module.addr
+        env.ARENA_WAGER_MODULE_ADDRESS
       );
 
       const msg = {
+        categoryId: categoryItem.category_id!,
         description: values.description,
         expiration: convertToExpiration(values.expiration),
         name: values.name,
@@ -219,7 +195,10 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
     <FormProvider {...formMethods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack>
-          <CreateCompetitionForm cosmwasmClient={cosmwasmClient} />
+          <CreateCompetitionForm
+            category_id={categoryItem.category_id!}
+            cosmwasmClient={cosmwasmClient}
+          />
           <Button
             type="submit"
             isDisabled={!isWalletConnected}

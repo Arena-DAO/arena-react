@@ -3,7 +3,6 @@ import { Button, useToast } from "@chakra-ui/react";
 import { useChain } from "@cosmos-kit/react";
 import { InstantiateMsg as DaoDaoCoreInstantiateMsg } from "@dao/DaoDaoCore.types";
 import { InstantiateMsg as ArenaEscrowInstantiateMsg } from "@arena/ArenaEscrow.types";
-import { ArenaCoreQueryClient } from "@arena/ArenaCore.client";
 import { ArenaLeagueModuleClient } from "@arena/ArenaLeagueModule.client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
@@ -21,12 +20,11 @@ import { format } from "date-fns";
 import moment from "moment-timezone";
 import { CosmWasmClient, toBinary } from "@cosmjs/cosmwasm-stargate";
 import env from "config/env";
-import { CompetitionModuleResponseForString } from "@arena/ArenaCore.types";
-import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
-import { CreateCompetitionSchema, DurationSchema } from "@config/schemas";
-import CreateCompetitionForm from "@components/competition/CreateCompetitionForm";
 import { z } from "zod";
 import { CompetitionInstantiateExt } from "@arena/ArenaLeagueModule.types";
+import { CategoryMap } from "@config/featured";
+import { CreateCompetitionSchema, DurationSchema } from "@config/schemas";
+import CreateCompetitionForm from "@components/competition/CreateCompetitionForm";
 
 interface LeagueFormProps {
   cosmwasmClient: CosmWasmClient;
@@ -42,6 +40,10 @@ type FormValues = z.infer<typeof CreateLeagueSchema>;
 
 function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
   const router = useRouter();
+  const category = router.query.category;
+  if (!category) throw "No category provided";
+  const categoryItem = CategoryMap.get(category as string);
+  if (!categoryItem || !categoryItem.category_id) throw "No category_id found";
   const toast = useToast();
   const { getSigningCosmWasmClient, address, isWalletConnected } = useChain(
     env.CHAIN
@@ -101,43 +103,14 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
       if (!cosmwasmClient) throw "Could not get the CosmWasm client";
       if (!address) throw "Could not get user address";
 
-      let daoDaoCoreClient = new DaoDaoCoreQueryClient(
-        cosmwasmClient,
-        values.dao_address
-      );
-      let getItemResponse = await daoDaoCoreClient.getItem({
-        key: env.ARENA_ITEM_KEY,
-      });
-
-      if (!getItemResponse || !getItemResponse.item) {
-        throw "The DAO does not have an Arena extension.";
-      }
-
-      let arenaCoreClient = new ArenaCoreQueryClient(
-        cosmwasmClient,
-        getItemResponse.item
-      );
-
-      let leagueModule = (await arenaCoreClient.queryExtension({
-        msg: {
-          competition_module: {
-            query: {
-              key: [env.LEAGUE_MODULE_KEY, null],
-            },
-          },
-        },
-      })) as unknown as CompetitionModuleResponseForString;
-
-      if (!leagueModule || !leagueModule.is_enabled)
-        throw "The DAO's Arena extension does not have a league module set.";
-
       let leagueModuleClient = new ArenaLeagueModuleClient(
         cosmwasmClient,
         address,
-        leagueModule.addr
+        env.ARENA_LEAGUE_MODULE_ADDRESS
       );
 
       const msg = {
+        categoryId: categoryItem.category_id!,
         description: values.description,
         expiration: convertToExpiration(values.expiration),
         name: values.name,
@@ -237,7 +210,10 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
     <FormProvider {...formMethods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack>
-          <CreateCompetitionForm cosmwasmClient={cosmwasmClient} />
+          <CreateCompetitionForm
+            category_id={categoryItem.category_id}
+            cosmwasmClient={cosmwasmClient}
+          />
           <Button
             type="submit"
             isDisabled={!isWalletConnected}

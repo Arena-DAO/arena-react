@@ -20,32 +20,28 @@ import {
   ModalOverlay,
   ModalFooter,
 } from "@chakra-ui/react";
-import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
-import { useDaoDaoCoreGetItemQuery } from "@dao/DaoDaoCore.react-query";
 import env from "@config/env";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useFieldArray, useWatch } from "react-hook-form";
-import { useAllRulesets } from "~/hooks/useAllRulesets";
-import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { Ruleset } from "@arena/ArenaCore.types";
 import { FormComponentProps } from "../../CreateCompetitionForm";
+import { useArenaCoreQueryExtensionQuery } from "@arena/ArenaCore.react-query";
+import { ArenaCoreQueryClient } from "@arena/ArenaCore.client";
 
-interface AddRulesetFormInnerProps extends FormComponentProps {
-  arenaCoreAddr: string;
-  setRulesetsCount: (count: number) => void;
+interface AddRulesetFormProps extends FormComponentProps {
+  category_id: string;
 }
 
-function AddRulesetFormInner({
-  arenaCoreAddr,
+export function AddRulesetForm({
   cosmwasmClient,
-  setRulesetsCount,
   control,
-}: AddRulesetFormInnerProps) {
-  const rulesets = useAllRulesets(
-    cosmwasmClient,
-    arenaCoreAddr,
-    (count: number) => setRulesetsCount(count)
-  );
+  category_id,
+}: AddRulesetFormProps) {
+  // TODO: add pagination support (limit is 30 results)
+  const { data } = useArenaCoreQueryExtensionQuery({
+    client: new ArenaCoreQueryClient(cosmwasmClient, env.ARENA_CORE_ADDRESS),
+    args: { msg: { rulesets: { category_id: category_id } } },
+  });
   const buttonProps: ButtonProps = {
     size: "sm",
     variant: "outline",
@@ -57,8 +53,12 @@ function AddRulesetFormInner({
     name: "rulesets",
   });
 
+  if (!data) return null;
+
+  const rulesets = data as unknown as Ruleset[];
   return (
-    <>
+    <FormControl>
+      <FormLabel>Rulesets</FormLabel>
       <TableContainer>
         <Table variant="unstyled">
           <Thead>
@@ -134,41 +134,6 @@ function AddRulesetFormInner({
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </>
-  );
-}
-
-export function AddRulesetForm({
-  cosmwasmClient,
-  control,
-}: FormComponentProps) {
-  let watchDAOAddress = useWatch({ control, name: "dao_address" });
-  const { data, isError, isFetched, refetch } = useDaoDaoCoreGetItemQuery({
-    client: new DaoDaoCoreQueryClient(cosmwasmClient, watchDAOAddress),
-    args: { key: env.ARENA_ITEM_KEY },
-    options: { enabled: false },
-  });
-  useEffect(() => {
-    if (isValidContractAddress(watchDAOAddress)) refetch();
-  }, [watchDAOAddress, refetch]);
-  const [rulesetsCount, setRulesetsCount] = useState<number>();
-
-  if (!isFetched || isError || rulesetsCount === 0) {
-    return null;
-  }
-
-  return (
-    <FormControl>
-      <FormLabel>Rulesets</FormLabel>
-      {data && data.item && (
-        <AddRulesetFormInner
-          arenaCoreAddr={data.item}
-          setRulesetsCount={(count: number) => setRulesetsCount(count)}
-          cosmwasmClient={cosmwasmClient}
-          control={control}
-        />
-      )}
-      <small>Rulesets Count: {rulesetsCount}</small>
     </FormControl>
   );
 }

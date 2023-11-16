@@ -10,7 +10,6 @@ import {
   Text,
   Tooltip,
 } from "@chakra-ui/react";
-import { ViewIcon } from "@chakra-ui/icons";
 import { useDaoDaoCoreConfigQuery } from "@dao/DaoDaoCore.react-query";
 import { convertIPFSToHttp } from "~/helpers/IPFSHelpers";
 import NextLink from "next/link";
@@ -24,13 +23,11 @@ import { AddressSchema } from "@config/schemas";
 interface DAOCardProps extends CardProps {
   address: string;
   cosmwasmClient: CosmWasmClient;
-  showViewLink?: boolean;
 }
 
 export function DAOCard({
   address,
   cosmwasmClient,
-  showViewLink = true,
   ...cardProps
 }: DAOCardProps) {
   const isEnabled = AddressSchema.safeParse(address).success;
@@ -71,22 +68,6 @@ export function DAOCard({
           px="0"
         >
           <CopyAddressButton addr={address} aria-label="Copy Address" />
-          {showViewLink && (
-            <Tooltip label="View Arena Page">
-              <Link
-                as={NextLink}
-                href={"/dao/view?dao=" + address}
-                _hover={{ textDecoration: "none" }}
-                _focus={{ outline: "none" }}
-              >
-                <IconButton
-                  icon={<ViewIcon />}
-                  aria-label="View"
-                  variant="ghost"
-                />
-              </Link>
-            </Tooltip>
-          )}
           <Tooltip label="View on DAO DAO">
             <Link
               as={NextLink}

@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { Uint128, InstantiateMsg, MemberBalance, Balance, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Action, Expiration, Timestamp, Uint64, MemberShareForString, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, QueryMsg, MigrateMsg, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceVerified, MemberBalanceVerified, NullableArrayOfMemberShareForString, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
+import { Uint128, InstantiateMsg, MemberBalance, Balance, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Action, Expiration, Timestamp, Uint64, MemberShareForString, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, QueryMsg, MigrateMsg, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceVerified, MemberBalanceVerified, ArrayOfMemberShareForString, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
 import { ArenaEscrowQueryClient, ArenaEscrowClient } from "./ArenaEscrow.client";
 export const arenaEscrowQueryKeys = {
   contract: ([{
@@ -151,11 +151,11 @@ export const arenaEscrowQueries = {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   }),
-  distribution: <TData = NullableArrayOfMemberShareForString,>({
+  distribution: <TData = ArrayOfMemberShareForString,>({
     client,
     args,
     options
-  }: ArenaEscrowDistributionQuery<TData>): UseQueryOptions<NullableArrayOfMemberShareForString, Error, TData> => ({
+  }: ArenaEscrowDistributionQuery<TData>): UseQueryOptions<ArrayOfMemberShareForString, Error, TData> => ({
     queryKey: arenaEscrowQueryKeys.distribution(client?.contractAddress, args),
     queryFn: () => client ? client.distribution({
       addr: args.addr
@@ -216,17 +216,17 @@ export function useArenaEscrowDumpStateQuery<TData = DumpStateResponse>({
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
-export interface ArenaEscrowDistributionQuery<TData> extends ArenaEscrowReactQuery<NullableArrayOfMemberShareForString, TData> {
+export interface ArenaEscrowDistributionQuery<TData> extends ArenaEscrowReactQuery<ArrayOfMemberShareForString, TData> {
   args: {
     addr: string;
   };
 }
-export function useArenaEscrowDistributionQuery<TData = NullableArrayOfMemberShareForString>({
+export function useArenaEscrowDistributionQuery<TData = ArrayOfMemberShareForString>({
   client,
   args,
   options
 }: ArenaEscrowDistributionQuery<TData>) {
-  return useQuery<NullableArrayOfMemberShareForString, Error, TData>(arenaEscrowQueryKeys.distribution(client?.contractAddress, args), () => client ? client.distribution({
+  return useQuery<ArrayOfMemberShareForString, Error, TData>(arenaEscrowQueryKeys.distribution(client?.contractAddress, args), () => client ? client.distribution({
     addr: args.addr
   }) : Promise.reject(new Error("Invalid client")), { ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)

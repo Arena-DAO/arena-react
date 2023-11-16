@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { Uint128, InstantiateMsg, MemberBalance, Balance, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Action, Expiration, Timestamp, Uint64, MemberShareForString, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, QueryMsg, MigrateMsg, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceVerified, MemberBalanceVerified, NullableArrayOfMemberShareForString, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
+import { Uint128, InstantiateMsg, MemberBalance, Balance, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Action, Expiration, Timestamp, Uint64, MemberShareForString, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, QueryMsg, MigrateMsg, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceVerified, MemberBalanceVerified, ArrayOfMemberShareForString, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
 export interface ArenaEscrowReadOnlyInterface {
   contractAddress: string;
   balances: ({
@@ -45,7 +45,7 @@ export interface ArenaEscrowReadOnlyInterface {
     addr
   }: {
     addr: string;
-  }) => Promise<NullableArrayOfMemberShareForString>;
+  }) => Promise<ArrayOfMemberShareForString>;
   dumpState: ({
     addr
   }: {
@@ -153,7 +153,7 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
     addr
   }: {
     addr: string;
-  }): Promise<NullableArrayOfMemberShareForString> => {
+  }): Promise<ArrayOfMemberShareForString> => {
     return this.client.queryContractSmart(this.contractAddress, {
       distribution: {
         addr
