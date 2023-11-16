@@ -19,10 +19,6 @@ export const LINK_ITEMS: LinkItem[] = [
     href: "/featured",
   },
   {
-    label: "⚡ Enable DAO",
-    href: "/dao/enable",
-  },
-  {
     label: "⚔️ Compete",
     isDefaultOpen: true,
     children: [
