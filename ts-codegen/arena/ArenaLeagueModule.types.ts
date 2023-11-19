@@ -48,6 +48,11 @@ export type ExecuteMsg = {
     rulesets: Uint128[];
   };
 } | {
+  submit_evidence: {
+    evidence: string[];
+    id: Uint128;
+  };
+} | {
   process_competition: {
     distribution: MemberShareForString[];
     id: Uint128;
@@ -133,9 +138,9 @@ export type QueryMsg = {
   };
 } | {
   competitions: {
+    filter?: CompetitionsFilter | null;
     limit?: number | null;
     start_after?: Uint128 | null;
-    status?: CompetitionStatus | null;
   };
 } | {
   query_extension: {
@@ -143,6 +148,15 @@ export type QueryMsg = {
   };
 } | {
   ownership: {};
+};
+export type CompetitionsFilter = {
+  competition_status: {
+    status: CompetitionStatus;
+  };
+} | {
+  category: {
+    id: Uint128;
+  };
 };
 export type CompetitionStatus = "pending" | "active" | "inactive" | "jailed";
 export type QueryExt = {
@@ -164,6 +178,7 @@ export interface CompetitionResponseForCompetitionExt {
   dao: Addr;
   description: string;
   escrow?: Addr | null;
+  evidence: Evidence[];
   expiration: Expiration;
   extension: CompetitionExt;
   has_generated_proposals: boolean;
@@ -175,6 +190,11 @@ export interface CompetitionResponseForCompetitionExt {
   rulesets: Uint128[];
   start_height: number;
   status: CompetitionStatus;
+}
+export interface Evidence {
+  content: string;
+  submit_time: Timestamp;
+  submit_user: Addr;
 }
 export interface CompetitionExt {
   match_draw_points: Uint128;

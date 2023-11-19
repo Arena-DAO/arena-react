@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee, Coin } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, ProposeMessage, MemberShareForString, ModuleInstantiateInfo, QueryMsg, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, MemberShareForAddr, ArrayOfCompetitionResponseForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, ProposeMessage, MemberShareForString, ModuleInstantiateInfo, QueryMsg, CompetitionsFilter, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, Evidence, MemberShareForAddr, ArrayOfCompetitionResponseForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
 import { ArenaWagerModuleQueryClient, ArenaWagerModuleClient } from "./ArenaWagerModule.client";
 export const arenaWagerModuleQueryKeys = {
   contract: ([{
@@ -79,9 +79,9 @@ export const arenaWagerModuleQueries = {
   }: ArenaWagerModuleCompetitionsQuery<TData>): UseQueryOptions<ArrayOfCompetitionResponseForEmpty, Error, TData> => ({
     queryKey: arenaWagerModuleQueryKeys.competitions(client?.contractAddress, args),
     queryFn: () => client ? client.competitions({
+      filter: args.filter,
       limit: args.limit,
-      startAfter: args.startAfter,
-      status: args.status
+      startAfter: args.startAfter
     }) : Promise.reject(new Error("Invalid client")),
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
@@ -141,9 +141,9 @@ export function useArenaWagerModuleQueryExtensionQuery<TData = Binary>({
 }
 export interface ArenaWagerModuleCompetitionsQuery<TData> extends ArenaWagerModuleReactQuery<ArrayOfCompetitionResponseForEmpty, TData> {
   args: {
+    filter?: CompetitionsFilter;
     limit?: number;
     startAfter?: Uint128;
-    status?: CompetitionStatus;
   };
 }
 export function useArenaWagerModuleCompetitionsQuery<TData = ArrayOfCompetitionResponseForEmpty>({
@@ -152,9 +152,9 @@ export function useArenaWagerModuleCompetitionsQuery<TData = ArrayOfCompetitionR
   options
 }: ArenaWagerModuleCompetitionsQuery<TData>) {
   return useQuery<ArrayOfCompetitionResponseForEmpty, Error, TData>(arenaWagerModuleQueryKeys.competitions(client?.contractAddress, args), () => client ? client.competitions({
+    filter: args.filter,
     limit: args.limit,
-    startAfter: args.startAfter,
-    status: args.status
+    startAfter: args.startAfter
   }) : Promise.reject(new Error("Invalid client")), { ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
@@ -257,6 +257,29 @@ export function useArenaWagerModuleProcessCompetitionMutation(options?: Omit<Use
       funds
     } = {}
   }) => client.processCompetition(msg, fee, memo, funds), options);
+}
+export interface ArenaWagerModuleSubmitEvidenceMutation {
+  client: ArenaWagerModuleClient;
+  msg: {
+    evidence: string[];
+    id: Uint128;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaWagerModuleSubmitEvidenceMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleSubmitEvidenceMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaWagerModuleSubmitEvidenceMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.submitEvidence(msg, fee, memo, funds), options);
 }
 export interface ArenaWagerModuleCreateCompetitionMutation {
   client: ArenaWagerModuleClient;

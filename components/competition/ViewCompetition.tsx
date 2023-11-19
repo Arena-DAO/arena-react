@@ -67,6 +67,11 @@ export default function ViewCompetition({
     onOpen: onOpenPresetModal,
     onClose: onClosePresetModal,
   } = useDisclosure();
+  const {
+    isOpen: isOpenEvidenceModal,
+    onOpen: onOpenEvidenceModal,
+    onClose: onCloseEvidenceModal,
+  } = useDisclosure();
   const query = useArenaWagerModuleCompetitionQuery({
     client: new ArenaWagerModuleQueryClient(cosmwasmClient, module_addr),
     args: { id: id },
@@ -163,6 +168,16 @@ export default function ViewCompetition({
               notifyIsActive={() => notifyStatusChanged("active")}
             />
           )}
+          {data.evidence.length > 0 && (
+            <>
+              <Heading size="md">Evidence</Heading>
+              <List {...listProps}>
+                {data.evidence.map((x, i) => (
+                  <ListItem key={i}>{x.content}</ListItem>
+                ))}
+              </List>
+            </>
+          )}
           <ButtonGroup overflowX="auto" scrollPaddingBottom="0">
             {data.status !== "inactive" && (
               <>
@@ -191,6 +206,11 @@ export default function ViewCompetition({
                 }}
               >
                 Jail Wager
+              </Button>
+            )}
+            {data.status == "jailed" && (
+              <Button minW="150px" onClick={() => onOpenEvidenceModal()}>
+                Submit Evidence
               </Button>
             )}
           </ButtonGroup>

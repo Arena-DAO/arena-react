@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee, Coin } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Duration, ExecuteExt, Result, Action, ProposeMessage, MemberShareForString, ModuleInstantiateInfo, CompetitionInstantiateExt, MatchResult, QueryMsg, CompetitionStatus, QueryExt, MigrateMsg, Null, Addr, CompetitionResponseForCompetitionExt, CompetitionExt, MemberShareForAddr, ArrayOfCompetitionResponseForCompetitionExt, Config, OwnershipForString } from "./ArenaLeagueModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Duration, ExecuteExt, Result, Action, ProposeMessage, MemberShareForString, ModuleInstantiateInfo, CompetitionInstantiateExt, MatchResult, QueryMsg, CompetitionsFilter, CompetitionStatus, QueryExt, MigrateMsg, Null, Addr, CompetitionResponseForCompetitionExt, Evidence, CompetitionExt, MemberShareForAddr, ArrayOfCompetitionResponseForCompetitionExt, Config, OwnershipForString } from "./ArenaLeagueModule.types";
 import { ArenaLeagueModuleQueryClient, ArenaLeagueModuleClient } from "./ArenaLeagueModule.client";
 export const arenaLeagueModuleQueryKeys = {
   contract: ([{
@@ -79,9 +79,9 @@ export const arenaLeagueModuleQueries = {
   }: ArenaLeagueModuleCompetitionsQuery<TData>): UseQueryOptions<ArrayOfCompetitionResponseForCompetitionExt, Error, TData> => ({
     queryKey: arenaLeagueModuleQueryKeys.competitions(client?.contractAddress, args),
     queryFn: () => client ? client.competitions({
+      filter: args.filter,
       limit: args.limit,
-      startAfter: args.startAfter,
-      status: args.status
+      startAfter: args.startAfter
     }) : Promise.reject(new Error("Invalid client")),
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
@@ -141,9 +141,9 @@ export function useArenaLeagueModuleQueryExtensionQuery<TData = Binary>({
 }
 export interface ArenaLeagueModuleCompetitionsQuery<TData> extends ArenaLeagueModuleReactQuery<ArrayOfCompetitionResponseForCompetitionExt, TData> {
   args: {
+    filter?: CompetitionsFilter;
     limit?: number;
     startAfter?: Uint128;
-    status?: CompetitionStatus;
   };
 }
 export function useArenaLeagueModuleCompetitionsQuery<TData = ArrayOfCompetitionResponseForCompetitionExt>({
@@ -152,9 +152,9 @@ export function useArenaLeagueModuleCompetitionsQuery<TData = ArrayOfCompetition
   options
 }: ArenaLeagueModuleCompetitionsQuery<TData>) {
   return useQuery<ArrayOfCompetitionResponseForCompetitionExt, Error, TData>(arenaLeagueModuleQueryKeys.competitions(client?.contractAddress, args), () => client ? client.competitions({
+    filter: args.filter,
     limit: args.limit,
-    startAfter: args.startAfter,
-    status: args.status
+    startAfter: args.startAfter
   }) : Promise.reject(new Error("Invalid client")), { ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
@@ -257,6 +257,29 @@ export function useArenaLeagueModuleProcessCompetitionMutation(options?: Omit<Us
       funds
     } = {}
   }) => client.processCompetition(msg, fee, memo, funds), options);
+}
+export interface ArenaLeagueModuleSubmitEvidenceMutation {
+  client: ArenaLeagueModuleClient;
+  msg: {
+    evidence: string[];
+    id: Uint128;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaLeagueModuleSubmitEvidenceMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaLeagueModuleSubmitEvidenceMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaLeagueModuleSubmitEvidenceMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.submitEvidence(msg, fee, memo, funds), options);
 }
 export interface ArenaLeagueModuleCreateCompetitionMutation {
   client: ArenaLeagueModuleClient;

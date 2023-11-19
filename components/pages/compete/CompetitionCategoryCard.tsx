@@ -4,11 +4,13 @@ import { Card, CardBody } from "@chakra-ui/card";
 import { CategoryItem } from "@config/featured";
 import NextLink from "next/link";
 
-interface FeaturedDAOItemCardProps {
+interface CompetitionCategoryCardProps {
   item: CategoryItem;
 }
 
-export function FeaturedDAOItemCard({ item }: FeaturedDAOItemCardProps) {
+export function CompetitionCategoryCard({
+  item,
+}: CompetitionCategoryCardProps) {
   const cardBg = useColorModeValue("white", "gray.800");
 
   return (
