@@ -1,7 +1,7 @@
 import { Heading } from "@chakra-ui/layout";
 import { Image, VStack, useColorModeValue, LinkBox } from "@chakra-ui/react";
 import { Card, CardBody } from "@chakra-ui/card";
-import { CategoryItem } from "@config/featured";
+import { CategoryItem } from "@config/categories";
 import NextLink from "next/link";
 
 interface CompetitionCategoryCardProps {

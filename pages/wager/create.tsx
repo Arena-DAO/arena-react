@@ -3,7 +3,6 @@ import { Button, useToast } from "@chakra-ui/react";
 import { useChain } from "@cosmos-kit/react";
 import { InstantiateMsg as DaoDaoCoreInstantiateMsg } from "@dao/DaoDaoCore.types";
 import { InstantiateMsg as ArenaEscrowInstantiateMsg } from "@arena/ArenaEscrow.types";
-import { ArenaCoreQueryClient } from "@arena/ArenaCore.client";
 import { ArenaWagerModuleClient } from "@arena/ArenaWagerModule.client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
@@ -20,13 +19,11 @@ import { format } from "date-fns";
 import moment from "moment-timezone";
 import { CosmWasmClient, toBinary } from "@cosmjs/cosmwasm-stargate";
 import env from "config/env";
-import { CompetitionModuleResponseForString } from "@arena/ArenaCore.types";
-import { DaoDaoCoreQueryClient } from "@dao/DaoDaoCore.client";
 import { CreateCompetitionSchema } from "@config/schemas";
 import CreateCompetitionForm, {
   CreateCompetitionFormValues,
 } from "@components/competition/CreateCompetitionForm";
-import { CategoryMap } from "@config/featured";
+import { CategoryMap } from "@config/categories";
 
 interface WagerFormProps {
   cosmwasmClient: CosmWasmClient;

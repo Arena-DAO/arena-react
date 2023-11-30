@@ -4,7 +4,7 @@ import {
   SimpleGrid,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { CategoryMap, CategoryRoot } from "@config/featured";
+import { CategoryMap, CategoryRoot } from "@config/categories";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { CompetitionCategoryCard } from "@components/pages/compete/CompetitionCategoryCard";

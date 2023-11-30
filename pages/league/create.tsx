@@ -22,7 +22,7 @@ import { CosmWasmClient, toBinary } from "@cosmjs/cosmwasm-stargate";
 import env from "config/env";
 import { z } from "zod";
 import { CompetitionInstantiateExt } from "@arena/ArenaLeagueModule.types";
-import { CategoryMap } from "@config/featured";
+import { CategoryMap } from "@config/categories";
 import { CreateCompetitionSchema, DurationSchema } from "@config/schemas";
 import CreateCompetitionForm from "@components/competition/CreateCompetitionForm";
 

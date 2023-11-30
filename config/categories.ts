@@ -78,34 +78,26 @@ export const CategoryRoot: CategoryItem = {
           title: "Soccer",
           img: "/category_images/soccer.jpg",
           category_id: "10",
-          children: [
-            {
-              url: "soccer-kc",
-              img: "/category_images/soccer.jpg",
-              title: "KC Soccer",
-              category_id: "11",
-            },
-          ],
         },
-        { url: "tennis", title: "Tennis", img: "/category_images/tennis.jpg", category_id: "12" },
         {
           url: "basketball",
           title: "Basketball",
           img: "/category_images/basketball.jpg",
-          category_id: "13",
+          category_id: "11",
         },
         {
           url: "baseball",
           title: "Baseball",
           img: "/category_images/baseball.webp",
-          category_id: "14",
+          category_id: "12",
         },
         {
           url: "volleyball",
           title: "Volleyball",
           img: "/category_images/volleyball.webp",
-          category_id: "15",
+          category_id: "13",
         },
+        { url: "tennis", title: "Tennis", img: "/category_images/tennis.jpg", category_id: "14" },
       ],
     },
     {
