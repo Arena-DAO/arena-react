@@ -170,10 +170,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         if (id) break;
       }
 
-      if (id)
-        router.push(
-          `/wager/view?category=${categoryItem.category_id!}&id=${id}`
-        );
+      if (id) router.push(`/wager/view?category=${category}&id=${id}`);
     } catch (e: any) {
       console.error(e);
       toast({

@@ -13,6 +13,7 @@ interface CompetitionsSectionProps {
   category_id: string;
   module_addr: string;
   path: string;
+  category: string;
 }
 
 interface CompetitionsSectionItemsProps extends CompetitionsSectionProps {
@@ -23,6 +24,7 @@ interface CompetitionsSectionItemsProps extends CompetitionsSectionProps {
 
 function CompetitionsSectionItems({
   cosmwasmClient,
+  category,
   category_id,
   startAfter,
   setLastCompetitionId,
@@ -65,7 +67,10 @@ function CompetitionsSectionItems({
             <Text mt={2}>{competition.description}</Text>
           </CardBody>
           <CardFooter>
-            <Link as={NextLink} href={`/${path}/view?id=${competition.id}`}>
+            <Link
+              as={NextLink}
+              href={`/${path}/view?category=${category}&id=${competition.id}`}
+            >
               <Button>View</Button>
             </Link>
           </CardFooter>
@@ -80,6 +85,7 @@ export function CompetitionsSection({
   category_id,
   module_addr,
   title,
+  category,
   path,
 }: CompetitionsSectionProps & { title: string }) {
   const [isEmptyData, setIsEmptyData] = useState(true);
@@ -101,6 +107,7 @@ export function CompetitionsSection({
             startAfter={page}
             setLastCompetitionId={setLastCompetitionId}
             module_addr={module_addr}
+            category={category}
             path={path}
             setIsEmptyData={setIsEmptyData}
           />

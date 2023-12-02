@@ -175,6 +175,7 @@ export type MigrateMsg = {
 export type Null = null;
 export type Addr = string;
 export interface CompetitionResponseForCompetitionExt {
+  category_id: Uint128;
   dao: Addr;
   description: string;
   escrow?: Addr | null;

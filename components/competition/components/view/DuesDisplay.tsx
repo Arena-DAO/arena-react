@@ -3,7 +3,14 @@ import {
   ExecuteInstruction,
   toBinary,
 } from "@cosmjs/cosmwasm-stargate";
-import { Button, CardHeader, Heading, Stack, useToast } from "@chakra-ui/react";
+import {
+  Button,
+  CardHeader,
+  Heading,
+  SimpleGrid,
+  Stack,
+  useToast,
+} from "@chakra-ui/react";
 import { UserOrDAOCard } from "@components/cards/UserOrDAOCard";
 import { BalanceCard } from "@components/cards/BalanceCard";
 import { useChain } from "@cosmos-kit/react";
@@ -203,7 +210,7 @@ export function DuesDisplay({
   if (dues.length == 0) return null;
 
   return (
-    <Stack>
+    <SimpleGrid minChildWidth={"200px"} spacing="20px">
       {dues?.map((x, i) => {
         return (
           <BalanceCard
@@ -229,6 +236,6 @@ export function DuesDisplay({
           />
         );
       })}
-    </Stack>
+    </SimpleGrid>
   );
 }

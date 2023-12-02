@@ -30,6 +30,7 @@ import {
   CardHeader,
   CardBody,
   ButtonGroup,
+  Skeleton,
 } from "@chakra-ui/react";
 import { UserOrDAOCard } from "@components/cards/UserOrDAOCard";
 import env from "@config/env";
@@ -82,21 +83,22 @@ export function PresetDistributionModal({
   onClose,
   address,
 }: PresetDistributionModalProps) {
-  const { data, isLoading, isError } = useArenaEscrowDistributionQuery({
+  const { data, isLoading } = useArenaEscrowDistributionQuery({
     client: new ArenaEscrowQueryClient(cosmwasmClient, escrow_addr),
     args: { addr: address },
   });
 
-  if (isLoading || isError) return null;
   return (
-    <PresetDistributionInner
-      escrow_addr={escrow_addr}
-      cosmwasmClient={cosmwasmClient}
-      isOpen={isOpen}
-      onClose={onClose}
-      address={address}
-      data={data || undefined}
-    />
+    <Skeleton isLoaded={!isLoading}>
+      <PresetDistributionInner
+        escrow_addr={escrow_addr}
+        cosmwasmClient={cosmwasmClient}
+        isOpen={isOpen}
+        onClose={onClose}
+        address={address}
+        data={data || undefined}
+      />
+    </Skeleton>
   );
 }
 

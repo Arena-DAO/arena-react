@@ -75,11 +75,13 @@ export default function Compete() {
             cosmwasmClient={cosmwasmClient}
             category_id={daoItem.category_id}
             module_addr={env.ARENA_WAGER_MODULE_ADDRESS}
+            category={category as string}
             path="wager"
           />
           <CompetitionsSection
             title="Leagues"
             cosmwasmClient={cosmwasmClient}
+            category={category as string}
             category_id={daoItem.category_id}
             module_addr={env.ARENA_LEAGUE_MODULE_ADDRESS}
             path="league"
