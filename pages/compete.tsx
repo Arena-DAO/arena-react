@@ -1,5 +1,9 @@
 import {
+  Box,
+  Button,
+  ButtonGroup,
   Container,
+  Flex,
   Heading,
   SimpleGrid,
   useBreakpointValue,
@@ -12,6 +16,8 @@ import { CompetitionsSection } from "@components/pages/compete/CompetitionsSecti
 import env from "@config/env";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
+import { AddIcon } from "@chakra-ui/icons";
+import NextLink from "next/link";
 
 export default function Compete() {
   const router = useRouter();
@@ -43,15 +49,27 @@ export default function Compete() {
   return (
     <Container maxW={{ base: "full" }} centerContent pb={10}>
       <Heading mb="6">
-        {daoItem.title} {daoItem.children && "Categories"}
+        {daoItem.title} {"children" in daoItem && "Categories"}
       </Heading>
-      <SimpleGrid minChildWidth={minChildWidth} spacing="5" width="100%">
-        {daoItem.children?.map((x) => {
-          return <CompetitionCategoryCard item={x} key={x.url} />;
-        })}
-      </SimpleGrid>
-      {daoItem.category_id && cosmwasmClient && (
+      {"children" in daoItem && (
+        <SimpleGrid minChildWidth={minChildWidth} spacing="5" width="100%">
+          {daoItem.children.map((x) => {
+            return <CompetitionCategoryCard item={x} key={x.url} />;
+          })}
+        </SimpleGrid>
+      )}
+      {"category_id" in daoItem && cosmwasmClient && (
         <>
+          <Flex w="full" justifyContent={"flex-end"}>
+            <ButtonGroup variant="outline" size="sm">
+              <NextLink href={`/wager/create?category=${category}`}>
+                <Button leftIcon={<AddIcon />}>Create Wager</Button>
+              </NextLink>
+              <NextLink href={`/league/create?category=${category}`}>
+                <Button leftIcon={<AddIcon />}>Create League</Button>
+              </NextLink>
+            </ButtonGroup>
+          </Flex>
           <CompetitionsSection
             title="Wagers"
             cosmwasmClient={cosmwasmClient}

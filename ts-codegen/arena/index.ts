@@ -10,12 +10,12 @@ import * as _2 from "./ArenaWagerModule.react-query";
 import * as _3 from "./ArenaLeagueModule.types";
 import * as _4 from "./ArenaLeagueModule.client";
 import * as _5 from "./ArenaLeagueModule.react-query";
-import * as _6 from "./ArenaCore.types";
-import * as _7 from "./ArenaCore.client";
-import * as _8 from "./ArenaCore.react-query";
-import * as _9 from "./ArenaEscrow.types";
-import * as _10 from "./ArenaEscrow.client";
-import * as _11 from "./ArenaEscrow.react-query";
+import * as _6 from "./ArenaEscrow.types";
+import * as _7 from "./ArenaEscrow.client";
+import * as _8 from "./ArenaEscrow.react-query";
+import * as _9 from "./ArenaCore.types";
+import * as _10 from "./ArenaCore.client";
+import * as _11 from "./ArenaCore.react-query";
 export namespace contracts {
   export const ArenaWagerModule = { ..._0,
     ..._1,
@@ -25,11 +25,11 @@ export namespace contracts {
     ..._4,
     ..._5
   };
-  export const ArenaCore = { ..._6,
+  export const ArenaEscrow = { ..._6,
     ..._7,
     ..._8
   };
-  export const ArenaEscrow = { ..._9,
+  export const ArenaCore = { ..._9,
     ..._10,
     ..._11
   };

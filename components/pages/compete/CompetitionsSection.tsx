@@ -1,9 +1,9 @@
 import { ArenaWagerModuleQueryClient } from "@arena/ArenaWagerModule.client";
 import { useArenaWagerModuleCompetitionsQuery } from "@arena/ArenaWagerModule.react-query";
 import { Card, CardBody, CardFooter, CardHeader } from "@chakra-ui/card";
-import { Badge, Heading, Link, SimpleGrid } from "@chakra-ui/layout";
+import { Badge, Box, Heading, Link, SimpleGrid } from "@chakra-ui/layout";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button, Text } from "@chakra-ui/react";
 import { statusColors } from "~/helpers/ArenaHelpers";
 import NextLink from "next/link";
@@ -18,6 +18,7 @@ interface CompetitionsSectionProps {
 interface CompetitionsSectionItemsProps extends CompetitionsSectionProps {
   startAfter?: string;
   setLastCompetitionId: (id: string) => void;
+  setIsEmptyData: Dispatch<SetStateAction<boolean>>;
 }
 
 function CompetitionsSectionItems({
@@ -27,6 +28,7 @@ function CompetitionsSectionItems({
   setLastCompetitionId,
   module_addr,
   path,
+  setIsEmptyData,
 }: CompetitionsSectionItemsProps) {
   const { data } = useArenaWagerModuleCompetitionsQuery({
     client: new ArenaWagerModuleQueryClient(cosmwasmClient, module_addr),
@@ -37,12 +39,13 @@ function CompetitionsSectionItems({
   });
 
   useEffect(() => {
-    if (data && data.length > 0) {
-      setLastCompetitionId(data[data.length - 1]!.id);
+    if (data && "length" in data) {
+      if (data.length > 0) setLastCompetitionId(data[data.length - 1]!.id);
+      setIsEmptyData(data.length > 0);
     }
-  }, [data, setLastCompetitionId]);
+  }, [data, setLastCompetitionId, setIsEmptyData]);
 
-  if (!data || data.length == 0) return null;
+  if (!data || data.length == 0) return <Box py="14" />;
 
   return (
     <>
@@ -79,6 +82,7 @@ export function CompetitionsSection({
   title,
   path,
 }: CompetitionsSectionProps & { title: string }) {
+  const [isEmptyData, setIsEmptyData] = useState(true);
   const [pages, setPages] = useState<[string | undefined]>([undefined]);
   const [lastCompetitionId, setLastCompetitionId] = useState<
     string | undefined
@@ -98,23 +102,27 @@ export function CompetitionsSection({
             setLastCompetitionId={setLastCompetitionId}
             module_addr={module_addr}
             path={path}
+            setIsEmptyData={setIsEmptyData}
           />
         ))}
       </SimpleGrid>
-      <Button
-        aria-label="Load more"
-        size="xs"
-        variant="ghost"
-        alignSelf="flex-end"
-        onClick={() => {
-          setPages((x) => {
-            x.push(lastCompetitionId);
-            return x;
-          });
-        }}
-      >
-        Load More...
-      </Button>
+      {!isEmptyData && (
+        <Button
+          aria-label="Load more"
+          size="xs"
+          variant="ghost"
+          alignSelf="flex-end"
+          onClick={() => {
+            if (lastCompetitionId)
+              setPages((x) => {
+                x.push(lastCompetitionId);
+                return x;
+              });
+          }}
+        >
+          Load More...
+        </Button>
+      )}
     </>
   );
 }

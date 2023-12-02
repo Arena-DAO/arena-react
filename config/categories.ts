@@ -1,17 +1,28 @@
-export interface CategoryItem {
+interface BaseCategoryItem {
   url: string;
   title?: string;
-  children?: CategoryItem[];
-  category_id?: string;
   img?: string;
 }
+
+interface CategoryItemWithChildren extends BaseCategoryItem {
+  children: CategoryItem[];
+}
+
+interface CategoryItemWithCategoryId extends BaseCategoryItem {
+  category_id: string;
+}
+
+export type CategoryItem = CategoryItemWithChildren | CategoryItemWithCategoryId;
+
 
 function populateItemToMap(
   daoItem: CategoryItem,
   daoMap: Map<string, CategoryItem> = new Map()
 ): Map<string, CategoryItem> {
   if (daoItem.url) daoMap.set(daoItem.url, daoItem);
-  daoItem.children?.forEach((child) => populateItemToMap(child, daoMap));
+  if ('children' in daoItem) {
+    daoItem.children.forEach((child) => populateItemToMap(child, daoMap));
+  }
   return daoMap;
 }
 
@@ -65,13 +76,18 @@ export const CategoryRoot: CategoryItem = {
           img: "/category_images/apex-legends.webp",
           category_id: "8",
         },
+        {
+          url: "valorant",
+          title: "Valorant",
+          img: "/category_images/valorant.webp",
+          category_id: "9",
+        },
       ],
     },
     {
       url: "sports",
       title: "Sports",
       img: "/category_images/sports.jpg",
-      category_id: "9",
       children: [
         {
           url: "soccer",

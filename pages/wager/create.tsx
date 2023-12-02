@@ -34,7 +34,8 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
   const category = router.query.category;
   if (!category) throw "No category provided";
   const categoryItem = CategoryMap.get(category as string);
-  if (!categoryItem || !categoryItem.category_id) throw "No category_id found";
+  if (!categoryItem || !("category_id" in categoryItem))
+    throw "No category_id found";
   const toast = useToast();
   const { getSigningCosmWasmClient, address, isWalletConnected } = useChain(
     env.CHAIN

@@ -105,7 +105,17 @@ export type ExecuteExt = {
 } | {
   update_categories: {
     to_add: NewCompetitionCategory[];
-    to_disable: Uint128[];
+    to_edit: EditCompetitionCategory[];
+  };
+};
+export type EditCompetitionCategory = {
+  disable: {
+    category_id: Uint128;
+  };
+} | {
+  edit: {
+    category_id: Uint128;
+    name: string;
   };
 };
 export type Status = "open" | "rejected" | "passed" | "executed" | "closed" | "execution_failed";
