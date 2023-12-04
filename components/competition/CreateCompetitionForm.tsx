@@ -20,23 +20,19 @@ import {
   Tooltip,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
 import {
   Control,
   FormProvider,
   useFieldArray,
   useFormContext,
-  useWatch,
 } from "react-hook-form";
 import { z } from "zod";
-import { useEffect } from "react";
 import moment from "moment-timezone";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
-import { AddressSchema, CreateCompetitionSchema } from "@config/schemas";
+import { CreateCompetitionSchema } from "@config/schemas";
 import { AddRulesetForm } from "./components/create/AddRulesetForm";
 import { AddTeamForm } from "./components/create/AddTeamForm";
-import { DAOCard } from "@components/cards/DAOCard";
 
 export type CreateCompetitionFormValues = z.infer<
   typeof CreateCompetitionSchema
@@ -56,13 +52,10 @@ export default function CreateCompetitionForm({
   cosmwasmClient,
   category_id,
 }: CreateCompetitionFormProps) {
-  const router = useRouter();
-
   const formMethods = useFormContext<CreateCompetitionFormValues, any>();
   const {
     register,
     control,
-    setValue,
     watch,
     formState: { errors },
   } = formMethods;

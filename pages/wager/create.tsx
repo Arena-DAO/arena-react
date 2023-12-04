@@ -69,8 +69,11 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
           },
         },
       ],
-      competition_dao_name: "Arena Competition DAO",
-      competition_dao_description: "A DAO for handling an Arena Competition",
+      competition_dao_name: "Arena Competition DAO - " + categoryItem.title,
+      competition_dao_description:
+        "A DAO for handling an Arena Competition in " +
+        categoryItem.title +
+        ".",
     },
     resolver: zodResolver(CreateCompetitionSchema),
   });

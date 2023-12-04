@@ -56,6 +56,8 @@ export function AddRulesetForm({
   if (!data) return null;
 
   const rulesets = data as unknown as Ruleset[];
+  if (rulesets.length == 0) return null;
+
   return (
     <FormControl>
       <FormLabel>Rulesets</FormLabel>
