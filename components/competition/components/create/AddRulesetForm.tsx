@@ -22,7 +22,7 @@ import {
 } from "@chakra-ui/react";
 import env from "@config/env";
 import { useState } from "react";
-import { useFieldArray, useWatch } from "react-hook-form";
+import { useFieldArray } from "react-hook-form";
 import { Ruleset } from "@arena/ArenaCore.types";
 import { FormComponentProps } from "../../CreateCompetitionForm";
 import { useArenaCoreQueryExtensionQuery } from "@arena/ArenaCore.react-query";
@@ -71,7 +71,9 @@ export function AddRulesetForm({
           </Thead>
           <Tbody>
             {rulesets.map((ruleset, i) => {
-              const isRulesetSelected = fields.find((x) => x.id == ruleset.id);
+              const isRulesetSelected = fields.find(
+                (x) => x.ruleset_id == ruleset.id
+              );
 
               return (
                 <Tr key={i}>
@@ -94,7 +96,7 @@ export function AddRulesetForm({
                         onClick={() =>
                           remove(
                             fields.indexOf(
-                              fields.find((x) => x.id == ruleset.id)!
+                              fields.find((x) => x.ruleset_id == ruleset.id)!
                             )
                           )
                         }
@@ -122,17 +124,18 @@ export function AddRulesetForm({
             </UnorderedList>
           </ModalBody>
           <ModalFooter>
-            {modalRuleset && !fields.find((x) => x.id == modalRuleset.id) && (
-              <Button
-                {...buttonProps}
-                onClick={() => {
-                  append({ ruleset_id: modalRuleset.id });
-                  onClose();
-                }}
-              >
-                Select
-              </Button>
-            )}
+            {modalRuleset &&
+              !fields.find((x) => x.ruleset_id == modalRuleset.id) && (
+                <Button
+                  {...buttonProps}
+                  onClick={() => {
+                    append({ ruleset_id: modalRuleset.id });
+                    onClose();
+                  }}
+                >
+                  Select
+                </Button>
+              )}
           </ModalFooter>
         </ModalContent>
       </Modal>
