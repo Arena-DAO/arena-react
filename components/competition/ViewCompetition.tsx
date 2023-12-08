@@ -1,6 +1,8 @@
 import {
   Badge,
+  Box,
   Heading,
+  Link,
   List,
   ListItem,
   ListProps,
@@ -41,6 +43,8 @@ import {
   ProposalPromptModalAction,
 } from "./components/view/ProposalPromptModal";
 import { RulesetDisplay } from "./components/view/RulesetDisplay";
+import { BsYinYang } from "react-icons/bs";
+import NextLink from "next/link";
 
 interface ViewCompetitionProps {
   cosmwasmClient: CosmWasmClient;
@@ -130,9 +134,20 @@ export default function ViewCompetition({
               {data.status}
             </Badge>
           </Heading>
-          <Heading size="md" fontWeight={"none"} mb="6">
+          <Heading size="md" fontWeight={"none"} mb="2">
             {data.description}
           </Heading>
+          <Box textAlign={"right"}>
+            <Link
+              as={NextLink}
+              href={env.DAO_DAO_URL + "/dao/" + data.dao}
+              _hover={{ textDecoration: "none" }}
+              _focus={{ outline: "none" }}
+              target="_blank"
+            >
+              <Button leftIcon={<BsYinYang />}>View Competition DAO</Button>
+            </Link>
+          </Box>
           {(data.rulesets.length > 0 || data.rules.length > 0) && (
             <Card>
               <CardHeader pb="0">
@@ -159,7 +174,7 @@ export default function ViewCompetition({
               </CardBody>
             </Card>
           )}
-          {data.status != "inactive" && data.escrow && (
+          {data.escrow && (
             <EscrowDisplay
               cosmwasmClient={cosmwasmClient}
               escrow_addr={data.escrow}
@@ -180,17 +195,16 @@ export default function ViewCompetition({
           <ButtonGroup overflowX="auto" scrollPaddingBottom="0" my="2">
             {data.status !== "inactive" && (
               <>
-                {!data.has_generated_proposals && (
-                  <Button
-                    minW="150px"
-                    onClick={() => {
-                      setPromptAction("Propose Result");
-                      onOpenProposalModal();
-                    }}
-                  >
-                    Propose Result
-                  </Button>
-                )}
+                <Button
+                  minW="150px"
+                  onClick={() => {
+                    setPromptAction("Propose Result");
+                    onOpenProposalModal();
+                  }}
+                >
+                  Propose Result
+                </Button>
+
                 <Button minW="200px" onClick={() => onOpenPresetModal()}>
                   Set Preset Distribution
                 </Button>
@@ -235,9 +249,7 @@ export default function ViewCompetition({
           {data.result && (
             <Card>
               <CardHeader pb="0">
-                <Heading mb="0" size="md">
-                  Result
-                </Heading>
+                <Heading size="lg">Result</Heading>
               </CardHeader>
               <CardBody>
                 <TableContainer>

@@ -17,7 +17,6 @@ interface DuesDisplaySectionProps extends DuesDisplayProps {
   setLastDue: (id: string) => void;
   setIsEmptyData: Dispatch<SetStateAction<boolean>>;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
-  setHasLoadedData: Dispatch<SetStateAction<boolean>>;
 }
 
 function InitialDuesSection({
@@ -27,7 +26,6 @@ function InitialDuesSection({
   setIsEmptyData,
   setLastDue,
   setIsLoading,
-  setHasLoadedData,
 }: DuesDisplaySectionProps) {
   const { data } = useArenaEscrowInitialDuesQuery({
     client: new ArenaEscrowQueryClient(cosmwasmClient, escrow_addr),
@@ -39,7 +37,6 @@ function InitialDuesSection({
       if (data.length > 0) setLastDue(data[data.length - 1]!.addr);
       setIsEmptyData(data.length < env.PAGINATION_LIMIT);
       setIsLoading(false);
-      setHasLoadedData(true);
     }
   }, [data, setLastDue, setIsEmptyData, setIsLoading]);
 
@@ -77,9 +74,6 @@ export function InitialDuesDisplay({
   const [isEmptyData, setIsEmptyData] = useState(true);
   const [lastDue, setLastDue] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [hasLoadedData, setHasLoadedData] = useState<boolean>(false);
-
-  if (hasLoadedData && lastDue == undefined) return null;
 
   return (
     <>
@@ -94,7 +88,6 @@ export function InitialDuesDisplay({
             setLastDue={setLastDue}
             setIsEmptyData={setIsEmptyData}
             setIsLoading={setIsLoading}
-            setHasLoadedData={setHasLoadedData}
           />
         ))}
       </SimpleGrid>
