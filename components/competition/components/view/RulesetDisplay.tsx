@@ -34,7 +34,7 @@ export function RulesetDisplay({
       <Card variant="outline">
         <CardHeader pb="0">
           <Heading mb="0" size="sm">
-            Ruleset {ruleset_id}
+            {ruleset?.description}
           </Heading>
         </CardHeader>
         <CardBody>

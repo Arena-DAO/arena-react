@@ -20,6 +20,7 @@ interface CompetitionsSectionItemsProps extends CompetitionsSectionProps {
   startAfter?: string;
   setLastCompetitionId: (id: string) => void;
   setIsEmptyData: Dispatch<SetStateAction<boolean>>;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
 }
 
 function CompetitionsSectionItems({
@@ -31,6 +32,7 @@ function CompetitionsSectionItems({
   module_addr,
   path,
   setIsEmptyData,
+  setIsLoading,
 }: CompetitionsSectionItemsProps) {
   const { data } = useArenaWagerModuleCompetitionsQuery({
     client: new ArenaWagerModuleQueryClient(cosmwasmClient, module_addr),
@@ -43,11 +45,15 @@ function CompetitionsSectionItems({
   useEffect(() => {
     if (data && "length" in data) {
       if (data.length > 0) setLastCompetitionId(data[data.length - 1]!.id);
-      setIsEmptyData(data.length > 0);
+      setIsEmptyData(data.length == 0);
+      setIsLoading(false);
     }
-  }, [data, setLastCompetitionId, setIsEmptyData]);
+  }, [data, setLastCompetitionId, setIsEmptyData, setIsLoading]);
 
-  if (!data || data.length == 0) return <Box py="14" />;
+  if (!data || data.length == 0) {
+    if (startAfter) return null;
+    else return <Text>No competitions yet...</Text>;
+  }
 
   return (
     <>
@@ -93,12 +99,14 @@ export function CompetitionsSection({
   const [lastCompetitionId, setLastCompetitionId] = useState<
     string | undefined
   >();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   return (
     <>
       <Heading as="h3" alignSelf="flex-start">
         {title}
       </Heading>
-      <SimpleGrid minChildWidth="250px" spacing="5" width="100%">
+      <SimpleGrid minChildWidth="250px" spacing="5" width="100%" my="2">
         {pages.map((page, index) => (
           <CompetitionsSectionItems
             key={index}
@@ -110,21 +118,25 @@ export function CompetitionsSection({
             category={category}
             path={path}
             setIsEmptyData={setIsEmptyData}
+            setIsLoading={setIsLoading}
           />
         ))}
       </SimpleGrid>
       {!isEmptyData && (
         <Button
+          my="2"
           aria-label="Load more"
-          size="xs"
           variant="ghost"
           alignSelf="flex-end"
+          isLoading={isLoading}
           onClick={() => {
-            if (lastCompetitionId)
+            if (lastCompetitionId) {
+              setIsLoading(true);
               setPages((x) => {
                 x.push(lastCompetitionId);
                 return x;
               });
+            }
           }}
         >
           Load More...

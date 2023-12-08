@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { Uint128, InstantiateMsg, MemberBalance, Balance, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Action, Expiration, Timestamp, Uint64, MemberShareForString, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, QueryMsg, MigrateMsg, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceVerified, MemberBalanceVerified, ArrayOfMemberShareForString, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
+import { Uint128, InstantiateMsg, MemberBalance, Balance, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Action, Expiration, Timestamp, Uint64, MemberShareForString, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, QueryMsg, MigrateMsg, NullableBalanceVerified, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceVerified, MemberBalanceVerified, NullableArrayOfMemberShareForString, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
 export interface ArenaEscrowReadOnlyInterface {
   contractAddress: string;
   balances: ({
@@ -20,13 +20,20 @@ export interface ArenaEscrowReadOnlyInterface {
     addr
   }: {
     addr: string;
-  }) => Promise<BalanceVerified>;
+  }) => Promise<NullableBalanceVerified>;
   due: ({
     addr
   }: {
     addr: string;
-  }) => Promise<BalanceVerified>;
+  }) => Promise<NullableBalanceVerified>;
   dues: ({
+    limit,
+    startAfter
+  }: {
+    limit?: number;
+    startAfter?: string;
+  }) => Promise<ArrayOfMemberBalanceVerified>;
+  initialDues: ({
     limit,
     startAfter
   }: {
@@ -39,13 +46,13 @@ export interface ArenaEscrowReadOnlyInterface {
     addr: string;
   }) => Promise<Boolean>;
   isFullyFunded: () => Promise<Boolean>;
-  totalBalance: () => Promise<BalanceVerified>;
+  totalBalance: () => Promise<NullableBalanceVerified>;
   isLocked: () => Promise<Boolean>;
   distribution: ({
     addr
   }: {
     addr: string;
-  }) => Promise<ArrayOfMemberShareForString>;
+  }) => Promise<NullableArrayOfMemberShareForString>;
   dumpState: ({
     addr
   }: {
@@ -64,6 +71,7 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
     this.balance = this.balance.bind(this);
     this.due = this.due.bind(this);
     this.dues = this.dues.bind(this);
+    this.initialDues = this.initialDues.bind(this);
     this.isFunded = this.isFunded.bind(this);
     this.isFullyFunded = this.isFullyFunded.bind(this);
     this.totalBalance = this.totalBalance.bind(this);
@@ -91,7 +99,7 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
     addr
   }: {
     addr: string;
-  }): Promise<BalanceVerified> => {
+  }): Promise<NullableBalanceVerified> => {
     return this.client.queryContractSmart(this.contractAddress, {
       balance: {
         addr
@@ -102,7 +110,7 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
     addr
   }: {
     addr: string;
-  }): Promise<BalanceVerified> => {
+  }): Promise<NullableBalanceVerified> => {
     return this.client.queryContractSmart(this.contractAddress, {
       due: {
         addr
@@ -118,6 +126,20 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
   }): Promise<ArrayOfMemberBalanceVerified> => {
     return this.client.queryContractSmart(this.contractAddress, {
       dues: {
+        limit,
+        start_after: startAfter
+      }
+    });
+  };
+  initialDues = async ({
+    limit,
+    startAfter
+  }: {
+    limit?: number;
+    startAfter?: string;
+  }): Promise<ArrayOfMemberBalanceVerified> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      initial_dues: {
         limit,
         start_after: startAfter
       }
@@ -139,7 +161,7 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
       is_fully_funded: {}
     });
   };
-  totalBalance = async (): Promise<BalanceVerified> => {
+  totalBalance = async (): Promise<NullableBalanceVerified> => {
     return this.client.queryContractSmart(this.contractAddress, {
       total_balance: {}
     });
@@ -153,7 +175,7 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
     addr
   }: {
     addr: string;
-  }): Promise<ArrayOfMemberShareForString> => {
+  }): Promise<NullableArrayOfMemberShareForString> => {
     return this.client.queryContractSmart(this.contractAddress, {
       distribution: {
         addr

@@ -163,7 +163,6 @@ export default function ViewCompetition({
             <EscrowDisplay
               cosmwasmClient={cosmwasmClient}
               escrow_addr={data.escrow}
-              wager_id={data.id}
               wager_status={data.status}
               notifyIsActive={() => notifyStatusChanged("active")}
             />

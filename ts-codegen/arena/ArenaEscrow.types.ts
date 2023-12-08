@@ -107,6 +107,11 @@ export type QueryMsg = {
     start_after?: string | null;
   };
 } | {
+  initial_dues: {
+    limit?: number | null;
+    start_after?: string | null;
+  };
+} | {
   is_funded: {
     addr: string;
   };
@@ -130,6 +135,7 @@ export type QueryMsg = {
 export type MigrateMsg = {
   from_compatible: {};
 };
+export type NullableBalanceVerified = BalanceVerified | null;
 export type Addr = string;
 export interface BalanceVerified {
   cw20: Cw20CoinVerified[];
@@ -149,12 +155,12 @@ export interface MemberBalanceVerified {
   addr: Addr;
   balance: BalanceVerified;
 }
-export type ArrayOfMemberShareForString = MemberShareForString[];
+export type NullableArrayOfMemberShareForString = MemberShareForString[] | null;
 export interface DumpStateResponse {
-  balance: BalanceVerified;
-  dues: MemberBalanceVerified[];
+  balance?: BalanceVerified | null;
+  due?: BalanceVerified | null;
   is_locked: boolean;
-  total_balance: BalanceVerified;
+  total_balance?: BalanceVerified | null;
 }
 export type Boolean = boolean;
 export interface OwnershipForString {

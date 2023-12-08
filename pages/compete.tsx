@@ -6,6 +6,7 @@ import {
   Flex,
   Heading,
   SimpleGrid,
+  Stack,
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { CategoryMap, CategoryRoot } from "@config/categories";
@@ -61,7 +62,7 @@ export default function Compete() {
       {"category_id" in daoItem && cosmwasmClient && (
         <>
           <Flex w="full" justifyContent={"flex-end"}>
-            <ButtonGroup variant="outline" size="sm">
+            <ButtonGroup variant="outline">
               <NextLink href={`/wager/create?category=${category}`}>
                 <Button leftIcon={<AddIcon />}>Create Wager</Button>
               </NextLink>

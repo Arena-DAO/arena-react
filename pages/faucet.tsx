@@ -3,7 +3,7 @@ import {
   FormLabel,
   FormErrorMessage,
 } from "@chakra-ui/form-control";
-import { Container, Heading, Stack } from "@chakra-ui/layout";
+import { Box, Container, Heading, Stack } from "@chakra-ui/layout";
 import { Button, Input, useToast } from "@chakra-ui/react";
 import env from "@config/env";
 import { AddressSchema } from "@config/schemas";
@@ -62,14 +62,15 @@ export default function Faucet() {
             <Input {...register("address")} />
             <FormErrorMessage>{errors.address?.message}</FormErrorMessage>
           </FormControl>
-          <Button
-            type="submit"
-            colorScheme="secondary"
-            isLoading={isSubmitting}
-            maxW="150px"
-          >
-            Submit
-          </Button>
+          <Box mt="2">
+            <Button
+              type="submit"
+              colorScheme="secondary"
+              isLoading={isSubmitting}
+            >
+              Submit
+            </Button>
+          </Box>
         </Stack>
       </form>
     </Container>

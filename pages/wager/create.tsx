@@ -193,14 +193,15 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
             category_id={categoryItem.category_id!}
             cosmwasmClient={cosmwasmClient}
           />
-          <Button
-            type="submit"
-            isDisabled={!isWalletConnected}
-            isLoading={isSubmitting}
-            maxW="150px"
-          >
-            Submit
-          </Button>
+          <Box mt="2">
+            <Button
+              type="submit"
+              isDisabled={!isWalletConnected}
+              isLoading={isSubmitting}
+            >
+              Submit
+            </Button>
+          </Box>
         </Stack>
       </form>
     </FormProvider>
