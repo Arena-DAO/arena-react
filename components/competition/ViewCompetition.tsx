@@ -130,13 +130,13 @@ export default function ViewCompetition({
               {data.status}
             </Badge>
           </Heading>
-          <Text>{data.description}</Text>
+          <Heading size="md" fontWeight={"none"} mb="6">
+            {data.description}
+          </Heading>
           {(data.rulesets.length > 0 || data.rules.length > 0) && (
             <Card>
               <CardHeader pb="0">
-                <Heading mb="0" size="md">
-                  Rules
-                </Heading>
+                <Heading size="lg">Rules</Heading>
               </CardHeader>
               <CardBody>
                 <Stack>
@@ -177,7 +177,7 @@ export default function ViewCompetition({
               </List>
             </>
           )}
-          <ButtonGroup overflowX="auto" scrollPaddingBottom="0">
+          <ButtonGroup overflowX="auto" scrollPaddingBottom="0" my="2">
             {data.status !== "inactive" && (
               <>
                 {!data.has_generated_proposals && (

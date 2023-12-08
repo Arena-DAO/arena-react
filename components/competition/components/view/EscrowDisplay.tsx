@@ -22,6 +22,7 @@ import { BalanceCard } from "@components/cards/BalanceCard";
 import { ExecuteMsg as ArenaEscrowExecuteMsg } from "@arena/ArenaEscrow.types";
 import { ExecuteMsg as Cw20ExecuteMsg } from "@cw-plus/Cw20Base.types";
 import { ExecuteMsg as Cw721ExecuteMsg } from "@cw-nfts/Cw721Base.types";
+import { InitialDuesDisplay } from "./InitialDuesDisplay";
 
 interface EscrowDisplayProps {
   cosmwasmClient: CosmWasmClient;
@@ -169,8 +170,8 @@ export function EscrowDisplay({
             {data.balance && (
               <BalanceCard
                 header={
-                  <CardHeader>
-                    <Heading size="md">User Balance</Heading>
+                  <CardHeader pb="0">
+                    <Heading size="lg">User Balance</Heading>
                   </CardHeader>
                 }
                 variant={"outline"}
@@ -187,8 +188,8 @@ export function EscrowDisplay({
             {data.due && (
               <BalanceCard
                 header={
-                  <CardHeader>
-                    <Heading size="md">User Due</Heading>
+                  <CardHeader pb="0">
+                    <Heading size="lg">User Due</Heading>
                   </CardHeader>
                 }
                 variant={"outline"}
@@ -198,6 +199,10 @@ export function EscrowDisplay({
               />
             )}
           </SimpleGrid>
+          <InitialDuesDisplay
+            cosmwasmClient={cosmwasmClient}
+            escrow_addr={escrow_addr}
+          />
           <DuesDisplay
             cosmwasmClient={cosmwasmClient}
             escrow_addr={escrow_addr}
@@ -206,8 +211,8 @@ export function EscrowDisplay({
           {data.total_balance && (
             <BalanceCard
               header={
-                <CardHeader>
-                  <Heading size="md">Total Balance</Heading>
+                <CardHeader pb="0">
+                  <Heading size="lg">Total Balance</Heading>
                 </CardHeader>
               }
               variant={"outline"}

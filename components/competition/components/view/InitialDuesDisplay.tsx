@@ -4,13 +4,12 @@ import { UserOrDAOCard } from "@components/cards/UserOrDAOCard";
 import { BalanceCard } from "@components/cards/BalanceCard";
 import { ArenaEscrowQueryClient } from "@arena/ArenaEscrow.client";
 import { useState, useEffect, SetStateAction, Dispatch } from "react";
-import { useArenaEscrowDuesQuery } from "@arena/ArenaEscrow.react-query";
+import { useArenaEscrowInitialDuesQuery } from "@arena/ArenaEscrow.react-query";
 import env from "@config/env";
 
 interface DuesDisplayProps {
   cosmwasmClient: CosmWasmClient;
   escrow_addr: string;
-  balanceChanged: number;
 }
 
 interface DuesDisplaySectionProps extends DuesDisplayProps {
@@ -21,17 +20,16 @@ interface DuesDisplaySectionProps extends DuesDisplayProps {
   setHasLoadedData: Dispatch<SetStateAction<boolean>>;
 }
 
-function DuesSection({
+function InitialDuesSection({
   cosmwasmClient,
   escrow_addr,
   startAfter,
   setIsEmptyData,
   setLastDue,
   setIsLoading,
-  balanceChanged,
   setHasLoadedData,
 }: DuesDisplaySectionProps) {
-  const { data, refetch } = useArenaEscrowDuesQuery({
+  const { data } = useArenaEscrowInitialDuesQuery({
     client: new ArenaEscrowQueryClient(cosmwasmClient, escrow_addr),
     args: { startAfter: startAfter },
   });
@@ -44,9 +42,6 @@ function DuesSection({
       setHasLoadedData(true);
     }
   }, [data, setLastDue, setIsEmptyData, setIsLoading]);
-  useEffect(() => {
-    refetch();
-  }, [balanceChanged, refetch]);
 
   if (!data || data.length == 0) return null;
 
@@ -74,10 +69,9 @@ function DuesSection({
   );
 }
 
-export function DuesDisplay({
+export function InitialDuesDisplay({
   cosmwasmClient,
   escrow_addr,
-  balanceChanged,
 }: DuesDisplayProps) {
   const [pages, setPages] = useState<[string | undefined]>([undefined]);
   const [isEmptyData, setIsEmptyData] = useState(true);
@@ -85,23 +79,14 @@ export function DuesDisplay({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasLoadedData, setHasLoadedData] = useState<boolean>(false);
 
-  // Reset state
-  useEffect(() => {
-    setPages([undefined]);
-    setIsEmptyData(true);
-    setLastDue(undefined);
-    setIsLoading(false);
-    setHasLoadedData(false);
-  }, [balanceChanged]);
-
   if (hasLoadedData && lastDue == undefined) return null;
 
   return (
     <>
-      <Heading size="lg">Dues</Heading>
+      <Heading size="lg">Initial Dues</Heading>
       <SimpleGrid minChildWidth={"200px"} spacing="20px">
         {pages.map((page, index) => (
-          <DuesSection
+          <InitialDuesSection
             key={index}
             cosmwasmClient={cosmwasmClient}
             escrow_addr={escrow_addr}
@@ -109,7 +94,6 @@ export function DuesDisplay({
             setLastDue={setLastDue}
             setIsEmptyData={setIsEmptyData}
             setIsLoading={setIsLoading}
-            balanceChanged={balanceChanged}
             setHasLoadedData={setHasLoadedData}
           />
         ))}
