@@ -5,6 +5,7 @@ import { BalanceCard } from "@components/cards/BalanceCard";
 import { ArenaEscrowQueryClient } from "@arena/ArenaEscrow.client";
 import { useState, useEffect, SetStateAction, Dispatch } from "react";
 import { useArenaEscrowDuesQuery } from "@arena/ArenaEscrow.react-query";
+import env from "@config/env";
 
 interface DuesDisplayProps {
   cosmwasmClient: CosmWasmClient;
@@ -17,6 +18,7 @@ interface DuesDisplaySectionProps extends DuesDisplayProps {
   setLastDue: (id: string) => void;
   setIsEmptyData: Dispatch<SetStateAction<boolean>>;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
+  setHasLoadedData: Dispatch<SetStateAction<boolean>>;
 }
 
 function DuesSection({
@@ -27,6 +29,7 @@ function DuesSection({
   setLastDue,
   setIsLoading,
   balanceChanged,
+  setHasLoadedData,
 }: DuesDisplaySectionProps) {
   const { data, refetch } = useArenaEscrowDuesQuery({
     client: new ArenaEscrowQueryClient(cosmwasmClient, escrow_addr),
@@ -36,8 +39,9 @@ function DuesSection({
   useEffect(() => {
     if (data && "length" in data) {
       if (data.length > 0) setLastDue(data[data.length - 1]!.addr);
-      setIsEmptyData(data.length == 0);
+      setIsEmptyData(data.length < env.PAGINATION_LIMIT);
       setIsLoading(false);
+      setHasLoadedData(true);
     }
   }, [data, setLastDue, setIsEmptyData, setIsLoading]);
   useEffect(() => {
@@ -79,6 +83,7 @@ export function DuesDisplay({
   const [isEmptyData, setIsEmptyData] = useState(true);
   const [lastDue, setLastDue] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [hasLoadedData, setHasLoadedData] = useState<boolean>(false);
 
   // Reset state
   useEffect(() => {
@@ -86,7 +91,10 @@ export function DuesDisplay({
     setIsEmptyData(true);
     setLastDue(undefined);
     setIsLoading(false);
+    setHasLoadedData(false);
   }, [balanceChanged]);
+
+  if (hasLoadedData && lastDue == undefined) return null;
 
   return (
     <>
@@ -102,6 +110,7 @@ export function DuesDisplay({
             setIsEmptyData={setIsEmptyData}
             setIsLoading={setIsLoading}
             balanceChanged={balanceChanged}
+            setHasLoadedData={setHasLoadedData}
           />
         ))}
       </SimpleGrid>

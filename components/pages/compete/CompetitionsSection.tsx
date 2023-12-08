@@ -7,6 +7,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button, Text } from "@chakra-ui/react";
 import { statusColors } from "~/helpers/ArenaHelpers";
 import NextLink from "next/link";
+import env from "@config/env";
 
 interface CompetitionsSectionProps {
   cosmwasmClient: CosmWasmClient;
@@ -45,7 +46,8 @@ function CompetitionsSectionItems({
   useEffect(() => {
     if (data && "length" in data) {
       if (data.length > 0) setLastCompetitionId(data[data.length - 1]!.id);
-      setIsEmptyData(data.length == 0);
+      setIsEmptyData(data.length < env.PAGINATION_LIMIT);
+      console.log(env.PAGINATION_LIMIT);
       setIsLoading(false);
     }
   }, [data, setLastCompetitionId, setIsEmptyData, setIsLoading]);
