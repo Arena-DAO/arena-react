@@ -4,28 +4,28 @@
 * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
 */
 
-import * as _0 from "./ArenaLeagueModule.types";
-import * as _1 from "./ArenaLeagueModule.client";
-import * as _2 from "./ArenaLeagueModule.react-query";
-import * as _3 from "./ArenaWagerModule.types";
-import * as _4 from "./ArenaWagerModule.client";
-import * as _5 from "./ArenaWagerModule.react-query";
-import * as _6 from "./ArenaEscrow.types";
-import * as _7 from "./ArenaEscrow.client";
-import * as _8 from "./ArenaEscrow.react-query";
+import * as _0 from "./ArenaWagerModule.types";
+import * as _1 from "./ArenaWagerModule.client";
+import * as _2 from "./ArenaWagerModule.react-query";
+import * as _3 from "./ArenaEscrow.types";
+import * as _4 from "./ArenaEscrow.client";
+import * as _5 from "./ArenaEscrow.react-query";
+import * as _6 from "./ArenaLeagueModule.types";
+import * as _7 from "./ArenaLeagueModule.client";
+import * as _8 from "./ArenaLeagueModule.react-query";
 import * as _9 from "./ArenaCore.types";
 import * as _10 from "./ArenaCore.client";
 import * as _11 from "./ArenaCore.react-query";
 export namespace contracts {
-  export const ArenaLeagueModule = { ..._0,
+  export const ArenaWagerModule = { ..._0,
     ..._1,
     ..._2
   };
-  export const ArenaWagerModule = { ..._3,
+  export const ArenaEscrow = { ..._3,
     ..._4,
     ..._5
   };
-  export const ArenaEscrow = { ..._6,
+  export const ArenaLeagueModule = { ..._6,
     ..._7,
     ..._8
   };

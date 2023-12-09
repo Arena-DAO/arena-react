@@ -148,7 +148,6 @@ export interface CompetitionResponseForEmpty {
   evidence: Evidence[];
   expiration: Expiration;
   extension: Empty;
-  has_generated_proposals: boolean;
   id: Uint128;
   is_expired: boolean;
   name: string;

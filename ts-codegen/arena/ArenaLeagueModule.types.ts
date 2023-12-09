@@ -182,7 +182,6 @@ export interface CompetitionResponseForCompetitionExt {
   evidence: Evidence[];
   expiration: Expiration;
   extension: CompetitionExt;
-  has_generated_proposals: boolean;
   id: Uint128;
   is_expired: boolean;
   name: string;
