@@ -162,6 +162,7 @@ export type CompetitionStatus = "pending" | "active" | "inactive" | "jailed";
 export type QueryExt = {
   leaderboard: {
     league_id: Uint128;
+    round?: Uint64 | null;
   };
 } | {
   round: {

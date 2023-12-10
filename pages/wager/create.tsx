@@ -113,6 +113,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
             name: values.competition_dao_name,
             proposal_modules_instantiate_info: [
               {
+                admin: { core_module: {} },
                 code_id: env.CODE_ID_DAO_PROPOSAL_SINGLE,
                 label: "DAO Proposal Single",
                 msg: toBinary({
@@ -132,6 +133,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
               },
             ],
             voting_module_instantiate_info: {
+              admin: { core_module: {} },
               code_id: env.CODE_ID_DAO_VOTING_CW4,
               label: "DAO Voting CW4",
               msg: toBinary({
