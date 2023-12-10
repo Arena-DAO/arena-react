@@ -245,7 +245,7 @@ export default function CreateCompetitionForm({
         </Tooltip>
         <FormErrorMessage>{errors.dues?.message}</FormErrorMessage>
       </FormControl>
-      <Accordion allowMultiple>
+      <Accordion allowMultiple my="2">
         <AccordionItem>
           <AccordionButton>
             <Box as="span" flex="1" textAlign="left">

@@ -82,6 +82,12 @@ export const CategoryRoot: CategoryItem = {
           img: "/category_images/valorant.webp",
           category_id: "9",
         },
+        {
+          url: "the-finals",
+          title: "The Finals",
+          img: "/category_images/the-finals.webp",
+          category_id: "16",
+        },
       ],
     },
     {

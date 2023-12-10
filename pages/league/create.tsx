@@ -1,5 +1,21 @@
-import { Box, Container, Heading, Stack } from "@chakra-ui/layout";
-import { Button, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Container,
+  Grid,
+  GridItem,
+  Heading,
+  Stack,
+} from "@chakra-ui/layout";
+import {
+  Button,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Input,
+  Select,
+  useBreakpointValue,
+  useToast,
+} from "@chakra-ui/react";
 import { useChain } from "@cosmos-kit/react";
 import { InstantiateMsg as DaoDaoCoreInstantiateMsg } from "@dao/DaoDaoCore.types";
 import { InstantiateMsg as ArenaEscrowInstantiateMsg } from "@arena/ArenaEscrow.types";
@@ -55,7 +71,7 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
       expiration: {
         expiration_units: "At Time",
         time: format(
-          new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // Default to 2 weeks from now
+          new Date(Date.now() + 7 * 4 * 24 * 60 * 60 * 1000), // Default to 4 weeks from now
           "yyyy-MM-dd'T'HH:mm"
         ),
         timezone: moment.tz.guess(),
@@ -78,18 +94,25 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
           },
         },
       ],
-      competition_dao_name: "Arena Competition DAO",
-      competition_dao_description: "A DAO for handling an Arena Competition",
+      competition_dao_name: "Arena Competition DAO - " + categoryItem.title,
+      competition_dao_description:
+        "A DAO for handling an Arena Competition in " +
+        categoryItem.title +
+        ".",
       match_win_points: "3",
       match_lose_points: "0",
       match_draw_points: "1",
+      round_duration: {
+        duration_units: "Time",
+        duration: 3 * 24 * 60 * 60 * 1000, // Default to 3 days
+      },
     },
     resolver: zodResolver(CreateCompetitionSchema),
   });
   const {
     handleSubmit,
-    setValue,
-    formState: { isSubmitting },
+    register,
+    formState: { isSubmitting, errors },
   } = formMethods;
 
   const onSubmit = async (values: FormValues) => {
@@ -98,7 +121,7 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
       if (!cosmwasmClient) throw "Could not get the CosmWasm client";
       if (!address) throw "Could not get user address";
 
-      let leagueModuleClient = new ArenaLeagueModuleClient(
+      let moduleClient = new ArenaLeagueModuleClient(
         cosmwasmClient,
         address,
         env.ARENA_LEAGUE_MODULE_ADDRESS
@@ -129,6 +152,7 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
             name: values.competition_dao_name,
             proposal_modules_instantiate_info: [
               {
+                admin: { core_module: {} },
                 code_id: env.CODE_ID_DAO_PROPOSAL_SINGLE,
                 label: "DAO Proposal Single",
                 msg: toBinary({
@@ -148,6 +172,7 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
               },
             ],
             voting_module_instantiate_info: {
+              admin: { core_module: {} },
               code_id: env.CODE_ID_DAO_VOTING_CW4,
               label: "DAO Voting CW4",
               msg: toBinary({
@@ -169,7 +194,7 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
         },
       };
 
-      let result = await leagueModuleClient.createCompetition(msg);
+      let result = await moduleClient.createCompetition(msg);
 
       toast({
         title: "Success",
@@ -206,15 +231,66 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack>
           <CreateCompetitionForm
-            category_id={categoryItem.category_id}
+            category_id={categoryItem.category_id!}
             cosmwasmClient={cosmwasmClient}
           />
+          <Grid
+            templateColumns={useBreakpointValue({
+              base: "1fr",
+              sm: "repeat(2, 1fr)",
+              xl: "repeat(3, 1fr)",
+            })}
+            gap="2"
+            alignItems="flex-start"
+          >
+            <GridItem>
+              <FormControl isInvalid={!!errors.match_win_points}>
+                <FormLabel>Match Win Points</FormLabel>
+                <Input
+                  type="number"
+                  {...register("match_win_points", {
+                    setValueAs: (x) => (x === "" ? undefined : x.toString()),
+                  })}
+                />
+                <FormErrorMessage>
+                  {errors.match_win_points?.message}
+                </FormErrorMessage>
+              </FormControl>
+            </GridItem>
+            <GridItem>
+              <FormControl isInvalid={!!errors.match_draw_points}>
+                <FormLabel>Match Draw Points</FormLabel>
+                <Input
+                  type="number"
+                  {...register("match_draw_points", {
+                    setValueAs: (x) => (x === "" ? undefined : x.toString()),
+                  })}
+                />
+                <FormErrorMessage>
+                  {errors.match_draw_points?.message}
+                </FormErrorMessage>
+              </FormControl>
+            </GridItem>
+            <GridItem>
+              <FormControl isInvalid={!!errors.match_lose_points}>
+                <FormLabel>Match Lose Points</FormLabel>
+                <Input
+                  type="number"
+                  {...register("match_lose_points", {
+                    setValueAs: (x) => (x === "" ? undefined : x.toString()),
+                  })}
+                />
+                <FormErrorMessage>
+                  {errors.match_lose_points?.message}
+                </FormErrorMessage>
+              </FormControl>
+            </GridItem>
+          </Grid>
           <Box mt="2">
             <Button
               type="submit"
               isDisabled={!isWalletConnected}
               isLoading={isSubmitting}
-              maxW="150px"
             >
               Submit
             </Button>
