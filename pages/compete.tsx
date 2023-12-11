@@ -1,15 +1,13 @@
 import {
-  Box,
   Button,
   ButtonGroup,
   Container,
   Flex,
   Heading,
   SimpleGrid,
-  Stack,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { CategoryMap, CategoryRoot } from "@config/categories";
+import { CategoryMap, getCategoryRoot } from "@config/categories";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { CompetitionCategoryCard } from "@components/pages/compete/CompetitionCategoryCard";
@@ -42,8 +40,8 @@ export default function Compete() {
   const daoItem = useMemo(
     () =>
       category
-        ? CategoryMap.get(category as string) ?? CategoryRoot
-        : CategoryRoot,
+        ? CategoryMap.get(category as string) ?? getCategoryRoot()
+        : getCategoryRoot(),
     [category]
   );
 
