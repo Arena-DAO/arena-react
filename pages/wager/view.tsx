@@ -1,18 +1,18 @@
 import { Box, Container, Heading } from "@chakra-ui/layout";
 import ViewCompetition from "@components/competition/ViewCompetition";
-import { CategoryMap } from "@config/categories";
 import env from "@config/env";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
+import { useCategoriesContext } from "~/contexts/CategoriesContext";
 
 const ViewWagerPage = () => {
   const { getCosmWasmClient } = useChain(env.CHAIN);
   const {
     query: { id, category },
   } = useRouter();
-
+  const categoryMap = useCategoriesContext();
   const [cosmwasmClient, setCosmwasmClient] = useState<
     CosmWasmClient | undefined
   >(undefined);
@@ -26,10 +26,10 @@ const ViewWagerPage = () => {
   const [categoryName, setCategoryName] = useState<string>();
   useEffect(() => {
     if (typeof category === "string") {
-      let categoryItem = CategoryMap.get(category);
+      let categoryItem = categoryMap.get(category);
       setCategoryName(categoryItem?.title);
     }
-  }, [category]);
+  }, [category, categoryMap]);
 
   return (
     <Container maxW={{ base: "full", md: "5xl" }} centerContent pb={10}>

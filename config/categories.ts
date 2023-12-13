@@ -30,7 +30,7 @@ function populateItemToMap(
   return daoMap;
 }
 
-export function getCategoryRoot(): CategoryItem {
+function getCategoryRoot(): CategoryItem {
   if(env.ENV == "development")
     return dev_categories as CategoryItem;
   if (env.ENV == "production")

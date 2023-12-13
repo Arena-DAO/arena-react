@@ -7,9 +7,8 @@ import {
   SimpleGrid,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { CategoryMap, getCategoryRoot } from "@config/categories";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { CompetitionCategoryCard } from "@components/pages/compete/CompetitionCategoryCard";
 import { CompetitionsSection } from "@components/pages/compete/CompetitionsSection";
 import env from "@config/env";
@@ -17,10 +16,12 @@ import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import { AddIcon } from "@chakra-ui/icons";
 import NextLink from "next/link";
+import { useCategoriesContext } from "~/contexts/CategoriesContext";
 
 export default function Compete() {
   const router = useRouter();
   const { category } = router.query;
+  const categoryMap = useCategoriesContext();
   const { getCosmWasmClient } = useChain(env.CHAIN);
   const [cosmwasmClient, setCosmwasmClient] = useState<
     CosmWasmClient | undefined
@@ -37,13 +38,8 @@ export default function Compete() {
     sm: "300px",
     md: "400px",
   });
-  const daoItem = useMemo(
-    () =>
-      category
-        ? CategoryMap.get(category as string) ?? getCategoryRoot()
-        : getCategoryRoot(),
-    [category]
-  );
+  const daoItem =
+    categoryMap.get(category as string) ?? categoryMap.get("base")!;
 
   return (
     <Container maxW={{ base: "full" }} centerContent pb={10}>

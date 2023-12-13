@@ -16,6 +16,8 @@ import { GasPrice } from "@cosmjs/stargate";
 import "@interchain-ui/react/styles";
 import env from "@config/env";
 import { AssetList } from "@chain-registry/types";
+import { CategoriesContext } from "~/contexts/CategoriesContext";
+import { CategoryMap } from "@config/categories";
 
 export default function CreateCosmosApp({ Component, pageProps }: AppProps) {
   const queryClient = new QueryClient({});
@@ -53,9 +55,11 @@ export default function CreateCosmosApp({ Component, pageProps }: AppProps) {
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <MainLayout>
-            <Component {...pageProps} />
-          </MainLayout>
+          <CategoriesContext.Provider value={CategoryMap}>
+            <MainLayout>
+              <Component {...pageProps} />
+            </MainLayout>
+          </CategoriesContext.Provider>
         </QueryClientProvider>
       </ChainProvider>
     </ChakraProvider>

@@ -12,7 +12,6 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
-  Select,
   useBreakpointValue,
   useToast,
 } from "@chakra-ui/react";
@@ -38,9 +37,9 @@ import { CosmWasmClient, toBinary } from "@cosmjs/cosmwasm-stargate";
 import env from "config/env";
 import { z } from "zod";
 import { CompetitionInstantiateExt } from "@arena/ArenaLeagueModule.types";
-import { CategoryMap } from "@config/categories";
 import { CreateCompetitionSchema, DurationSchema } from "@config/schemas";
 import CreateCompetitionForm from "@components/competition/CreateCompetitionForm";
+import { useCategoriesContext } from "~/contexts/CategoriesContext";
 
 interface LeagueFormProps {
   cosmwasmClient: CosmWasmClient;
@@ -56,9 +55,10 @@ type FormValues = z.infer<typeof CreateLeagueSchema>;
 
 function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
   const router = useRouter();
+  const categoryMap = useCategoriesContext();
   const category = router.query.category;
   if (!category) throw "No category provided";
-  const categoryItem = CategoryMap.get(category as string);
+  const categoryItem = categoryMap.get(category as string);
   if (!categoryItem || !("category_id" in categoryItem))
     throw "No category_id found";
   const toast = useToast();

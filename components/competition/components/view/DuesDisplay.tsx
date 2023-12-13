@@ -43,7 +43,7 @@ function DuesSection({
       setIsLoading(false);
       setHasLoadedData(true);
     }
-  }, [data, setLastDue, setIsEmptyData, setIsLoading]);
+  }, [data, setLastDue, setIsEmptyData, setIsLoading, setHasLoadedData]);
   useEffect(() => {
     refetch();
   }, [balanceChanged, refetch]);

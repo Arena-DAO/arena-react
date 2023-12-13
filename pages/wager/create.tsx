@@ -23,7 +23,7 @@ import { CreateCompetitionSchema } from "@config/schemas";
 import CreateCompetitionForm, {
   CreateCompetitionFormValues,
 } from "@components/competition/CreateCompetitionForm";
-import { CategoryMap } from "@config/categories";
+import { useCategoriesContext } from "~/contexts/CategoriesContext";
 
 interface WagerFormProps {
   cosmwasmClient: CosmWasmClient;
@@ -32,8 +32,9 @@ interface WagerFormProps {
 function WagerForm({ cosmwasmClient }: WagerFormProps) {
   const router = useRouter();
   const category = router.query.category;
+  const categoryMap = useCategoriesContext();
   if (!category) throw "No category provided";
-  const categoryItem = CategoryMap.get(category as string);
+  const categoryItem = categoryMap.get(category as string);
   if (!categoryItem || !("category_id" in categoryItem))
     throw "No category_id found";
   const toast = useToast();
