@@ -7,7 +7,6 @@ import {
   ListItem,
   ListProps,
   Stack,
-  Text,
 } from "@chakra-ui/layout";
 import { useChain } from "@cosmos-kit/react";
 import env from "@config/env";
@@ -45,6 +44,7 @@ import {
 import { RulesetDisplay } from "./components/view/RulesetDisplay";
 import { BsYinYang } from "react-icons/bs";
 import NextLink from "next/link";
+import { EvidenceModal } from "./components/view/EvidenceModal";
 
 interface ViewCompetitionProps {
   cosmwasmClient: CosmWasmClient;
@@ -237,6 +237,14 @@ export default function ViewCompetition({
             setJailedStatus={() => notifyStatusChanged("jailed")}
             setHasGeneratedProposals={() => notifyHasGeneratedProposals()}
           />
+          {address && data.status == "jailed" && (
+            <EvidenceModal
+              competition_id={data.id}
+              isOpen={isOpenEvidenceModal}
+              onClose={onCloseEvidenceModal}
+              address={address}
+            />
+          )}
           {address && data.escrow && (
             <PresetDistributionModal
               escrow_addr={data.escrow}

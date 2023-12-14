@@ -1,10 +1,10 @@
 import { ArenaWagerModuleClient } from "@arena/ArenaWagerModule.client";
-import { Evidence } from "@arena/ArenaWagerModule.types";
 import {
   FormControl,
   FormLabel,
   FormErrorMessage,
 } from "@chakra-ui/form-control";
+import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { Heading, Stack } from "@chakra-ui/layout";
 import {
   Modal,
@@ -18,17 +18,21 @@ import {
   ModalFooter,
   Button,
   useToast,
+  IconButton,
+  Tooltip,
+  InputRightElement,
 } from "@chakra-ui/react";
 import env from "@config/env";
 import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Control, useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
 const FormSchema = z.object({
   evidence: z
-    .string()
-    .min(1, "Evidence cannot be empty")
+    .object({
+      evidence_item: z.string().min(1, "Evidence cannot be empty"),
+    })
     .array()
     .min(1, "Evidence array cannot be empty"),
 });
@@ -54,8 +58,14 @@ export function EvidenceModal({
     formState: { isSubmitting, errors },
     handleSubmit,
     register,
+    control,
   } = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    name: "evidence",
+    control,
   });
 
   const onSubmit = async (values: FormValues) => {
@@ -71,10 +81,11 @@ export function EvidenceModal({
       );
 
       await wagerClient.submitEvidence({
-        evidence: values.evidence,
+        evidence: values.evidence.flatMap((x) => x.evidence_item),
         id: competition_id,
       });
 
+      onClose();
       toast({
         title: "Success",
         isClosable: true,
@@ -100,13 +111,42 @@ export function EvidenceModal({
           <ModalCloseButton />
           <ModalBody>
             <Stack>
+              {fields.map((x, i) => {
+                return (
+                  <FormControl key={x.id} isInvalid={!!errors.evidence?.[i]}>
+                    <FormLabel>Evidence</FormLabel>
+                    <InputGroup>
+                      <Input {...register(`evidence.${i}.evidence_item`)} />
+                      <InputRightElement>
+                        <Tooltip label="Delete Evidence">
+                          <IconButton
+                            aria-label="Remove Evidence"
+                            variant="ghost"
+                            icon={<DeleteIcon />}
+                            onClick={() => remove(i)}
+                          />
+                        </Tooltip>
+                      </InputRightElement>
+                    </InputGroup>
+                    <FormErrorMessage>
+                      {errors.evidence?.[i]?.message}
+                    </FormErrorMessage>
+                  </FormControl>
+                );
+              })}
               <FormControl isInvalid={!!errors.evidence}>
-                <FormLabel>Evidence</FormLabel>
-                <InputGroup>
-                  <Input {...register("evidence")} />
-                </InputGroup>
                 <FormErrorMessage>{errors.evidence?.message}</FormErrorMessage>
               </FormControl>
+              <Tooltip label="Add Evidence">
+                <IconButton
+                  variant="ghost"
+                  colorScheme="secondary"
+                  aria-label="Add Evidence"
+                  alignSelf="flex-start"
+                  onClick={() => append({ evidence_item: "" })}
+                  icon={<AddIcon />}
+                />
+              </Tooltip>
             </Stack>
           </ModalBody>
           <ModalFooter>

@@ -80,7 +80,7 @@ export const AddDueForm = ({
   const dueFormSchema = z
     .object({
       type: TokenTypes,
-      key: z.string().nonempty({ message: "Key is required" }),
+      key: z.string().min(1, { message: "Key is required" }),
       amount: AmountSchema.optional(),
       token_id: z.string().optional(),
     })
