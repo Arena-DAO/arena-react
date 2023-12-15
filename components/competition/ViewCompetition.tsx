@@ -203,16 +203,17 @@ export default function ViewCompetition({
           <ButtonGroup overflowX="auto" scrollPaddingBottom="0" my="2">
             {data.status !== "inactive" && (
               <>
-                <Button
-                  minW="150px"
-                  onClick={() => {
-                    setPromptAction(ProposalPromptAction.Process);
-                    onOpenProposalModal();
-                  }}
-                >
-                  Process Competition
-                </Button>
-
+                {address == data.dao && (
+                  <Button
+                    minW="150px"
+                    onClick={() => {
+                      setPromptAction(ProposalPromptAction.Process);
+                      onOpenProposalModal();
+                    }}
+                  >
+                    Process Competition
+                  </Button>
+                )}
                 <Button minW="200px" onClick={() => onOpenPresetModal()}>
                   Set Preset Distribution
                 </Button>
