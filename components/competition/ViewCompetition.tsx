@@ -34,7 +34,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { statusColors } from "~/helpers/ArenaHelpers";
-import { CompetitionStatus } from "@arena/ArenaWagerModule.types";
+import { CompetitionStatus, Evidence } from "@arena/ArenaWagerModule.types";
 import { UserOrDAOCard } from "@components/cards/UserOrDAOCard";
 import { EscrowDisplay } from "./components/view/EscrowDisplay";
 import { PresetDistributionModal } from "./components/view/PresetDistributionModal";
@@ -107,11 +107,14 @@ export default function ViewCompetition({
       }),
     []
   );
-  const notifyHasGeneratedProposals = useCallback(
-    () =>
+  const notifyEvidenceChanged = useCallback(
+    (new_evidence: Evidence[]) =>
       setData((prevData) => {
         if (prevData) {
-          return { ...prevData, has_generated_proposals: true };
+          return {
+            ...prevData,
+            evidence: [...prevData.evidence, ...new_evidence],
+          };
         }
         return prevData;
       }),
@@ -240,7 +243,6 @@ export default function ViewCompetition({
             onClose={onCloseProposalModal}
             action={promptAction}
             setJailedStatus={() => notifyStatusChanged("jailed")}
-            setHasGeneratedProposals={() => notifyHasGeneratedProposals()}
           />
           {address && data.status == "jailed" && (
             <EvidenceModal
@@ -248,6 +250,7 @@ export default function ViewCompetition({
               isOpen={isOpenEvidenceModal}
               onClose={onCloseEvidenceModal}
               address={address}
+              setEvidence={notifyEvidenceChanged}
             />
           )}
           {address && data.escrow && (

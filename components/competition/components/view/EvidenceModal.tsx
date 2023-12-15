@@ -1,11 +1,12 @@
 import { ArenaWagerModuleClient } from "@arena/ArenaWagerModule.client";
+import { Evidence } from "@arena/ArenaWagerModule.types";
 import {
   FormControl,
   FormLabel,
   FormErrorMessage,
 } from "@chakra-ui/form-control";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
-import { Heading, Stack } from "@chakra-ui/layout";
+import { Stack } from "@chakra-ui/layout";
 import {
   Modal,
   ModalOverlay,
@@ -43,6 +44,7 @@ interface EvidenceModalProps {
   isOpen: boolean;
   onClose: () => void;
   address: string;
+  setEvidence: (evidence: Evidence[]) => void;
 }
 
 export function EvidenceModal({
@@ -50,6 +52,7 @@ export function EvidenceModal({
   isOpen,
   onClose,
   address,
+  setEvidence,
 }: EvidenceModalProps) {
   const toast = useToast();
   const { isWalletConnected, getSigningCosmWasmClient } = useChain(env.CHAIN);
@@ -85,6 +88,16 @@ export function EvidenceModal({
         id: competition_id,
       });
 
+      const date = new Date();
+      setEvidence(
+        values.evidence.flatMap((x) => {
+          return {
+            content: x.evidence_item,
+            submit_user: address,
+            submit_time: date.toString(),
+          } as Evidence;
+        })
+      );
       onClose();
       toast({
         title: "Success",

@@ -82,7 +82,6 @@ interface ProposalPromptModalProps {
   cosmwasmClient: CosmWasmClient;
   action: ProposalPromptAction;
   setJailedStatus: () => void;
-  setHasGeneratedProposals: () => void;
 }
 
 export function ProposalPromptModal({
@@ -92,7 +91,6 @@ export function ProposalPromptModal({
   onClose,
   cosmwasmClient,
   setJailedStatus,
-  setHasGeneratedProposals,
   action,
 }: ProposalPromptModalProps) {
   const toast = useToast();
@@ -164,7 +162,6 @@ export function ProposalPromptModal({
         description: "The competition's proposals have been generated.",
       });
 
-      setHasGeneratedProposals();
       onClose();
     } catch (e: any) {
       toast({
