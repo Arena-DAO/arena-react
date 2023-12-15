@@ -59,7 +59,6 @@ export default function ViewCompetition({
   id,
 }: ViewCompetitionProps) {
   const { address } = useChain(env.CHAIN);
-  const { onCopy } = useClipboard(window.location.href);
   const toast = useToast();
   const [promptAction, setPromptAction] = useState<ProposalPromptAction>(
     ProposalPromptAction.Process
@@ -146,14 +145,18 @@ export default function ViewCompetition({
           <Box textAlign={"right"}>
             <Link
               as={NextLink}
-              href={env.DAO_DAO_URL + "/dao/" + data.dao}
+              href={
+                env.DAO_DAO_URL +
+                "/dao/" +
+                data.dao +
+                "/apps?url=" +
+                encodeURIComponent(window.location.href)
+              }
               _hover={{ textDecoration: "none" }}
               _focus={{ outline: "none" }}
               target="_blank"
             >
-              <Button leftIcon={<BsYinYang />} onClick={onCopy}>
-                View Competition DAO
-              </Button>
+              <Button leftIcon={<BsYinYang />}>View Competition DAO</Button>
             </Link>
           </Box>
           {(data.rulesets.length > 0 || data.rules.length > 0) && (
