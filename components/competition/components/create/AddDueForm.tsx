@@ -24,7 +24,7 @@ import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { debounce } from "lodash";
 import env from "@config/env";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   UseFormGetValues,
   useForm,
@@ -161,6 +161,7 @@ export const AddDueForm = ({
   useEffect(() => {
     debouncedSetTokenId(watchTokenId);
   }, [watchTokenId, debouncedSetTokenId]);
+  const initialRef = React.useRef(null);
 
   const onSubmit = async (values: DueFormValues) => {
     if (!assets) {
@@ -267,10 +268,11 @@ export const AddDueForm = ({
         clearErrors();
         onClose();
       }}
+      initialFocusRef={initialRef}
       {...modalProps}
     >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent ref={initialRef}>
         <ModalHeader>Add Due Amount</ModalHeader>
         <ModalCloseButton />
         <ModalBody>

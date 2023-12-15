@@ -27,6 +27,7 @@ import { Ruleset } from "@arena/ArenaCore.types";
 import { FormComponentProps } from "../../CreateCompetitionForm";
 import { useArenaCoreQueryExtensionQuery } from "@arena/ArenaCore.react-query";
 import { ArenaCoreQueryClient } from "@arena/ArenaCore.client";
+import React from "react";
 
 interface AddRulesetFormProps extends FormComponentProps {
   category_id: string;
@@ -52,6 +53,7 @@ export function AddRulesetForm({
     control,
     name: "rulesets",
   });
+  const initialRef = React.useRef(null);
 
   if (!data) return null;
 
@@ -59,61 +61,68 @@ export function AddRulesetForm({
   if (rulesets.length == 0) return null;
 
   return (
-    <FormControl>
-      <FormLabel>Rulesets</FormLabel>
-      <TableContainer>
-        <Table variant="unstyled">
-          <Thead>
-            <Tr>
-              <Th>Description</Th>
-              <Th>Action</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {rulesets.map((ruleset, i) => {
-              const isRulesetSelected = fields.find(
-                (x) => x.ruleset_id == ruleset.id
-              );
+    <>
+      <FormControl>
+        <FormLabel>Rulesets</FormLabel>
+        <TableContainer>
+          <Table variant="unstyled">
+            <Thead>
+              <Tr>
+                <Th>Description</Th>
+                <Th>Action</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {rulesets.map((ruleset) => {
+                const isRulesetSelected = fields.find(
+                  (x) => x.ruleset_id == ruleset.id
+                );
 
-              return (
-                <Tr key={i}>
-                  <Td>{ruleset.description}</Td>
-                  <Td>
-                    <ButtonGroup>
-                      <Button
-                        {...buttonProps}
-                        onClick={() => {
-                          setModalRuleset(ruleset);
-                          onOpen();
-                        }}
-                      >
-                        View
-                      </Button>
-                      <Button
-                        isDisabled={!isRulesetSelected}
-                        visibility={isRulesetSelected ? "unset" : "hidden"}
-                        {...buttonProps}
-                        onClick={() =>
-                          remove(
-                            fields.indexOf(
-                              fields.find((x) => x.ruleset_id == ruleset.id)!
+                return (
+                  <Tr key={ruleset.id}>
+                    <Td>{ruleset.description}</Td>
+                    <Td>
+                      <ButtonGroup>
+                        <Button
+                          {...buttonProps}
+                          onClick={() => {
+                            setModalRuleset(ruleset);
+                            onOpen();
+                          }}
+                        >
+                          View
+                        </Button>
+                        <Button
+                          isDisabled={!isRulesetSelected}
+                          visibility={isRulesetSelected ? "unset" : "hidden"}
+                          {...buttonProps}
+                          onClick={() =>
+                            remove(
+                              fields.indexOf(
+                                fields.find((x) => x.ruleset_id == ruleset.id)!
+                              )
                             )
-                          )
-                        }
-                      >
-                        Unselect
-                      </Button>
-                    </ButtonGroup>
-                  </Td>
-                </Tr>
-              );
-            })}
-          </Tbody>
-        </Table>
-      </TableContainer>
-      <Modal isOpen={isOpen} onClose={onClose}>
+                          }
+                        >
+                          Unselect
+                        </Button>
+                      </ButtonGroup>
+                    </Td>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </Table>
+        </TableContainer>
+      </FormControl>
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+        initialFocusRef={initialRef}
+      >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent ref={initialRef}>
           <ModalHeader>Rules</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -139,6 +148,6 @@ export function AddRulesetForm({
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </FormControl>
+    </>
   );
 }
