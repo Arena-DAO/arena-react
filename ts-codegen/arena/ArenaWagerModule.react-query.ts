@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee, Coin } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, ProposeMessage, MemberShareForString, ModuleInstantiateInfo, QueryMsg, CompetitionsFilter, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, Evidence, MemberShareForAddr, ArrayOfCompetitionResponseForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, ModuleInfo, Admin, Binary, Expiration, Timestamp, Uint64, Action, ProposeMessage, MemberShareForString, ModuleInstantiateInfo, QueryMsg, CompetitionsFilter, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, Evidence, MemberShareForAddr, ArrayOfCompetitionResponseForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
 import { ArenaWagerModuleQueryClient, ArenaWagerModuleClient } from "./ArenaWagerModule.client";
 export const arenaWagerModuleQueryKeys = {
   contract: ([{
@@ -285,7 +285,7 @@ export interface ArenaWagerModuleCreateCompetitionMutation {
   client: ArenaWagerModuleClient;
   msg: {
     categoryId: Uint128;
-    competitionDao: ModuleInstantiateInfo;
+    competitionDao: ModuleInfo;
     description: string;
     escrow?: ModuleInstantiateInfo;
     expiration: Expiration;

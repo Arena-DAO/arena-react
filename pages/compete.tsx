@@ -5,6 +5,7 @@ import {
   Flex,
   Heading,
   SimpleGrid,
+  Tooltip,
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
@@ -60,9 +61,16 @@ export default function Compete() {
               <NextLink href={`/wager/create?category=${category}`}>
                 <Button leftIcon={<AddIcon />}>Create Wager</Button>
               </NextLink>
-              <NextLink href={`/league/create?category=${category}`}>
-                <Button leftIcon={<AddIcon />}>Create League</Button>
-              </NextLink>
+              <Tooltip label="In testing">
+                <NextLink href={`/league/create?category=${category}`}>
+                  <Button leftIcon={<AddIcon />}>Create League</Button>
+                </NextLink>
+              </Tooltip>
+              <Tooltip label="Future feature">
+                <Button leftIcon={<AddIcon />} disabled>
+                  Create Tournament
+                </Button>
+              </Tooltip>
             </ButtonGroup>
           </Flex>
           <CompetitionsSection

@@ -104,48 +104,52 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         rulesets: convertToRulesets(values.rulesets),
         instantiateExtension: {},
         competitionDao: {
-          code_id: env.CODE_ID_DAO_CORE,
-          label: "Arena Competition DAO",
-          msg: toBinary({
-            admin: env.ARENA_DAO_ADDRESS,
-            automatically_add_cw20s: true,
-            automatically_add_cw721s: true,
-            description: values.competition_dao_description,
-            name: values.competition_dao_name,
-            proposal_modules_instantiate_info: [
-              {
-                admin: { core_module: {} },
-                code_id: env.CODE_ID_DAO_PROPOSAL_SINGLE,
-                label: "DAO Proposal Single",
-                msg: toBinary({
-                  allow_revoting: false,
-                  close_proposal_on_execution_failure: true,
-                  max_voting_period: {
-                    time: env.DEFAULT_TEAM_VOTING_DURATION_TIME,
-                  },
-                  only_members_execute: true,
-                  pre_propose_info: {
-                    anyone_may_propose: {}, // Ideally want a module_can_propose and module_sender
-                  },
-                  threshold: {
-                    absolute_percentage: { percentage: { percent: "1" } },
-                  },
-                } as DAOProposalSingleInstantiateMsg),
-              },
-            ],
-            voting_module_instantiate_info: {
-              admin: { core_module: {} },
-              code_id: env.CODE_ID_DAO_VOTING_CW4,
-              label: "DAO Voting CW4",
+          new: {
+            info: {
+              code_id: env.CODE_ID_DAO_CORE,
+              label: "Arena Competition DAO",
               msg: toBinary({
-                cw4_group_code_id: env.CODE_ID_CW4_GROUP,
-                initial_members: values.dues.map((x) => ({
-                  addr: x.addr,
-                  weight: 1,
-                })),
-              } as DAOVotingCW4InstantiateMsg),
+                admin: env.ARENA_DAO_ADDRESS,
+                automatically_add_cw20s: true,
+                automatically_add_cw721s: true,
+                description: values.competition_dao_description,
+                name: values.competition_dao_name,
+                proposal_modules_instantiate_info: [
+                  {
+                    admin: { core_module: {} },
+                    code_id: env.CODE_ID_DAO_PROPOSAL_SINGLE,
+                    label: "DAO Proposal Single",
+                    msg: toBinary({
+                      allow_revoting: false,
+                      close_proposal_on_execution_failure: true,
+                      max_voting_period: {
+                        time: env.DEFAULT_TEAM_VOTING_DURATION_TIME,
+                      },
+                      only_members_execute: true,
+                      pre_propose_info: {
+                        anyone_may_propose: {}, // Ideally want a module_can_propose and module_sender
+                      },
+                      threshold: {
+                        absolute_percentage: { percentage: { percent: "1" } },
+                      },
+                    } as DAOProposalSingleInstantiateMsg),
+                  },
+                ],
+                voting_module_instantiate_info: {
+                  admin: { core_module: {} },
+                  code_id: env.CODE_ID_DAO_VOTING_CW4,
+                  label: "DAO Voting CW4",
+                  msg: toBinary({
+                    cw4_group_code_id: env.CODE_ID_CW4_GROUP,
+                    initial_members: values.dues.map((x) => ({
+                      addr: x.addr,
+                      weight: 1,
+                    })),
+                  } as DAOVotingCW4InstantiateMsg),
+                },
+              } as DaoDaoCoreInstantiateMsg),
             },
-          } as DaoDaoCoreInstantiateMsg),
+          },
         },
         escrow: {
           code_id: env.CODE_ID_ESCROW,

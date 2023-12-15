@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, Action, ProposeMessage, MemberShareForString, ModuleInstantiateInfo, QueryMsg, CompetitionsFilter, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, Evidence, MemberShareForAddr, ArrayOfCompetitionResponseForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, ModuleInfo, Admin, Binary, Expiration, Timestamp, Uint64, Action, ProposeMessage, MemberShareForString, ModuleInstantiateInfo, QueryMsg, CompetitionsFilter, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, Evidence, MemberShareForAddr, ArrayOfCompetitionResponseForEmpty, Config, OwnershipForString } from "./ArenaWagerModule.types";
 export interface ArenaWagerModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<Config>;
@@ -145,7 +145,7 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
     rulesets
   }: {
     categoryId: Uint128;
-    competitionDao: ModuleInstantiateInfo;
+    competitionDao: ModuleInfo;
     description: string;
     escrow?: ModuleInstantiateInfo;
     expiration: Expiration;
@@ -273,7 +273,7 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
     rulesets
   }: {
     categoryId: Uint128;
-    competitionDao: ModuleInstantiateInfo;
+    competitionDao: ModuleInfo;
     description: string;
     escrow?: ModuleInstantiateInfo;
     expiration: Expiration;

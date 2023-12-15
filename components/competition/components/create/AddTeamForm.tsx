@@ -18,18 +18,38 @@ import {
   UseFieldArrayRemove,
   useFieldArray,
   useFormContext,
+  useWatch,
 } from "react-hook-form";
-import { WrapperUserOrDAOCard } from "./WrapperUserOrDAOCard";
 import { AddDueForm } from "./AddDueForm";
 import { NativeCard } from "@components/cards/NativeCard";
 import { Cw20Card } from "@components/cards/Cw20Card";
 import { Cw721Card } from "@components/cards/Cw721Card";
-import { CreateCompetitionFormValues } from "@components/competition/CreateCompetitionForm";
+import {
+  CreateCompetitionFormValues,
+  FormComponentProps,
+} from "@components/competition/CreateCompetitionForm";
+import { UserOrDAOCard } from "@components/cards/UserOrDAOCard";
 
 interface AddTeamFormProps {
   cosmwasmClient: CosmWasmClient;
   duesRemove: UseFieldArrayRemove;
   index: number;
+}
+
+interface WrapperUserOrDAOCardProps extends FormComponentProps {
+  index: number;
+}
+
+export function WrapperUserOrDAOCard({
+  cosmwasmClient,
+  control,
+  index,
+}: WrapperUserOrDAOCardProps) {
+  let watchAddress = useWatch({ control, name: `dues.${index}.addr` });
+
+  return (
+    <UserOrDAOCard cosmwasmClient={cosmwasmClient} address={watchAddress} />
+  );
 }
 
 export function AddTeamForm({

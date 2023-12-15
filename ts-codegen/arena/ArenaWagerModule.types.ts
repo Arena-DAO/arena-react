@@ -38,7 +38,7 @@ export type ExecuteMsg = {
 } | {
   create_competition: {
     category_id: Uint128;
-    competition_dao: ModuleInstantiateInfo;
+    competition_dao: ModuleInfo;
     description: string;
     escrow?: ModuleInstantiateInfo | null;
     expiration: Expiration;
@@ -65,6 +65,15 @@ export type ExecuteMsg = {
   update_ownership: Action;
 };
 export type Uint128 = string;
+export type ModuleInfo = {
+  new: {
+    info: ModuleInstantiateInfo;
+  };
+} | {
+  existing: {
+    addr: string;
+  };
+};
 export type Admin = {
   address: {
     addr: string;

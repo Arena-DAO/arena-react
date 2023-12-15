@@ -16,20 +16,17 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useChain } from "@cosmos-kit/react";
-import { InstantiateMsg as DaoDaoCoreInstantiateMsg } from "@dao/DaoDaoCore.types";
 import { InstantiateMsg as ArenaEscrowInstantiateMsg } from "@arena/ArenaEscrow.types";
 import { ArenaLeagueModuleClient } from "@arena/ArenaLeagueModule.client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
-import { FormProvider, useForm } from "react-hook-form";
+import { Control, FormProvider, useForm, useWatch } from "react-hook-form";
 import {
   convertToDuration,
   convertToExpiration,
   convertToRules,
   convertToRulesets,
 } from "~/helpers/SchemaHelpers";
-import { InstantiateMsg as DAOProposalSingleInstantiateMsg } from "@dao/DaoProposalSingle.types";
-import { InstantiateMsg as DAOVotingCW4InstantiateMsg } from "@dao/DaoVotingCw4.types";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import moment from "moment-timezone";
@@ -37,12 +34,22 @@ import { CosmWasmClient, toBinary } from "@cosmjs/cosmwasm-stargate";
 import env from "config/env";
 import { z } from "zod";
 import { CompetitionInstantiateExt } from "@arena/ArenaLeagueModule.types";
-import { CreateCompetitionSchema, DurationSchema } from "@config/schemas";
+import {
+  AddressSchema,
+  CreateCompetitionSchema,
+  DurationSchema,
+} from "@config/schemas";
 import CreateCompetitionForm from "@components/competition/CreateCompetitionForm";
 import { useCategoriesContext } from "~/contexts/CategoriesContext";
+import { UserOrDAOCard } from "@components/cards/UserOrDAOCard";
 
 interface LeagueFormProps {
   cosmwasmClient: CosmWasmClient;
+}
+
+interface WrapperUserOrDAOCardProps {
+  cosmwasmClient: CosmWasmClient;
+  control: Control<FormValues>;
 }
 
 const CreateLeagueSchema = CreateCompetitionSchema.extend({
@@ -50,8 +57,20 @@ const CreateLeagueSchema = CreateCompetitionSchema.extend({
   match_draw_points: z.string(),
   match_lose_points: z.string(),
   round_duration: DurationSchema,
+  host: AddressSchema,
 });
 type FormValues = z.infer<typeof CreateLeagueSchema>;
+
+function WrapperUserOrDAOCard({
+  cosmwasmClient,
+  control,
+}: WrapperUserOrDAOCardProps) {
+  let watchAddress = useWatch({ control, name: "host" });
+
+  return (
+    <UserOrDAOCard cosmwasmClient={cosmwasmClient} address={watchAddress} />
+  );
+}
 
 function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
   const router = useRouter();
@@ -79,7 +98,6 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
       rules: [],
       dues: [
         {
-          addr: address,
           balance: {
             cw20: [],
             cw721: [],
@@ -106,6 +124,7 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
         duration_units: "Time",
         duration: 3 * 24 * 60 * 60 * 1000, // Default to 3 days
       },
+      host: address,
     },
     resolver: zodResolver(CreateCompetitionSchema),
   });
@@ -113,6 +132,7 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
     handleSubmit,
     register,
     formState: { isSubmitting, errors },
+    control,
   } = formMethods;
 
   const onSubmit = async (values: FormValues) => {
@@ -142,48 +162,9 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
           teams: values.dues.map((x) => x.addr),
         } as CompetitionInstantiateExt,
         competitionDao: {
-          code_id: env.CODE_ID_DAO_CORE,
-          label: "Arena Competition DAO",
-          msg: toBinary({
-            admin: env.ARENA_DAO_ADDRESS,
-            automatically_add_cw20s: true,
-            automatically_add_cw721s: true,
-            description: values.competition_dao_description,
-            name: values.competition_dao_name,
-            proposal_modules_instantiate_info: [
-              {
-                admin: { core_module: {} },
-                code_id: env.CODE_ID_DAO_PROPOSAL_SINGLE,
-                label: "DAO Proposal Single",
-                msg: toBinary({
-                  allow_revoting: false,
-                  close_proposal_on_execution_failure: true,
-                  max_voting_period: {
-                    time: env.DEFAULT_TEAM_VOTING_DURATION_TIME,
-                  },
-                  only_members_execute: true,
-                  pre_propose_info: {
-                    anyone_may_propose: {}, // Ideally want a module_can_propose and module_sender
-                  },
-                  threshold: {
-                    absolute_percentage: { percentage: { percent: "1" } },
-                  },
-                } as DAOProposalSingleInstantiateMsg),
-              },
-            ],
-            voting_module_instantiate_info: {
-              admin: { core_module: {} },
-              code_id: env.CODE_ID_DAO_VOTING_CW4,
-              label: "DAO Voting CW4",
-              msg: toBinary({
-                cw4_group_code_id: env.CODE_ID_CW4_GROUP,
-                initial_members: values.dues.map((x) => ({
-                  addr: x.addr,
-                  weight: 1,
-                })),
-              } as DAOVotingCW4InstantiateMsg),
-            },
-          } as DaoDaoCoreInstantiateMsg),
+          existing: {
+            addr: values.host,
+          },
         },
         escrow: {
           code_id: env.CODE_ID_ESCROW,
@@ -230,6 +211,15 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
     <FormProvider {...formMethods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack>
+          <FormControl isInvalid={!!errors.host}>
+            <FormLabel>Host</FormLabel>
+            <Input {...register("host")} />
+            <FormErrorMessage>{errors.host?.message}</FormErrorMessage>
+          </FormControl>
+          <WrapperUserOrDAOCard
+            cosmwasmClient={cosmwasmClient}
+            control={control}
+          />
           <CreateCompetitionForm
             category_id={categoryItem.category_id!}
             cosmwasmClient={cosmwasmClient}
