@@ -20,7 +20,7 @@ import { InstantiateMsg as ArenaEscrowInstantiateMsg } from "@arena/ArenaEscrow.
 import { ArenaLeagueModuleClient } from "@arena/ArenaLeagueModule.client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
-import { Control, FormProvider, useForm, useWatch } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import {
   convertToDuration,
   convertToExpiration,

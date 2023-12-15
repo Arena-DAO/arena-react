@@ -192,7 +192,10 @@ export function ProposalPromptModal({
       title: "Competition Result",
       description:
         "This proposal allows members to vote on the winner of the competition. Each choice represents a different team. Select the team that you believe should win the competition.",
-      distribution: [{ addr: address, shares: "1" }],
+      distribution:
+        action == ProposalPromptAction.Process
+          ? []
+          : [{ addr: address, shares: "1" }],
     },
     resolver: zodResolver(FormSchema),
   });
