@@ -111,11 +111,6 @@ export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInt
     proposeMessage: ProposeMessage;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   activate: (fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
-  proposeResult: ({
-    proposeMessage
-  }: {
-    proposeMessage: ProposeMessage;
-  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   addCompetitionHook: ({
     id
   }: {
@@ -187,7 +182,6 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
     this.contractAddress = contractAddress;
     this.jailCompetition = this.jailCompetition.bind(this);
     this.activate = this.activate.bind(this);
-    this.proposeResult = this.proposeResult.bind(this);
     this.addCompetitionHook = this.addCompetitionHook.bind(this);
     this.removeCompetitionHook = this.removeCompetitionHook.bind(this);
     this.executeCompetitionHook = this.executeCompetitionHook.bind(this);
@@ -212,17 +206,6 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
   activate = async (fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       activate: {}
-    }, fee, memo, _funds);
-  };
-  proposeResult = async ({
-    proposeMessage
-  }: {
-    proposeMessage: ProposeMessage;
-  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
-    return await this.client.execute(this.sender, this.contractAddress, {
-      propose_result: {
-        propose_message: proposeMessage
-      }
     }, fee, memo, _funds);
   };
   addCompetitionHook = async ({

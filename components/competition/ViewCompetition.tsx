@@ -29,6 +29,7 @@ import {
   Th,
   Thead,
   Tr,
+  useClipboard,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
@@ -39,7 +40,7 @@ import { EscrowDisplay } from "./components/view/EscrowDisplay";
 import { PresetDistributionModal } from "./components/view/PresetDistributionModal";
 import {
   ProposalPromptModal,
-  ProposalPromptModalAction,
+  ProposalPromptAction,
 } from "./components/view/ProposalPromptModal";
 import { RulesetDisplay } from "./components/view/RulesetDisplay";
 import { BsYinYang } from "react-icons/bs";
@@ -58,9 +59,11 @@ export default function ViewCompetition({
   id,
 }: ViewCompetitionProps) {
   const { address } = useChain(env.CHAIN);
+  const { onCopy } = useClipboard(window.location.href);
   const toast = useToast();
-  const [promptAction, setPromptAction] =
-    useState<ProposalPromptModalAction>("Propose Result");
+  const [promptAction, setPromptAction] = useState<ProposalPromptAction>(
+    ProposalPromptAction.Process
+  );
   const {
     isOpen: isOpenProposalModal,
     onOpen: onOpenProposalModal,
@@ -145,7 +148,9 @@ export default function ViewCompetition({
               _focus={{ outline: "none" }}
               target="_blank"
             >
-              <Button leftIcon={<BsYinYang />}>View Competition DAO</Button>
+              <Button leftIcon={<BsYinYang />} onClick={onCopy}>
+                View Competition DAO
+              </Button>
             </Link>
           </Box>
           {(data.rulesets.length > 0 || data.rules.length > 0) && (
@@ -184,7 +189,7 @@ export default function ViewCompetition({
           )}
           {data.evidence.length > 0 && (
             <>
-              <Heading size="md">Evidence</Heading>
+              <Heading size="lg">Evidence</Heading>
               <List {...listProps}>
                 {data.evidence.map((x, i) => (
                   <ListItem key={i}>{x.content}</ListItem>
@@ -198,11 +203,11 @@ export default function ViewCompetition({
                 <Button
                   minW="150px"
                   onClick={() => {
-                    setPromptAction("Propose Result");
+                    setPromptAction(ProposalPromptAction.Process);
                     onOpenProposalModal();
                   }}
                 >
-                  Propose Result
+                  Process Competition
                 </Button>
 
                 <Button minW="200px" onClick={() => onOpenPresetModal()}>
@@ -214,11 +219,11 @@ export default function ViewCompetition({
               <Button
                 minW="150px"
                 onClick={() => {
-                  setPromptAction("Jail Wager");
+                  setPromptAction(ProposalPromptAction.Jail);
                   onOpenProposalModal();
                 }}
               >
-                Jail Wager
+                Jail Competition
               </Button>
             )}
             {data.status == "jailed" && (

@@ -33,13 +33,27 @@ import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { DistributionSchema } from "@config/schemas";
 import { UserOrDAOCard } from "@components/cards/UserOrDAOCard";
 
-const FormSchema = z.object({
-  title: z.string().min(1, { message: "Proposal Title cannot be empty" }),
-  description: z
-    .string()
-    .min(1, { message: "Proposal Description cannot be empty" }),
-  distribution: DistributionSchema,
-});
+export enum ProposalPromptAction {
+  Jail = "Jail Competition",
+  Process = "Process Competition",
+}
+
+const FormSchema = z
+  .object({
+    title: z.string(),
+    description: z.string(),
+    distribution: DistributionSchema,
+    prompt_action: z.nativeEnum(ProposalPromptAction),
+  })
+  .refine(
+    (data) =>
+      data.prompt_action != ProposalPromptAction.Jail ||
+      (data.title && data.description),
+    {
+      message: "Title and description are required when prompt action is Jail",
+      path: ["title", "description"],
+    }
+  );
 export type FormValues = z.infer<typeof FormSchema>;
 
 interface WrapperUserOrDAOCardProps {
@@ -60,15 +74,13 @@ function WrapperUserOrDAOCard({
   );
 }
 
-export type ProposalPromptModalAction = "Jail Wager" | "Propose Result";
-
 interface ProposalPromptModalProps {
   id: string;
   module_addr: string;
   isOpen: boolean;
   onClose: () => void;
   cosmwasmClient: CosmWasmClient;
-  action: ProposalPromptModalAction;
+  action: ProposalPromptAction;
   setJailedStatus: () => void;
   setHasGeneratedProposals: () => void;
 }
@@ -88,7 +100,7 @@ export function ProposalPromptModal({
     env.CHAIN
   );
 
-  const jailWager = async (values: FormValues) => {
+  const jailCompetition = async (values: FormValues) => {
     try {
       let cosmwasmClient = await getSigningCosmWasmClient();
       if (!cosmwasmClient) throw "Could not get the CosmWasm client";
@@ -128,7 +140,7 @@ export function ProposalPromptModal({
     }
   };
 
-  const proposeResult = async (values: FormValues) => {
+  const processResult = async (values: FormValues) => {
     try {
       let cosmwasmClient = await getSigningCosmWasmClient();
       if (!cosmwasmClient) throw "Could not get the CosmWasm client";
@@ -140,13 +152,9 @@ export function ProposalPromptModal({
         module_addr
       );
 
-      await wagerModuleClient.proposeResult({
-        proposeMessage: {
-          id: id,
-          title: values.title,
-          description: values.description,
-          distribution: values.distribution,
-        },
+      await wagerModuleClient.processCompetition({
+        id: id,
+        distribution: values.distribution,
       });
 
       toast({
@@ -168,8 +176,8 @@ export function ProposalPromptModal({
     }
   };
   const actionHandlers = {
-    "Jail Wager": jailWager,
-    "Propose Result": proposeResult,
+    [ProposalPromptAction.Jail]: jailCompetition,
+    [ProposalPromptAction.Process]: processResult,
   };
 
   const {
@@ -180,6 +188,7 @@ export function ProposalPromptModal({
     reset,
   } = useForm<FormValues>({
     defaultValues: {
+      prompt_action: action,
       title: "Competition Result",
       description:
         "This proposal allows members to vote on the winner of the competition. Each choice represents a different team. Select the team that you believe should win the competition.",
@@ -198,26 +207,30 @@ export function ProposalPromptModal({
       <ModalOverlay />
       <ModalContent>
         <form onSubmit={handleSubmit(actionHandlers[action])}>
-          <ModalHeader>{action}</ModalHeader>
+          <ModalHeader>{action.toString()}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Stack>
-              <FormControl isInvalid={!!errors.title}>
-                <FormLabel>Proposal Title</FormLabel>
-                <InputGroup>
-                  <Input {...register("title")} />
-                </InputGroup>
-                <FormErrorMessage>{errors.title?.message}</FormErrorMessage>
-              </FormControl>
-              <FormControl isInvalid={!!errors.description}>
-                <FormLabel>Proposal Description</FormLabel>
-                <InputGroup>
-                  <Textarea {...register("description")} />
-                </InputGroup>
-                <FormErrorMessage>
-                  {errors.description?.message}
-                </FormErrorMessage>
-              </FormControl>
+              {action == ProposalPromptAction.Jail && (
+                <>
+                  <FormControl isInvalid={!!errors.title}>
+                    <FormLabel>Proposal Title</FormLabel>
+                    <InputGroup>
+                      <Input {...register("title")} />
+                    </InputGroup>
+                    <FormErrorMessage>{errors.title?.message}</FormErrorMessage>
+                  </FormControl>
+                  <FormControl isInvalid={!!errors.description}>
+                    <FormLabel>Proposal Description</FormLabel>
+                    <InputGroup>
+                      <Textarea {...register("description")} />
+                    </InputGroup>
+                    <FormErrorMessage>
+                      {errors.description?.message}
+                    </FormErrorMessage>
+                  </FormControl>
+                </>
+              )}
               <FormControl isInvalid={!!errors.distribution}>
                 <FormLabel>Distribution</FormLabel>
                 <Stack>

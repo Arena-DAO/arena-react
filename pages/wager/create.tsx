@@ -156,6 +156,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
           label: "Arena Escrow",
           msg: toBinary({
             dues: values.dues,
+            whitelist: [env.ARENA_DAO_ADDRESS],
           } as ArenaEscrowInstantiateMsg),
         },
       };

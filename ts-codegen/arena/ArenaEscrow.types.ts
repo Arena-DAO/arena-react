@@ -7,6 +7,7 @@
 export type Uint128 = string;
 export interface InstantiateMsg {
   dues: MemberBalance[];
+  whitelist: string[];
 }
 export interface MemberBalance {
   addr: string;

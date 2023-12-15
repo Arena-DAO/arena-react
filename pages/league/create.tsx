@@ -47,11 +47,6 @@ interface LeagueFormProps {
   cosmwasmClient: CosmWasmClient;
 }
 
-interface WrapperUserOrDAOCardProps {
-  cosmwasmClient: CosmWasmClient;
-  control: Control<FormValues>;
-}
-
 const CreateLeagueSchema = CreateCompetitionSchema.extend({
   match_win_points: z.string(),
   match_draw_points: z.string(),
@@ -60,17 +55,6 @@ const CreateLeagueSchema = CreateCompetitionSchema.extend({
   host: AddressSchema,
 });
 type FormValues = z.infer<typeof CreateLeagueSchema>;
-
-function WrapperUserOrDAOCard({
-  cosmwasmClient,
-  control,
-}: WrapperUserOrDAOCardProps) {
-  let watchAddress = useWatch({ control, name: "host" });
-
-  return (
-    <UserOrDAOCard cosmwasmClient={cosmwasmClient} address={watchAddress} />
-  );
-}
 
 function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
   const router = useRouter();
@@ -132,8 +116,10 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
     handleSubmit,
     register,
     formState: { isSubmitting, errors },
-    control,
+    watch,
   } = formMethods;
+
+  const watchHost = watch("host");
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -171,6 +157,7 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
           label: "Arena Escrow",
           msg: toBinary({
             dues: values.dues,
+            whitelist: [env.ARENA_DAO_ADDRESS],
           } as ArenaEscrowInstantiateMsg),
         },
       };
@@ -216,10 +203,7 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
             <Input {...register("host")} />
             <FormErrorMessage>{errors.host?.message}</FormErrorMessage>
           </FormControl>
-          <WrapperUserOrDAOCard
-            cosmwasmClient={cosmwasmClient}
-            control={control}
-          />
+          <UserOrDAOCard cosmwasmClient={cosmwasmClient} address={watchHost} />
           <CreateCompetitionForm
             category_id={categoryItem.category_id!}
             cosmwasmClient={cosmwasmClient}

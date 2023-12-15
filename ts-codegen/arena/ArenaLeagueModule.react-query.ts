@@ -378,28 +378,6 @@ export function useArenaLeagueModuleAddCompetitionHookMutation(options?: Omit<Us
     } = {}
   }) => client.addCompetitionHook(msg, fee, memo, funds), options);
 }
-export interface ArenaLeagueModuleProposeResultMutation {
-  client: ArenaLeagueModuleClient;
-  msg: {
-    proposeMessage: ProposeMessage;
-  };
-  args?: {
-    fee?: number | StdFee | "auto";
-    memo?: string;
-    funds?: Coin[];
-  };
-}
-export function useArenaLeagueModuleProposeResultMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaLeagueModuleProposeResultMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaLeagueModuleProposeResultMutation>(({
-    client,
-    msg,
-    args: {
-      fee,
-      memo,
-      funds
-    } = {}
-  }) => client.proposeResult(msg, fee, memo, funds), options);
-}
 export interface ArenaLeagueModuleActivateMutation {
   client: ArenaLeagueModuleClient;
   args?: {

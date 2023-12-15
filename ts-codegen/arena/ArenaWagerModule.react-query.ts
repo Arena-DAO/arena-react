@@ -378,28 +378,6 @@ export function useArenaWagerModuleAddCompetitionHookMutation(options?: Omit<Use
     } = {}
   }) => client.addCompetitionHook(msg, fee, memo, funds), options);
 }
-export interface ArenaWagerModuleProposeResultMutation {
-  client: ArenaWagerModuleClient;
-  msg: {
-    proposeMessage: ProposeMessage;
-  };
-  args?: {
-    fee?: number | StdFee | "auto";
-    memo?: string;
-    funds?: Coin[];
-  };
-}
-export function useArenaWagerModuleProposeResultMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleProposeResultMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaWagerModuleProposeResultMutation>(({
-    client,
-    msg,
-    args: {
-      fee,
-      memo,
-      funds
-    } = {}
-  }) => client.proposeResult(msg, fee, memo, funds), options);
-}
 export interface ArenaWagerModuleActivateMutation {
   client: ArenaWagerModuleClient;
   args?: {

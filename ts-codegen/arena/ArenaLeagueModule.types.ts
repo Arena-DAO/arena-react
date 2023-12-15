@@ -19,10 +19,6 @@ export type ExecuteMsg = {
 } | {
   activate: {};
 } | {
-  propose_result: {
-    propose_message: ProposeMessage;
-  };
-} | {
   add_competition_hook: {
     id: Uint128;
   };
