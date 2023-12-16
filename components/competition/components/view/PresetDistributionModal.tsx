@@ -168,7 +168,7 @@ function PresetDistributionInner({
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
       <ModalContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(async (data) => await onSubmit(data))}>
           <ModalHeader>Set Preset Distribution</ModalHeader>
           <ModalCloseButton />
           <ModalBody>

@@ -195,7 +195,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(async (data) => await onSubmit(data))}>
         <Stack>
           <CreateCompetitionForm
             category_id={categoryItem.category_id!}

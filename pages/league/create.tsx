@@ -15,7 +15,6 @@ import {
   InputGroup,
   InputRightAddon,
   Select,
-  useBreakpointValue,
   useToast,
 } from "@chakra-ui/react";
 import { useChain } from "@cosmos-kit/react";
@@ -109,7 +108,7 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
       match_draw_points: "1",
       round_duration: {
         duration_units: "Time",
-        duration: 3 * 24 * 60 * 60 * 1000, // Default to 3 days
+        duration: 3 * 24 * 60 * 60, // Default to 3 days
       },
       host: address,
     },
@@ -120,6 +119,7 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
     register,
     formState: { isSubmitting, errors },
     watch,
+    getValues,
   } = formMethods;
 
   const watchHost = watch("host");
@@ -136,6 +136,8 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
         address,
         env.ARENA_LEAGUE_MODULE_ADDRESS
       );
+
+      values = getValues();
 
       const msg = {
         categoryId: categoryItem.category_id!,
@@ -186,7 +188,7 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
         if (id) break;
       }
 
-      if (id) router.push(`/wager/view?category=${category}&id=${id}`);
+      if (id) router.push(`/league/view?category=${category}&id=${id}`);
     } catch (e: any) {
       console.error(e);
       toast({
@@ -200,7 +202,7 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(async (data) => await onSubmit(data))}>
         <Stack>
           <FormControl isInvalid={!!errors.host}>
             <FormLabel>Host</FormLabel>
@@ -213,11 +215,11 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
             cosmwasmClient={cosmwasmClient}
           />
           <Grid
-            templateColumns={useBreakpointValue({
+            templateColumns={{
               base: "1fr",
               sm: "repeat(2, 1fr)",
               xl: "repeat(3, 1fr)",
-            })}
+            }}
             gap="2"
             alignItems="flex-start"
           >
@@ -275,6 +277,7 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
                 <InputGroup>
                   <Input
                     type="number"
+                    textAlign="end"
                     {...register("round_duration.duration", {
                       setValueAs: (x) => (x === "" ? undefined : parseInt(x)),
                     })}

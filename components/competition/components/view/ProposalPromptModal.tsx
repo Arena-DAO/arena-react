@@ -206,7 +206,11 @@ export function ProposalPromptModal({
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
       <ModalContent>
-        <form onSubmit={handleSubmit(actionHandlers[action])}>
+        <form
+          onSubmit={handleSubmit(
+            async (data) => await actionHandlers[action](data)
+          )}
+        >
           <ModalHeader>{action.toString()}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>

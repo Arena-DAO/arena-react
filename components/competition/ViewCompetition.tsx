@@ -29,7 +29,6 @@ import {
   Th,
   Thead,
   Tr,
-  useClipboard,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
@@ -46,6 +45,11 @@ import { RulesetDisplay } from "./components/view/RulesetDisplay";
 import { BsYinYang } from "react-icons/bs";
 import NextLink from "next/link";
 import { EvidenceModal } from "./components/view/EvidenceModal";
+import {
+  isValidContractAddress,
+  isValidWalletAddress,
+} from "~/helpers/AddressHelpers";
+import { UserCard } from "@components/cards/UserCard";
 
 interface ViewCompetitionProps {
   cosmwasmClient: CosmWasmClient;
@@ -142,23 +146,32 @@ export default function ViewCompetition({
           <Heading size="md" fontWeight={"none"} mb="2">
             {data.description}
           </Heading>
-          <Box textAlign={"right"}>
-            <Link
-              as={NextLink}
-              href={
-                env.DAO_DAO_URL +
-                "/dao/" +
-                data.dao +
-                "/apps?url=" +
-                encodeURIComponent(window.location.href)
-              }
-              _hover={{ textDecoration: "none" }}
-              _focus={{ outline: "none" }}
-              target="_blank"
-            >
-              <Button leftIcon={<BsYinYang />}>View Competition DAO</Button>
-            </Link>
-          </Box>
+          {isValidWalletAddress(data.dao) && (
+            <>
+              <Heading size="xl">Host</Heading>
+              <UserCard addr={data.dao} />
+            </>
+          )}
+          {isValidContractAddress(data.dao) && (
+            <Box textAlign={"right"}>
+              <Link
+                as={NextLink}
+                href={
+                  env.DAO_DAO_URL +
+                  "/dao/" +
+                  data.dao +
+                  "/apps?url=" +
+                  encodeURIComponent(window.location.href)
+                }
+                _hover={{ textDecoration: "none" }}
+                _focus={{ outline: "none" }}
+                target="_blank"
+              >
+                <Button leftIcon={<BsYinYang />}>View Competition DAO</Button>
+              </Link>
+            </Box>
+          )}
+
           {(data.rulesets.length > 0 || data.rules.length > 0) && (
             <Card>
               <CardHeader pb="0">

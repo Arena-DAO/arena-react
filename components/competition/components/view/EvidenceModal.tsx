@@ -119,7 +119,7 @@ export function EvidenceModal({
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <ModalOverlay />
       <ModalContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(async (data) => await onSubmit(data))}>
           <ModalHeader>Submit Evidence</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
