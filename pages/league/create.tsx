@@ -12,6 +12,9 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
+  InputGroup,
+  InputRightAddon,
+  Select,
   useBreakpointValue,
   useToast,
 } from "@chakra-ui/react";
@@ -120,6 +123,7 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
   } = formMethods;
 
   const watchHost = watch("host");
+  const watchRoundDurationUnits = watch("round_duration.duration_units");
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -256,6 +260,43 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
                 />
                 <FormErrorMessage>
                   {errors.match_lose_points?.message}
+                </FormErrorMessage>
+              </FormControl>
+            </GridItem>
+          </Grid>
+          <Grid
+            templateColumns="repeat(12, 1fr)"
+            gap="2"
+            alignItems="flex-start"
+          >
+            <GridItem colSpan={{ base: 12, sm: 8, md: 6, lg: 4 }}>
+              <FormControl isInvalid={!!errors.round_duration?.duration}>
+                <FormLabel>Round Duration</FormLabel>
+                <InputGroup>
+                  <Input
+                    type="number"
+                    {...register("round_duration.duration", {
+                      setValueAs: (x) => (x === "" ? undefined : parseInt(x)),
+                    })}
+                  />
+                  <InputRightAddon>
+                    {watchRoundDurationUnits == "Time" ? "seconds" : "blocks"}
+                  </InputRightAddon>
+                </InputGroup>
+                <FormErrorMessage>
+                  {errors.round_duration?.duration?.message}
+                </FormErrorMessage>
+              </FormControl>
+            </GridItem>
+            <GridItem colSpan={{ base: 12, sm: 4, lg: 2 }}>
+              <FormControl isInvalid={!!errors.round_duration?.duration_units}>
+                <FormLabel>Round Units</FormLabel>
+                <Select {...register("round_duration.duration_units")}>
+                  <option value="Time">Time</option>
+                  <option value="Height">Height</option>
+                </Select>
+                <FormErrorMessage>
+                  {errors.round_duration?.duration_units?.message}
                 </FormErrorMessage>
               </FormControl>
             </GridItem>
