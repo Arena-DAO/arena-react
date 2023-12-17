@@ -83,7 +83,7 @@ export default function Home() {
           w={{ base: "100%", md: "90%", lg: "85%", xl: "75%" }}
         />
         <Box>
-          <Link as={NextLink} href="#about">
+          <Link as={NextLink} href="#about" boxShadow="none">
             <Heading size="xl" id="about">
               <chakra.span color="secondary.400">#</chakra.span> About Us
             </Heading>
@@ -118,7 +118,11 @@ export default function Home() {
           </Stack>
         </Box>
         <Box>
-          <Link as={NextLink} href="#initial_token_distribution">
+          <Link
+            as={NextLink}
+            href="#initial_token_distribution"
+            boxShadow="none"
+          >
             <Heading size="xl" id="initial_token_distribution">
               <chakra.span color="secondary.400">#</chakra.span> Initial Token
               Distribution
@@ -154,7 +158,7 @@ export default function Home() {
           />
         </Box>
         <Box>
-          <Link as={NextLink} href="#arena_core">
+          <Link as={NextLink} href="#arena_core" boxShadow="none">
             <Heading size="xl" id="arena_core">
               <chakra.span color="secondary.400">#</chakra.span> Arena Core
             </Heading>
@@ -190,7 +194,7 @@ export default function Home() {
           </Stack>
         </Box>
         <Box>
-          <Link as={NextLink} href="#escrow">
+          <Link as={NextLink} href="#escrow" boxShadow="none">
             <Heading size="xl" id="escrow">
               <chakra.span color="secondary.400">#</chakra.span> Escrows
             </Heading>
@@ -215,7 +219,7 @@ export default function Home() {
           </Stack>
         </Box>
         <Box>
-          <Link as={NextLink} href="#wagers">
+          <Link as={NextLink} href="#wagers" boxShadow="none">
             <Heading size="xl" id="wagers">
               <chakra.span color="secondary.400">#</chakra.span> Wagers
             </Heading>
@@ -240,7 +244,7 @@ export default function Home() {
           </Stack>
         </Box>
         <Box>
-          <Link as={NextLink} href="#leagues">
+          <Link as={NextLink} href="#leagues" boxShadow="none">
             <Heading size="xl" id="leagues">
               <chakra.span color="secondary.400">#</chakra.span> Leagues
             </Heading>
