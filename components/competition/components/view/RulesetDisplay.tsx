@@ -2,7 +2,7 @@ import { ArenaCoreQueryClient } from "@arena/ArenaCore.client";
 import { useArenaCoreQueryExtensionQuery } from "@arena/ArenaCore.react-query";
 import { Ruleset } from "@arena/ArenaCore.types";
 import { Card, CardBody, CardHeader } from "@chakra-ui/card";
-import { Heading, List, ListItem, ListProps } from "@chakra-ui/layout";
+import { Heading, ListItem, ListProps, UnorderedList } from "@chakra-ui/layout";
 import { Skeleton } from "@chakra-ui/react";
 import env from "@config/env";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
@@ -38,11 +38,11 @@ export function RulesetDisplay({
           </Heading>
         </CardHeader>
         <CardBody>
-          <List {...listProps}>
+          <UnorderedList {...listProps}>
             {ruleset?.rules.map((x, i) => {
               return <ListItem key={i}>{x}</ListItem>;
             })}
-          </List>
+          </UnorderedList>
         </CardBody>
       </Card>
     </Skeleton>

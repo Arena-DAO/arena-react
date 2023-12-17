@@ -3,10 +3,10 @@ import {
   Box,
   Heading,
   Link,
-  List,
   ListItem,
   ListProps,
   Stack,
+  UnorderedList,
 } from "@chakra-ui/layout";
 import { useChain } from "@cosmos-kit/react";
 import env from "@config/env";
@@ -188,11 +188,11 @@ export default function ViewCompetition({
                     />
                   ))}
                   {data.rules.length > 0 && (
-                    <List {...listProps}>
+                    <UnorderedList {...listProps}>
                       {data.rules.map((rule, idx) => (
                         <ListItem key={idx}>{rule}</ListItem>
                       ))}
-                    </List>
+                    </UnorderedList>
                   )}
                 </Stack>
               </CardBody>
@@ -209,11 +209,11 @@ export default function ViewCompetition({
           {data.evidence.length > 0 && (
             <>
               <Heading size="lg">Evidence</Heading>
-              <List {...listProps}>
+              <UnorderedList {...listProps}>
                 {data.evidence.map((x, i) => (
                   <ListItem key={i}>{x.content}</ListItem>
                 ))}
-              </List>
+              </UnorderedList>
             </>
           )}
           <ButtonGroup overflowX="auto" scrollPaddingBottom="0" my="2">

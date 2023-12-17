@@ -8,6 +8,7 @@ interface Env {
   BECH32_CONTRACT_LENGTH: number;
   DEFAULT_TEAM_VOTING_DURATION_TIME: number;
   PAGINATION_LIMIT: number;
+  ARENA_TAX: number;
 
   // Variables specific to both .env.development and .env.production
   CHAIN: string;
@@ -48,6 +49,7 @@ const env: Env = {
     process.env.NEXT_PUBLIC_DEFAULT_TEAM_VOTING_DURATION_TIME!
   ),
   PAGINATION_LIMIT: parseInt(process.env.NEXT_PUBLIC_PAGINATION_LIMIT!),
+  ARENA_TAX : parseInt(process.env.NEXT_PUBLIC_ARENA_TAX!),
 
   DEFAULT_NATIVE: process.env.NEXT_PUBLIC_DEFAULT_NATIVE!,
   CHAIN: process.env.NEXT_PUBLIC_CHAIN!,
