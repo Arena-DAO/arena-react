@@ -217,7 +217,7 @@ export default function ViewCompetition({
             </>
           )}
           <ButtonGroup overflowX="auto" scrollPaddingBottom="0" my="2">
-            {data.status !== "inactive" && (
+            {address && data.status !== "inactive" && (
               <>
                 {address == data.dao && (
                   <Button
@@ -230,7 +230,7 @@ export default function ViewCompetition({
                     Process Competition
                   </Button>
                 )}
-                <Button minW="200px" onClick={() => onOpenPresetModal()}>
+                <Button minW="200px" onClick={onOpenPresetModal}>
                   Set Preset Distribution
                 </Button>
               </>
@@ -247,7 +247,7 @@ export default function ViewCompetition({
               </Button>
             )}
             {data.status == "jailed" && (
-              <Button minW="150px" onClick={() => onOpenEvidenceModal()}>
+              <Button minW="150px" onClick={onOpenEvidenceModal}>
                 Submit Evidence
               </Button>
             )}

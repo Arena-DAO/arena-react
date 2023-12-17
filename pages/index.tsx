@@ -83,7 +83,7 @@ export default function Home() {
           w={{ base: "100%", md: "90%", lg: "85%", xl: "75%" }}
         />
         <Box>
-          <Link as={NextLink} href="#about" boxShadow="none">
+          <Link as={NextLink} href="#about" _focus={{ boxShadow: "none" }}>
             <Heading size="xl" id="about">
               <chakra.span color="secondary.400">#</chakra.span> About Us
             </Heading>
@@ -121,7 +121,7 @@ export default function Home() {
           <Link
             as={NextLink}
             href="#initial_token_distribution"
-            boxShadow="none"
+            _focus={{ boxShadow: "none" }}
           >
             <Heading size="xl" id="initial_token_distribution">
               <chakra.span color="secondary.400">#</chakra.span> Initial Token
@@ -133,11 +133,11 @@ export default function Home() {
             chartType="PieChart"
             data={[
               ["Group", "Percentage"],
-              ["Founder (vested)", 30],
+              ["Liquidity Bootstrapping", 30],
+              ["Liquidity Incentives", 15],
+              ["Community Pool", 25],
+              ["Founder (vested)", 20],
               ["x/drip (airdrop)", 5],
-              ["Liquidity Bootstrapping", 25],
-              ["Community Pool", 30],
-              ["Liquidity Incentives", 5],
               ["SubDAO's", 5],
             ]}
             options={{
@@ -158,7 +158,7 @@ export default function Home() {
           />
         </Box>
         <Box>
-          <Link as={NextLink} href="#arena_core" boxShadow="none">
+          <Link as={NextLink} href="#arena_core" _focus={{ boxShadow: "none" }}>
             <Heading size="xl" id="arena_core">
               <chakra.span color="secondary.400">#</chakra.span> Arena Core
             </Heading>
@@ -194,7 +194,7 @@ export default function Home() {
           </Stack>
         </Box>
         <Box>
-          <Link as={NextLink} href="#escrow" boxShadow="none">
+          <Link as={NextLink} href="#escrow" _focus={{ boxShadow: "none" }}>
             <Heading size="xl" id="escrow">
               <chakra.span color="secondary.400">#</chakra.span> Escrows
             </Heading>
@@ -219,7 +219,7 @@ export default function Home() {
           </Stack>
         </Box>
         <Box>
-          <Link as={NextLink} href="#wagers" boxShadow="none">
+          <Link as={NextLink} href="#wagers" _focus={{ boxShadow: "none" }}>
             <Heading size="xl" id="wagers">
               <chakra.span color="secondary.400">#</chakra.span> Wagers
             </Heading>
@@ -244,7 +244,7 @@ export default function Home() {
           </Stack>
         </Box>
         <Box>
-          <Link as={NextLink} href="#leagues" boxShadow="none">
+          <Link as={NextLink} href="#leagues" _focus={{ boxShadow: "none" }}>
             <Heading size="xl" id="leagues">
               <chakra.span color="secondary.400">#</chakra.span> Leagues
             </Heading>
