@@ -133,7 +133,7 @@ const MobileMenu = ({
       {/* content */}
       <Box
         position="fixed"
-        top="3.75rem"
+        top={20}
         bottom={0}
         left={0}
         right={0}
@@ -317,7 +317,7 @@ const SimpleLayout = ({
 
 export default function MainLayout({ children }: PropsWithChildren) {
   return (
-    <SimpleLayout connectWalletToggle={<WalletConnectToggle />} navbarH="60px">
+    <SimpleLayout connectWalletToggle={<WalletConnectToggle />} navbarH="20">
       <Head>
         <title>The Ultimate Arena 🏆</title>
       </Head>

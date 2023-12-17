@@ -57,7 +57,11 @@ export default function Compete() {
       {"category_id" in daoItem && cosmwasmClient && (
         <>
           <Flex w="full" justifyContent={"flex-end"}>
-            <ButtonGroup variant="outline">
+            <ButtonGroup
+              variant="outline"
+              overflowX="auto"
+              scrollPaddingBottom="0"
+            >
               <NextLink href={`/wager/create?category=${category}`}>
                 <Button leftIcon={<AddIcon />}>Create Wager</Button>
               </NextLink>
@@ -67,7 +71,7 @@ export default function Compete() {
                 </NextLink>
               </Tooltip>
               <Tooltip label="Future feature">
-                <Button leftIcon={<AddIcon />} disabled>
+                <Button leftIcon={<AddIcon />} disabled minW="190px">
                   Create Tournament
                 </Button>
               </Tooltip>

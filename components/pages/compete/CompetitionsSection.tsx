@@ -1,7 +1,14 @@
 import { ArenaWagerModuleQueryClient } from "@arena/ArenaWagerModule.client";
 import { useArenaWagerModuleCompetitionsQuery } from "@arena/ArenaWagerModule.react-query";
 import { Card, CardBody, CardFooter, CardHeader } from "@chakra-ui/card";
-import { Badge, Box, Heading, Link, SimpleGrid } from "@chakra-ui/layout";
+import {
+  Badge,
+  Box,
+  Heading,
+  Link,
+  SimpleGrid,
+  Stack,
+} from "@chakra-ui/layout";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button, Text } from "@chakra-ui/react";
@@ -107,7 +114,14 @@ export function CompetitionsSection({
       <Heading as="h3" alignSelf="flex-start">
         {title}
       </Heading>
-      <SimpleGrid minChildWidth="250px" spacing="5" width="100%" my="2">
+      <Stack
+        w="100%"
+        mt="6"
+        spacing={8}
+        display="grid"
+        gridTemplateColumns="repeat(auto-fill, minmax(250px, 1fr))"
+        gap={6}
+      >
         {pages.map((page, index) => (
           <CompetitionsSectionItems
             key={index}
@@ -122,7 +136,7 @@ export function CompetitionsSection({
             setIsLoading={setIsLoading}
           />
         ))}
-      </SimpleGrid>
+      </Stack>
       {!isEmptyData && (
         <Button
           my="2"
