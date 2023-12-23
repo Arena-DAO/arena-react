@@ -34,10 +34,10 @@ export type ExecuteMsg = {
 } | {
   create_competition: {
     category_id: Uint128;
-    competition_dao: ModuleInfo;
     description: string;
     escrow?: ModuleInstantiateInfo | null;
     expiration: Expiration;
+    host: ModuleInfo;
     instantiate_extension: CompetitionInstantiateExt;
     name: string;
     rules: string[];
@@ -61,15 +61,6 @@ export type ExecuteMsg = {
   update_ownership: Action;
 };
 export type Uint128 = string;
-export type ModuleInfo = {
-  new: {
-    info: ModuleInstantiateInfo;
-  };
-} | {
-  existing: {
-    addr: string;
-  };
-};
 export type Admin = {
   address: {
     addr: string;
@@ -87,6 +78,15 @@ export type Expiration = {
 };
 export type Timestamp = Uint64;
 export type Uint64 = string;
+export type ModuleInfo = {
+  new: {
+    info: ModuleInstantiateInfo;
+  };
+} | {
+  existing: {
+    addr: string;
+  };
+};
 export type Duration = {
   height: number;
 } | {
@@ -178,16 +178,36 @@ export type QueryExt = {
 export type MigrateMsg = {
   from_compatible: {};
 };
-export type Null = null;
 export type Addr = string;
+export interface SudoMsg {
+  member_points: MemberPoints;
+  round_response: RoundResponse;
+}
+export interface MemberPoints {
+  matches_played: Uint64;
+  member: Addr;
+  points: Uint128;
+}
+export interface RoundResponse {
+  expiration: Expiration;
+  matches: Match[];
+  round_number: Uint64;
+}
+export interface Match {
+  match_number: Uint128;
+  result?: Result | null;
+  team_1: Addr;
+  team_2: Addr;
+}
+export type Null = null;
 export interface CompetitionResponseForCompetitionExt {
   category_id: Uint128;
-  dao: Addr;
   description: string;
   escrow?: Addr | null;
   evidence: Evidence[];
   expiration: Expiration;
   extension: CompetitionExt;
+  host: Addr;
   id: Uint128;
   is_expired: boolean;
   name: string;

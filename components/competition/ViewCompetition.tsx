@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/layout";
 import { useChain } from "@cosmos-kit/react";
 import env from "@config/env";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, ReactNode } from "react";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useArenaWagerModuleCompetitionQuery } from "@arena/ArenaWagerModule.react-query";
 import { ArenaWagerModuleQueryClient } from "@arena/ArenaWagerModule.client";
@@ -55,12 +55,14 @@ interface ViewCompetitionProps {
   cosmwasmClient: CosmWasmClient;
   module_addr: string;
   id: string;
+  extension?: ReactNode;
 }
 
 export default function ViewCompetition({
   cosmwasmClient,
   module_addr,
   id,
+  extension,
 }: ViewCompetitionProps) {
   const { address } = useChain(env.CHAIN);
   const toast = useToast();
@@ -146,32 +148,12 @@ export default function ViewCompetition({
           <Heading size="md" fontWeight={"none"} mb="2">
             {data.description}
           </Heading>
-          {isValidWalletAddress(data.dao) && (
-            <>
-              <Heading size="xl">Host</Heading>
-              <UserCard addr={data.dao} />
-            </>
-          )}
-          {isValidContractAddress(data.dao) && (
-            <Box textAlign={"right"}>
-              <Link
-                as={NextLink}
-                href={
-                  env.DAO_DAO_URL +
-                  "/dao/" +
-                  data.dao +
-                  "/apps?url=" +
-                  encodeURIComponent(window.location.href)
-                }
-                _hover={{ textDecoration: "none" }}
-                _focus={{ outline: "none" }}
-                target="_blank"
-              >
-                <Button leftIcon={<BsYinYang />}>View Competition DAO</Button>
-              </Link>
-            </Box>
-          )}
-
+          <Heading size="xl">Host</Heading>
+          <UserOrDAOCard
+            cosmwasmClient={cosmwasmClient}
+            address={data.host}
+            subLink={"/apps?url=" + encodeURIComponent(window.location.href)}
+          />
           {(data.rulesets.length > 0 || data.rules.length > 0) && (
             <Card>
               <CardHeader pb="0">
@@ -219,7 +201,7 @@ export default function ViewCompetition({
           <ButtonGroup overflowX="auto" scrollPaddingBottom="0" my="2">
             {address && data.status !== "inactive" && (
               <>
-                {address == data.dao && (
+                {address == data.host && (
                   <Button
                     minW="150px"
                     onClick={() => {
@@ -313,6 +295,7 @@ export default function ViewCompetition({
             </Card>
           )}
         </Stack>
+        {extension}
       </Skeleton>
     </Fade>
   );

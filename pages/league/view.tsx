@@ -1,5 +1,7 @@
 import { Box, Container, Heading } from "@chakra-ui/layout";
 import ViewCompetition from "@components/competition/ViewCompetition";
+import LeaderboardDisplay from "@components/pages/league/LeaderboardDisplay";
+import RoundsDisplay from "@components/pages/league/RoundsDisplay";
 import env from "@config/env";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
@@ -38,11 +40,23 @@ const ViewLeaguePage = () => {
       </Heading>
       <Box w="100%">
         {cosmwasmClient && typeof id === "string" && (
-          <ViewCompetition
-            module_addr={env.ARENA_LEAGUE_MODULE_ADDRESS}
-            id={id}
-            cosmwasmClient={cosmwasmClient}
-          />
+          <>
+            <ViewCompetition
+              module_addr={env.ARENA_LEAGUE_MODULE_ADDRESS}
+              id={id}
+              cosmwasmClient={cosmwasmClient}
+            />
+            <LeaderboardDisplay
+              cosmwasmClient={cosmwasmClient}
+              module_addr={env.ARENA_LEAGUE_MODULE_ADDRESS}
+              id={id}
+            />
+            <RoundsDisplay
+              cosmwasmClient={cosmwasmClient}
+              module_addr={env.ARENA_LEAGUE_MODULE_ADDRESS}
+              id={id}
+            />
+          </>
         )}
       </Box>
     </Container>

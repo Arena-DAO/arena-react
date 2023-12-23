@@ -153,7 +153,7 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
           round_duration: convertToDuration(values.round_duration),
           teams: values.dues.map((x) => x.addr),
         } as CompetitionInstantiateExt,
-        competitionDao: {
+        host: {
           existing: {
             addr: values.host,
           },
@@ -206,7 +206,7 @@ function LeagueForm({ cosmwasmClient }: LeagueFormProps) {
         <Stack>
           <FormControl isInvalid={!!errors.host}>
             <FormLabel>Host</FormLabel>
-            <Input {...register("host")} />
+            <Input {...register("host")} readOnly />
             <FormErrorMessage>{errors.host?.message}</FormErrorMessage>
           </FormControl>
           <UserOrDAOCard cosmwasmClient={cosmwasmClient} address={watchHost} />

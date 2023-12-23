@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Uint128, ModuleInfo, Admin, Binary, Expiration, Timestamp, Uint64, Duration, ExecuteExt, Result, Action, ProposeMessage, MemberShareForString, ModuleInstantiateInfo, CompetitionInstantiateExt, MatchResult, QueryMsg, CompetitionsFilter, CompetitionStatus, QueryExt, MigrateMsg, Null, Addr, CompetitionResponseForCompetitionExt, Evidence, CompetitionExt, MemberShareForAddr, ArrayOfCompetitionResponseForCompetitionExt, Config, OwnershipForString } from "./ArenaLeagueModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Admin, Binary, Expiration, Timestamp, Uint64, ModuleInfo, Duration, ExecuteExt, Result, Action, ProposeMessage, MemberShareForString, ModuleInstantiateInfo, CompetitionInstantiateExt, MatchResult, QueryMsg, CompetitionsFilter, CompetitionStatus, QueryExt, MigrateMsg, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForCompetitionExt, Evidence, CompetitionExt, MemberShareForAddr, ArrayOfCompetitionResponseForCompetitionExt, Config, OwnershipForString } from "./ArenaLeagueModule.types";
 export interface ArenaLeagueModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<Config>;
@@ -130,20 +130,20 @@ export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInt
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   createCompetition: ({
     categoryId,
-    competitionDao,
     description,
     escrow,
     expiration,
+    host,
     instantiateExtension,
     name,
     rules,
     rulesets
   }: {
     categoryId: Uint128;
-    competitionDao: ModuleInfo;
     description: string;
     escrow?: ModuleInstantiateInfo;
     expiration: Expiration;
+    host: ModuleInfo;
     instantiateExtension: CompetitionInstantiateExt;
     name: string;
     rules: string[];
@@ -246,20 +246,20 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
   };
   createCompetition = async ({
     categoryId,
-    competitionDao,
     description,
     escrow,
     expiration,
+    host,
     instantiateExtension,
     name,
     rules,
     rulesets
   }: {
     categoryId: Uint128;
-    competitionDao: ModuleInfo;
     description: string;
     escrow?: ModuleInstantiateInfo;
     expiration: Expiration;
+    host: ModuleInfo;
     instantiateExtension: CompetitionInstantiateExt;
     name: string;
     rules: string[];
@@ -268,10 +268,10 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
     return await this.client.execute(this.sender, this.contractAddress, {
       create_competition: {
         category_id: categoryId,
-        competition_dao: competitionDao,
         description,
         escrow,
         expiration,
+        host,
         instantiate_extension: instantiateExtension,
         name,
         rules,

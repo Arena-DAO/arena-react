@@ -7,16 +7,23 @@ import { AddressSchema } from "@config/schemas";
 interface UserOrDAOCardProps extends CardProps {
   cosmwasmClient: CosmWasmClient;
   address: string;
+  subLink?: string;
 }
 
 export function UserOrDAOCard({
   cosmwasmClient,
   address,
+  subLink,
   ...cardProps
 }: UserOrDAOCardProps) {
   if (!AddressSchema.safeParse(address).success) return null;
   if (address.length == 43) return <UserCard addr={address} {...cardProps} />;
   return (
-    <DAOCard address={address} cosmwasmClient={cosmwasmClient} {...cardProps} />
+    <DAOCard
+      address={address}
+      cosmwasmClient={cosmwasmClient}
+      subLink={subLink}
+      {...cardProps}
+    />
   );
 }

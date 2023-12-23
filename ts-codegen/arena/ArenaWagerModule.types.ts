@@ -34,10 +34,10 @@ export type ExecuteMsg = {
 } | {
   create_competition: {
     category_id: Uint128;
-    competition_dao: ModuleInfo;
     description: string;
     escrow?: ModuleInstantiateInfo | null;
     expiration: Expiration;
+    host: ModuleInfo;
     instantiate_extension: Empty;
     name: string;
     rules: string[];
@@ -61,15 +61,6 @@ export type ExecuteMsg = {
   update_ownership: Action;
 };
 export type Uint128 = string;
-export type ModuleInfo = {
-  new: {
-    info: ModuleInstantiateInfo;
-  };
-} | {
-  existing: {
-    addr: string;
-  };
-};
 export type Admin = {
   address: {
     addr: string;
@@ -87,6 +78,15 @@ export type Expiration = {
 };
 export type Timestamp = Uint64;
 export type Uint64 = string;
+export type ModuleInfo = {
+  new: {
+    info: ModuleInstantiateInfo;
+  };
+} | {
+  existing: {
+    addr: string;
+  };
+};
 export type Action = {
   transfer_ownership: {
     expiry?: Expiration | null;
@@ -147,12 +147,12 @@ export type Null = null;
 export type Addr = string;
 export interface CompetitionResponseForEmpty {
   category_id: Uint128;
-  dao: Addr;
   description: string;
   escrow?: Addr | null;
   evidence: Evidence[];
   expiration: Expiration;
   extension: Empty;
+  host: Addr;
   id: Uint128;
   is_expired: boolean;
   name: string;

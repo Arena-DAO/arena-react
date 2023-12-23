@@ -103,7 +103,7 @@ function WagerForm({ cosmwasmClient }: WagerFormProps) {
         rules: convertToRules(values.rules),
         rulesets: convertToRulesets(values.rulesets),
         instantiateExtension: {},
-        competitionDao: {
+        host: {
           new: {
             info: {
               code_id: env.CODE_ID_DAO_CORE,

@@ -23,11 +23,13 @@ import { AddressSchema } from "@config/schemas";
 interface DAOCardProps extends CardProps {
   address: string;
   cosmwasmClient: CosmWasmClient;
+  subLink?: string;
 }
 
 export function DAOCard({
   address,
   cosmwasmClient,
+  subLink,
   ...cardProps
 }: DAOCardProps) {
   const isEnabled = AddressSchema.safeParse(address).success;
@@ -71,7 +73,7 @@ export function DAOCard({
           <Tooltip label="View on DAO DAO">
             <Link
               as={NextLink}
-              href={env.DAO_DAO_URL + "/dao/" + address}
+              href={env.DAO_DAO_URL + "/dao/" + address + (subLink ?? "")}
               _hover={{ textDecoration: "none" }}
               _focus={{ outline: "none" }}
               target="_blank"
