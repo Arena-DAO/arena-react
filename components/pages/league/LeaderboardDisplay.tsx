@@ -1,19 +1,15 @@
 import { ArenaLeagueModuleQueryClient } from "@arena/ArenaLeagueModule.client";
 import { useArenaLeagueModuleQueryExtensionQuery } from "@arena/ArenaLeagueModule.react-query";
-import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { Table, Thead, Tbody, Tr, Th, Td, Heading } from "@chakra-ui/react";
 import { UserOrDAOCard } from "@components/cards/UserOrDAOCard";
 import { MemberPoints } from "@arena/ArenaLeagueModule.types";
+import { LeagueExtensionProps } from "./LeagueExtension";
 
 export default function LeaderboardDisplay({
   cosmwasmClient,
   module_addr,
   id,
-}: {
-  cosmwasmClient: CosmWasmClient;
-  module_addr: string;
-  id: string;
-}) {
+}: LeagueExtensionProps) {
   const { data } = useArenaLeagueModuleQueryExtensionQuery({
     client: new ArenaLeagueModuleQueryClient(cosmwasmClient, module_addr),
     args: { msg: { leaderboard: { league_id: id } } },
@@ -22,6 +18,9 @@ export default function LeaderboardDisplay({
   if (!data) return null;
 
   const leaderboard = data as unknown as MemberPoints[];
+
+  if (leaderboard.length == 0) return null;
+
   leaderboard.sort((a, b) => Number(b.points) - Number(a.points));
 
   return (
