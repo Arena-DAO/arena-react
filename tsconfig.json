@@ -31,15 +31,21 @@
     /* PATHS */
     "baseUrl": "./",
     "paths": {
-      "@components/*": ["components/*"],
-      "@arena/*": ["ts-codegen/arena/*"],
-      "@dao/*": ["ts-codegen/dao/*"],
-      "@cw-nfts/*": ["ts-codegen/cw-nfts/*"],
-      "@cw-plus/*": ["ts-codegen/cw-plus/*"],
-      "@config/*": ["config/*"],
-      "~/*": ["./*"]
-    }
+      "~/*": ["./src/*"]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "ts-codegen"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "postcss.config.js",
+    "tailwind.config.js"
+  ],
+  "exclude": ["node_modules", "src/codegen/*.ts"]
 }
