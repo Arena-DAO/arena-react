@@ -1,20 +1,13 @@
 import { z } from "zod";
+import DecimalSchema from "./DecimalSchema";
 
-const PercentageThresholdSchema = z
-	.object({
-		percentage_threshold: z.enum(["Majority", "Percent"]),
-		percent: z.number().int().positive().max(100).optional(),
-	})
-	.refine(
-		(context) => {
-			return context.percentage_threshold === "Percent"
-				? !!context.percent
-				: true;
-		},
-		{
-			message:
-				'Percent is required when percentage threshold is set to "Percent"',
-		},
-	);
+const PercentageThresholdSchema = z.union([
+	z.object({
+		majority: z.object({}),
+	}),
+	z.object({
+		percent: DecimalSchema,
+	}),
+]);
 
 export default PercentageThresholdSchema;

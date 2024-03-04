@@ -4,45 +4,13 @@
 * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
 */
 
-export type Expiration = {
-  at_height: number;
-} | {
-  at_time: Timestamp;
-} | {
-  never: {};
-};
-export type Timestamp = Uint64;
-export type Uint64 = string;
-export interface AllNftInfoResponse {
-  access: OwnerOfResponse;
-  info: NftInfoResponseForNullable_Empty;
-}
-export interface OwnerOfResponse {
-  approvals: Approval[];
-  owner: string;
-}
-export interface Approval {
-  expires: Expiration;
-  spender: string;
-}
-export interface NftInfoResponseForNullable_Empty {
-  extension?: Empty | null;
-  token_uri?: string | null;
-}
-export interface Empty {
-  [k: string]: unknown;
-}
-export interface ApprovalResponse {
-  approval: Approval;
-}
-export interface ApprovalsResponse {
-  approvals: Approval[];
-}
-export interface ContractInfoResponse {
+export interface InstantiateMsg {
+  minter?: string | null;
   name: string;
   symbol: string;
+  withdraw_address?: string | null;
 }
-export type Cw721ExecuteMsg = {
+export type ExecuteMsg = {
   transfer_nft: {
     recipient: string;
     token_id: string;
@@ -74,34 +42,59 @@ export type Cw721ExecuteMsg = {
     operator: string;
   };
 } | {
+  mint: {
+    extension: Empty;
+    owner: string;
+    token_id: string;
+    token_uri?: string | null;
+  };
+} | {
   burn: {
     token_id: string;
   };
+} | {
+  extension: {
+    msg: Empty;
+  };
+} | {
+  set_withdraw_address: {
+    address: string;
+  };
+} | {
+  remove_withdraw_address: {};
+} | {
+  withdraw_funds: {
+    amount: Coin;
+  };
+} | {
+  update_ownership: Action;
 };
 export type Binary = string;
-export interface InstantiateMsg {
-  admin?: string | null;
-  minter?: string | null;
-  name: string;
-  symbol: string;
-  withdraw_address?: string | null;
+export type Expiration = {
+  at_height: number;
+} | {
+  at_time: Timestamp;
+} | {
+  never: {};
+};
+export type Timestamp = Uint64;
+export type Uint64 = string;
+export type Uint128 = string;
+export type Action = {
+  transfer_ownership: {
+    expiry?: Expiration | null;
+    new_owner: string;
+  };
+} | "accept_ownership" | "renounce_ownership";
+export interface Empty {
+  [k: string]: unknown;
 }
-export interface MinterResponse {
-  minter?: string | null;
-}
-export interface NftInfoResponse {
-  extension?: Empty | null;
-  token_uri?: string | null;
-}
-export interface NumTokensResponse {
-  count: number;
-}
-export interface OperatorsResponse {
-  operators: Approval[];
+export interface Coin {
+  amount: Uint128;
+  denom: string;
+  [k: string]: unknown;
 }
 export type QueryMsg = {
-  admin: {};
-} | {
   owner_of: {
     include_expired?: boolean | null;
     token_id: string;
@@ -116,6 +109,12 @@ export type QueryMsg = {
   approvals: {
     include_expired?: boolean | null;
     token_id: string;
+  };
+} | {
+  operator: {
+    include_expired?: boolean | null;
+    operator: string;
+    owner: string;
   };
 } | {
   all_operators: {
@@ -150,7 +149,60 @@ export type QueryMsg = {
   };
 } | {
   minter: {};
+} | {
+  extension: {
+    msg: Empty;
+  };
+} | {
+  get_withdraw_address: {};
+} | {
+  ownership: {};
 };
+export interface AllNftInfoResponseForEmpty {
+  access: OwnerOfResponse;
+  info: NftInfoResponseForEmpty;
+}
+export interface OwnerOfResponse {
+  approvals: Approval[];
+  owner: string;
+}
+export interface Approval {
+  expires: Expiration;
+  spender: string;
+}
+export interface NftInfoResponseForEmpty {
+  extension: Empty;
+  token_uri?: string | null;
+}
+export interface OperatorsResponse {
+  operators: Approval[];
+}
 export interface TokensResponse {
   tokens: string[];
+}
+export interface ApprovalResponse {
+  approval: Approval;
+}
+export interface ApprovalsResponse {
+  approvals: Approval[];
+}
+export interface ContractInfoResponse {
+  name: string;
+  symbol: string;
+}
+export type Null = null;
+export type NullableString = string | null;
+export interface MinterResponse {
+  minter?: string | null;
+}
+export interface NumTokensResponse {
+  count: number;
+}
+export interface OperatorResponse {
+  approval: Approval;
+}
+export interface OwnershipForString {
+  owner?: string | null;
+  pending_expiry?: Expiration | null;
+  pending_owner?: string | null;
 }

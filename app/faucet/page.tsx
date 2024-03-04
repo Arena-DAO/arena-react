@@ -5,17 +5,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Input } from "@nextui-org/react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useAddressSchema } from "~/hooks/schemas/useAddressSchema";
+import { AddressSchema } from "~/config/schemas";
 import { useEnv } from "~/hooks/useEnv";
+
+const FormSchema = z.object({
+	address: AddressSchema,
+});
+type FormValues = z.infer<typeof FormSchema>;
 
 export default function Faucet() {
 	const { data: env } = useEnv();
 	const { address } = useChain(env.CHAIN);
-	const addressSchema = useAddressSchema();
-	const FormSchema = z.object({
-		address: addressSchema,
-	});
-	type FormValues = z.infer<typeof FormSchema>;
 	const {
 		register,
 		handleSubmit,

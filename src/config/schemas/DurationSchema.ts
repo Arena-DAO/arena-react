@@ -1,14 +1,13 @@
 import { z } from "zod";
+import TimestampSchema from "./TimestampSchema";
 
-const DurationSchema = z.object({
-	duration: z
-		.number({
-			invalid_type_error: "Duration must be a number",
-		})
-		.int({ message: "Duration must be a whole number" })
-		.positive()
-		.optional(),
-	duration_units: z.enum(["Time", "Height"]),
-});
+const DurationSchema = z.union([
+	z.object({
+		height: z.number().nonnegative(),
+	}),
+	z.object({
+		ime: TimestampSchema,
+	}),
+]);
 
 export default DurationSchema;

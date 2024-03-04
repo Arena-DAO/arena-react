@@ -1,13 +1,9 @@
-import env from "~/config/env";
-
-export function convertIPFSToHttp(url: string | null | undefined) {
-	if (!url) return undefined;
-
+export function convertIPFSToHttp(gateway: string, url: string) {
 	// Detect if URL is IPFS and convert to HTTP
 	const ipfsRegex = /^ipfs:\/\/(.*)/;
 	const match = url.match(ipfsRegex);
 	if (match) {
-		return `${env.IPFS_GATEWAY}${match[1]}`;
+		return `${gateway}${match[1]}`;
 	}
 
 	// Otherwise return the URL as it is
