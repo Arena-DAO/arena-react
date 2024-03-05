@@ -17,7 +17,6 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 import { useAsyncList } from "react-stately";
 import { ArenaCoreQueryClient } from "~/codegen/ArenaCore.client";
 import { Ruleset } from "~/codegen/ArenaCore.types";
-import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import { WithClient } from "~/types/util";
 import { CreateCompetitionFormValues } from "../CreateCompetitionForm";
@@ -27,7 +26,7 @@ interface RulesetsSelectionProps {
 	pagination_limit: number;
 }
 
-const RulesetsSelectionComponent = ({
+const RulesetsSelection = ({
 	cosmWasmClient,
 	category_id,
 }: WithClient<RulesetsSelectionProps>) => {
@@ -117,12 +116,4 @@ const RulesetsSelectionComponent = ({
 	);
 };
 
-export const RulesetsSelection = (props: RulesetsSelectionProps) => {
-	const { data } = useCosmWasmClient();
-
-	return (
-		<>
-			{data && <RulesetsSelectionComponent cosmWasmClient={data} {...props} />}
-		</>
-	);
-};
+export default RulesetsSelection;

@@ -1,19 +1,26 @@
 "use client";
 
 import {
-	Badge,
 	Button,
-	Card,
-	CardBody,
-	CardHeader,
+	Chip,
 	Link,
 	Spinner,
+	Table,
+	TableBody,
+	TableCell,
+	TableColumn,
+	TableHeader,
+	TableRow,
 } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { contracts } from "~/codegen";
+import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
+import { useState } from "react";
+import { BsPlus } from "react-icons/bs";
+import { useAsyncList } from "react-stately";
+import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
+import { CompetitionResponseForEmpty } from "~/codegen/ArenaWagerModule.types";
 import { statusColors } from "~/helpers/ArenaHelpers";
 import { CategoryLeaf } from "~/hooks/useCategories";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import { WithClient } from "~/types/util";
 
@@ -23,156 +30,104 @@ interface CompetitionModuleSectionProps {
 	path: string;
 }
 
-interface CompetitionModuleSectionItemsProps
-	extends CompetitionModuleSectionProps {
-	startAfter?: string;
-	setLastCompetitionId: (id: string) => void;
-	setIsEmptyData: Dispatch<SetStateAction<boolean>>;
-	setIsLoading: Dispatch<SetStateAction<boolean>>;
-}
-
 const CompetitionModuleSectionItems = ({
 	cosmWasmClient,
 	category,
 	module_addr,
-	startAfter,
 	path,
-	setLastCompetitionId,
-	setIsEmptyData,
-	setIsLoading,
-}: WithClient<CompetitionModuleSectionItemsProps>) => {
-	const router = useRouter();
-	const { ArenaWagerModule } = contracts;
-	const { data, isLoading } =
-		ArenaWagerModule.useArenaWagerModuleCompetitionsQuery({
-			client: new ArenaWagerModule.ArenaWagerModuleQueryClient(
+}: WithClient<CompetitionModuleSectionProps>) => {
+	const { data: env } = useEnv();
+	const [hasMore, setHasMore] = useState(false);
+	const list = useAsyncList<CompetitionResponseForEmpty, string | undefined>({
+		async load({ cursor }) {
+			const client = new ArenaWagerModuleQueryClient(
 				cosmWasmClient,
 				module_addr,
-			),
-			args: {
+			);
+
+			const data = await client.competitions({
+				startAfter: cursor,
 				filter: { category: { id: category.category_id?.toString() } },
-				startAfter: startAfter,
-			},
-		});
-	const { data: env } = useEnv();
+			});
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Seems to be a false positive
-	useEffect(() => {
-		if (data && "length" in data) {
-			if (data.length > 0) {
-				const lastCompetition = data[data.length - 1];
-				if (lastCompetition) {
-					setLastCompetitionId(lastCompetition.id);
-				}
-			}
-			setIsEmptyData(data.length < env.PAGINATION_LIMIT);
-			setIsLoading(false);
-		}
-	}, [
-		data,
-		setLastCompetitionId,
-		setIsEmptyData,
-		setIsLoading,
-		env.PAGINATION_LIMIT,
-	]);
+			setHasMore(data.length === env.PAGINATION_LIMIT);
 
-	if (isLoading) {
-		return <Spinner />;
-	}
-	if (!data || data.length === 0) {
-		return null;
-	}
+			return {
+				items: data,
+				cursor: data[data.length - 1]?.id,
+			};
+		},
+	});
+	const [loaderRef, scrollerRef] = useInfiniteScroll({
+		hasMore,
+		onLoadMore: list.loadMore,
+	});
+
 	return (
-		<>
-			{data?.map((competition) => (
-				<Card
-					key={competition.id}
-					isPressable
-					onPress={() =>
-						router.push(
-							`/${path}/view?category=${category}&id=${competition.id}`,
-						)
-					}
-				>
-					<CardHeader>
-						<Badge
-							content={competition.status}
-							color={statusColors[competition.status]}
-						>
-							<h1 className="text-2xl">{competition.name}</h1>
-						</Badge>
-					</CardHeader>
-					<CardBody>
-						<p>{competition.description}</p>
-					</CardBody>
-				</Card>
-			))}
-		</>
+		<Table
+			isHeaderSticky
+			aria-label="Competitions"
+			baseRef={scrollerRef}
+			bottomContent={
+				hasMore ? (
+					<div className="flex w-full justify-center">
+						<Spinner ref={loaderRef} color="white" />
+					</div>
+				) : null
+			}
+			classNames={{
+				base: "max-h-[600px] overflow-auto table-auto",
+			}}
+		>
+			<TableHeader>
+				<TableColumn>Name</TableColumn>
+				<TableColumn>Status</TableColumn>
+				<TableColumn>Description</TableColumn>
+				<TableColumn>Actions</TableColumn>
+			</TableHeader>
+			<TableBody
+				emptyContent="No competitions yet.. Create one!"
+				items={list.items}
+				isLoading={list.isLoading}
+				loadingContent={<Spinner color="white" />}
+			>
+				{(item: CompetitionResponseForEmpty) => (
+					<TableRow key={item.id}>
+						<TableCell>{item.name}</TableCell>
+						<TableCell>
+							<Chip color={statusColors[item.status]}>{item.status}</Chip>
+						</TableCell>
+						<TableCell>{item.description}</TableCell>
+						<TableCell>
+							<Link href={`/${path}/view?category=${category}&id=${item.id}`}>
+								<Button>View</Button>
+							</Link>
+						</TableCell>
+					</TableRow>
+				)}
+			</TableBody>
+		</Table>
 	);
 };
 
-const CompetitionModuleSection = ({
-	cosmWasmClient,
-	category,
-	module_addr,
-	title,
-	path,
-}: WithClient<CompetitionModuleSectionProps> & { title: string }) => {
-	const [isEmptyData, setIsEmptyData] = useState(true);
-	const [pages, setPages] = useState<[string | undefined]>([undefined]);
-	const [lastCompetitionId, setLastCompetitionId] = useState<
-		string | undefined
-	>();
-	const [isLoading, setIsLoading] = useState<boolean>(false);
-
+const CompetitionModuleSection = (props: CompetitionModuleSectionProps) => {
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	return (
-		<>
-			<div className="block text-start">
-				<Link href={`#${title}`}>
-					<h2 id={title} className="text-3xl font-semibold text-foreground">
-						<span className="text-primary">#</span> {title}
-					</h2>
+		<div className="space-y-4">
+			<div className="block text-right">
+				<Link
+					href={`/${props.path}/create?category=${props.category.category_id}`}
+				>
+					<Button startContent={<BsPlus />}>Create</Button>
 				</Link>
 			</div>
-			<div className="grid grid-cols-12 gap-4">
-				{pages.map((page) => (
-					<CompetitionModuleSectionItems
-						key={page ?? "null"}
-						cosmWasmClient={cosmWasmClient}
-						category={category}
-						startAfter={page}
-						module_addr={module_addr}
-						path={path}
-						setIsEmptyData={setIsEmptyData}
-						setIsLoading={setIsLoading}
-						setLastCompetitionId={setLastCompetitionId}
-					/>
-				))}
-			</div>
-			{pages.length === 1 && lastCompetitionId === undefined && (
-				<div className="block my-4">
-					<em>No competitions yet...</em>
-				</div>
+			{cosmWasmClient && (
+				<CompetitionModuleSectionItems
+					cosmWasmClient={cosmWasmClient}
+					{...props}
+				/>
 			)}
-			{!isEmptyData && (
-				<Button
-					aria-label="Load more"
-					variant="ghost"
-					isLoading={isLoading}
-					onClick={() => {
-						if (lastCompetitionId) {
-							setIsLoading(true);
-							setPages((x) => {
-								x.push(lastCompetitionId);
-								return x;
-							});
-						}
-					}}
-				>
-					Load More...
-				</Button>
-			)}
-		</>
+		</div>
 	);
 };
 

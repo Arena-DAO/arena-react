@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { DaoDaoCoreQueryClient } from "~/codegen/DaoDaoCore.client";
 import { useDaoDaoCoreConfigQuery } from "~/codegen/DaoDaoCore.react-query";
 import { isValidWalletAddress } from "~/helpers/AddressHelpers";
+import { withIpfsSupport } from "~/helpers/IPFSHelpers";
 import { useEnv } from "./useEnv";
 
 type UserProfile = {
@@ -70,7 +71,7 @@ export const useProfileData = (
 				return {
 					address,
 					name: data.name,
-					imageUrl: data.imageUrl,
+					imageUrl: withIpfsSupport(env.IPFS_GATEWAY, data.imageUrl),
 				} as Profile;
 			},
 		},
@@ -83,7 +84,7 @@ export const useProfileData = (
 				return {
 					address,
 					name: data.name,
-					imageUrl: data.image_url,
+					imageUrl: withIpfsSupport(env.IPFS_GATEWAY, data.image_url),
 				} as Profile;
 			},
 		},

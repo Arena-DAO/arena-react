@@ -28,8 +28,9 @@ import { FiDelete, FiPlus } from "react-icons/fi";
 import { z } from "zod";
 import { CreateCompetitionSchema } from "~/config/schemas";
 import { useCategoryMap } from "~/hooks/useCategories";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import { RulesetsSelection } from "./components/RulesetsSelection";
+import RulesetsSelection from "./components/RulesetsSelection";
 
 export type CreateCompetitionFormValues = z.infer<
 	typeof CreateCompetitionSchema
@@ -42,6 +43,7 @@ export interface FormComponentProps {
 
 export default function CreateCompetitionForm() {
 	const { data: env } = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const searchParams = useSearchParams();
 	const { data: categories } = useCategoryMap();
 	const formMethods = useFormContext<CreateCompetitionFormValues>();
@@ -159,10 +161,12 @@ export default function CreateCompetitionForm() {
 					/>
 				)}
 			</div>
-			<RulesetsSelection
-				pagination_limit={env.PAGINATION_LIMIT}
-				category_id={category_id}
-			/>
+			{cosmWasmClient && (
+				<RulesetsSelection
+					category_id={category_id}
+					cosmWasmClient={cosmWasmClient}
+				/>
+			)}
 			<Button
 				onClick={() => rulesAppend({ rule: "" })}
 				aria-label="Add rule"

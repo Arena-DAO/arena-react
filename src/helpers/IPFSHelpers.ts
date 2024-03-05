@@ -1,4 +1,8 @@
-export function convertIPFSToHttp(gateway: string, url: string) {
+export function withIpfsSupport(gateway: string, url?: string | null) {
+	if (!url) {
+		return url;
+	}
+
 	// Detect if URL is IPFS and convert to HTTP
 	const ipfsRegex = /^ipfs:\/\/(.*)/;
 	const match = url.match(ipfsRegex);
