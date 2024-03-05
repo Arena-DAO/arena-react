@@ -1,10 +1,13 @@
 "use client";
 
-import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import {
 	Accordion,
 	AccordionItem,
 	Button,
+	Card,
+	CardBody,
+	CardFooter,
+	CardHeader,
 	Input,
 	Select,
 	SelectItem,
@@ -30,6 +33,7 @@ import { CreateCompetitionSchema } from "~/config/schemas";
 import { useCategoryMap } from "~/hooks/useCategories";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
+import DuesProfile from "./components/DuesProfile";
 import RulesetsSelection from "./components/RulesetsSelection";
 
 export type CreateCompetitionFormValues = z.infer<
@@ -37,7 +41,6 @@ export type CreateCompetitionFormValues = z.infer<
 >;
 
 export interface FormComponentProps {
-	cosmWasmClient: CosmWasmClient;
 	control: Control<CreateCompetitionFormValues>;
 }
 
@@ -210,6 +213,15 @@ export default function CreateCompetitionForm() {
 					))}
 				</TableBody>
 			</Table>
+			<Button
+				onClick={() =>
+					duesAppend({ addr: "", balance: { native: [], cw20: [], cw721: [] } })
+				}
+				aria-label="Add due"
+				startContent={<FiPlus />}
+			>
+				Add Team
+			</Button>
 			<Table aria-label="Teams">
 				<TableHeader>
 					<TableColumn>Team</TableColumn>
@@ -219,7 +231,39 @@ export default function CreateCompetitionForm() {
 					{duesFields.map((due, index) => (
 						<TableRow key={due.id}>
 							<TableCell>
-								<div />
+								<Card>
+									<CardHeader>Team {index + 1}</CardHeader>
+									<CardBody>
+										<Input
+											label="Address"
+											{...register(`dues.${index}.addr`)}
+											isDisabled={isSubmitting}
+											isInvalid={!!errors.dues?.[index]?.addr}
+											errorMessage={errors.dues?.[index]?.addr?.message}
+											endContent={
+												<Tooltip content="Delete Team">
+													<Button
+														isIconOnly
+														aria-label="Delete Team"
+														variant="faded"
+														onClick={() => duesRemove(index)}
+													>
+														<FiDelete />
+													</Button>
+												</Tooltip>
+											}
+										/>
+									</CardBody>
+									<CardFooter>
+										{cosmWasmClient && (
+											<DuesProfile
+												cosmWasmClient={cosmWasmClient}
+												index={index}
+												control={control}
+											/>
+										)}
+									</CardFooter>
+								</Card>
 							</TableCell>
 							<TableCell>
 								<div />

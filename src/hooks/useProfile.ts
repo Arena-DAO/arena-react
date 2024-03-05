@@ -57,6 +57,7 @@ const fetchProfile = async (
 export const useProfileData = (
 	address: string,
 	cosmWasmClient: CosmWasmClient,
+	isValid: boolean,
 ) => {
 	const isWallet = isValidWalletAddress(address);
 
@@ -66,7 +67,7 @@ export const useProfileData = (
 		async () => await fetchProfile(env.PFPK_URL, address),
 		{
 			staleTime: 1000 * 60 * 30, // 30 minutes
-			enabled: isWallet && !!cosmWasmClient,
+			enabled: isWallet && isValid,
 			select: (data) => {
 				return {
 					address,
@@ -79,7 +80,7 @@ export const useProfileData = (
 	const daoQuery = useDaoDaoCoreConfigQuery({
 		client: new DaoDaoCoreQueryClient(cosmWasmClient, address),
 		options: {
-			enabled: !isWallet && !!cosmWasmClient,
+			enabled: !isWallet && isValid,
 			select: (data) => {
 				return {
 					address,

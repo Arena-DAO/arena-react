@@ -48,7 +48,6 @@ const CreateWager = () => {
 			rules: [],
 			dues: [
 				{
-					addr: address,
 					balance: {
 						cw20: [],
 						cw721: [],
