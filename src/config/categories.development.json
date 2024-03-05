@@ -96,6 +96,12 @@
 					"title": "Tennis",
 					"img": "/category_images/tennis.jpg",
 					"category_id": 14
+				},
+				{
+					"url": "football",
+					"title": "Football",
+					"img": "/category_images/football.jpg",
+					"category_id": 15
 				}
 			]
 		}
