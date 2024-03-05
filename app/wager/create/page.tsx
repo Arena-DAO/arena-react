@@ -5,8 +5,10 @@ import CreateCompetitionForm, {
 } from "@/components/competition/CreateCompetitionForm";
 import { toBinary } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
+import { UTCDate } from "@date-fns/utc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@nextui-org/react";
+import { addSeconds, formatISO } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
 import { InstantiateMsg as ArenaEscrowInstantiateMsg } from "~/codegen/ArenaEscrow.types";
@@ -16,7 +18,6 @@ import { InstantiateMsg as DAOProposalSingleInstantiateMsg } from "~/codegen/Dao
 import { InstantiateMsg as DAOVotingCW4InstantiateMsg } from "~/codegen/DaoVotingCw4.types";
 import { CreateCompetitionSchema } from "~/config/schemas";
 import { useCategoryMap } from "~/hooks/useCategories";
-import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 
 const CreateWager = () => {
@@ -24,7 +25,6 @@ const CreateWager = () => {
 	const router = useRouter();
 	const { data: env } = useEnv();
 	const { data: categories } = useCategoryMap();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { getSigningCosmWasmClient, address, isWalletConnected } = useChain(
 		env.CHAIN,
 	);
@@ -40,9 +40,10 @@ const CreateWager = () => {
 	const formMethods = useForm<CreateCompetitionFormValues>({
 		defaultValues: {
 			expiration: {
-				at_time: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
-					.toISOString()
-					.slice(0, 16), // Default to 2 weeks from now
+				at_time: formatISO(addSeconds(new UTCDate(), 14 * 24 * 60 * 60)).slice(
+					0,
+					16,
+				), // Default to 2 weeks from now
 			},
 			rules: [],
 			dues: [
@@ -174,13 +175,8 @@ const CreateWager = () => {
 		<FormProvider {...formMethods}>
 			<form onSubmit={handleSubmit(async (data) => await onSubmit(data))}>
 				<div className="space-y-4">
-					<h1 className="text-5xl">Create a Wager</h1>
-					{cosmWasmClient && (
-						<CreateCompetitionForm
-							category_id={category_id}
-							cosmWasmClient={cosmWasmClient}
-						/>
-					)}
+					<h1 className="text-5xl text-center">Create a Wager</h1>
+					<CreateCompetitionForm />
 					<div className="flex">
 						<Button
 							type="submit"

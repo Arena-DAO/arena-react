@@ -38,9 +38,7 @@ const Layout = ({ children }: PropsWithChildren) => {
 				<Providers>
 					<div className="flex min-h-screen flex-col">
 						<AppNavbar />
-						<div className="container mx-auto flex-grow pt-8 text-center">
-							{children}
-						</div>
+						<div className="container mx-auto flex-grow pt-8">{children}</div>
 						<Footer />
 					</div>
 				</Providers>

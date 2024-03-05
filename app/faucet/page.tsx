@@ -19,7 +19,7 @@ export default function Faucet() {
 	const {
 		register,
 		handleSubmit,
-		formState: { errors, isSubmitting },
+		formState: { errors, isSubmitting, defaultValues },
 	} = useForm<FormValues>({
 		defaultValues: {
 			address,
@@ -37,15 +37,15 @@ export default function Faucet() {
 	if (!env.FAUCET_URL) return <h1>Faucet is not defined...</h1>;
 	return (
 		<div className="space-y-4">
-			<h1 className="text-5xl">Juno Testnet Faucet</h1>
+			<h1 className="text-5xl text-center">Juno Testnet Faucet</h1>
 			<form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 				<Input
 					{...register("address")}
 					label="Address"
 					isDisabled={isSubmitting}
+					value={defaultValues?.address}
 					isInvalid={!!errors.address}
 					errorMessage={errors.address?.message}
-					color={errors.address ? "danger" : "default"}
 				/>
 				<Button type="submit" isLoading={isSubmitting} className="ml-auto">
 					Submit

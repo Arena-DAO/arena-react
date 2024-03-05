@@ -23,7 +23,7 @@ const CompeteComponent = ({ cosmWasmClient }: WithClient<unknown>) => {
 	}
 	return (
 		<div className="space-y-4">
-			<h1 className="text-5xl">
+			<h1 className="text-5xl text-center">
 				{categoryItem.title} {"children" in categoryItem && "Categories"}
 			</h1>
 			{"children" in categoryItem && (

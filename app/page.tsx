@@ -51,7 +51,7 @@ export default function HomePage() {
 
 	return (
 		<div className="space-y-4">
-			<h1 className="font-extrabold text-5xl">
+			<h1 className="font-extrabold text-5xl text-center">
 				Welcome to the future of{" "}
 				<span className="text-primary">competition</span>!
 			</h1>
