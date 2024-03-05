@@ -1,7 +1,6 @@
 "use client";
 
 import { Skeleton, User } from "@nextui-org/react";
-import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useProfileData } from "~/hooks/useProfile";
 import { WithClient } from "~/types/util";
 
@@ -9,10 +8,7 @@ interface ProfileProps {
 	address: string;
 }
 
-const WalletProfileComponent = ({
-	address,
-	cosmWasmClient,
-}: WithClient<ProfileProps>) => {
+const Profile = ({ address, cosmWasmClient }: WithClient<ProfileProps>) => {
 	const { data, isLoading } = useProfileData(address, cosmWasmClient);
 
 	return (
@@ -27,10 +23,4 @@ const WalletProfileComponent = ({
 	);
 };
 
-export default function WalletProfile(props: ProfileProps) {
-	const { data } = useCosmWasmClient();
-
-	return (
-		<>{data && <WalletProfileComponent cosmWasmClient={data} {...props} />}</>
-	);
-}
+export default Profile;

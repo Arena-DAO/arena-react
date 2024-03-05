@@ -46,14 +46,13 @@ export default function CreateCompetitionForm() {
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const searchParams = useSearchParams();
 	const { data: categories } = useCategoryMap();
-	const formMethods = useFormContext<CreateCompetitionFormValues>();
 	const {
 		register,
 		control,
 		watch,
 		formState: { errors, isSubmitting, defaultValues },
 		setValue,
-	} = formMethods;
+	} = useFormContext<CreateCompetitionFormValues>();
 
 	const watchExpiration = watch("expiration");
 
@@ -62,6 +61,11 @@ export default function CreateCompetitionForm() {
 		append: rulesAppend,
 		remove: rulesRemove,
 	} = useFieldArray({ name: "rules", control });
+	const {
+		fields: duesFields,
+		append: duesAppend,
+		remove: duesRemove,
+	} = useFieldArray({ name: "dues", control });
 
 	const category = searchParams?.get("category") ?? "";
 	const categoryItem = categories.get(category);
@@ -201,6 +205,24 @@ export default function CreateCompetitionForm() {
 										</Tooltip>
 									}
 								/>
+							</TableCell>
+						</TableRow>
+					))}
+				</TableBody>
+			</Table>
+			<Table aria-label="Teams">
+				<TableHeader>
+					<TableColumn>Team</TableColumn>
+					<TableColumn>Dues</TableColumn>
+				</TableHeader>
+				<TableBody emptyContent="No teams provided">
+					{duesFields.map((due, index) => (
+						<TableRow key={due.id}>
+							<TableCell>
+								<div />
+							</TableCell>
+							<TableCell>
+								<div />
 							</TableCell>
 						</TableRow>
 					))}

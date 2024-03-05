@@ -9,19 +9,30 @@ import {
 	DropdownTrigger,
 } from "@nextui-org/react";
 import { BsWallet } from "react-icons/bs";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import WalletProfile from "./WalletProfile";
+import Profile from "./Profile";
 
 export default function WalletConnectToggle() {
 	const { data: env } = useEnv();
 	const chainContext = useChain(env.CHAIN);
+	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 
 	if (chainContext.isWalletConnected && chainContext.address) {
 		return (
 			<Dropdown placement="bottom-end">
 				<DropdownTrigger>
-					<Button variant="light" className="h-full">
-						<WalletProfile address={chainContext.address} />
+					<Button
+						variant="light"
+						className="h-full"
+						isLoading={cosmWasmClient === undefined}
+					>
+						{cosmWasmClient && (
+							<Profile
+								address={chainContext.address}
+								cosmWasmClient={cosmWasmClient}
+							/>
+						)}
 					</Button>
 				</DropdownTrigger>
 				<DropdownMenu aria-label="Profile Actions">
