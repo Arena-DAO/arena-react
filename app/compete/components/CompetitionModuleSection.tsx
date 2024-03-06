@@ -3,7 +3,6 @@
 import {
 	Button,
 	Chip,
-	Link,
 	Spinner,
 	Table,
 	TableBody,
@@ -13,6 +12,7 @@ import {
 	TableRow,
 } from "@nextui-org/react";
 import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { BsPlus } from "react-icons/bs";
 import { useAsyncList } from "react-stately";
@@ -36,6 +36,7 @@ const CompetitionModuleSectionItems = ({
 	module_addr,
 	path,
 }: WithClient<CompetitionModuleSectionProps>) => {
+	const router = useRouter();
 	const { data: env } = useEnv();
 	const [hasMore, setHasMore] = useState(false);
 	const list = useAsyncList<CompetitionResponseForEmpty, string | undefined>({
@@ -99,9 +100,15 @@ const CompetitionModuleSectionItems = ({
 						</TableCell>
 						<TableCell>{item.description}</TableCell>
 						<TableCell>
-							<Link href={`/${path}/view?category=${category}&id=${item.id}`}>
-								<Button>View</Button>
-							</Link>
+							<Button
+								onClick={() =>
+									router.push(
+										`/${path}/view?category=${category.url}&id=${item.id}`,
+									)
+								}
+							>
+								View
+							</Button>
 						</TableCell>
 					</TableRow>
 				)}
@@ -112,12 +119,19 @@ const CompetitionModuleSectionItems = ({
 
 const CompetitionModuleSection = (props: CompetitionModuleSectionProps) => {
 	const { data: cosmWasmClient } = useCosmWasmClient();
+	const router = useRouter();
+
 	return (
 		<div className="space-y-4">
 			<div className="block text-right">
-				<Link href={`/${props.path}/create?category=${props.category.url}`}>
-					<Button startContent={<BsPlus />}>Create</Button>
-				</Link>
+				<Button
+					startContent={<BsPlus />}
+					onClick={() =>
+						router.push(`/${props.path}/create?category=${props.category.url}`)
+					}
+				>
+					Create
+				</Button>
 			</div>
 			{cosmWasmClient && (
 				<CompetitionModuleSectionItems
