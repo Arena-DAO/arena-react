@@ -58,7 +58,7 @@ export default function WalletConnectToggle() {
 			color="primary"
 			onClick={chainContext.openView}
 		>
-			Connect Wallet
+			Connect
 		</Button>
 	);
 }

@@ -1,16 +1,19 @@
-import { Skeleton, User } from "@nextui-org/react";
+"use client";
+
+import { Skeleton, User, UserProps } from "@nextui-org/react";
 import { useToken } from "~/hooks/useToken";
 import { WithClient } from "~/types/util";
 
-interface TokenCardProps {
+interface TokenCardProps extends Omit<UserProps, "name"> {
 	denomOrAddress: string;
-	isNative: boolean;
+	isNative?: boolean;
 }
 
 const TokenInfo = ({
 	cosmWasmClient,
 	denomOrAddress,
-	isNative,
+	isNative = false,
+	...props
 }: WithClient<TokenCardProps>) => {
 	const {
 		data: token,
@@ -32,6 +35,7 @@ const TokenInfo = ({
 						token?.logo_URIs?.png ??
 						token?.logo_URIs?.jpeg,
 				}}
+				{...props}
 			/>
 		</Skeleton>
 	);

@@ -55,6 +55,7 @@ export default function CreateCompetitionForm() {
 		watch,
 		formState: { errors, isSubmitting, defaultValues },
 		setValue,
+		getValues,
 	} = useFormContext<CreateCompetitionFormValues>();
 
 	const watchExpiration = watch("expiration");
@@ -266,6 +267,7 @@ export default function CreateCompetitionForm() {
 												control={control}
 												cosmWasmClient={cosmWasmClient}
 												index={index}
+												getValues={getValues}
 											/>
 										)}
 									</CardBody>

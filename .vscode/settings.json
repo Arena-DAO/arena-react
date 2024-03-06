@@ -1,13 +1,11 @@
 {
-	"search.exclude": {
-		"**/.yarn": true
-	},
-	"typescript.enablePromptUseWorkspaceTsdk": true,
-	"[javascript]": {
-		"editor.defaultFormatter": "biomejs.biome"
-	},
-	"editor.codeActionsOnSave": {
-		"source.organizeImports.biome": "always",
-		"quickfix.biome": "always"
-	}
+  "search.exclude": {
+    "**/.yarn": true
+  },
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports.biome": "always",
+    "quickfix.biome": "explicit"
+  }
 }
