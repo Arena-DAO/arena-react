@@ -26,8 +26,8 @@ import {
 	getCw20Asset,
 	getNativeAsset,
 } from "~/helpers/TokenHelpers";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import { WithClient } from "~/types/util";
 import { CreateCompetitionFormValues } from "../CreateCompetitionForm";
 
 const DueFormSchema = z
@@ -88,14 +88,14 @@ interface AddDueFormProps {
 const AddDueForm = ({
 	isOpen,
 	onOpenChange,
-	cosmWasmClient,
 	index,
 	onClose,
 	cw20Append,
 	nativeAppend,
 	getValues,
-}: WithClient<AddDueFormProps>) => {
+}: AddDueFormProps) => {
 	const { data: env } = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { assets } = useChain(env.CHAIN);
 	const {
 		handleSubmit,
@@ -143,6 +143,9 @@ const AddDueForm = ({
 
 	const onSubmit = async (values: DueFormValues) => {
 		try {
+			if (!cosmWasmClient) {
+				throw "Could not get the CosmWasm client";
+			}
 			switch (values.tokenType) {
 				case "cw20": {
 					const cw20 = await getCw20Asset(
@@ -176,7 +179,7 @@ const AddDueForm = ({
 
 					cw20Append({
 						address: token.denom,
-						amount: token.amount,
+						amount: BigInt(token.amount),
 					});
 					break;
 				}
@@ -212,7 +215,7 @@ const AddDueForm = ({
 						native,
 					);
 
-					nativeAppend(token);
+					nativeAppend({ denom: token.denom, amount: BigInt(token.amount) });
 					break;
 				}
 				default:

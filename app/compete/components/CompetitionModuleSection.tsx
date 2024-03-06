@@ -115,9 +115,7 @@ const CompetitionModuleSection = (props: CompetitionModuleSectionProps) => {
 	return (
 		<div className="space-y-4">
 			<div className="block text-right">
-				<Link
-					href={`/${props.path}/create?category=${props.category.category_id}`}
-				>
+				<Link href={`/${props.path}/create?category=${props.category.url}`}>
 					<Button startContent={<BsPlus />}>Create</Button>
 				</Link>
 			</div>

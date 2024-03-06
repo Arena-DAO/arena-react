@@ -1,5 +1,7 @@
 "use client";
 
+import { Chain } from "@chain-registry/types";
+import { GasPrice } from "@cosmjs/stargate";
 import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { wallets as ledgerWallets } from "@cosmos-kit/ledger";
@@ -19,6 +21,19 @@ import "~/styles/globals.css";
 function InnerProviders({ children }: PropsWithChildren) {
 	const router = useRouter();
 	const { data: env } = useEnv();
+	const signerOptions = {
+		signingCosmwasm: (chain: string | Chain) => {
+			if (typeof chain !== "string" && chain.chain_name.startsWith("juno"))
+				return {
+					gasPrice: GasPrice.fromString(
+						`${chain.fees?.fee_tokens[0]?.average_gas_price?.toString()}${
+							chain.fees?.fee_tokens[0]?.denom
+						}`,
+					),
+				};
+			return undefined;
+		},
+	};
 
 	return (
 		<NextUIProvider navigate={router.push}>
@@ -33,6 +48,7 @@ function InnerProviders({ children }: PropsWithChildren) {
 						...vectisWallets,
 						...stationWallets,
 					]}
+					signerOptions={signerOptions}
 					walletConnectOptions={{
 						signClient: {
 							projectId: env.WALLETCONNECT_PROJECT_ID,

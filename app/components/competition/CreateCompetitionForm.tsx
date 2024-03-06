@@ -27,7 +27,7 @@ import {
 	useFieldArray,
 	useFormContext,
 } from "react-hook-form";
-import { FiDelete, FiPlus, FiTrash } from "react-icons/fi";
+import { FiPlus, FiTrash } from "react-icons/fi";
 import { z } from "zod";
 import { CreateCompetitionSchema } from "~/config/schemas";
 import { useCategoryMap } from "~/hooks/useCategories";
@@ -216,25 +216,25 @@ export default function CreateCompetitionForm() {
 					<TableColumn>Rules</TableColumn>
 				</TableHeader>
 				<TableBody emptyContent="No rules given">
-					{rulesFields?.map((rule, ruleIndex) => (
+					{rulesFields?.map((rule, i) => (
 						<TableRow key={rule.id}>
 							<TableCell>
 								<Controller
 									control={control}
-									name={`rules.${ruleIndex}.rule`}
+									name={`rules.${i}.rule`}
 									render={({ field }) => (
 										<Input
-											label={`Rule ${ruleIndex + 1}`}
+											label={`Rule ${i + 1}`}
 											isDisabled={isSubmitting}
-											isInvalid={!!errors.rules?.[ruleIndex]?.rule}
-											errorMessage={errors.rules?.[ruleIndex]?.rule?.message}
+											isInvalid={!!errors.rules?.[i]?.rule}
+											errorMessage={errors.rules?.[i]?.rule?.message}
 											endContent={
 												<Tooltip content="Delete rule">
 													<Button
 														isIconOnly
 														aria-label="Delete Rule"
 														variant="faded"
-														onClick={() => rulesRemove(ruleIndex)}
+														onClick={() => rulesRemove(i)}
 													>
 														<FiTrash />
 													</Button>
@@ -295,7 +295,7 @@ export default function CreateCompetitionForm() {
 																variant="faded"
 																onClick={() => duesRemove(index)}
 															>
-																<FiDelete />
+																<FiTrash />
 															</Button>
 														</Tooltip>
 													}
@@ -303,14 +303,11 @@ export default function CreateCompetitionForm() {
 												/>
 											)}
 										/>
-										{cosmWasmClient && (
-											<DueBalance
-												control={control}
-												cosmWasmClient={cosmWasmClient}
-												index={index}
-												getValues={getValues}
-											/>
-										)}
+										<DueBalance
+											control={control}
+											index={index}
+											getValues={getValues}
+										/>
 									</CardBody>
 								</Card>
 							</TableCell>

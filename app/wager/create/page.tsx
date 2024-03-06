@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@nextui-org/react";
 import { addSeconds, formatISO } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { InstantiateMsg as ArenaEscrowInstantiateMsg } from "~/codegen/ArenaEscrow.types";
 import { ArenaWagerModuleClient } from "~/codegen/ArenaWagerModule.client";
@@ -17,17 +18,18 @@ import { InstantiateMsg as DaoDaoCoreInstantiateMsg } from "~/codegen/DaoDaoCore
 import { InstantiateMsg as DAOProposalSingleInstantiateMsg } from "~/codegen/DaoProposalSingle.types";
 import { InstantiateMsg as DAOVotingCW4InstantiateMsg } from "~/codegen/DaoVotingCw4.types";
 import { CreateCompetitionSchema } from "~/config/schemas";
+import { convertToExpiration } from "~/helpers/SchemaHelpers";
 import { useCategoryMap } from "~/hooks/useCategories";
 import { useEnv } from "~/hooks/useEnv";
 
 const CreateWager = () => {
-	const searchParams = useSearchParams();
-	const router = useRouter();
 	const { data: env } = useEnv();
-	const { data: categories } = useCategoryMap();
 	const { getSigningCosmWasmClient, address, isWalletConnected } = useChain(
 		env.CHAIN,
 	);
+	const searchParams = useSearchParams();
+	const router = useRouter();
+	const { data: categories } = useCategoryMap();
 
 	const category = searchParams?.get("category") ?? "";
 	const categoryItem = categories.get(category);
@@ -36,7 +38,6 @@ const CreateWager = () => {
 			? categoryItem.category_id
 			: undefined
 		: undefined;
-
 	const formMethods = useForm<CreateCompetitionFormValues>({
 		defaultValues: {
 			expiration: {
@@ -74,6 +75,13 @@ const CreateWager = () => {
 		formState: { isSubmitting },
 	} = formMethods;
 
+	useEffect(() => {
+		const value = formMethods.getValues("dues.0.addr");
+		if (value === undefined && address) {
+			formMethods.setValue("dues.0.addr", address);
+		}
+	}, [address, formMethods.getValues, formMethods.setValue]);
+
 	const onSubmit = async (values: CreateCompetitionFormValues) => {
 		const cosmWasmClient = await getSigningCosmWasmClient();
 		if (!cosmWasmClient) throw "Could not get the CosmWasm client";
@@ -88,7 +96,7 @@ const CreateWager = () => {
 		const msg = {
 			categoryId: category_id?.toString(),
 			description: values.description,
-			expiration: values.expiration,
+			expiration: convertToExpiration(values.expiration),
 			name: values.name,
 			rules: values.rules.map((x) => x.rule),
 			rulesets: values.rulesets.map((x) => x.ruleset_id.toString()),
@@ -149,7 +157,22 @@ const CreateWager = () => {
 				code_id: env.CODE_ID_ESCROW,
 				label: "Arena Escrow",
 				msg: toBinary({
-					dues: values.dues,
+					dues: values.dues.map(({ addr, balance }) => {
+						return {
+							addr,
+							balance: {
+								native: balance.native.map(({ denom, amount }) => ({
+									denom,
+									amount: amount.toString(),
+								})),
+								cw20: balance.cw20.map(({ address, amount }) => ({
+									address,
+									amount: amount.toString(),
+								})),
+								cw721: balance.cw721,
+							},
+						};
+					}),
 				} as ArenaEscrowInstantiateMsg),
 			},
 		};

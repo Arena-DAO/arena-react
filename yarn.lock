@@ -5697,6 +5697,7 @@ __metadata:
     "@cosmjs/crypto": "npm:^0.32.2"
     "@cosmjs/encoding": "npm:^0.32.2"
     "@cosmjs/proto-signing": "npm:^0.32.2"
+    "@cosmjs/stargate": "npm:^0.32.2"
     "@cosmos-kit/keplr": "npm:2.6.9"
     "@cosmos-kit/leap": "npm:^2.6.11"
     "@cosmos-kit/ledger": "npm:^2.6.9"

@@ -1,14 +1,15 @@
+import { toDate } from "date-fns";
 import { z } from "zod";
-import { Duration } from "~/codegen/DaoDaoCore.types";
-import DurationSchema from "~/config/schemas/DurationSchema";
+import { Expiration } from "~/codegen/ArenaWagerModule.types";
+import { ExpirationSchema } from "~/config/schemas";
 
-export function convertToDuration(
-	durationSchema: z.infer<typeof DurationSchema>,
-): Duration {
-	switch (durationSchema.duration_units) {
-		case "Height":
-			return { height: durationSchema.duration || 0 };
-		case "Time":
-			return { time: durationSchema.duration || 0 };
+export function convertToExpiration(
+	expirationSchema: z.infer<typeof ExpirationSchema>,
+): Expiration {
+	if ("at_time" in expirationSchema) {
+		return {
+			at_time: (toDate(expirationSchema.at_time).getTime() * 1e6).toString(),
+		};
 	}
+	return expirationSchema;
 }

@@ -16,7 +16,7 @@ import {
 } from "@nextui-org/react";
 import { UseFormGetValues, useFieldArray } from "react-hook-form";
 import { FiPlus, FiTrash } from "react-icons/fi";
-import { WithClient } from "~/types/util";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import {
 	CreateCompetitionFormValues,
 	FormComponentProps,
@@ -24,14 +24,14 @@ import {
 import AddDueForm from "./AddDueForm";
 
 const DueBalance = ({
-	cosmWasmClient,
 	index,
 	control,
 	getValues,
-}: WithClient<FormComponentProps> & {
+}: FormComponentProps & {
 	index: number;
 	getValues: UseFormGetValues<CreateCompetitionFormValues>;
 }) => {
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const native = useFieldArray({
 		control,
 		name: `dues.${index}.balance.native`,
@@ -63,19 +63,23 @@ const DueBalance = ({
 								{native.fields.map((x, i) => (
 									<TableRow key={x.id}>
 										<TableCell className="w-1/2">
-											<TokenInfo
-												cosmWasmClient={cosmWasmClient}
-												denomOrAddress={x.denom}
-												isNative
-											/>
+											{cosmWasmClient && (
+												<TokenInfo
+													cosmWasmClient={cosmWasmClient}
+													denomOrAddress={x.denom}
+													isNative
+												/>
+											)}
 										</TableCell>
 										<TableCell className="text-right">
-											<TokenAmount
-												cosmWasmClient={cosmWasmClient}
-												amount={x.amount}
-												denomOrAddress={x.denom}
-												isNative
-											/>
+											{cosmWasmClient && (
+												<TokenAmount
+													cosmWasmClient={cosmWasmClient}
+													amount={x.amount}
+													denomOrAddress={x.denom}
+													isNative
+												/>
+											)}
 										</TableCell>
 										<TableCell className="text-right">
 											<Tooltip content="Delete due">
@@ -104,17 +108,21 @@ const DueBalance = ({
 								{cw20.fields.map((x, i) => (
 									<TableRow key={x.id}>
 										<TableCell className="w-1/2">
-											<TokenInfo
-												cosmWasmClient={cosmWasmClient}
-												denomOrAddress={x.address}
-											/>
+											{cosmWasmClient && (
+												<TokenInfo
+													cosmWasmClient={cosmWasmClient}
+													denomOrAddress={x.address}
+												/>
+											)}
 										</TableCell>
 										<TableCell className="w-1/4 text-right">
-											<TokenAmount
-												cosmWasmClient={cosmWasmClient}
-												amount={x.amount}
-												denomOrAddress={x.address}
-											/>
+											{cosmWasmClient && (
+												<TokenAmount
+													cosmWasmClient={cosmWasmClient}
+													amount={x.amount}
+													denomOrAddress={x.address}
+												/>
+											)}
 										</TableCell>
 										<TableCell className="w-1/4 text-right">
 											<Tooltip content="Delete due">
@@ -139,7 +147,6 @@ const DueBalance = ({
 				getValues={getValues}
 				onClose={onClose}
 				onOpenChange={onOpenChange}
-				cosmWasmClient={cosmWasmClient}
 				cw20Append={cw20.append}
 				cw721Append={cw721.append}
 				nativeAppend={native.append}

@@ -6,7 +6,7 @@ import { useToken } from "~/hooks/useToken";
 import { WithClient } from "~/types/util";
 
 interface TokenAmountProps {
-	amount: string;
+	amount: bigint;
 	denomOrAddress: string;
 	isNative?: boolean;
 	className?: string;
@@ -35,7 +35,7 @@ const TokenAmount = ({
 		return null;
 	}
 	const displayAmount = getDisplayToken(
-		{ denom: denomOrAddress, amount },
+		{ denom: denomOrAddress, amount: amount.toString() },
 		token,
 	);
 
