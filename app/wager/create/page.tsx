@@ -2,7 +2,7 @@
 
 import CreateCompetitionForm, {
 	CreateCompetitionFormValues,
-} from "@/components/competition/CreateCompetitionForm";
+} from "@/components/competition/create/CreateCompetitionForm";
 import { toBinary } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import { UTCDate } from "@date-fns/utc";
