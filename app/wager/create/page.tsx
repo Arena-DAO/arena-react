@@ -104,6 +104,7 @@ const CreateWager = () => {
 			host: {
 				new: {
 					info: {
+						admin: { address: { addr: env.ARENA_DAO_ADDRESS } },
 						code_id: env.CODE_ID_DAO_CORE,
 						label: "Arena Competition DAO",
 						msg: toBinary({

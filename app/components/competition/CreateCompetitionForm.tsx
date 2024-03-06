@@ -30,6 +30,7 @@ import {
 import { FiPlus, FiTrash } from "react-icons/fi";
 import { z } from "zod";
 import { CreateCompetitionSchema } from "~/config/schemas";
+import { keyboardDelegateFixSpace } from "~/helpers/NextUIHelpers";
 import { useCategoryMap } from "~/hooks/useCategories";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
@@ -204,14 +205,7 @@ export default function CreateCompetitionForm() {
 					cosmWasmClient={cosmWasmClient}
 				/>
 			)}
-			<Button
-				onClick={() => rulesAppend({ rule: "" })}
-				aria-label="Add rule"
-				startContent={<FiPlus />}
-			>
-				Add Rule
-			</Button>
-			<Table aria-label="Rules">
+			<Table aria-label="Rules" keyboardDelegate={keyboardDelegateFixSpace}>
 				<TableHeader>
 					<TableColumn>Rules</TableColumn>
 				</TableHeader>
@@ -250,15 +244,13 @@ export default function CreateCompetitionForm() {
 				</TableBody>
 			</Table>
 			<Button
-				onClick={() =>
-					duesAppend({ addr: "", balance: { native: [], cw20: [], cw721: [] } })
-				}
-				aria-label="Add due"
+				onClick={() => rulesAppend({ rule: "" })}
+				aria-label="Add rule"
 				startContent={<FiPlus />}
 			>
-				Add Team
+				Add Rule
 			</Button>
-			<Table aria-label="Teams">
+			<Table aria-label="Teams" keyboardDelegate={keyboardDelegateFixSpace}>
 				<TableHeader>
 					<TableColumn>Teams</TableColumn>
 				</TableHeader>
@@ -315,6 +307,15 @@ export default function CreateCompetitionForm() {
 					))}
 				</TableBody>
 			</Table>
+			<Button
+				onClick={() =>
+					duesAppend({ addr: "", balance: { native: [], cw20: [], cw721: [] } })
+				}
+				aria-label="Add team"
+				startContent={<FiPlus />}
+			>
+				Add Team
+			</Button>
 			<Accordion variant="shadow">
 				<AccordionItem
 					key="1"

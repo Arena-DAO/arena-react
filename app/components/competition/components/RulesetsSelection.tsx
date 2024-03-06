@@ -23,7 +23,6 @@ import { CreateCompetitionFormValues } from "../CreateCompetitionForm";
 
 interface RulesetsSelectionProps {
 	category_id?: number | null;
-	pagination_limit: number;
 }
 
 const RulesetsSelection = ({
