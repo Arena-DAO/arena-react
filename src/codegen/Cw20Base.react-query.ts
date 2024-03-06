@@ -5,7 +5,7 @@
 */
 
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import { Executor, Addr, Duration, Uint128, UncheckedDenom, Threshold, Decimal, InstantiateMsg, UncheckedDepositInfo, ExecuteMsg, Expiration, Timestamp, Uint64, CosmosMsgForEmpty, BankMsg, WasmMsg, Binary, Vote, Coin, Empty, MemberChangedHookMsg, MemberDiff, QueryMsg, Cw4Contract, Denom, Config, DepositInfo, Status, ThresholdResponse, ProposalListResponseForEmpty, ProposalResponseForEmpty, VoterListResponse, VoterDetail, VoteListResponse, VoteInfo, VoteResponse, VoterResponse } from "./Cw20Base.types";
+import { Uint128, Logo, EmbeddedLogo, Binary, InstantiateMsg, Cw20Coin, InstantiateMarketingInfo, MinterResponse, ExecuteMsg, Expiration, Timestamp, Uint64, QueryMsg, AllAccountsResponse, AllAllowancesResponse, AllowanceInfo, AllSpenderAllowancesResponse, SpenderAllowanceInfo, AllowanceResponse, BalanceResponse, DownloadLogoResponse, LogoInfo, Addr, MarketingInfoResponse, TokenInfoResponse } from "./Cw20Base.types";
 import { Cw20BaseQueryClient } from "./Cw20Base.client";
 export interface Cw20BaseReactQuery<TResponse, TData = TResponse> {
   client: Cw20BaseQueryClient;
@@ -13,127 +13,113 @@ export interface Cw20BaseReactQuery<TResponse, TData = TResponse> {
     initialData?: undefined;
   };
 }
-export interface Cw20BaseConfigQuery<TData> extends Cw20BaseReactQuery<Config, TData> {}
-export function useCw20BaseConfigQuery<TData = Config>({
+export interface Cw20BaseDownloadLogoQuery<TData> extends Cw20BaseReactQuery<DownloadLogoResponse, TData> {}
+export function useCw20BaseDownloadLogoQuery<TData = DownloadLogoResponse>({
   client,
   options
-}: Cw20BaseConfigQuery<TData>) {
-  return useQuery<Config, Error, TData>(["cw20BaseConfig", client.contractAddress], () => client.config(), options);
+}: Cw20BaseDownloadLogoQuery<TData>) {
+  return useQuery<DownloadLogoResponse, Error, TData>(["cw20BaseDownloadLogo", client.contractAddress], () => client.downloadLogo(), options);
 }
-export interface Cw20BaseListVotersQuery<TData> extends Cw20BaseReactQuery<VoterListResponse, TData> {
+export interface Cw20BaseMarketingInfoQuery<TData> extends Cw20BaseReactQuery<MarketingInfoResponse, TData> {}
+export function useCw20BaseMarketingInfoQuery<TData = MarketingInfoResponse>({
+  client,
+  options
+}: Cw20BaseMarketingInfoQuery<TData>) {
+  return useQuery<MarketingInfoResponse, Error, TData>(["cw20BaseMarketingInfo", client.contractAddress], () => client.marketingInfo(), options);
+}
+export interface Cw20BaseAllAccountsQuery<TData> extends Cw20BaseReactQuery<AllAccountsResponse, TData> {
   args: {
     limit?: number;
     startAfter?: string;
   };
 }
-export function useCw20BaseListVotersQuery<TData = VoterListResponse>({
+export function useCw20BaseAllAccountsQuery<TData = AllAccountsResponse>({
   client,
   args,
   options
-}: Cw20BaseListVotersQuery<TData>) {
-  return useQuery<VoterListResponse, Error, TData>(["cw20BaseListVoters", client.contractAddress, JSON.stringify(args)], () => client.listVoters({
+}: Cw20BaseAllAccountsQuery<TData>) {
+  return useQuery<AllAccountsResponse, Error, TData>(["cw20BaseAllAccounts", client.contractAddress, JSON.stringify(args)], () => client.allAccounts({
     limit: args.limit,
     startAfter: args.startAfter
   }), options);
 }
-export interface Cw20BaseVoterQuery<TData> extends Cw20BaseReactQuery<VoterResponse, TData> {
+export interface Cw20BaseAllSpenderAllowancesQuery<TData> extends Cw20BaseReactQuery<AllSpenderAllowancesResponse, TData> {
+  args: {
+    limit?: number;
+    spender: string;
+    startAfter?: string;
+  };
+}
+export function useCw20BaseAllSpenderAllowancesQuery<TData = AllSpenderAllowancesResponse>({
+  client,
+  args,
+  options
+}: Cw20BaseAllSpenderAllowancesQuery<TData>) {
+  return useQuery<AllSpenderAllowancesResponse, Error, TData>(["cw20BaseAllSpenderAllowances", client.contractAddress, JSON.stringify(args)], () => client.allSpenderAllowances({
+    limit: args.limit,
+    spender: args.spender,
+    startAfter: args.startAfter
+  }), options);
+}
+export interface Cw20BaseAllAllowancesQuery<TData> extends Cw20BaseReactQuery<AllAllowancesResponse, TData> {
+  args: {
+    limit?: number;
+    owner: string;
+    startAfter?: string;
+  };
+}
+export function useCw20BaseAllAllowancesQuery<TData = AllAllowancesResponse>({
+  client,
+  args,
+  options
+}: Cw20BaseAllAllowancesQuery<TData>) {
+  return useQuery<AllAllowancesResponse, Error, TData>(["cw20BaseAllAllowances", client.contractAddress, JSON.stringify(args)], () => client.allAllowances({
+    limit: args.limit,
+    owner: args.owner,
+    startAfter: args.startAfter
+  }), options);
+}
+export interface Cw20BaseAllowanceQuery<TData> extends Cw20BaseReactQuery<AllowanceResponse, TData> {
+  args: {
+    owner: string;
+    spender: string;
+  };
+}
+export function useCw20BaseAllowanceQuery<TData = AllowanceResponse>({
+  client,
+  args,
+  options
+}: Cw20BaseAllowanceQuery<TData>) {
+  return useQuery<AllowanceResponse, Error, TData>(["cw20BaseAllowance", client.contractAddress, JSON.stringify(args)], () => client.allowance({
+    owner: args.owner,
+    spender: args.spender
+  }), options);
+}
+export interface Cw20BaseMinterQuery<TData> extends Cw20BaseReactQuery<MinterResponse, TData> {}
+export function useCw20BaseMinterQuery<TData = MinterResponse>({
+  client,
+  options
+}: Cw20BaseMinterQuery<TData>) {
+  return useQuery<MinterResponse, Error, TData>(["cw20BaseMinter", client.contractAddress], () => client.minter(), options);
+}
+export interface Cw20BaseTokenInfoQuery<TData> extends Cw20BaseReactQuery<TokenInfoResponse, TData> {}
+export function useCw20BaseTokenInfoQuery<TData = TokenInfoResponse>({
+  client,
+  options
+}: Cw20BaseTokenInfoQuery<TData>) {
+  return useQuery<TokenInfoResponse, Error, TData>(["cw20BaseTokenInfo", client.contractAddress], () => client.tokenInfo(), options);
+}
+export interface Cw20BaseBalanceQuery<TData> extends Cw20BaseReactQuery<BalanceResponse, TData> {
   args: {
     address: string;
   };
 }
-export function useCw20BaseVoterQuery<TData = VoterResponse>({
+export function useCw20BaseBalanceQuery<TData = BalanceResponse>({
   client,
   args,
   options
-}: Cw20BaseVoterQuery<TData>) {
-  return useQuery<VoterResponse, Error, TData>(["cw20BaseVoter", client.contractAddress, JSON.stringify(args)], () => client.voter({
+}: Cw20BaseBalanceQuery<TData>) {
+  return useQuery<BalanceResponse, Error, TData>(["cw20BaseBalance", client.contractAddress, JSON.stringify(args)], () => client.balance({
     address: args.address
   }), options);
-}
-export interface Cw20BaseListVotesQuery<TData> extends Cw20BaseReactQuery<VoteListResponse, TData> {
-  args: {
-    limit?: number;
-    proposalId: number;
-    startAfter?: string;
-  };
-}
-export function useCw20BaseListVotesQuery<TData = VoteListResponse>({
-  client,
-  args,
-  options
-}: Cw20BaseListVotesQuery<TData>) {
-  return useQuery<VoteListResponse, Error, TData>(["cw20BaseListVotes", client.contractAddress, JSON.stringify(args)], () => client.listVotes({
-    limit: args.limit,
-    proposalId: args.proposalId,
-    startAfter: args.startAfter
-  }), options);
-}
-export interface Cw20BaseVoteQuery<TData> extends Cw20BaseReactQuery<VoteResponse, TData> {
-  args: {
-    proposalId: number;
-    voter: string;
-  };
-}
-export function useCw20BaseVoteQuery<TData = VoteResponse>({
-  client,
-  args,
-  options
-}: Cw20BaseVoteQuery<TData>) {
-  return useQuery<VoteResponse, Error, TData>(["cw20BaseVote", client.contractAddress, JSON.stringify(args)], () => client.vote({
-    proposalId: args.proposalId,
-    voter: args.voter
-  }), options);
-}
-export interface Cw20BaseReverseProposalsQuery<TData> extends Cw20BaseReactQuery<ProposalListResponseForEmpty, TData> {
-  args: {
-    limit?: number;
-    startBefore?: number;
-  };
-}
-export function useCw20BaseReverseProposalsQuery<TData = ProposalListResponseForEmpty>({
-  client,
-  args,
-  options
-}: Cw20BaseReverseProposalsQuery<TData>) {
-  return useQuery<ProposalListResponseForEmpty, Error, TData>(["cw20BaseReverseProposals", client.contractAddress, JSON.stringify(args)], () => client.reverseProposals({
-    limit: args.limit,
-    startBefore: args.startBefore
-  }), options);
-}
-export interface Cw20BaseListProposalsQuery<TData> extends Cw20BaseReactQuery<ProposalListResponseForEmpty, TData> {
-  args: {
-    limit?: number;
-    startAfter?: number;
-  };
-}
-export function useCw20BaseListProposalsQuery<TData = ProposalListResponseForEmpty>({
-  client,
-  args,
-  options
-}: Cw20BaseListProposalsQuery<TData>) {
-  return useQuery<ProposalListResponseForEmpty, Error, TData>(["cw20BaseListProposals", client.contractAddress, JSON.stringify(args)], () => client.listProposals({
-    limit: args.limit,
-    startAfter: args.startAfter
-  }), options);
-}
-export interface Cw20BaseProposalQuery<TData> extends Cw20BaseReactQuery<ProposalResponseForEmpty, TData> {
-  args: {
-    proposalId: number;
-  };
-}
-export function useCw20BaseProposalQuery<TData = ProposalResponseForEmpty>({
-  client,
-  args,
-  options
-}: Cw20BaseProposalQuery<TData>) {
-  return useQuery<ProposalResponseForEmpty, Error, TData>(["cw20BaseProposal", client.contractAddress, JSON.stringify(args)], () => client.proposal({
-    proposalId: args.proposalId
-  }), options);
-}
-export interface Cw20BaseThresholdQuery<TData> extends Cw20BaseReactQuery<ThresholdResponse, TData> {}
-export function useCw20BaseThresholdQuery<TData = ThresholdResponse>({
-  client,
-  options
-}: Cw20BaseThresholdQuery<TData>) {
-  return useQuery<ThresholdResponse, Error, TData>(["cw20BaseThreshold", client.contractAddress], () => client.threshold(), options);
 }

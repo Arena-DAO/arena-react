@@ -4,70 +4,102 @@
 * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
 */
 
-export type Executor = "member" | {
-  only: Addr;
-};
-export type Addr = string;
-export type Duration = {
-  height: number;
-} | {
-  time: number;
-};
 export type Uint128 = string;
-export type UncheckedDenom = {
-  native: string;
+export type Logo = {
+  url: string;
 } | {
-  cw20: string;
+  embedded: EmbeddedLogo;
 };
-export type Threshold = {
-  absolute_count: {
-    weight: number;
-  };
+export type EmbeddedLogo = {
+  svg: Binary;
 } | {
-  absolute_percentage: {
-    percentage: Decimal;
-  };
-} | {
-  threshold_quorum: {
-    quorum: Decimal;
-    threshold: Decimal;
-  };
+  png: Binary;
 };
-export type Decimal = string;
+export type Binary = string;
 export interface InstantiateMsg {
-  executor?: Executor | null;
-  group_addr: string;
-  max_voting_period: Duration;
-  proposal_deposit?: UncheckedDepositInfo | null;
-  threshold: Threshold;
+  decimals: number;
+  initial_balances: Cw20Coin[];
+  marketing?: InstantiateMarketingInfo | null;
+  mint?: MinterResponse | null;
+  name: string;
+  symbol: string;
 }
-export interface UncheckedDepositInfo {
+export interface Cw20Coin {
+  address: string;
   amount: Uint128;
-  denom: UncheckedDenom;
-  refund_failed_proposals: boolean;
+}
+export interface InstantiateMarketingInfo {
+  description?: string | null;
+  logo?: Logo | null;
+  marketing?: string | null;
+  project?: string | null;
+}
+export interface MinterResponse {
+  cap?: Uint128 | null;
+  minter: string;
 }
 export type ExecuteMsg = {
-  propose: {
-    description: string;
-    latest?: Expiration | null;
-    msgs: CosmosMsgForEmpty[];
-    title: string;
+  transfer: {
+    amount: Uint128;
+    recipient: string;
   };
 } | {
-  vote: {
-    proposal_id: number;
-    vote: Vote;
+  burn: {
+    amount: Uint128;
   };
 } | {
-  execute: {
-    proposal_id: number;
+  send: {
+    amount: Uint128;
+    contract: string;
+    msg: Binary;
   };
 } | {
-  close: {
-    proposal_id: number;
+  increase_allowance: {
+    amount: Uint128;
+    expires?: Expiration | null;
+    spender: string;
   };
 } | {
-  member_changed_hook: MemberChangedHookMsg;
+  decrease_allowance: {
+    amount: Uint128;
+    expires?: Expiration | null;
+    spender: string;
+  };
+} | {
+  transfer_from: {
+    amount: Uint128;
+    owner: string;
+    recipient: string;
+  };
+} | {
+  send_from: {
+    amount: Uint128;
+    contract: string;
+    msg: Binary;
+    owner: string;
+  };
+} | {
+  burn_from: {
+    amount: Uint128;
+    owner: string;
+  };
+} | {
+  mint: {
+    amount: Uint128;
+    recipient: string;
+  };
+} | {
+  update_minter: {
+    new_minter?: string | null;
+  };
+} | {
+  update_marketing: {
+    description?: string | null;
+    marketing?: string | null;
+    project?: string | null;
+  };
+} | {
+  upload_logo: Logo;
 };
 export type Expiration = {
   at_height: number;
@@ -78,186 +110,89 @@ export type Expiration = {
 };
 export type Timestamp = Uint64;
 export type Uint64 = string;
-export type CosmosMsgForEmpty = {
-  bank: BankMsg;
-} | {
-  custom: Empty;
-} | {
-  wasm: WasmMsg;
-};
-export type BankMsg = {
-  send: {
-    amount: Coin[];
-    to_address: string;
-    [k: string]: unknown;
-  };
-} | {
-  burn: {
-    amount: Coin[];
-    [k: string]: unknown;
-  };
-};
-export type WasmMsg = {
-  execute: {
-    contract_addr: string;
-    funds: Coin[];
-    msg: Binary;
-    [k: string]: unknown;
-  };
-} | {
-  instantiate: {
-    admin?: string | null;
-    code_id: number;
-    funds: Coin[];
-    label: string;
-    msg: Binary;
-    [k: string]: unknown;
-  };
-} | {
-  migrate: {
-    contract_addr: string;
-    msg: Binary;
-    new_code_id: number;
-    [k: string]: unknown;
-  };
-} | {
-  update_admin: {
-    admin: string;
-    contract_addr: string;
-    [k: string]: unknown;
-  };
-} | {
-  clear_admin: {
-    contract_addr: string;
-    [k: string]: unknown;
-  };
-};
-export type Binary = string;
-export type Vote = "yes" | "no" | "abstain" | "veto";
-export interface Coin {
-  amount: Uint128;
-  denom: string;
-  [k: string]: unknown;
-}
-export interface Empty {
-  [k: string]: unknown;
-}
-export interface MemberChangedHookMsg {
-  diffs: MemberDiff[];
-}
-export interface MemberDiff {
-  key: string;
-  new?: number | null;
-  old?: number | null;
-}
 export type QueryMsg = {
-  threshold: {};
-} | {
-  proposal: {
-    proposal_id: number;
-  };
-} | {
-  list_proposals: {
-    limit?: number | null;
-    start_after?: number | null;
-  };
-} | {
-  reverse_proposals: {
-    limit?: number | null;
-    start_before?: number | null;
-  };
-} | {
-  vote: {
-    proposal_id: number;
-    voter: string;
-  };
-} | {
-  list_votes: {
-    limit?: number | null;
-    proposal_id: number;
-    start_after?: string | null;
-  };
-} | {
-  voter: {
+  balance: {
     address: string;
   };
 } | {
-  list_voters: {
+  token_info: {};
+} | {
+  minter: {};
+} | {
+  allowance: {
+    owner: string;
+    spender: string;
+  };
+} | {
+  all_allowances: {
+    limit?: number | null;
+    owner: string;
+    start_after?: string | null;
+  };
+} | {
+  all_spender_allowances: {
+    limit?: number | null;
+    spender: string;
+    start_after?: string | null;
+  };
+} | {
+  all_accounts: {
     limit?: number | null;
     start_after?: string | null;
   };
 } | {
-  config: {};
-};
-export type Cw4Contract = Addr;
-export type Denom = {
-  native: string;
+  marketing_info: {};
 } | {
-  cw20: Addr;
+  download_logo: {};
 };
-export interface Config {
-  executor?: Executor | null;
-  group_addr: Cw4Contract;
-  max_voting_period: Duration;
-  proposal_deposit?: DepositInfo | null;
-  threshold: Threshold;
+export interface AllAccountsResponse {
+  accounts: string[];
+  [k: string]: unknown;
 }
-export interface DepositInfo {
-  amount: Uint128;
-  denom: Denom;
-  refund_failed_proposals: boolean;
+export interface AllAllowancesResponse {
+  allowances: AllowanceInfo[];
+  [k: string]: unknown;
 }
-export type Status = "pending" | "open" | "rejected" | "passed" | "executed";
-export type ThresholdResponse = {
-  absolute_count: {
-    total_weight: number;
-    weight: number;
-  };
-} | {
-  absolute_percentage: {
-    percentage: Decimal;
-    total_weight: number;
-  };
-} | {
-  threshold_quorum: {
-    quorum: Decimal;
-    threshold: Decimal;
-    total_weight: number;
-  };
-};
-export interface ProposalListResponseForEmpty {
-  proposals: ProposalResponseForEmpty[];
-}
-export interface ProposalResponseForEmpty {
-  deposit?: DepositInfo | null;
-  description: string;
+export interface AllowanceInfo {
+  allowance: Uint128;
   expires: Expiration;
-  id: number;
-  msgs: CosmosMsgForEmpty[];
-  proposer: Addr;
-  status: Status;
-  threshold: ThresholdResponse;
-  title: string;
+  spender: string;
 }
-export interface VoterListResponse {
-  voters: VoterDetail[];
+export interface AllSpenderAllowancesResponse {
+  allowances: SpenderAllowanceInfo[];
+  [k: string]: unknown;
 }
-export interface VoterDetail {
-  addr: string;
-  weight: number;
+export interface SpenderAllowanceInfo {
+  allowance: Uint128;
+  expires: Expiration;
+  owner: string;
 }
-export interface VoteListResponse {
-  votes: VoteInfo[];
+export interface AllowanceResponse {
+  allowance: Uint128;
+  expires: Expiration;
+  [k: string]: unknown;
 }
-export interface VoteInfo {
-  proposal_id: number;
-  vote: Vote;
-  voter: string;
-  weight: number;
+export interface BalanceResponse {
+  balance: Uint128;
 }
-export interface VoteResponse {
-  vote?: VoteInfo | null;
+export interface DownloadLogoResponse {
+  data: Binary;
+  mime_type: string;
 }
-export interface VoterResponse {
-  weight?: number | null;
+export type LogoInfo = {
+  url: string;
+} | "embedded";
+export type Addr = string;
+export interface MarketingInfoResponse {
+  description?: string | null;
+  logo?: LogoInfo | null;
+  marketing?: Addr | null;
+  project?: string | null;
+  [k: string]: unknown;
+}
+export interface TokenInfoResponse {
+  decimals: number;
+  name: string;
+  symbol: string;
+  total_supply: Uint128;
 }

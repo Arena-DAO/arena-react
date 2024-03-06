@@ -6,7 +6,6 @@ import {
 	Button,
 	Card,
 	CardBody,
-	CardFooter,
 	CardHeader,
 	Input,
 	Select,
@@ -33,7 +32,8 @@ import { CreateCompetitionSchema } from "~/config/schemas";
 import { useCategoryMap } from "~/hooks/useCategories";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import DuesProfile from "./components/DuesProfile";
+import DueBalance from "./components/DueBalance";
+import DueProfile from "./components/DueProfile";
 import RulesetsSelection from "./components/RulesetsSelection";
 
 export type CreateCompetitionFormValues = z.infer<
@@ -224,16 +224,24 @@ export default function CreateCompetitionForm() {
 			</Button>
 			<Table aria-label="Teams">
 				<TableHeader>
-					<TableColumn>Team</TableColumn>
-					<TableColumn>Dues</TableColumn>
+					<TableColumn>Teams</TableColumn>
 				</TableHeader>
 				<TableBody emptyContent="No teams provided">
 					{duesFields.map((due, index) => (
 						<TableRow key={due.id}>
 							<TableCell>
 								<Card>
-									<CardHeader>Team {index + 1}</CardHeader>
-									<CardBody>
+									<CardHeader className="flex justify-between">
+										<div>Team {index + 1}</div>
+										{cosmWasmClient && (
+											<DueProfile
+												cosmWasmClient={cosmWasmClient}
+												index={index}
+												control={control}
+											/>
+										)}
+									</CardHeader>
+									<CardBody className="space-y-4">
 										<Input
 											label="Address"
 											{...register(`dues.${index}.addr`)}
@@ -253,20 +261,15 @@ export default function CreateCompetitionForm() {
 												</Tooltip>
 											}
 										/>
-									</CardBody>
-									<CardFooter>
 										{cosmWasmClient && (
-											<DuesProfile
+											<DueBalance
+												control={control}
 												cosmWasmClient={cosmWasmClient}
 												index={index}
-												control={control}
 											/>
 										)}
-									</CardFooter>
+									</CardBody>
 								</Card>
-							</TableCell>
-							<TableCell>
-								<div />
 							</TableCell>
 						</TableRow>
 					))}

@@ -5,59 +5,51 @@
 */
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
-import { StdFee } from "@cosmjs/amino";
-import { Executor, Addr, Duration, Uint128, UncheckedDenom, Threshold, Decimal, InstantiateMsg, UncheckedDepositInfo, ExecuteMsg, Expiration, Timestamp, Uint64, CosmosMsgForEmpty, BankMsg, WasmMsg, Binary, Vote, Coin, Empty, MemberChangedHookMsg, MemberDiff, QueryMsg, Cw4Contract, Denom, Config, DepositInfo, Status, ThresholdResponse, ProposalListResponseForEmpty, ProposalResponseForEmpty, VoterListResponse, VoterDetail, VoteListResponse, VoteInfo, VoteResponse, VoterResponse } from "./Cw20Base.types";
+import { Coin, StdFee } from "@cosmjs/amino";
+import { Uint128, Logo, EmbeddedLogo, Binary, InstantiateMsg, Cw20Coin, InstantiateMarketingInfo, MinterResponse, ExecuteMsg, Expiration, Timestamp, Uint64, QueryMsg, AllAccountsResponse, AllAllowancesResponse, AllowanceInfo, AllSpenderAllowancesResponse, SpenderAllowanceInfo, AllowanceResponse, BalanceResponse, DownloadLogoResponse, LogoInfo, Addr, MarketingInfoResponse, TokenInfoResponse } from "./Cw20Base.types";
 export interface Cw20BaseReadOnlyInterface {
   contractAddress: string;
-  threshold: () => Promise<ThresholdResponse>;
-  proposal: ({
-    proposalId
-  }: {
-    proposalId: number;
-  }) => Promise<ProposalResponseForEmpty>;
-  listProposals: ({
-    limit,
-    startAfter
-  }: {
-    limit?: number;
-    startAfter?: number;
-  }) => Promise<ProposalListResponseForEmpty>;
-  reverseProposals: ({
-    limit,
-    startBefore
-  }: {
-    limit?: number;
-    startBefore?: number;
-  }) => Promise<ProposalListResponseForEmpty>;
-  vote: ({
-    proposalId,
-    voter
-  }: {
-    proposalId: number;
-    voter: string;
-  }) => Promise<VoteResponse>;
-  listVotes: ({
-    limit,
-    proposalId,
-    startAfter
-  }: {
-    limit?: number;
-    proposalId: number;
-    startAfter?: string;
-  }) => Promise<VoteListResponse>;
-  voter: ({
+  balance: ({
     address
   }: {
     address: string;
-  }) => Promise<VoterResponse>;
-  listVoters: ({
+  }) => Promise<BalanceResponse>;
+  tokenInfo: () => Promise<TokenInfoResponse>;
+  minter: () => Promise<MinterResponse>;
+  allowance: ({
+    owner,
+    spender
+  }: {
+    owner: string;
+    spender: string;
+  }) => Promise<AllowanceResponse>;
+  allAllowances: ({
+    limit,
+    owner,
+    startAfter
+  }: {
+    limit?: number;
+    owner: string;
+    startAfter?: string;
+  }) => Promise<AllAllowancesResponse>;
+  allSpenderAllowances: ({
+    limit,
+    spender,
+    startAfter
+  }: {
+    limit?: number;
+    spender: string;
+    startAfter?: string;
+  }) => Promise<AllSpenderAllowancesResponse>;
+  allAccounts: ({
     limit,
     startAfter
   }: {
     limit?: number;
     startAfter?: string;
-  }) => Promise<VoterListResponse>;
-  config: () => Promise<Config>;
+  }) => Promise<AllAccountsResponse>;
+  marketingInfo: () => Promise<MarketingInfoResponse>;
+  downloadLogo: () => Promise<DownloadLogoResponse>;
 }
 export class Cw20BaseQueryClient implements Cw20BaseReadOnlyInterface {
   client: CosmWasmClient;
@@ -66,159 +58,202 @@ export class Cw20BaseQueryClient implements Cw20BaseReadOnlyInterface {
   constructor(client: CosmWasmClient, contractAddress: string) {
     this.client = client;
     this.contractAddress = contractAddress;
-    this.threshold = this.threshold.bind(this);
-    this.proposal = this.proposal.bind(this);
-    this.listProposals = this.listProposals.bind(this);
-    this.reverseProposals = this.reverseProposals.bind(this);
-    this.vote = this.vote.bind(this);
-    this.listVotes = this.listVotes.bind(this);
-    this.voter = this.voter.bind(this);
-    this.listVoters = this.listVoters.bind(this);
-    this.config = this.config.bind(this);
+    this.balance = this.balance.bind(this);
+    this.tokenInfo = this.tokenInfo.bind(this);
+    this.minter = this.minter.bind(this);
+    this.allowance = this.allowance.bind(this);
+    this.allAllowances = this.allAllowances.bind(this);
+    this.allSpenderAllowances = this.allSpenderAllowances.bind(this);
+    this.allAccounts = this.allAccounts.bind(this);
+    this.marketingInfo = this.marketingInfo.bind(this);
+    this.downloadLogo = this.downloadLogo.bind(this);
   }
 
-  threshold = async (): Promise<ThresholdResponse> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      threshold: {}
-    });
-  };
-  proposal = async ({
-    proposalId
-  }: {
-    proposalId: number;
-  }): Promise<ProposalResponseForEmpty> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      proposal: {
-        proposal_id: proposalId
-      }
-    });
-  };
-  listProposals = async ({
-    limit,
-    startAfter
-  }: {
-    limit?: number;
-    startAfter?: number;
-  }): Promise<ProposalListResponseForEmpty> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      list_proposals: {
-        limit,
-        start_after: startAfter
-      }
-    });
-  };
-  reverseProposals = async ({
-    limit,
-    startBefore
-  }: {
-    limit?: number;
-    startBefore?: number;
-  }): Promise<ProposalListResponseForEmpty> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      reverse_proposals: {
-        limit,
-        start_before: startBefore
-      }
-    });
-  };
-  vote = async ({
-    proposalId,
-    voter
-  }: {
-    proposalId: number;
-    voter: string;
-  }): Promise<VoteResponse> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      vote: {
-        proposal_id: proposalId,
-        voter
-      }
-    });
-  };
-  listVotes = async ({
-    limit,
-    proposalId,
-    startAfter
-  }: {
-    limit?: number;
-    proposalId: number;
-    startAfter?: string;
-  }): Promise<VoteListResponse> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      list_votes: {
-        limit,
-        proposal_id: proposalId,
-        start_after: startAfter
-      }
-    });
-  };
-  voter = async ({
+  balance = async ({
     address
   }: {
     address: string;
-  }): Promise<VoterResponse> => {
+  }): Promise<BalanceResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      voter: {
+      balance: {
         address
       }
     });
   };
-  listVoters = async ({
+  tokenInfo = async (): Promise<TokenInfoResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      token_info: {}
+    });
+  };
+  minter = async (): Promise<MinterResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      minter: {}
+    });
+  };
+  allowance = async ({
+    owner,
+    spender
+  }: {
+    owner: string;
+    spender: string;
+  }): Promise<AllowanceResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      allowance: {
+        owner,
+        spender
+      }
+    });
+  };
+  allAllowances = async ({
+    limit,
+    owner,
+    startAfter
+  }: {
+    limit?: number;
+    owner: string;
+    startAfter?: string;
+  }): Promise<AllAllowancesResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      all_allowances: {
+        limit,
+        owner,
+        start_after: startAfter
+      }
+    });
+  };
+  allSpenderAllowances = async ({
+    limit,
+    spender,
+    startAfter
+  }: {
+    limit?: number;
+    spender: string;
+    startAfter?: string;
+  }): Promise<AllSpenderAllowancesResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      all_spender_allowances: {
+        limit,
+        spender,
+        start_after: startAfter
+      }
+    });
+  };
+  allAccounts = async ({
     limit,
     startAfter
   }: {
     limit?: number;
     startAfter?: string;
-  }): Promise<VoterListResponse> => {
+  }): Promise<AllAccountsResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      list_voters: {
+      all_accounts: {
         limit,
         start_after: startAfter
       }
     });
   };
-  config = async (): Promise<Config> => {
+  marketingInfo = async (): Promise<MarketingInfoResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      config: {}
+      marketing_info: {}
+    });
+  };
+  downloadLogo = async (): Promise<DownloadLogoResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      download_logo: {}
     });
   };
 }
 export interface Cw20BaseInterface extends Cw20BaseReadOnlyInterface {
   contractAddress: string;
   sender: string;
-  propose: ({
+  transfer: ({
+    amount,
+    recipient
+  }: {
+    amount: Uint128;
+    recipient: string;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  burn: ({
+    amount
+  }: {
+    amount: Uint128;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  send: ({
+    amount,
+    contract,
+    msg
+  }: {
+    amount: Uint128;
+    contract: string;
+    msg: Binary;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  increaseAllowance: ({
+    amount,
+    expires,
+    spender
+  }: {
+    amount: Uint128;
+    expires?: Expiration;
+    spender: string;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  decreaseAllowance: ({
+    amount,
+    expires,
+    spender
+  }: {
+    amount: Uint128;
+    expires?: Expiration;
+    spender: string;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  transferFrom: ({
+    amount,
+    owner,
+    recipient
+  }: {
+    amount: Uint128;
+    owner: string;
+    recipient: string;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  sendFrom: ({
+    amount,
+    contract,
+    msg,
+    owner
+  }: {
+    amount: Uint128;
+    contract: string;
+    msg: Binary;
+    owner: string;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  burnFrom: ({
+    amount,
+    owner
+  }: {
+    amount: Uint128;
+    owner: string;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  mint: ({
+    amount,
+    recipient
+  }: {
+    amount: Uint128;
+    recipient: string;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  updateMinter: ({
+    newMinter
+  }: {
+    newMinter?: string;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  updateMarketing: ({
     description,
-    latest,
-    msgs,
-    title
+    marketing,
+    project
   }: {
-    description: string;
-    latest?: Expiration;
-    msgs: CosmosMsgForEmpty[];
-    title: string;
+    description?: string;
+    marketing?: string;
+    project?: string;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
-  vote: ({
-    proposalId,
-    vote
-  }: {
-    proposalId: number;
-    vote: Vote;
-  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
-  execute: ({
-    proposalId
-  }: {
-    proposalId: number;
-  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
-  close: ({
-    proposalId
-  }: {
-    proposalId: number;
-  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
-  memberChangedHook: ({
-    diffs
-  }: {
-    diffs: MemberDiff[];
-  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  uploadLogo: (logo: Logo, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
 }
 export class Cw20BaseClient extends Cw20BaseQueryClient implements Cw20BaseInterface {
   client: SigningCosmWasmClient;
@@ -230,78 +265,192 @@ export class Cw20BaseClient extends Cw20BaseQueryClient implements Cw20BaseInter
     this.client = client;
     this.sender = sender;
     this.contractAddress = contractAddress;
-    this.propose = this.propose.bind(this);
-    this.vote = this.vote.bind(this);
-    this.execute = this.execute.bind(this);
-    this.close = this.close.bind(this);
-    this.memberChangedHook = this.memberChangedHook.bind(this);
+    this.transfer = this.transfer.bind(this);
+    this.burn = this.burn.bind(this);
+    this.send = this.send.bind(this);
+    this.increaseAllowance = this.increaseAllowance.bind(this);
+    this.decreaseAllowance = this.decreaseAllowance.bind(this);
+    this.transferFrom = this.transferFrom.bind(this);
+    this.sendFrom = this.sendFrom.bind(this);
+    this.burnFrom = this.burnFrom.bind(this);
+    this.mint = this.mint.bind(this);
+    this.updateMinter = this.updateMinter.bind(this);
+    this.updateMarketing = this.updateMarketing.bind(this);
+    this.uploadLogo = this.uploadLogo.bind(this);
   }
 
-  propose = async ({
+  transfer = async ({
+    amount,
+    recipient
+  }: {
+    amount: Uint128;
+    recipient: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      transfer: {
+        amount,
+        recipient
+      }
+    }, fee, memo, _funds);
+  };
+  burn = async ({
+    amount
+  }: {
+    amount: Uint128;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      burn: {
+        amount
+      }
+    }, fee, memo, _funds);
+  };
+  send = async ({
+    amount,
+    contract,
+    msg
+  }: {
+    amount: Uint128;
+    contract: string;
+    msg: Binary;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      send: {
+        amount,
+        contract,
+        msg
+      }
+    }, fee, memo, _funds);
+  };
+  increaseAllowance = async ({
+    amount,
+    expires,
+    spender
+  }: {
+    amount: Uint128;
+    expires?: Expiration;
+    spender: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      increase_allowance: {
+        amount,
+        expires,
+        spender
+      }
+    }, fee, memo, _funds);
+  };
+  decreaseAllowance = async ({
+    amount,
+    expires,
+    spender
+  }: {
+    amount: Uint128;
+    expires?: Expiration;
+    spender: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      decrease_allowance: {
+        amount,
+        expires,
+        spender
+      }
+    }, fee, memo, _funds);
+  };
+  transferFrom = async ({
+    amount,
+    owner,
+    recipient
+  }: {
+    amount: Uint128;
+    owner: string;
+    recipient: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      transfer_from: {
+        amount,
+        owner,
+        recipient
+      }
+    }, fee, memo, _funds);
+  };
+  sendFrom = async ({
+    amount,
+    contract,
+    msg,
+    owner
+  }: {
+    amount: Uint128;
+    contract: string;
+    msg: Binary;
+    owner: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      send_from: {
+        amount,
+        contract,
+        msg,
+        owner
+      }
+    }, fee, memo, _funds);
+  };
+  burnFrom = async ({
+    amount,
+    owner
+  }: {
+    amount: Uint128;
+    owner: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      burn_from: {
+        amount,
+        owner
+      }
+    }, fee, memo, _funds);
+  };
+  mint = async ({
+    amount,
+    recipient
+  }: {
+    amount: Uint128;
+    recipient: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      mint: {
+        amount,
+        recipient
+      }
+    }, fee, memo, _funds);
+  };
+  updateMinter = async ({
+    newMinter
+  }: {
+    newMinter?: string;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      update_minter: {
+        new_minter: newMinter
+      }
+    }, fee, memo, _funds);
+  };
+  updateMarketing = async ({
     description,
-    latest,
-    msgs,
-    title
+    marketing,
+    project
   }: {
-    description: string;
-    latest?: Expiration;
-    msgs: CosmosMsgForEmpty[];
-    title: string;
+    description?: string;
+    marketing?: string;
+    project?: string;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      propose: {
+      update_marketing: {
         description,
-        latest,
-        msgs,
-        title
+        marketing,
+        project
       }
     }, fee, memo, _funds);
   };
-  vote = async ({
-    proposalId,
-    vote
-  }: {
-    proposalId: number;
-    vote: Vote;
-  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+  uploadLogo = async (logo: Logo, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      vote: {
-        proposal_id: proposalId,
-        vote
-      }
-    }, fee, memo, _funds);
-  };
-  execute = async ({
-    proposalId
-  }: {
-    proposalId: number;
-  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
-    return await this.client.execute(this.sender, this.contractAddress, {
-      execute: {
-        proposal_id: proposalId
-      }
-    }, fee, memo, _funds);
-  };
-  close = async ({
-    proposalId
-  }: {
-    proposalId: number;
-  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
-    return await this.client.execute(this.sender, this.contractAddress, {
-      close: {
-        proposal_id: proposalId
-      }
-    }, fee, memo, _funds);
-  };
-  memberChangedHook = async ({
-    diffs
-  }: {
-    diffs: MemberDiff[];
-  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
-    return await this.client.execute(this.sender, this.contractAddress, {
-      member_changed_hook: {
-        diffs
-      }
+      upload_logo: logo
     }, fee, memo, _funds);
   };
 }
