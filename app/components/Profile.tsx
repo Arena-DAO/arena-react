@@ -23,12 +23,13 @@ const Profile = ({
 	if (!isValid && hideIfInvalid) {
 		return null;
 	}
+
 	return (
 		<Skeleton isLoaded={!isLoading}>
 			<User
 				name={data?.name ?? data?.address}
 				avatarProps={{
-					src: data?.imageUrl,
+					src: data?.imageUrl ?? "/logo.svg",
 				}}
 			/>
 		</Skeleton>
