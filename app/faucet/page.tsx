@@ -3,7 +3,7 @@
 import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Input } from "@nextui-org/react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { AddressSchema } from "~/config/schemas";
 import { useEnv } from "~/hooks/useEnv";
@@ -17,9 +17,9 @@ export default function Faucet() {
 	const { data: env } = useEnv();
 	const { address } = useChain(env.CHAIN);
 	const {
-		register,
+		control,
 		handleSubmit,
-		formState: { errors, isSubmitting, defaultValues },
+		formState: { errors, isSubmitting },
 	} = useForm<FormValues>({
 		defaultValues: {
 			address,
@@ -39,13 +39,18 @@ export default function Faucet() {
 		<div className="space-y-4">
 			<h1 className="text-5xl text-center">Juno Testnet Faucet</h1>
 			<form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-				<Input
-					{...register("address")}
-					label="Address"
-					isDisabled={isSubmitting}
-					value={defaultValues?.address}
-					isInvalid={!!errors.address}
-					errorMessage={errors.address?.message}
+				<Controller
+					control={control}
+					name="address"
+					render={({ field }) => (
+						<Input
+							label="Address"
+							isDisabled={isSubmitting}
+							isInvalid={!!errors.address}
+							errorMessage={errors.address?.message}
+							{...field}
+						/>
+					)}
 				/>
 				<Button type="submit" isLoading={isSubmitting} className="ml-auto">
 					Submit

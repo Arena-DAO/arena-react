@@ -22,11 +22,12 @@ import {
 import { useSearchParams } from "next/navigation";
 import {
 	Control,
+	Controller,
 	FieldError,
 	useFieldArray,
 	useFormContext,
 } from "react-hook-form";
-import { FiDelete, FiPlus } from "react-icons/fi";
+import { FiDelete, FiPlus, FiTrash } from "react-icons/fi";
 import { z } from "zod";
 import { CreateCompetitionSchema } from "~/config/schemas";
 import { useCategoryMap } from "~/hooks/useCategories";
@@ -50,7 +51,6 @@ export default function CreateCompetitionForm() {
 	const searchParams = useSearchParams();
 	const { data: categories } = useCategoryMap();
 	const {
-		register,
 		control,
 		watch,
 		formState: { errors, isSubmitting, defaultValues },
@@ -80,19 +80,31 @@ export default function CreateCompetitionForm() {
 
 	return (
 		<>
-			<Input
-				{...register("name")}
-				label="Name"
-				isDisabled={isSubmitting}
-				isInvalid={!!errors.name}
-				errorMessage={errors.name?.message}
+			<Controller
+				control={control}
+				name="name"
+				render={({ field }) => (
+					<Input
+						label="Name"
+						isDisabled={isSubmitting}
+						isInvalid={!!errors.name}
+						errorMessage={errors.name?.message}
+						{...field}
+					/>
+				)}
 			/>
-			<Textarea
-				{...register("description")}
-				label="Description"
-				isDisabled={isSubmitting}
-				isInvalid={!!errors.description}
-				errorMessage={errors.description?.message}
+			<Controller
+				control={control}
+				name="description"
+				render={({ field }) => (
+					<Textarea
+						label="Description"
+						isDisabled={isSubmitting}
+						isInvalid={!!errors.description}
+						errorMessage={errors.description?.message}
+						{...field}
+					/>
+				)}
 			/>
 			<div className="grid grid-cols-12 gap-4">
 				<Select
@@ -131,41 +143,58 @@ export default function CreateCompetitionForm() {
 					</SelectItem>
 				</Select>
 				{"at_height" in watchExpiration && (
-					<Input
-						className="col-span-12 sm:col-span-6 lg:col-span-4"
-						{...register("expiration.at_height")}
-						label="Height"
-						type="number"
-						value={watchExpiration.at_height.toString()}
-						isDisabled={isSubmitting}
-						isInvalid={!!errors.expiration && "at_height" in errors.expiration}
-						errorMessage={
-							!!errors.expiration && "at_height" in errors.expiration
-								? (errors.expiration.at_height as FieldError).message
-								: ""
-						}
+					<Controller
+						control={control}
+						name="expiration.at_height"
+						render={({ field }) => (
+							<Input
+								className="col-span-12 sm:col-span-6 lg:col-span-4"
+								label="Height"
+								type="number"
+								isDisabled={isSubmitting}
+								isInvalid={
+									!!errors.expiration && "at_height" in errors.expiration
+								}
+								errorMessage={
+									!!errors.expiration && "at_height" in errors.expiration
+										? (errors.expiration.at_height as FieldError).message
+										: ""
+								}
+								{...field}
+								value={watchExpiration.at_height.toString()}
+								onChange={(e) => field.onChange(parseInt(e.target.value))}
+							/>
+						)}
 					/>
 				)}
 				{"at_time" in watchExpiration && (
-					<Input
-						{...register("expiration.at_time")}
-						className="col-span-12 sm:col-span-6 lg:col-span-4"
-						type="datetime-local"
-						placeholder="Select date and time"
-						value={watchExpiration.at_time}
-						label="Time"
-						isDisabled={isSubmitting}
-						isInvalid={!!errors.expiration && "at_time" in errors.expiration}
-						errorMessage={
-							!!errors.expiration && "at_time" in errors.expiration
-								? (errors.expiration.at_time as FieldError).message
-								: ""
-						}
-						endContent={
-							<div className="pointer-events-none flex items-center">
-								<span className="text-default-400 text-small">UTC</span>
-							</div>
-						}
+					<Controller
+						control={control}
+						name="expiration.at_time"
+						render={({ field }) => (
+							<Input
+								className="col-span-12 sm:col-span-6 lg:col-span-4"
+								type="datetime-local"
+								placeholder="Select date and time"
+								label="Time"
+								isDisabled={isSubmitting}
+								isInvalid={
+									!!errors.expiration && "at_time" in errors.expiration
+								}
+								errorMessage={
+									!!errors.expiration && "at_time" in errors.expiration
+										? (errors.expiration.at_time as FieldError).message
+										: ""
+								}
+								endContent={
+									<div className="pointer-events-none flex items-center">
+										<span className="text-default-400 text-small">UTC</span>
+									</div>
+								}
+								{...field}
+								value={watchExpiration.at_time}
+							/>
+						)}
 					/>
 				)}
 			</div>
@@ -190,24 +219,30 @@ export default function CreateCompetitionForm() {
 					{rulesFields?.map((rule, ruleIndex) => (
 						<TableRow key={rule.id}>
 							<TableCell>
-								<Input
-									{...register(`rules.${ruleIndex}.rule`)}
-									label={`Rule ${ruleIndex + 1}`}
-									isDisabled={isSubmitting}
-									isInvalid={!!errors.rules?.[ruleIndex]?.rule}
-									errorMessage={errors.rules?.[ruleIndex]?.rule?.message}
-									endContent={
-										<Tooltip content="Delete rule">
-											<Button
-												isIconOnly
-												aria-label="Delete Rule"
-												variant="faded"
-												onClick={() => rulesRemove(ruleIndex)}
-											>
-												<FiDelete />
-											</Button>
-										</Tooltip>
-									}
+								<Controller
+									control={control}
+									name={`rules.${ruleIndex}.rule`}
+									render={({ field }) => (
+										<Input
+											label={`Rule ${ruleIndex + 1}`}
+											isDisabled={isSubmitting}
+											isInvalid={!!errors.rules?.[ruleIndex]?.rule}
+											errorMessage={errors.rules?.[ruleIndex]?.rule?.message}
+											endContent={
+												<Tooltip content="Delete rule">
+													<Button
+														isIconOnly
+														aria-label="Delete Rule"
+														variant="faded"
+														onClick={() => rulesRemove(ruleIndex)}
+													>
+														<FiTrash />
+													</Button>
+												</Tooltip>
+											}
+											{...field}
+										/>
+									)}
 								/>
 							</TableCell>
 						</TableRow>
@@ -243,24 +278,30 @@ export default function CreateCompetitionForm() {
 										)}
 									</CardHeader>
 									<CardBody className="space-y-4">
-										<Input
-											label="Address"
-											{...register(`dues.${index}.addr`)}
-											isDisabled={isSubmitting}
-											isInvalid={!!errors.dues?.[index]?.addr}
-											errorMessage={errors.dues?.[index]?.addr?.message}
-											endContent={
-												<Tooltip content="Delete Team">
-													<Button
-														isIconOnly
-														aria-label="Delete Team"
-														variant="faded"
-														onClick={() => duesRemove(index)}
-													>
-														<FiDelete />
-													</Button>
-												</Tooltip>
-											}
+										<Controller
+											control={control}
+											name={`dues.${index}.addr`}
+											render={({ field }) => (
+												<Input
+													label="Address"
+													isDisabled={isSubmitting}
+													isInvalid={!!errors.dues?.[index]?.addr}
+													errorMessage={errors.dues?.[index]?.addr?.message}
+													endContent={
+														<Tooltip content="Delete Team">
+															<Button
+																isIconOnly
+																aria-label="Delete Team"
+																variant="faded"
+																onClick={() => duesRemove(index)}
+															>
+																<FiDelete />
+															</Button>
+														</Tooltip>
+													}
+													{...field}
+												/>
+											)}
 										/>
 										{cosmWasmClient && (
 											<DueBalance
@@ -284,21 +325,31 @@ export default function CreateCompetitionForm() {
 					title="Competition DAO Details"
 				>
 					<div className="space-y-4">
-						<Input
-							{...register("competition_dao_name")}
-							value={defaultValues?.competition_dao_name}
-							label="Name"
-							isDisabled={isSubmitting}
-							isInvalid={!!errors.competition_dao_name}
-							errorMessage={errors.competition_dao_name?.message}
+						<Controller
+							control={control}
+							name="competition_dao_name"
+							render={({ field }) => (
+								<Input
+									label="Name"
+									isDisabled={isSubmitting}
+									isInvalid={!!errors.competition_dao_name}
+									errorMessage={errors.competition_dao_name?.message}
+									{...field}
+								/>
+							)}
 						/>
-						<Textarea
-							{...register("competition_dao_description")}
-							value={defaultValues?.competition_dao_description}
-							label="Description"
-							isDisabled={isSubmitting}
-							isInvalid={!!errors.competition_dao_description}
-							errorMessage={errors.competition_dao_description?.message}
+						<Controller
+							control={control}
+							name="competition_dao_description"
+							render={({ field }) => (
+								<Textarea
+									label="Description"
+									isDisabled={isSubmitting}
+									isInvalid={!!errors.competition_dao_description}
+									errorMessage={errors.competition_dao_description?.message}
+									{...field}
+								/>
+							)}
 						/>
 					</div>
 				</AccordionItem>

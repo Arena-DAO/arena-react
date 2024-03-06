@@ -11,6 +11,7 @@ import {
 	TableColumn,
 	TableHeader,
 	TableRow,
+	Tooltip,
 	useDisclosure,
 } from "@nextui-org/react";
 import { UseFormGetValues, useFieldArray } from "react-hook-form";
@@ -77,13 +78,15 @@ const DueBalance = ({
 											/>
 										</TableCell>
 										<TableCell className="text-right">
-											<Button
-												isIconOnly
-												aria-label="Delete Native Due"
-												onClick={() => native.remove(i)}
-											>
-												<FiTrash />
-											</Button>
+											<Tooltip content="Delete due">
+												<Button
+													isIconOnly
+													aria-label="Delete Native Due"
+													onClick={() => native.remove(i)}
+												>
+													<FiTrash />
+												</Button>
+											</Tooltip>
 										</TableCell>
 									</TableRow>
 								))}
@@ -114,13 +117,15 @@ const DueBalance = ({
 											/>
 										</TableCell>
 										<TableCell className="w-1/4 text-right">
-											<Button
-												isIconOnly
-												aria-label="Delete Native Due"
-												onClick={() => cw20.remove(i)}
-											>
-												<FiTrash />
-											</Button>
+											<Tooltip content="Delete due">
+												<Button
+													isIconOnly
+													aria-label="Delete CW20 Due"
+													onClick={() => cw20.remove(i)}
+												>
+													<FiTrash />
+												</Button>
+											</Tooltip>
 										</TableCell>
 									</TableRow>
 								))}
