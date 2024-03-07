@@ -58,7 +58,11 @@ export default function AppNavbar() {
 			<NavbarContent className="hidden md:flex gap-4" justify="center">
 				{navbarItems.map((item) => (
 					<NavbarItem key={item.href}>
-						<Link href={item.href} className="font-bold">
+						<Link
+							href={item.href}
+							className="font-bold"
+							isExternal={item.isExternal}
+						>
 							{item.label}
 						</Link>
 					</NavbarItem>

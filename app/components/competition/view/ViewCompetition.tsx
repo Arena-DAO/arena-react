@@ -2,6 +2,7 @@
 
 import { CopyAddressButton } from "@/components/CopyAddressButton";
 import Profile from "@/components/Profile";
+import { UTCDateMini } from "@date-fns/utc";
 import {
 	Button,
 	ButtonGroup,
@@ -10,9 +11,12 @@ import {
 	CardHeader,
 	Input,
 	Link,
+	Select,
+	SelectItem,
 	Textarea,
 	Tooltip,
 } from "@nextui-org/react";
+import { format } from "date-fns";
 import { BsYinYang } from "react-icons/bs";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { useArenaWagerModuleCompetitionQuery } from "~/codegen/ArenaWagerModule.react-query";
@@ -43,35 +47,89 @@ const ViewCompetition = ({
 		<div className="space-y-4">
 			<Card>
 				<CardHeader>
-					<h2 className="text-3xl font-bold">Host</h2>
+					<h2 className="text-2xl font-bold">Host</h2>
 				</CardHeader>
 				<CardBody>
-					<div className="flex justify-between">
-						{data?.host && (
-							<>
-								<Profile address={data.host} cosmWasmClient={cosmWasmClient} />
-								<ButtonGroup>
-									<CopyAddressButton address={data?.host} />
-									{isValidContractAddress(data.host, env.BECH32_PREFIX) && (
-										<Tooltip content="View on DAO DAO">
-											<Button
-												isIconOnly
-												as={Link}
-												href={`${env.DAO_DAO_URL}/dao/${data.host}`}
-												isExternal
-											>
-												<BsYinYang />
-											</Button>
-										</Tooltip>
-									)}
-								</ButtonGroup>
-							</>
-						)}
-					</div>
+					{data?.host && (
+						<div className="flex justify-between">
+							<Profile address={data.host} cosmWasmClient={cosmWasmClient} />
+							<ButtonGroup>
+								<CopyAddressButton address={data?.host} />
+								{isValidContractAddress(data.host, env.BECH32_PREFIX) && (
+									<Tooltip content="View on DAO DAO">
+										<Button
+											isIconOnly
+											as={Link}
+											href={`${env.DAO_DAO_URL}/dao/${data.host}`}
+											isExternal
+										>
+											<BsYinYang />
+										</Button>
+									</Tooltip>
+								)}
+							</ButtonGroup>
+						</div>
+					)}
 				</CardBody>
 			</Card>
 			<Input label="Name" value={data?.name} readOnly />
 			<Textarea label="Description" value={data?.description} readOnly />
+			<div className="grid grid-cols-12 gap-4">
+				{data?.expiration && (
+					<>
+						<Select
+							label="Expiration"
+							className="col-span-12 sm:col-span-6 md:col-span-4"
+							defaultSelectedKeys={[
+								"at_time" in data.expiration
+									? "at_time"
+									: "at_height" in data.expiration
+									  ? "at_height"
+									  : "never",
+							]}
+							isDisabled
+						>
+							<SelectItem value="at_time" key="at_time">
+								At Time
+							</SelectItem>
+							<SelectItem value="at_height" key="at_height">
+								At Height
+							</SelectItem>
+							<SelectItem value="never" key="never">
+								Never
+							</SelectItem>
+						</Select>
+						{"at_height" in data.expiration && (
+							<Input
+								className="col-span-12 sm:col-span-6 lg:col-span-4"
+								label="Height"
+								type="number"
+								value={data.expiration.at_height.toString()}
+								readOnly
+							/>
+						)}
+						{"at_time" in data.expiration && (
+							<Input
+								className="col-span-12 sm:col-span-6 lg:col-span-4"
+								label="Time"
+								type="datetime-local"
+								value={format(
+									new UTCDateMini(
+										Number(BigInt(data.expiration.at_time) / BigInt(1e6)),
+									),
+									"yyyy-MM-dd'T'HH:mm",
+								)}
+								readOnly
+								endContent={
+									<div className="pointer-events-none flex items-center">
+										<span className="text-default-400 text-small">UTC</span>
+									</div>
+								}
+							/>
+						)}
+					</>
+				)}
+			</div>
 		</div>
 	);
 };

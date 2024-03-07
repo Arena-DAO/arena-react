@@ -1,6 +1,6 @@
 "use client";
 
-import Profile from "@/components/Profile";
+import Profile, { ProfileProps } from "@/components/Profile";
 import { useWatch } from "react-hook-form";
 import { WithClient } from "~/types/util";
 import { FormComponentProps } from "../CreateCompetitionForm";
@@ -9,7 +9,10 @@ const DuesProfile = ({
 	cosmWasmClient,
 	control,
 	index,
-}: WithClient<FormComponentProps> & { index: number }) => {
+	...props
+}: WithClient<FormComponentProps & Omit<ProfileProps, "address">> & {
+	index: number;
+}) => {
 	const watchAddress = useWatch({ control, name: `dues.${index}.addr` });
 
 	return (
@@ -17,6 +20,7 @@ const DuesProfile = ({
 			cosmWasmClient={cosmWasmClient}
 			address={watchAddress}
 			hideIfInvalid
+			{...props}
 		/>
 	);
 };

@@ -260,7 +260,7 @@ export default function CreateCompetitionForm() {
 							<TableCell>
 								<Card>
 									<CardHeader className="flex justify-between">
-										<div>Team {index + 1}</div>
+										<div className="text-nowrap mr-4">Team {index + 1}</div>
 										{cosmWasmClient && (
 											<DueProfile
 												cosmWasmClient={cosmWasmClient}

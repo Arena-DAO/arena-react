@@ -1,20 +1,23 @@
 "use client";
 
-import { Skeleton, User } from "@nextui-org/react";
+import { Avatar, Skeleton, User, UserProps } from "@nextui-org/react";
 import { isValidBech32Address } from "~/helpers/AddressHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import { useProfileData } from "~/hooks/useProfile";
 import { WithClient } from "~/types/util";
 
-interface ProfileProps {
+export interface ProfileProps extends Omit<UserProps, "name"> {
 	address: string;
 	hideIfInvalid?: boolean;
+	justAvatar?: boolean;
 }
 
 const Profile = ({
 	address,
 	cosmWasmClient,
 	hideIfInvalid = false,
+	justAvatar = false,
+	...props
 }: WithClient<ProfileProps>) => {
 	const { data: env } = useEnv();
 	const isValid = isValidBech32Address(address, env.BECH32_PREFIX);
@@ -24,12 +27,22 @@ const Profile = ({
 		return null;
 	}
 
+	if (justAvatar) {
+		return (
+			<Skeleton isLoaded={!isLoading}>
+				<Avatar showFallback src={data?.imageUrl} />
+			</Skeleton>
+		);
+	}
+
 	return (
 		<Skeleton isLoaded={!isLoading}>
 			<User
+				{...props}
 				name={data?.name ?? data?.address}
 				avatarProps={{
-					src: data?.imageUrl ?? "/logo.svg",
+					src: data?.imageUrl,
+					showFallback: true,
 				}}
 			/>
 		</Skeleton>

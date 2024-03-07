@@ -24,13 +24,14 @@ export default function WalletConnectToggle() {
 				<DropdownTrigger>
 					<Button
 						variant="light"
-						className="h-full"
+						className="h-full max-w-[200px]"
 						isLoading={cosmWasmClient === undefined}
 					>
 						{cosmWasmClient && (
 							<Profile
 								address={chainContext.address}
 								cosmWasmClient={cosmWasmClient}
+								justAvatar
 							/>
 						)}
 					</Button>
