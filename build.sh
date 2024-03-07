@@ -10,6 +10,7 @@ elif [ "$CF_PAGES_BRANCH" == "development" ]; then
   # Run the "staging" script in `package.json` on the "staging" branch
   # "staging" should be replaced with the name of your specific branch
 
-  yarn build:dev
+  yarn run shx cp .env.development .env.production
+  yarn build
   
 fi

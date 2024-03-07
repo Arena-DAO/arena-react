@@ -4,8 +4,6 @@
 	"license": "GPL-3.0",
 	"scripts": {
 		"build": "next build",
-		"build:dev": "shx cp .env.production .env.production.backup && shx cp .env.development .env.production && yarn build && shx mv .env.production.backup .env.production",
-		"restore:prod": "shx mv .env.production.backup .env.production",
 		"dev": "next dev",
 		"lint": "biome check --apply ./",
 		"lint:unsafe": "biome check --apply-unsafe ./",
