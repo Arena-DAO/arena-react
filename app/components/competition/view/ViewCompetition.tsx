@@ -2,7 +2,6 @@
 
 import { CopyAddressButton } from "@/components/CopyAddressButton";
 import Profile from "@/components/Profile";
-import { UTCDateMini } from "@date-fns/utc";
 import {
 	Button,
 	ButtonGroup,
@@ -16,11 +15,11 @@ import {
 	Textarea,
 	Tooltip,
 } from "@nextui-org/react";
-import { format } from "date-fns";
 import { BsYinYang } from "react-icons/bs";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { useArenaWagerModuleCompetitionQuery } from "~/codegen/ArenaWagerModule.react-query";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
+import { formatExpirationTime } from "~/helpers/DateHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import { WithClient } from "~/types/util";
 
@@ -113,12 +112,7 @@ const ViewCompetition = ({
 								className="col-span-12 sm:col-span-6 lg:col-span-4"
 								label="Time"
 								type="datetime-local"
-								value={format(
-									new UTCDateMini(
-										Number(BigInt(data.expiration.at_time) / BigInt(1e6)),
-									),
-									"yyyy-MM-dd'T'HH:mm",
-								)}
+								value={formatExpirationTime(data.expiration.at_time)}
 								readOnly
 								endContent={
 									<div className="pointer-events-none flex items-center">
