@@ -49,6 +49,7 @@ export default function AppNavbar() {
 							alt="logo"
 							width="30"
 							height="30"
+							removeWrapper
 						/>
 						<p className="font-bold text-inherit ml-2">Arena DAO</p>
 					</Link>

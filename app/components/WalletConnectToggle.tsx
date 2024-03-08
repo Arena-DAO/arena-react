@@ -24,8 +24,8 @@ export default function WalletConnectToggle() {
 				<DropdownTrigger>
 					<Button
 						variant="light"
-						className="h-full max-w-[200px]"
 						isLoading={cosmWasmClient === undefined}
+						isIconOnly
 					>
 						{cosmWasmClient && (
 							<Profile
@@ -53,13 +53,13 @@ export default function WalletConnectToggle() {
 	}
 	return (
 		<Button
-			startContent={<BsWallet />}
 			isLoading={chainContext.isWalletConnecting}
 			variant="ghost"
 			color="primary"
 			onClick={chainContext.openView}
+			isIconOnly
 		>
-			Connect
+			<BsWallet />
 		</Button>
 	);
 }
