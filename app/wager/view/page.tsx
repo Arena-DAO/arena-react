@@ -7,15 +7,15 @@ import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 const ViewWager = () => {
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const searchParams = useSearchParams();
-	const id = searchParams?.get("id");
+	const competitionId = searchParams?.get("competitionId");
 
-	if (!id) {
+	if (!competitionId) {
 		return <h1 className="text-5xl text-center">Wager id not provided...</h1>;
 	}
 	return (
 		<>
 			{cosmWasmClient && (
-				<ViewCompetition cosmWasmClient={cosmWasmClient} id={id} />
+				<ViewCompetition cosmWasmClient={cosmWasmClient} competitionId={competitionId} />
 			)}
 		</>
 	);

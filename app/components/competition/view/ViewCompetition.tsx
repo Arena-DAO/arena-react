@@ -24,12 +24,12 @@ import { useEnv } from "~/hooks/useEnv";
 import { WithClient } from "~/types/util";
 
 interface ViewCompetitionProps {
-	id: string;
+	competitionId: string;
 }
 
 const ViewCompetition = ({
 	cosmWasmClient,
-	id,
+	competitionId,
 }: WithClient<ViewCompetitionProps>) => {
 	const { data: env } = useEnv();
 	const { data, isLoading } = useArenaWagerModuleCompetitionQuery({
@@ -38,7 +38,7 @@ const ViewCompetition = ({
 			env.ARENA_WAGER_MODULE_ADDRESS,
 		),
 		args: {
-			id,
+			competitionId,
 		},
 	});
 

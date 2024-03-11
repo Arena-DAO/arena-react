@@ -20,16 +20,16 @@ export type ExecuteMsg = {
   activate: {};
 } | {
   add_competition_hook: {
-    id: Uint128;
+    competition_id: Uint128;
   };
 } | {
   remove_competition_hook: {
-    id: Uint128;
+    competition_id: Uint128;
   };
 } | {
   execute_competition_hook: {
+    competition_id: Uint128;
     distribution: MemberPercentageForString[];
-    id: Uint128;
   };
 } | {
   create_competition: {
@@ -45,15 +45,16 @@ export type ExecuteMsg = {
   };
 } | {
   submit_evidence: {
+    competition_id: Uint128;
     evidence: string[];
-    id: Uint128;
   };
 } | {
   process_competition: {
-    cw20_msg?: Binary | null;
-    cw721_msg?: Binary | null;
+    competition_id: Uint128;
     distribution: MemberPercentageForString[];
-    id: Uint128;
+    remainder_addr: string;
+    tax_cw20_msg?: Binary | null;
+    tax_cw721_msg?: Binary | null;
   };
 } | {
   extension: {
@@ -62,9 +63,9 @@ export type ExecuteMsg = {
 } | {
   update_ownership: Action;
 };
-export type Binary = string;
 export type Decimal = string;
 export type Uint128 = string;
+export type Binary = string;
 export type Admin = {
   address: {
     addr: string;
@@ -97,11 +98,12 @@ export type Action = {
   };
 } | "accept_ownership" | "renounce_ownership";
 export interface ProposeMessage {
-  cw20_msg?: Binary | null;
-  cw721_msg?: Binary | null;
   description: string;
   distribution: MemberPercentageForString[];
   id: Uint128;
+  remainder_addr: string;
+  tax_cw20_msg?: Binary | null;
+  tax_cw721_msg?: Binary | null;
   title: string;
 }
 export interface MemberPercentageForString {
@@ -125,13 +127,23 @@ export type QueryMsg = {
   competition_count: {};
 } | {
   competition: {
-    id: Uint128;
+    competition_id: Uint128;
   };
 } | {
   competitions: {
     filter?: CompetitionsFilter | null;
     limit?: number | null;
     start_after?: Uint128 | null;
+  };
+} | {
+  evidence: {
+    competition_id: Uint128;
+    limit?: number | null;
+    start_after?: Uint128 | null;
+  };
+} | {
+  result: {
+    competition_id: Uint128;
   };
 } | {
   query_extension: {
@@ -159,27 +171,16 @@ export interface CompetitionResponseForEmpty {
   category_id?: Uint128 | null;
   description: string;
   escrow?: Addr | null;
-  evidence: Evidence[];
   expiration: Expiration;
   extension: Empty;
   host: Addr;
   id: Uint128;
   is_expired: boolean;
   name: string;
-  result?: MemberPercentageForAddr[] | null;
   rules: string[];
   rulesets: Uint128[];
   start_height: number;
   status: CompetitionStatus;
-}
-export interface Evidence {
-  content: string;
-  submit_time: Timestamp;
-  submit_user: Addr;
-}
-export interface MemberPercentageForAddr {
-  addr: Addr;
-  percentage: Decimal;
 }
 export type ArrayOfCompetitionResponseForEmpty = CompetitionResponseForEmpty[];
 export interface ConfigForEmpty {
@@ -188,8 +189,15 @@ export interface ConfigForEmpty {
   key: string;
 }
 export type String = string;
+export type ArrayOfEvidence = Evidence[];
+export interface Evidence {
+  content: string;
+  submit_time: Timestamp;
+  submit_user: Addr;
+}
 export interface OwnershipForString {
   owner?: string | null;
   pending_expiry?: Expiration | null;
   pending_owner?: string | null;
 }
+export type ArrayOfMemberPercentageForString = MemberPercentageForString[];

@@ -180,18 +180,18 @@ const CreateWager = () => {
 
 		const result = await wagerModuleClient.createCompetition(msg);
 
-		let id: string | undefined = undefined;
+		let competitionId: string | undefined = undefined;
 		for (const event of result.events) {
 			for (const attribute of event.attributes) {
-				if (attribute.key === "id") {
-					id = attribute.value;
+				if (attribute.key === "competition_id") {
+					competitionId = attribute.value;
 					break;
 				}
 			}
-			if (id) break;
+			if (competitionId) break;
 		}
 
-		if (id) router.push(`/wager/view?category=${category}&id=${id}`);
+		if (competitionId) router.push(`/wager/view?category=${category}&competitionId=${competitionId}`);
 	};
 
 	return (

@@ -5,7 +5,7 @@
 */
 
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import { Binary, InstantiateMsg, TournamentExt, ExecuteMsg, Decimal, Uint128, Admin, Expiration, Timestamp, Uint64, ModuleInfo, Duration, ExecuteExt, Result, Action, ProposeMessage, MemberPercentageForString, ModuleInstantiateInfo, CompetitionInstantiateExt, MatchResult, QueryMsg, CompetitionsFilter, CompetitionStatus, QueryExt, MigrateMsg, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForCompetitionExt, Evidence, CompetitionExt, MemberPercentageForAddr, ArrayOfCompetitionResponseForCompetitionExt, ConfigForTournamentExt, String, OwnershipForString } from "./ArenaLeagueModule.types";
+import { Binary, InstantiateMsg, TournamentExt, ExecuteMsg, Decimal, Uint128, Admin, Expiration, Timestamp, Uint64, ModuleInfo, Duration, ExecuteExt, Result, Action, ProposeMessage, MemberPercentageForString, ModuleInstantiateInfo, CompetitionInstantiateExt, MatchResult, QueryMsg, CompetitionsFilter, CompetitionStatus, QueryExt, MigrateMsg, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForCompetitionExt, CompetitionExt, ArrayOfCompetitionResponseForCompetitionExt, ConfigForTournamentExt, String, ArrayOfEvidence, Evidence, OwnershipForString, ArrayOfMemberPercentageForString } from "./ArenaLeagueModule.types";
 import { ArenaLeagueModuleQueryClient } from "./ArenaLeagueModule.client";
 export interface ArenaLeagueModuleReactQuery<TResponse, TData = TResponse> {
   client: ArenaLeagueModuleQueryClient;
@@ -34,6 +34,38 @@ export function useArenaLeagueModuleQueryExtensionQuery<TData = Binary>({
     msg: args.msg
   }), options);
 }
+export interface ArenaLeagueModuleResultQuery<TData> extends ArenaLeagueModuleReactQuery<ArrayOfMemberPercentageForString, TData> {
+  args: {
+    competitionId: Uint128;
+  };
+}
+export function useArenaLeagueModuleResultQuery<TData = ArrayOfMemberPercentageForString>({
+  client,
+  args,
+  options
+}: ArenaLeagueModuleResultQuery<TData>) {
+  return useQuery<ArrayOfMemberPercentageForString, Error, TData>(["arenaLeagueModuleResult", client.contractAddress, JSON.stringify(args)], () => client.result({
+    competitionId: args.competitionId
+  }), options);
+}
+export interface ArenaLeagueModuleEvidenceQuery<TData> extends ArenaLeagueModuleReactQuery<ArrayOfEvidence, TData> {
+  args: {
+    competitionId: Uint128;
+    limit?: number;
+    startAfter?: Uint128;
+  };
+}
+export function useArenaLeagueModuleEvidenceQuery<TData = ArrayOfEvidence>({
+  client,
+  args,
+  options
+}: ArenaLeagueModuleEvidenceQuery<TData>) {
+  return useQuery<ArrayOfEvidence, Error, TData>(["arenaLeagueModuleEvidence", client.contractAddress, JSON.stringify(args)], () => client.evidence({
+    competitionId: args.competitionId,
+    limit: args.limit,
+    startAfter: args.startAfter
+  }), options);
+}
 export interface ArenaLeagueModuleCompetitionsQuery<TData> extends ArenaLeagueModuleReactQuery<ArrayOfCompetitionResponseForCompetitionExt, TData> {
   args: {
     filter?: CompetitionsFilter;
@@ -54,7 +86,7 @@ export function useArenaLeagueModuleCompetitionsQuery<TData = ArrayOfCompetition
 }
 export interface ArenaLeagueModuleCompetitionQuery<TData> extends ArenaLeagueModuleReactQuery<CompetitionResponseForCompetitionExt, TData> {
   args: {
-    id: Uint128;
+    competitionId: Uint128;
   };
 }
 export function useArenaLeagueModuleCompetitionQuery<TData = CompetitionResponseForCompetitionExt>({
@@ -63,7 +95,7 @@ export function useArenaLeagueModuleCompetitionQuery<TData = CompetitionResponse
   options
 }: ArenaLeagueModuleCompetitionQuery<TData>) {
   return useQuery<CompetitionResponseForCompetitionExt, Error, TData>(["arenaLeagueModuleCompetition", client.contractAddress, JSON.stringify(args)], () => client.competition({
-    id: args.id
+    competitionId: args.competitionId
   }), options);
 }
 export interface ArenaLeagueModuleCompetitionCountQuery<TData> extends ArenaLeagueModuleReactQuery<Uint128, TData> {}

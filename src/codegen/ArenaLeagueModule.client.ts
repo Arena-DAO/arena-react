@@ -6,16 +6,16 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { Binary, InstantiateMsg, TournamentExt, ExecuteMsg, Decimal, Uint128, Admin, Expiration, Timestamp, Uint64, ModuleInfo, Duration, ExecuteExt, Result, Action, ProposeMessage, MemberPercentageForString, ModuleInstantiateInfo, CompetitionInstantiateExt, MatchResult, QueryMsg, CompetitionsFilter, CompetitionStatus, QueryExt, MigrateMsg, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForCompetitionExt, Evidence, CompetitionExt, MemberPercentageForAddr, ArrayOfCompetitionResponseForCompetitionExt, ConfigForTournamentExt, String, OwnershipForString } from "./ArenaLeagueModule.types";
+import { Binary, InstantiateMsg, TournamentExt, ExecuteMsg, Decimal, Uint128, Admin, Expiration, Timestamp, Uint64, ModuleInfo, Duration, ExecuteExt, Result, Action, ProposeMessage, MemberPercentageForString, ModuleInstantiateInfo, CompetitionInstantiateExt, MatchResult, QueryMsg, CompetitionsFilter, CompetitionStatus, QueryExt, MigrateMsg, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForCompetitionExt, CompetitionExt, ArrayOfCompetitionResponseForCompetitionExt, ConfigForTournamentExt, String, ArrayOfEvidence, Evidence, OwnershipForString, ArrayOfMemberPercentageForString } from "./ArenaLeagueModule.types";
 export interface ArenaLeagueModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForTournamentExt>;
   dAO: () => Promise<String>;
   competitionCount: () => Promise<Uint128>;
   competition: ({
-    id
+    competitionId
   }: {
-    id: Uint128;
+    competitionId: Uint128;
   }) => Promise<CompetitionResponseForCompetitionExt>;
   competitions: ({
     filter,
@@ -26,6 +26,20 @@ export interface ArenaLeagueModuleReadOnlyInterface {
     limit?: number;
     startAfter?: Uint128;
   }) => Promise<ArrayOfCompetitionResponseForCompetitionExt>;
+  evidence: ({
+    competitionId,
+    limit,
+    startAfter
+  }: {
+    competitionId: Uint128;
+    limit?: number;
+    startAfter?: Uint128;
+  }) => Promise<ArrayOfEvidence>;
+  result: ({
+    competitionId
+  }: {
+    competitionId: Uint128;
+  }) => Promise<ArrayOfMemberPercentageForString>;
   queryExtension: ({
     msg
   }: {
@@ -45,6 +59,8 @@ export class ArenaLeagueModuleQueryClient implements ArenaLeagueModuleReadOnlyIn
     this.competitionCount = this.competitionCount.bind(this);
     this.competition = this.competition.bind(this);
     this.competitions = this.competitions.bind(this);
+    this.evidence = this.evidence.bind(this);
+    this.result = this.result.bind(this);
     this.queryExtension = this.queryExtension.bind(this);
     this.ownership = this.ownership.bind(this);
   }
@@ -65,13 +81,13 @@ export class ArenaLeagueModuleQueryClient implements ArenaLeagueModuleReadOnlyIn
     });
   };
   competition = async ({
-    id
+    competitionId
   }: {
-    id: Uint128;
+    competitionId: Uint128;
   }): Promise<CompetitionResponseForCompetitionExt> => {
     return this.client.queryContractSmart(this.contractAddress, {
       competition: {
-        id
+        competition_id: competitionId
       }
     });
   };
@@ -89,6 +105,34 @@ export class ArenaLeagueModuleQueryClient implements ArenaLeagueModuleReadOnlyIn
         filter,
         limit,
         start_after: startAfter
+      }
+    });
+  };
+  evidence = async ({
+    competitionId,
+    limit,
+    startAfter
+  }: {
+    competitionId: Uint128;
+    limit?: number;
+    startAfter?: Uint128;
+  }): Promise<ArrayOfEvidence> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      evidence: {
+        competition_id: competitionId,
+        limit,
+        start_after: startAfter
+      }
+    });
+  };
+  result = async ({
+    competitionId
+  }: {
+    competitionId: Uint128;
+  }): Promise<ArrayOfMemberPercentageForString> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      result: {
+        competition_id: competitionId
       }
     });
   };
@@ -119,21 +163,21 @@ export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInt
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   activate: (fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   addCompetitionHook: ({
-    id
+    competitionId
   }: {
-    id: Uint128;
+    competitionId: Uint128;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   removeCompetitionHook: ({
-    id
+    competitionId
   }: {
-    id: Uint128;
+    competitionId: Uint128;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   executeCompetitionHook: ({
-    distribution,
-    id
+    competitionId,
+    distribution
   }: {
+    competitionId: Uint128;
     distribution: MemberPercentageForString[];
-    id: Uint128;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   createCompetition: ({
     categoryId,
@@ -157,22 +201,24 @@ export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInt
     rulesets: Uint128[];
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   submitEvidence: ({
-    evidence,
-    id
+    competitionId,
+    evidence
   }: {
+    competitionId: Uint128;
     evidence: string[];
-    id: Uint128;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   processCompetition: ({
-    cw20Msg,
-    cw721Msg,
+    competitionId,
     distribution,
-    id
+    remainderAddr,
+    taxCw20Msg,
+    taxCw721Msg
   }: {
-    cw20Msg?: Binary;
-    cw721Msg?: Binary;
+    competitionId: Uint128;
     distribution: MemberPercentageForString[];
-    id: Uint128;
+    remainderAddr: string;
+    taxCw20Msg?: Binary;
+    taxCw721Msg?: Binary;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   extension: ({
     msg
@@ -220,38 +266,38 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
     }, fee, memo, _funds);
   };
   addCompetitionHook = async ({
-    id
+    competitionId
   }: {
-    id: Uint128;
+    competitionId: Uint128;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       add_competition_hook: {
-        id
+        competition_id: competitionId
       }
     }, fee, memo, _funds);
   };
   removeCompetitionHook = async ({
-    id
+    competitionId
   }: {
-    id: Uint128;
+    competitionId: Uint128;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       remove_competition_hook: {
-        id
+        competition_id: competitionId
       }
     }, fee, memo, _funds);
   };
   executeCompetitionHook = async ({
-    distribution,
-    id
+    competitionId,
+    distribution
   }: {
+    competitionId: Uint128;
     distribution: MemberPercentageForString[];
-    id: Uint128;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       execute_competition_hook: {
-        distribution,
-        id
+        competition_id: competitionId,
+        distribution
       }
     }, fee, memo, _funds);
   };
@@ -291,36 +337,39 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
     }, fee, memo, _funds);
   };
   submitEvidence = async ({
-    evidence,
-    id
+    competitionId,
+    evidence
   }: {
+    competitionId: Uint128;
     evidence: string[];
-    id: Uint128;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       submit_evidence: {
-        evidence,
-        id
+        competition_id: competitionId,
+        evidence
       }
     }, fee, memo, _funds);
   };
   processCompetition = async ({
-    cw20Msg,
-    cw721Msg,
+    competitionId,
     distribution,
-    id
+    remainderAddr,
+    taxCw20Msg,
+    taxCw721Msg
   }: {
-    cw20Msg?: Binary;
-    cw721Msg?: Binary;
+    competitionId: Uint128;
     distribution: MemberPercentageForString[];
-    id: Uint128;
+    remainderAddr: string;
+    taxCw20Msg?: Binary;
+    taxCw721Msg?: Binary;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       process_competition: {
-        cw20_msg: cw20Msg,
-        cw721_msg: cw721Msg,
+        competition_id: competitionId,
         distribution,
-        id
+        remainder_addr: remainderAddr,
+        tax_cw20_msg: taxCw20Msg,
+        tax_cw721_msg: taxCw721Msg
       }
     }, fee, memo, _funds);
   };

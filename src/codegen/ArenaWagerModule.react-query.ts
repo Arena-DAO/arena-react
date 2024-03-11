@@ -5,7 +5,7 @@
 */
 
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Admin, Expiration, Timestamp, Uint64, ModuleInfo, Action, ProposeMessage, MemberPercentageForString, ModuleInstantiateInfo, EmptyWrapper, QueryMsg, CompetitionsFilter, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, Evidence, MemberPercentageForAddr, ArrayOfCompetitionResponseForEmpty, ConfigForEmpty, String, OwnershipForString } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Decimal, Uint128, Binary, Admin, Expiration, Timestamp, Uint64, ModuleInfo, Action, ProposeMessage, MemberPercentageForString, ModuleInstantiateInfo, EmptyWrapper, QueryMsg, CompetitionsFilter, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, ArrayOfCompetitionResponseForEmpty, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, ArrayOfMemberPercentageForString } from "./ArenaWagerModule.types";
 import { ArenaWagerModuleQueryClient } from "./ArenaWagerModule.client";
 export interface ArenaWagerModuleReactQuery<TResponse, TData = TResponse> {
   client: ArenaWagerModuleQueryClient;
@@ -34,6 +34,38 @@ export function useArenaWagerModuleQueryExtensionQuery<TData = Binary>({
     msg: args.msg
   }), options);
 }
+export interface ArenaWagerModuleResultQuery<TData> extends ArenaWagerModuleReactQuery<ArrayOfMemberPercentageForString, TData> {
+  args: {
+    competitionId: Uint128;
+  };
+}
+export function useArenaWagerModuleResultQuery<TData = ArrayOfMemberPercentageForString>({
+  client,
+  args,
+  options
+}: ArenaWagerModuleResultQuery<TData>) {
+  return useQuery<ArrayOfMemberPercentageForString, Error, TData>(["arenaWagerModuleResult", client.contractAddress, JSON.stringify(args)], () => client.result({
+    competitionId: args.competitionId
+  }), options);
+}
+export interface ArenaWagerModuleEvidenceQuery<TData> extends ArenaWagerModuleReactQuery<ArrayOfEvidence, TData> {
+  args: {
+    competitionId: Uint128;
+    limit?: number;
+    startAfter?: Uint128;
+  };
+}
+export function useArenaWagerModuleEvidenceQuery<TData = ArrayOfEvidence>({
+  client,
+  args,
+  options
+}: ArenaWagerModuleEvidenceQuery<TData>) {
+  return useQuery<ArrayOfEvidence, Error, TData>(["arenaWagerModuleEvidence", client.contractAddress, JSON.stringify(args)], () => client.evidence({
+    competitionId: args.competitionId,
+    limit: args.limit,
+    startAfter: args.startAfter
+  }), options);
+}
 export interface ArenaWagerModuleCompetitionsQuery<TData> extends ArenaWagerModuleReactQuery<ArrayOfCompetitionResponseForEmpty, TData> {
   args: {
     filter?: CompetitionsFilter;
@@ -54,7 +86,7 @@ export function useArenaWagerModuleCompetitionsQuery<TData = ArrayOfCompetitionR
 }
 export interface ArenaWagerModuleCompetitionQuery<TData> extends ArenaWagerModuleReactQuery<CompetitionResponseForEmpty, TData> {
   args: {
-    id: Uint128;
+    competitionId: Uint128;
   };
 }
 export function useArenaWagerModuleCompetitionQuery<TData = CompetitionResponseForEmpty>({
@@ -63,7 +95,7 @@ export function useArenaWagerModuleCompetitionQuery<TData = CompetitionResponseF
   options
 }: ArenaWagerModuleCompetitionQuery<TData>) {
   return useQuery<CompetitionResponseForEmpty, Error, TData>(["arenaWagerModuleCompetition", client.contractAddress, JSON.stringify(args)], () => client.competition({
-    id: args.id
+    competitionId: args.competitionId
   }), options);
 }
 export interface ArenaWagerModuleCompetitionCountQuery<TData> extends ArenaWagerModuleReactQuery<Uint128, TData> {}

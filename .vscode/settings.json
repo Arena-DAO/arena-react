@@ -9,9 +9,5 @@
 	"[json]": {
 		"editor.defaultFormatter": "biomejs.biome"
 	},
-	"editor.defaultFormatter": "biomejs.biome",
-	"editor.codeActionsOnSave": {
-		"source.organizeImports.biome": "always",
-		"quickfix.biome": "explicit"
-	}
+	"editor.defaultFormatter": "biomejs.biome"
 }

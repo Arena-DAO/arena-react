@@ -120,11 +120,12 @@ export type EditCompetitionCategory = {
 };
 export type Status = "open" | "rejected" | "passed" | "executed" | "closed" | "execution_failed";
 export interface ProposeMessage {
-  cw20_msg?: Binary | null;
-  cw721_msg?: Binary | null;
   description: string;
   distribution: MemberPercentageForString[];
   id: Uint128;
+  remainder_addr: string;
+  tax_cw20_msg?: Binary | null;
+  tax_cw721_msg?: Binary | null;
   title: string;
 }
 export interface MemberPercentageForString {
