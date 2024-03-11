@@ -3,7 +3,7 @@
 import { Spinner } from "@nextui-org/react";
 import { getDisplayToken } from "~/helpers/TokenHelpers";
 import { useToken } from "~/hooks/useToken";
-import { WithClient } from "~/types/util";
+import type { WithClient } from "~/types/util";
 
 interface TokenAmountProps {
 	amount: bigint;

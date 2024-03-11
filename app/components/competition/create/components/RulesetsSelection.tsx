@@ -16,10 +16,10 @@ import { useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { useAsyncList } from "react-stately";
 import { ArenaCoreQueryClient } from "~/codegen/ArenaCore.client";
-import { Ruleset } from "~/codegen/ArenaCore.types";
+import type { Ruleset } from "~/codegen/ArenaCore.types";
 import { useEnv } from "~/hooks/useEnv";
-import { WithClient } from "~/types/util";
-import { CreateCompetitionFormValues } from "../CreateCompetitionForm";
+import type { WithClient } from "~/types/util";
+import type { CreateCompetitionFormValues } from "../CreateCompetitionForm";
 
 interface RulesetsSelectionProps {
 	category_id?: number | null;

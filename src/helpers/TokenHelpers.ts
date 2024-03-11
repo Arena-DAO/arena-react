@@ -1,7 +1,7 @@
-import { Asset } from "@chain-registry/types";
-import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { Metadata } from "cosmjs-types/cosmos/bank/v1beta1/bank";
-import { Coin } from "cosmjs-types/cosmos/base/v1beta1/coin";
+import type { Asset } from "@chain-registry/types";
+import type { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import type { Metadata } from "cosmjs-types/cosmos/bank/v1beta1/bank";
+import type { Coin } from "cosmjs-types/cosmos/base/v1beta1/coin";
 import { Cw20BaseQueryClient } from "~/codegen/Cw20Base.client";
 import { isValidContractAddress } from "./AddressHelpers";
 
@@ -22,7 +22,7 @@ export function getTokenConversion(
 
 	const amount =
 		10 ** (original_units.exponent - new_units.exponent) *
-		parseFloat(coin.amount.replace(/,/g, ""));
+		Number.parseFloat(coin.amount.replace(/,/g, ""));
 	return {
 		denom: to_denom,
 		amount: Number.isNaN(amount)

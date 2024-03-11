@@ -21,7 +21,7 @@ import { useArenaWagerModuleCompetitionQuery } from "~/codegen/ArenaWagerModule.
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { formatExpirationTime } from "~/helpers/DateHelpers";
 import { useEnv } from "~/hooks/useEnv";
-import { WithClient } from "~/types/util";
+import type { WithClient } from "~/types/util";
 
 interface ViewCompetitionProps {
 	competitionId: string;
@@ -32,7 +32,7 @@ const ViewCompetition = ({
 	competitionId,
 }: WithClient<ViewCompetitionProps>) => {
 	const { data: env } = useEnv();
-	const { data, isLoading } = useArenaWagerModuleCompetitionQuery({
+	const { data } = useArenaWagerModuleCompetitionQuery({
 		client: new ArenaWagerModuleQueryClient(
 			cosmWasmClient,
 			env.ARENA_WAGER_MODULE_ADDRESS,
@@ -124,6 +124,16 @@ const ViewCompetition = ({
 					</>
 				)}
 			</div>
+			<Card>
+				<CardHeader>Rules</CardHeader>
+				<CardBody>
+					<ol className="list-decimal">
+						{data?.rules.map((rule) => (
+							<li>{rule}</li>
+						))}
+					</ol>
+				</CardBody>
+			</Card>
 		</div>
 	);
 };

@@ -2,7 +2,7 @@
 
 import { Tab, Tabs } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
-import { SubCategory, useCategoryMap } from "~/hooks/useCategories";
+import { type SubCategory, useCategoryMap } from "~/hooks/useCategories";
 import { useEnv } from "~/hooks/useEnv";
 import CompetitionCategoryCard from "./components/CompetitionCategoryCard";
 import CompetitionModuleSection from "./components/CompetitionModuleSection";

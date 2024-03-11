@@ -45,7 +45,7 @@ const checkEnv = (key: string | undefined): string => {
 
 const checkEnvNumber = (key: string | undefined): number => {
 	const string = checkEnv(key);
-	const value = parseInt(string);
+	const value = Number.parseInt(string);
 	if (Number.isNaN(value)) {
 		throw new Error(`Environment variable ${key} is not a number`);
 	}

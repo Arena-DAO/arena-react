@@ -17,12 +17,12 @@ import { useState } from "react";
 import { BsPlus } from "react-icons/bs";
 import { useAsyncList } from "react-stately";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
-import { CompetitionResponseForEmpty } from "~/codegen/ArenaWagerModule.types";
+import type { CompetitionResponseForEmpty } from "~/codegen/ArenaWagerModule.types";
 import { statusColors } from "~/helpers/ArenaHelpers";
-import { CategoryLeaf } from "~/hooks/useCategories";
+import type { CategoryLeaf } from "~/hooks/useCategories";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import { WithClient } from "~/types/util";
+import type { WithClient } from "~/types/util";
 
 interface CompetitionModuleSectionProps {
 	category: CategoryLeaf;

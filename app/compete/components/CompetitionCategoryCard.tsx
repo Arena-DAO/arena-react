@@ -3,7 +3,7 @@
 import { Card, CardBody, CardFooter } from "@nextui-org/react";
 import { Image } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import { SubCategory } from "~/hooks/useCategories";
+import type { SubCategory } from "~/hooks/useCategories";
 
 interface CompetitionCategoryCardProps {
 	category: SubCategory;

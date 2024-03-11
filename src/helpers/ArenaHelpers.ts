@@ -1,4 +1,4 @@
-import { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
+import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 
 type Colors =
 	| "default"

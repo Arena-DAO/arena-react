@@ -1,7 +1,7 @@
 "use client";
 
 import CreateCompetitionForm, {
-	CreateCompetitionFormValues,
+	type CreateCompetitionFormValues,
 } from "@/components/competition/create/CreateCompetitionForm";
 import { toBinary } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
@@ -12,11 +12,11 @@ import { addSeconds, formatISO } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { InstantiateMsg as ArenaEscrowInstantiateMsg } from "~/codegen/ArenaEscrow.types";
+import type { InstantiateMsg as ArenaEscrowInstantiateMsg } from "~/codegen/ArenaEscrow.types";
 import { ArenaWagerModuleClient } from "~/codegen/ArenaWagerModule.client";
-import { InstantiateMsg as DaoDaoCoreInstantiateMsg } from "~/codegen/DaoDaoCore.types";
-import { InstantiateMsg as DAOProposalSingleInstantiateMsg } from "~/codegen/DaoProposalSingle.types";
-import { InstantiateMsg as DAOVotingCW4InstantiateMsg } from "~/codegen/DaoVotingCw4.types";
+import type { InstantiateMsg as DaoDaoCoreInstantiateMsg } from "~/codegen/DaoDaoCore.types";
+import type { InstantiateMsg as DAOProposalSingleInstantiateMsg } from "~/codegen/DaoProposalSingle.types";
+import type { InstantiateMsg as DAOVotingCW4InstantiateMsg } from "~/codegen/DaoVotingCw4.types";
 import { CreateCompetitionSchema } from "~/config/schemas";
 import { convertToExpiration } from "~/helpers/SchemaHelpers";
 import { useCategoryMap } from "~/hooks/useCategories";
@@ -191,7 +191,10 @@ const CreateWager = () => {
 			if (competitionId) break;
 		}
 
-		if (competitionId) router.push(`/wager/view?category=${category}&competitionId=${competitionId}`);
+		if (competitionId)
+			router.push(
+				`/wager/view?category=${category}&competitionId=${competitionId}`,
+			);
 	};
 
 	return (

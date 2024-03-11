@@ -15,7 +15,10 @@ const ViewWager = () => {
 	return (
 		<>
 			{cosmWasmClient && (
-				<ViewCompetition cosmWasmClient={cosmWasmClient} competitionId={competitionId} />
+				<ViewCompetition
+					cosmWasmClient={cosmWasmClient}
+					competitionId={competitionId}
+				/>
 			)}
 		</>
 	);

@@ -1,9 +1,9 @@
 "use client";
 
-import Profile, { ProfileProps } from "@/components/Profile";
+import Profile, { type ProfileProps } from "@/components/Profile";
 import { useWatch } from "react-hook-form";
-import { WithClient } from "~/types/util";
-import { FormComponentProps } from "../CreateCompetitionForm";
+import type { WithClient } from "~/types/util";
+import type { FormComponentProps } from "../CreateCompetitionForm";
 
 const DuesProfile = ({
 	cosmWasmClient,

@@ -1,6 +1,6 @@
 "use client";
 
-import { Chain } from "@chain-registry/types";
+import type { Chain } from "@chain-registry/types";
 import { GasPrice } from "@cosmjs/stargate";
 import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
@@ -14,7 +14,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { assets, chains } from "chain-registry";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useRouter } from "next/navigation";
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 import { useEnv } from "~/hooks/useEnv";
 import "~/styles/globals.css";
 

@@ -1,4 +1,4 @@
-import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import type { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useQuery } from "@tanstack/react-query";
 import { DaoDaoCoreQueryClient } from "~/codegen/DaoDaoCore.client";
 import { useDaoDaoCoreConfigQuery } from "~/codegen/DaoDaoCore.react-query";

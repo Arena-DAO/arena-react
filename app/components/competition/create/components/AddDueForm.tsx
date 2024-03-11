@@ -16,8 +16,8 @@ import _ from "lodash";
 import { useEffect, useState } from "react";
 import {
 	Controller,
-	UseFieldArrayAppend,
-	UseFormGetValues,
+	type UseFieldArrayAppend,
+	type UseFormGetValues,
 	useForm,
 } from "react-hook-form";
 import { z } from "zod";
@@ -28,7 +28,7 @@ import {
 } from "~/helpers/TokenHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import { CreateCompetitionFormValues } from "../CreateCompetitionForm";
+import type { CreateCompetitionFormValues } from "../CreateCompetitionForm";
 
 const DueFormSchema = z
 	.object({
@@ -314,7 +314,9 @@ const AddDueForm = ({
 								errorMessage={errors.amount?.message}
 								{...field}
 								value={field.value?.toString()}
-								onChange={(e) => field.onChange(parseFloat(e.target.value))}
+								onChange={(e) =>
+									field.onChange(Number.parseFloat(e.target.value))
+								}
 							/>
 						)}
 					/>

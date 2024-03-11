@@ -14,10 +14,10 @@ import {
 	Tooltip,
 	useDisclosure,
 } from "@nextui-org/react";
-import { UseFormGetValues, useFieldArray } from "react-hook-form";
+import { type UseFormGetValues, useFieldArray } from "react-hook-form";
 import { FiPlus, FiTrash } from "react-icons/fi";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
-import {
+import type {
 	CreateCompetitionFormValues,
 	FormComponentProps,
 } from "../CreateCompetitionForm";

@@ -1,10 +1,10 @@
 "use client";
 
-import { Avatar, Skeleton, User, UserProps } from "@nextui-org/react";
+import { Avatar, Skeleton, User, type UserProps } from "@nextui-org/react";
 import { isValidBech32Address } from "~/helpers/AddressHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import { useProfileData } from "~/hooks/useProfile";
-import { WithClient } from "~/types/util";
+import type { WithClient } from "~/types/util";
 
 export interface ProfileProps extends Omit<UserProps, "name"> {
 	address: string;

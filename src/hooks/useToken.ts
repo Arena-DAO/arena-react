@@ -1,4 +1,4 @@
-import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import type { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import { useQuery } from "@tanstack/react-query";
 import { getCw20Asset, getNativeAsset } from "~/helpers/TokenHelpers";

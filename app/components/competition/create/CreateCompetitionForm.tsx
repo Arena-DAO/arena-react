@@ -21,15 +21,15 @@ import {
 } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
 import {
-	Control,
+	type Control,
 	Controller,
-	FieldError,
+	type FieldError,
 	useFieldArray,
 	useFormContext,
 } from "react-hook-form";
 import { FiPlus, FiTrash } from "react-icons/fi";
-import { z } from "zod";
-import { CreateCompetitionSchema } from "~/config/schemas";
+import type { z } from "zod";
+import type { CreateCompetitionSchema } from "~/config/schemas";
 import { keyboardDelegateFixSpace } from "~/helpers/NextUIHelpers";
 import { useCategoryMap } from "~/hooks/useCategories";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
@@ -163,7 +163,9 @@ export default function CreateCompetitionForm() {
 								}
 								{...field}
 								value={watchExpiration.at_height.toString()}
-								onChange={(e) => field.onChange(parseInt(e.target.value))}
+								onChange={(e) =>
+									field.onChange(Number.parseInt(e.target.value))
+								}
 							/>
 						)}
 					/>

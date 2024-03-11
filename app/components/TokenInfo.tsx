@@ -1,8 +1,8 @@
 "use client";
 
-import { Skeleton, User, UserProps } from "@nextui-org/react";
+import { Skeleton, User, type UserProps } from "@nextui-org/react";
 import { useToken } from "~/hooks/useToken";
-import { WithClient } from "~/types/util";
+import type { WithClient } from "~/types/util";
 
 interface TokenCardProps extends Omit<UserProps, "name"> {
 	denomOrAddress: string;

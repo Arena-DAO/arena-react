@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, ButtonProps, Tooltip } from "@nextui-org/react";
+import { Button, type ButtonProps, Tooltip } from "@nextui-org/react";
 import { FiCheck, FiCopy } from "react-icons/fi";
 import useClipboard from "react-use-clipboard";
 

@@ -1,7 +1,7 @@
 import { toDate } from "date-fns";
-import { z } from "zod";
-import { Expiration } from "~/codegen/ArenaWagerModule.types";
-import { ExpirationSchema } from "~/config/schemas";
+import type { z } from "zod";
+import type { Expiration } from "~/codegen/ArenaWagerModule.types";
+import type { ExpirationSchema } from "~/config/schemas";
 
 export function convertToExpiration(
 	expirationSchema: z.infer<typeof ExpirationSchema>,
