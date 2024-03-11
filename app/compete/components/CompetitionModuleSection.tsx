@@ -103,7 +103,7 @@ const CompetitionModuleSectionItems = ({
 							<Button
 								onClick={() =>
 									router.push(
-										`/${path}/view?category=${category.url}&id=${item.id}`,
+										`/${path}/view?category=${category.url}&competitionId=${item.id}`,
 									)
 								}
 							>
