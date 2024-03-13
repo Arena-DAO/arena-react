@@ -101,6 +101,7 @@ export async function getCw20Asset(
 		},
 	} as Asset;
 }
+
 export async function getNativeAsset(
 	denom: string,
 	apiUrl: string,
@@ -111,8 +112,10 @@ export async function getNativeAsset(
 		return localAsset;
 	}
 
+	// NOTE: This will not support tokenfactory denoms, because the slashes mess with the route
 	const response = await fetch(
 		`${apiUrl}/cosmos/bank/v1beta1/denoms_metadata/${denom}`,
+		{ mode: "no-cors" },
 	);
 
 	if (!response.ok) {

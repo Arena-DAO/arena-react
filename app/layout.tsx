@@ -5,7 +5,7 @@ import { Providers } from "./providers";
 
 const Layout = ({ children }: PropsWithChildren) => {
 	return (
-		<html lang="en" className="dark">
+		<html lang="en" suppressHydrationWarning>
 			<head>
 				<title>The Ultimate Arena 🏆</title>
 				<meta charSet="UTF-8" />
