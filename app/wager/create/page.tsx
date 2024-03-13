@@ -12,6 +12,7 @@ import { addSeconds, formatISO } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 import type { InstantiateMsg as ArenaEscrowInstantiateMsg } from "~/codegen/ArenaEscrow.types";
 import { ArenaWagerModuleClient } from "~/codegen/ArenaWagerModule.client";
 import type { InstantiateMsg as DaoDaoCoreInstantiateMsg } from "~/codegen/DaoDaoCore.types";
@@ -83,118 +84,126 @@ const CreateWager = () => {
 	}, [address, formMethods.getValues, formMethods.setValue]);
 
 	const onSubmit = async (values: CreateCompetitionFormValues) => {
-		const cosmWasmClient = await getSigningCosmWasmClient();
-		if (!cosmWasmClient) throw "Could not get the CosmWasm client";
-		if (!address) throw "Could not get user address";
+		try {
+			const cosmWasmClient = await getSigningCosmWasmClient();
+			if (!cosmWasmClient) throw "Could not get the CosmWasm client";
+			if (!address) throw "Could not get user address";
 
-		const wagerModuleClient = new ArenaWagerModuleClient(
-			cosmWasmClient,
-			address,
-			env.ARENA_WAGER_MODULE_ADDRESS,
-		);
+			const wagerModuleClient = new ArenaWagerModuleClient(
+				cosmWasmClient,
+				address,
+				env.ARENA_WAGER_MODULE_ADDRESS,
+			);
 
-		const msg = {
-			categoryId: category_id?.toString(),
-			description: values.description,
-			expiration: convertToExpiration(values.expiration),
-			name: values.name,
-			rules: values.rules.map((x) => x.rule),
-			rulesets: values.rulesets.map((x) => x.ruleset_id.toString()),
-			instantiateExtension: {},
-			host: {
-				new: {
-					info: {
-						admin: { address: { addr: env.ARENA_DAO_ADDRESS } },
-						code_id: env.CODE_ID_DAO_CORE,
-						label: "Arena Competition DAO",
-						msg: toBinary({
-							admin: env.ARENA_DAO_ADDRESS,
-							automatically_add_cw20s: true,
-							automatically_add_cw721s: true,
-							description: values.competition_dao_description,
-							name: values.competition_dao_name,
-							proposal_modules_instantiate_info: [
-								{
-									admin: { core_module: {} },
-									code_id: env.CODE_ID_DAO_PROPOSAL_SINGLE,
-									label: "DAO Proposal Single",
-									msg: toBinary({
-										allow_revoting: false,
-										close_proposal_on_execution_failure: true,
-										max_voting_period: {
-											time: env.DEFAULT_TEAM_VOTING_DURATION_TIME,
-										},
-										only_members_execute: true,
-										pre_propose_info: {
-											anyone_may_propose: {}, // Ideally want a module_can_propose and module_sender
-										},
-										threshold: {
-											absolute_percentage: { percentage: { percent: "1" } },
-										},
-									} as DAOProposalSingleInstantiateMsg),
-								},
-							],
-							voting_module_instantiate_info: {
-								admin: { core_module: {} },
-								code_id: env.CODE_ID_DAO_VOTING_CW4,
-								label: "DAO Voting CW4",
-								msg: toBinary({
-									group_contract: {
-										new: {
-											cw4_group_code_id: env.CODE_ID_CW4_GROUP,
-											initial_members: values.dues.map((x) => ({
-												addr: x.addr,
-												weight: 1,
-											})),
-										},
+			const msg = {
+				categoryId: category_id?.toString(),
+				description: values.description,
+				expiration: convertToExpiration(values.expiration),
+				name: values.name,
+				rules: values.rules.map((x) => x.rule),
+				rulesets: values.rulesets.map((x) => x.ruleset_id.toString()),
+				instantiateExtension: {},
+				host: {
+					new: {
+						info: {
+							admin: { address: { addr: env.ARENA_DAO_ADDRESS } },
+							code_id: env.CODE_ID_DAO_CORE,
+							label: "Arena Competition DAO",
+							msg: toBinary({
+								admin: env.ARENA_DAO_ADDRESS,
+								automatically_add_cw20s: true,
+								automatically_add_cw721s: true,
+								description: values.competition_dao_description,
+								name: values.competition_dao_name,
+								proposal_modules_instantiate_info: [
+									{
+										admin: { core_module: {} },
+										code_id: env.CODE_ID_DAO_PROPOSAL_SINGLE,
+										label: "DAO Proposal Single",
+										msg: toBinary({
+											allow_revoting: false,
+											close_proposal_on_execution_failure: true,
+											max_voting_period: {
+												time: env.DEFAULT_TEAM_VOTING_DURATION_TIME,
+											},
+											only_members_execute: true,
+											pre_propose_info: {
+												anyone_may_propose: {}, // Ideally want a module_can_propose and module_sender
+											},
+											threshold: {
+												absolute_percentage: { percentage: { percent: "1" } },
+											},
+										} as DAOProposalSingleInstantiateMsg),
 									},
-								} as DAOVotingCW4InstantiateMsg),
-							},
-						} as DaoDaoCoreInstantiateMsg),
+								],
+								voting_module_instantiate_info: {
+									admin: { core_module: {} },
+									code_id: env.CODE_ID_DAO_VOTING_CW4,
+									label: "DAO Voting CW4",
+									msg: toBinary({
+										group_contract: {
+											new: {
+												cw4_group_code_id: env.CODE_ID_CW4_GROUP,
+												initial_members: values.dues.map((x) => ({
+													addr: x.addr,
+													weight: 1,
+												})),
+											},
+										},
+									} as DAOVotingCW4InstantiateMsg),
+								},
+							} as DaoDaoCoreInstantiateMsg),
+						},
 					},
 				},
-			},
-			escrow: {
-				code_id: env.CODE_ID_ESCROW,
-				label: "Arena Escrow",
-				msg: toBinary({
-					dues: values.dues.map(({ addr, balance }) => {
-						return {
-							addr,
-							balance: {
-								native: balance.native.map(({ denom, amount }) => ({
-									denom,
-									amount: amount.toString(),
-								})),
-								cw20: balance.cw20.map(({ address, amount }) => ({
-									address,
-									amount: amount.toString(),
-								})),
-								cw721: balance.cw721,
-							},
-						};
-					}),
-				} as ArenaEscrowInstantiateMsg),
-			},
-		};
+				escrow: {
+					code_id: env.CODE_ID_ESCROW,
+					label: "Arena Escrow",
+					msg: toBinary({
+						dues: values.dues.map(({ addr, balance }) => {
+							return {
+								addr,
+								balance: {
+									native: balance.native.map(({ denom, amount }) => ({
+										denom,
+										amount: amount.toString(),
+									})),
+									cw20: balance.cw20.map(({ address, amount }) => ({
+										address,
+										amount: amount.toString(),
+									})),
+									cw721: balance.cw721,
+								},
+							};
+						}),
+					} as ArenaEscrowInstantiateMsg),
+				},
+			};
 
-		const result = await wagerModuleClient.createCompetition(msg);
+			const result = await wagerModuleClient.createCompetition(msg);
 
-		let competitionId: string | undefined = undefined;
-		for (const event of result.events) {
-			for (const attribute of event.attributes) {
-				if (attribute.key === "competition_id") {
-					competitionId = attribute.value;
-					break;
+			toast.success("The wager was created");
+
+			let competitionId: string | undefined = undefined;
+			for (const event of result.events) {
+				for (const attribute of event.attributes) {
+					if (attribute.key === "competition_id") {
+						competitionId = attribute.value;
+						break;
+					}
 				}
+				if (competitionId) break;
 			}
-			if (competitionId) break;
-		}
 
-		if (competitionId)
-			router.push(
-				`/wager/view?category=${category}&competitionId=${competitionId}`,
-			);
+			if (competitionId)
+				router.push(
+					`/wager/view?category=${category}&competitionId=${competitionId}`,
+				);
+
+			// biome-ignore lint/suspicious/noExplicitAny: try-catch
+		} catch (e: any) {
+			toast.error(e);
+		}
 	};
 
 	return (

@@ -12,14 +12,18 @@ import "@interchain-ui/react/styles";
 import { NextUIProvider } from "@nextui-org/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { assets, chains } from "chain-registry";
-import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import type { PropsWithChildren } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.min.css";
 import { useEnv } from "~/hooks/useEnv";
 import "~/styles/globals.css";
 
+const queryClient = new QueryClient();
+
 function InnerProviders({ children }: PropsWithChildren) {
-	const router = useRouter();
+	const { theme } = useTheme();
 	const { data: env } = useEnv();
 	const signerOptions = {
 		signingCosmwasm: (chain: string | Chain) => {
@@ -36,38 +40,39 @@ function InnerProviders({ children }: PropsWithChildren) {
 	};
 
 	return (
-		<NextUIProvider navigate={router.push}>
-			<NextThemesProvider attribute="class" defaultTheme="dark">
-				<ChainProvider
-					chains={chains.filter((x) => x.chain_name === env.CHAIN)}
-					assetLists={assets.filter((x) => x.chain_name === env.CHAIN)}
-					wallets={[
-						...keplrWallets,
-						...leapWallets,
-						...ledgerWallets,
-						...vectisWallets,
-						...stationWallets,
-					]}
-					signerOptions={signerOptions}
-					walletConnectOptions={{
-						signClient: {
-							projectId: env.WALLETCONNECT_PROJECT_ID,
-						},
-					}}
-				>
-					{children}
-				</ChainProvider>
-			</NextThemesProvider>
-		</NextUIProvider>
+		<ChainProvider
+			chains={chains.filter((x) => x.chain_name.includes("juno"))}
+			assetLists={assets.filter((x) => x.chain_name.includes("juno"))}
+			wallets={[
+				...keplrWallets,
+				...leapWallets,
+				...ledgerWallets,
+				...vectisWallets,
+				...stationWallets,
+			]}
+			signerOptions={signerOptions}
+			walletConnectOptions={{
+				signClient: {
+					projectId: env.WALLETCONNECT_PROJECT_ID,
+				},
+			}}
+		>
+			{children}
+			<ToastContainer position="bottom-right" stacked theme={theme} />
+		</ChainProvider>
 	);
 }
 
 export function Providers({ children }: PropsWithChildren) {
-	const queryClient = new QueryClient();
+	const router = useRouter();
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<InnerProviders>{children}</InnerProviders>
+			<NextUIProvider navigate={router.push}>
+				<NextThemesProvider attribute="class" defaultTheme="dark">
+					<InnerProviders>{children}</InnerProviders>
+				</NextThemesProvider>
+			</NextUIProvider>
 		</QueryClientProvider>
 	);
 }

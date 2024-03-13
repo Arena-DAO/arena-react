@@ -1,4 +1,5 @@
 import type { PropsWithChildren } from "react";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Footer from "./components/Footer";
 import AppNavbar from "./components/NavBar";
 import { Providers } from "./providers";
@@ -38,7 +39,9 @@ const Layout = ({ children }: PropsWithChildren) => {
 				<Providers>
 					<div className="flex min-h-screen flex-col">
 						<AppNavbar />
-						<div className="container mx-auto flex-grow pt-8">{children}</div>
+						<div className="container mx-auto flex-grow pt-8">
+							<ErrorBoundary>{children}</ErrorBoundary>
+						</div>
 						<Footer />
 					</div>
 				</Providers>

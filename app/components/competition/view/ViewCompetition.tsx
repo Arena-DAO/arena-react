@@ -153,8 +153,9 @@ const ViewCompetition = ({
 				<CardHeader>Rules</CardHeader>
 				<CardBody>
 					<ol className="list-decimal list-inside">
-						{data?.rules.map((rule) => (
-							<li>{rule}</li>
+						{data?.rules.map((rule, i) => (
+							// biome-ignore lint/suspicious/noArrayIndexKey: No better option
+							<li key={i}>{rule}</li>
 						))}
 					</ol>
 				</CardBody>
