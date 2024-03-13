@@ -10,7 +10,7 @@ type Colors =
 	| undefined;
 
 export const statusColors: { [key in CompetitionStatus]: Colors } = {
-	pending: "warning",
+	pending: "secondary",
 	active: "success",
 	inactive: "default",
 	jailed: "danger",

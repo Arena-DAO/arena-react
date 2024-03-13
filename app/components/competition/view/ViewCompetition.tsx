@@ -2,12 +2,15 @@
 
 import { CopyAddressButton } from "@/components/CopyAddressButton";
 import Profile from "@/components/Profile";
+import { useChain } from "@cosmos-kit/react";
 import {
+	Badge,
 	Button,
 	ButtonGroup,
 	Card,
 	CardBody,
 	CardHeader,
+	Chip,
 	Input,
 	Link,
 	Select,
@@ -19,9 +22,14 @@ import { BsYinYang } from "react-icons/bs";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { useArenaWagerModuleCompetitionQuery } from "~/codegen/ArenaWagerModule.react-query";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
+import { statusColors } from "~/helpers/ArenaHelpers";
 import { formatExpirationTime } from "~/helpers/DateHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import type { WithClient } from "~/types/util";
+import BalancesModal from "./components/BalancesModal";
+import DuesModal from "./components/DuesModal";
+import EscrowSection from "./components/EscrowSection";
+import RulesetsSection from "./components/RulesetsSection";
 
 interface ViewCompetitionProps {
 	competitionId: string;
@@ -32,6 +40,7 @@ const ViewCompetition = ({
 	competitionId,
 }: WithClient<ViewCompetitionProps>) => {
 	const { data: env } = useEnv();
+	const { address } = useChain(env.CHAIN);
 	const { data } = useArenaWagerModuleCompetitionQuery({
 		client: new ArenaWagerModuleQueryClient(
 			cosmWasmClient,
@@ -45,8 +54,18 @@ const ViewCompetition = ({
 	return (
 		<div className="space-y-4">
 			<Card>
-				<CardHeader>
+				<CardHeader className="flex justify-between">
 					<h2 className="text-2xl font-bold">Host</h2>
+					{data && (
+						<Badge
+							content="expired"
+							color="warning"
+							aria-label="Expired"
+							isInvisible={!data.is_expired}
+						>
+							<Chip color={statusColors[data.status]}>{data.status}</Chip>
+						</Badge>
+					)}
 				</CardHeader>
 				<CardBody>
 					{data?.host && (
@@ -124,16 +143,38 @@ const ViewCompetition = ({
 					</>
 				)}
 			</div>
+			{data?.rulesets.map((rulesetId) => (
+				<RulesetsSection
+					rulesetId={rulesetId}
+					cosmWasmClient={cosmWasmClient}
+				/>
+			))}
 			<Card>
 				<CardHeader>Rules</CardHeader>
 				<CardBody>
-					<ol className="list-decimal">
+					<ol className="list-decimal list-inside">
 						{data?.rules.map((rule) => (
 							<li>{rule}</li>
 						))}
 					</ol>
 				</CardBody>
 			</Card>
+			{data?.escrow && (
+				<>
+					<EscrowSection
+						cosmWasmClient={cosmWasmClient}
+						address={address}
+						escrow={data.escrow}
+					/>
+					<ButtonGroup>
+						<DuesModal escrow={data.escrow} cosmWasmClient={cosmWasmClient} />
+						<BalancesModal
+							escrow={data.escrow}
+							cosmWasmClient={cosmWasmClient}
+						/>
+					</ButtonGroup>
+				</>
+			)}
 		</div>
 	);
 };
