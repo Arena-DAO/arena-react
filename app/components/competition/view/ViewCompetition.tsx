@@ -29,6 +29,7 @@ import { formatExpirationTime } from "~/helpers/DateHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import type { WithClient } from "~/types/util";
 import EscrowSection from "./components/EscrowSection";
+import ProcessForm from "./components/ProcessForm";
 import RulesetsSection from "./components/RulesetsSection";
 
 interface ViewCompetitionProps {
@@ -166,6 +167,7 @@ const ViewCompetition = ({
 					</ol>
 				</CardBody>
 			</Card>
+			<ProcessForm competitionId={competitionId} />
 			{data?.escrow && (
 				<EscrowSection
 					cosmWasmClient={cosmWasmClient}

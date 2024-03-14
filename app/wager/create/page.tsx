@@ -86,7 +86,6 @@ const CreateWager = () => {
 	const onSubmit = async (values: CreateCompetitionFormValues) => {
 		try {
 			const cosmWasmClient = await getSigningCosmWasmClient();
-			if (!cosmWasmClient) throw "Could not get the CosmWasm client";
 			if (!address) throw "Could not get user address";
 
 			const wagerModuleClient = new ArenaWagerModuleClient(
@@ -202,7 +201,8 @@ const CreateWager = () => {
 
 			// biome-ignore lint/suspicious/noExplicitAny: try-catch
 		} catch (e: any) {
-			toast.error(e);
+			console.error(e);
+			toast.error(e.toString());
 		}
 	};
 

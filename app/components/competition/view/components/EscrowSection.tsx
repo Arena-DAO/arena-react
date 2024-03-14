@@ -106,7 +106,8 @@ const EscrowSection = ({
 			setVersion((x) => x + 1);
 			// biome-ignore lint/suspicious/noExplicitAny: try-catch
 		} catch (e: any) {
-			toast.error(e);
+			console.error(e);
+			toast.error(e.toString());
 		}
 	};
 
@@ -124,7 +125,8 @@ const EscrowSection = ({
 			setVersion((x) => x + 1);
 			// biome-ignore lint/suspicious/noExplicitAny: try-catch
 		} catch (e: any) {
-			toast.error(e);
+			console.error(e);
+			toast.error(e.toString());
 		}
 	};
 
