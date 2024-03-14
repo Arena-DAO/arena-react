@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	Button,
 	Input,
+	Link,
 	Modal,
 	ModalBody,
 	ModalContent,
@@ -19,16 +20,20 @@ import {
 	useDisclosure,
 } from "@nextui-org/react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { FiPlus, FiTrash } from "react-icons/fi";
+import { FiExternalLink, FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import { ArenaWagerModuleClient } from "~/codegen/ArenaWagerModule.client";
+import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import { AddressSchema, DistributionSchema } from "~/config/schemas";
+import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { keyboardDelegateFixSpace } from "~/helpers/NextUIHelpers";
 import { useEnv } from "~/hooks/useEnv";
 
 interface ProcessFormProps {
 	competitionId: string;
+	host: string;
+	status: CompetitionStatus;
 }
 
 const ProcessFormSchema = z.object({
@@ -38,7 +43,7 @@ const ProcessFormSchema = z.object({
 
 type ProcessFormValues = z.infer<typeof ProcessFormSchema>;
 
-const ProcessForm = ({ competitionId }: ProcessFormProps) => {
+const ProcessForm = ({ competitionId, host, status }: ProcessFormProps) => {
 	const { data: env } = useEnv();
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
 	const {
@@ -64,14 +69,13 @@ const ProcessForm = ({ competitionId }: ProcessFormProps) => {
 				env.ARENA_WAGER_MODULE_ADDRESS,
 			);
 
-			const response = await competitionClient.processCompetition({
+			await competitionClient.processCompetition({
 				competitionId,
 				distribution: values.distribution.map(({ addr, percentage }) => {
 					return { addr, percentage: percentage.toString() };
 				}),
 				remainderAddr: values.remainderAddr,
 			});
-			console.log(response);
 
 			toast.success("The competition has been processed successfully");
 			// biome-ignore lint/suspicious/noExplicitAny: try-catch
@@ -80,10 +84,58 @@ const ProcessForm = ({ competitionId }: ProcessFormProps) => {
 			toast.error(e.toString());
 		}
 	};
+	const tryOpen = () => {
+		if (
+			(status === "active" && address === host) ||
+			(status === "jailed" && address === env.ARENA_DAO_ADDRESS)
+		) {
+			onOpen();
+		} else {
+			toast.info(
+				<div className="flex space-between">
+					<div>
+						Processing must happen through the{" "}
+						{status === "active" ? "host" : "Arena DAO"}
+					</div>
+					{status === "active" && isValidContractAddress(host) && (
+						<Button
+							as={Link}
+							href={`${
+								env.DAO_DAO_URL
+							}/dao/${host}/apps?url=${encodeURIComponent(
+								window.location.href,
+							)}`}
+							isExternal
+							isIconOnly
+							aria-label="Handle on DAO DAO"
+						>
+							<FiExternalLink />
+						</Button>
+					)}
+					{status === "jailed" && (
+						<Button
+							as={Link}
+							href={`${env.DAO_DAO_URL}/dao/${
+								env.ARENA_DAO_ADDRESS
+							}/apps?url=${encodeURIComponent(window.location.href)}`}
+							isExternal
+							isIconOnly
+							aria-label="Handle on DAO DAO"
+						>
+							<FiExternalLink />
+						</Button>
+					)}
+				</div>,
+			);
+		}
+	};
 
+	if (!address) {
+		return null;
+	}
 	return (
 		<>
-			<Button onClick={onOpen}>Process</Button>
+			<Button onClick={tryOpen}>Process</Button>
 			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl">
 				<ModalContent>
 					<ModalHeader>Process Competition</ModalHeader>

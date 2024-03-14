@@ -167,7 +167,10 @@ const ViewCompetition = ({
 					</ol>
 				</CardBody>
 			</Card>
-			<ProcessForm competitionId={competitionId} />
+			{data?.host &&
+				(data?.status === "active" || data?.status === "jailed") && (
+					<ProcessForm competitionId={competitionId} host={data.host} />
+				)}
 			{data?.escrow && (
 				<EscrowSection
 					cosmWasmClient={cosmWasmClient}
