@@ -26,8 +26,6 @@ import { statusColors } from "~/helpers/ArenaHelpers";
 import { formatExpirationTime } from "~/helpers/DateHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import type { WithClient } from "~/types/util";
-import BalancesModal from "./components/BalancesModal";
-import DuesModal from "./components/DuesModal";
 import EscrowSection from "./components/EscrowSection";
 import RulesetsSection from "./components/RulesetsSection";
 
@@ -161,20 +159,11 @@ const ViewCompetition = ({
 				</CardBody>
 			</Card>
 			{data?.escrow && (
-				<>
-					<EscrowSection
-						cosmWasmClient={cosmWasmClient}
-						address={address}
-						escrow={data.escrow}
-					/>
-					<ButtonGroup>
-						<DuesModal escrow={data.escrow} cosmWasmClient={cosmWasmClient} />
-						<BalancesModal
-							escrow={data.escrow}
-							cosmWasmClient={cosmWasmClient}
-						/>
-					</ButtonGroup>
-				</>
+				<EscrowSection
+					cosmWasmClient={cosmWasmClient}
+					address={address}
+					escrow={data.escrow}
+				/>
 			)}
 		</div>
 	);

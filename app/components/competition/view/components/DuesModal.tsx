@@ -17,7 +17,7 @@ import {
 	useDisclosure,
 } from "@nextui-org/react";
 import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAsyncList } from "react-stately";
 import { ArenaEscrowQueryClient } from "~/codegen/ArenaEscrow.client";
 import type { MemberBalanceChecked } from "~/codegen/ArenaEscrow.types";
@@ -27,9 +27,14 @@ import BalanceDisplay from "./BalanceDisplay";
 
 interface DuesModalProps {
 	escrow: string;
+	version: number;
 }
 
-const DuesModal = ({ escrow, cosmWasmClient }: WithClient<DuesModalProps>) => {
+const DuesModal = ({
+	escrow,
+	cosmWasmClient,
+	version,
+}: WithClient<DuesModalProps>) => {
 	const { data: env } = useEnv();
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const [hasMore, setHasMore] = useState(false);
@@ -51,6 +56,13 @@ const DuesModal = ({ escrow, cosmWasmClient }: WithClient<DuesModalProps>) => {
 		hasMore,
 		onLoadMore: list.loadMore,
 	});
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Stops cycle
+	useEffect(() => {
+		if (version > 0) {
+			list.reload();
+		}
+	}, [version]);
 
 	return (
 		<>
@@ -75,7 +87,7 @@ const DuesModal = ({ escrow, cosmWasmClient }: WithClient<DuesModalProps>) => {
 							}}
 						>
 							<TableHeader>
-								<TableColumn className="w-1/4">Team</TableColumn>
+								<TableColumn>Team</TableColumn>
 								<TableColumn>Due</TableColumn>
 							</TableHeader>
 							<TableBody
@@ -86,7 +98,7 @@ const DuesModal = ({ escrow, cosmWasmClient }: WithClient<DuesModalProps>) => {
 							>
 								{(item: MemberBalanceChecked) => (
 									<TableRow key={item.addr}>
-										<TableCell className="w-1/4">
+										<TableCell>
 											<Profile
 												address={item.addr}
 												cosmWasmClient={cosmWasmClient}

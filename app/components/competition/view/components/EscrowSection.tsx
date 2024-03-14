@@ -1,15 +1,17 @@
 "use client";
 
-import { type ExecuteInstruction, toBinary } from "@cosmjs/cosmwasm-stargate";
+import type { ExecuteInstruction } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import {
 	Button,
+	ButtonGroup,
 	Card,
 	CardBody,
 	CardFooter,
 	CardHeader,
 	Spinner,
 } from "@nextui-org/react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
 	ArenaEscrowClient,
@@ -21,6 +23,8 @@ import type { ExecuteMsg as Cw20ExecuteMsg } from "~/codegen/Cw20Base.types";
 import { useEnv } from "~/hooks/useEnv";
 import type { WithClient } from "~/types/util";
 import BalanceDisplay from "./BalanceDisplay";
+import BalancesModal from "./BalancesModal";
+import DuesModal from "./DuesModal";
 
 interface EscrowSectionProps {
 	escrow: string;
@@ -34,10 +38,16 @@ const EscrowSection = ({
 }: WithClient<EscrowSectionProps>) => {
 	const { data: env } = useEnv();
 	const { getSigningCosmWasmClient } = useChain(env.CHAIN);
-	const { data, isLoading } = useArenaEscrowDumpStateQuery({
+	const { data, isLoading, refetch } = useArenaEscrowDumpStateQuery({
 		client: new ArenaEscrowQueryClient(cosmWasmClient, escrow),
 		args: { addr: address },
 	});
+	const [version, setVersion] = useState(0);
+	useEffect(() => {
+		if (version > 0) {
+			refetch();
+		}
+	}, [version, refetch]);
 
 	const deposit = async () => {
 		try {
@@ -71,7 +81,7 @@ const EscrowSection = ({
 			await client.executeMultiple(address, msgs, "auto");
 
 			toast.success("Funds have been sucessfully deposited");
-
+			setVersion((x) => x + 1);
 			// biome-ignore lint/suspicious/noExplicitAny: try-catch
 		} catch (e: any) {
 			toast.error(e);
@@ -89,7 +99,7 @@ const EscrowSection = ({
 			await escrowClient.withdraw({});
 
 			toast.success("Funds have been successfully withdrawn");
-
+			setVersion((x) => x + 1);
 			// biome-ignore lint/suspicious/noExplicitAny: try-catch
 		} catch (e: any) {
 			toast.error(e);
@@ -97,7 +107,11 @@ const EscrowSection = ({
 	};
 
 	if (isLoading || !data) {
-		return <Spinner />;
+		return (
+			<div className="flex justify-center">
+				<Spinner />
+			</div>
+		);
 	}
 	return (
 		<>
@@ -144,6 +158,18 @@ const EscrowSection = ({
 					</CardBody>
 				</Card>
 			)}
+			<ButtonGroup>
+				<DuesModal
+					escrow={escrow}
+					cosmWasmClient={cosmWasmClient}
+					version={version}
+				/>
+				<BalancesModal
+					escrow={escrow}
+					cosmWasmClient={cosmWasmClient}
+					version={version}
+				/>
+			</ButtonGroup>
 		</>
 	);
 };
