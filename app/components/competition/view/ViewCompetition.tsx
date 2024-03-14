@@ -18,9 +18,11 @@ import {
 	Textarea,
 	Tooltip,
 } from "@nextui-org/react";
+import { useEffect, useState } from "react";
 import { BsYinYang } from "react-icons/bs";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { useArenaWagerModuleCompetitionQuery } from "~/codegen/ArenaWagerModule.react-query";
+import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { statusColors } from "~/helpers/ArenaHelpers";
 import { formatExpirationTime } from "~/helpers/DateHelpers";
@@ -48,6 +50,12 @@ const ViewCompetition = ({
 			competitionId,
 		},
 	});
+	const [status, setStatus] = useState<CompetitionStatus>("pending");
+	useEffect(() => {
+		if (data) {
+			setStatus(data.status);
+		}
+	}, [data]);
 
 	return (
 		<div className="space-y-4">
@@ -61,7 +69,7 @@ const ViewCompetition = ({
 							aria-label="Expired"
 							isInvisible={!data.is_expired}
 						>
-							<Chip color={statusColors[data.status]}>{data.status}</Chip>
+							<Chip color={statusColors[status]}>{status}</Chip>
 						</Badge>
 					)}
 				</CardHeader>
@@ -163,6 +171,7 @@ const ViewCompetition = ({
 					cosmWasmClient={cosmWasmClient}
 					address={address}
 					escrow={data.escrow}
+					setCompetitionStatus={setStatus}
 				/>
 			)}
 		</div>

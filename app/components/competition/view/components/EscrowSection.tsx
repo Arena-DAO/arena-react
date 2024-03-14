@@ -11,7 +11,7 @@ import {
 	CardHeader,
 	Spinner,
 } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
 	ArenaEscrowClient,
@@ -19,6 +19,7 @@ import {
 } from "~/codegen/ArenaEscrow.client";
 import { useArenaEscrowDumpStateQuery } from "~/codegen/ArenaEscrow.react-query";
 import type { ExecuteMsg as EscrowExecuteMsg } from "~/codegen/ArenaEscrow.types";
+import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import type { ExecuteMsg as Cw20ExecuteMsg } from "~/codegen/Cw20Base.types";
 import { useEnv } from "~/hooks/useEnv";
 import type { WithClient } from "~/types/util";
@@ -29,12 +30,14 @@ import DuesModal from "./DuesModal";
 interface EscrowSectionProps {
 	escrow: string;
 	address?: string;
+	setCompetitionStatus: Dispatch<SetStateAction<CompetitionStatus>>;
 }
 
 const EscrowSection = ({
 	escrow,
 	cosmWasmClient,
 	address,
+	setCompetitionStatus,
 }: WithClient<EscrowSectionProps>) => {
 	const { data: env } = useEnv();
 	const { getSigningCosmWasmClient } = useChain(env.CHAIN);
@@ -43,11 +46,17 @@ const EscrowSection = ({
 		args: { addr: address },
 	});
 	const [version, setVersion] = useState(0);
+	const [isLocked, setIsLocked] = useState(true);
 	useEffect(() => {
 		if (version > 0) {
 			refetch();
 		}
 	}, [version, refetch]);
+	useEffect(() => {
+		if (data) {
+			setIsLocked(data.is_locked);
+		}
+	}, [data]);
 
 	const deposit = async () => {
 		try {
@@ -78,7 +87,20 @@ const EscrowSection = ({
 				);
 			}
 
-			await client.executeMultiple(address, msgs, "auto");
+			const response = await client.executeMultiple(address, msgs, "auto");
+
+			// Check if the response contains the activate action, so we can mark the competition as active
+			if (
+				response.events.find((event) =>
+					event.attributes.find(
+						(attr) => attr.key === "action" && attr.value === "activate",
+					),
+				)
+			) {
+				setIsLocked(true);
+				setCompetitionStatus("active");
+				toast.success("The competition is now active");
+			}
 
 			toast.success("Funds have been sucessfully deposited");
 			setVersion((x) => x + 1);
@@ -124,11 +146,13 @@ const EscrowSection = ({
 							balance={data.balance}
 						/>
 					</CardBody>
-					<CardFooter>
-						<Button color="primary" onClick={withdraw}>
-							Withdraw
-						</Button>
-					</CardFooter>
+					{!isLocked && (
+						<CardFooter>
+							<Button color="primary" onClick={withdraw}>
+								Withdraw
+							</Button>
+						</CardFooter>
+					)}
 				</Card>
 			)}
 			{data.due && (
@@ -140,11 +164,13 @@ const EscrowSection = ({
 							balance={data.due}
 						/>
 					</CardBody>
-					<CardFooter>
-						<Button color="primary" onClick={deposit}>
-							Deposit
-						</Button>
-					</CardFooter>
+					{!isLocked && (
+						<CardFooter>
+							<Button color="primary" onClick={deposit}>
+								Deposit
+							</Button>
+						</CardFooter>
+					)}
 				</Card>
 			)}
 			{data.total_balance && (
