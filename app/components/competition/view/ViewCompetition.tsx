@@ -169,7 +169,11 @@ const ViewCompetition = ({
 			</Card>
 			{data?.host &&
 				(data?.status === "active" || data?.status === "jailed") && (
-					<ProcessForm competitionId={competitionId} host={data.host} />
+					<ProcessForm
+						competitionId={competitionId}
+						host={data.host}
+						status={data.status}
+					/>
 				)}
 			{data?.escrow && (
 				<EscrowSection
