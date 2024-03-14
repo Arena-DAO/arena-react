@@ -114,10 +114,9 @@ export default function HomePage() {
 					["Group", "Percentage"],
 					["Liquidity Bootstrapping", 30],
 					["Liquidity Incentives", 15],
-					["Community Pool", 25],
+					["Community Pool", 30],
 					["Founder", 20],
 					["x/drip (airdrop)", 5],
-					["SubDAO's", 5],
 				]}
 				options={{
 					backgroundColor: "transparent",
