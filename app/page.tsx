@@ -104,8 +104,9 @@ export default function HomePage() {
 						<span className="text-primary">#</span> Initial Token Distribution
 					</h2>
 				</Link>
-				<em className="block">(tentative)</em>
 			</div>
+			<h4 className="text-xl font-bold">1B Supply</h4>
+			<em>(tentative)</em>
 			<Chart
 				chartType="PieChart"
 				className="text-foreground"
@@ -114,7 +115,7 @@ export default function HomePage() {
 					["Liquidity Bootstrapping", 30],
 					["Liquidity Incentives", 15],
 					["Community Pool", 25],
-					["Founder (vested)", 20],
+					["Founder", 20],
 					["x/drip (airdrop)", 5],
 					["SubDAO's", 5],
 				]}
@@ -150,7 +151,7 @@ export default function HomePage() {
 				<Feature
 					icon={<BsBookFill />}
 					title="Rulesets"
-					description="To avoid constantly applying the same rules when creating competitions. The community can decide upon common sets of rules to be available on creation."
+					description="To avoid constantly applying the same rules when creating competitions. The community can decide upon common sets of rules for a category to be available on competition creation."
 				/>
 				<Feature
 					icon={<BsHddNetworkFill />}
@@ -169,7 +170,7 @@ export default function HomePage() {
 				<Feature
 					icon={<BsCalendarEventFill />}
 					title="Event-Based"
-					description="The escrow will automatically lock itself when all dues are received and send an activation message to its respective competition. On competition processing, the funds will be automatically sent to all users."
+					description="The escrow will automatically lock itself when all dues are received and send an activation message to its respective competition. Once the competition is processed, the funds will be available to be claimed by each user."
 				/>
 				<Feature
 					icon={<BsPersonRolodex />}
@@ -188,7 +189,7 @@ export default function HomePage() {
 				<Feature
 					icon={<BsPeopleFill />}
 					title="Custom Membership"
-					description="The wager module allows users to create a wager with any amount of members. A member can be a sole user or a team defined on-chain by a DAO. 4-player chess just became a whole lot more interesting."
+					description="The wager module allows users to create a wager with any amount of members. A member can be a sole user or a team defined on-chain as a DAO."
 				/>
 				<Feature
 					icon={<BsCheck2All />}
