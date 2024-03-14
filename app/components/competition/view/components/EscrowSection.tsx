@@ -48,7 +48,7 @@ const EscrowSection = ({
 
 			const msgs: ExecuteInstruction[] = [];
 
-			if (data.due.native.length > 0 && data.due.cw20.length === 0) {
+			if (data.due.native.length > 0) {
 				msgs.push({
 					contractAddress: escrow,
 					msg: { receive_native: {} } as EscrowExecuteMsg,
@@ -56,16 +56,13 @@ const EscrowSection = ({
 				});
 			}
 			if (data.due.cw20.length > 0) {
-				// If we can send the funds in the cw20 message, prefer this, and only send the funds on the 1st message.
-				const funds = data.due.native.length > 0 ? data.due.native : undefined;
 				msgs.push(
-					...data.due.cw20.map((x, i) => {
+					...data.due.cw20.map((x) => {
 						return {
 							contractAddress: x.address,
 							msg: {
 								send: { amount: x.amount, contract: escrow, msg: "" },
 							} as Cw20ExecuteMsg,
-							funds: i === 0 ? funds : undefined,
 						};
 					}),
 				);
