@@ -52,7 +52,13 @@ export default function Faucet() {
 						/>
 					)}
 				/>
-				<Button type="submit" isLoading={isSubmitting} className="ml-auto">
+				<p className="text-xs">*Testnet faucet is down at the moment</p>
+				<Button
+					type="submit"
+					isLoading={isSubmitting}
+					className="ml-auto"
+					isDisabled
+				>
 					Submit
 				</Button>
 			</form>

@@ -24,18 +24,10 @@ import {
 	Textarea,
 	Tooltip,
 } from "@nextui-org/react";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-	BsClock,
-	BsClockFill,
-	BsHourglassBottom,
-	BsYinYang,
-} from "react-icons/bs";
-import { toast } from "react-toastify";
-import {
-	ArenaWagerModuleClient,
-	ArenaWagerModuleQueryClient,
-} from "~/codegen/ArenaWagerModule.client";
+import { BsArrowLeft, BsHourglassBottom, BsYinYang } from "react-icons/bs";
+import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { useArenaWagerModuleCompetitionQuery } from "~/codegen/ArenaWagerModule.react-query";
 import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
@@ -73,8 +65,19 @@ const ViewCompetition = ({
 		}
 	}, [data]);
 
+	const searchParams = useSearchParams();
+
+	const category = searchParams?.get("category");
+
 	return (
 		<div className="space-y-4">
+			{category && (
+				<Tooltip content="Return to competitions">
+					<Button as={Link} isIconOnly href={`/compete?category=${category}`}>
+						<BsArrowLeft />
+					</Button>
+				</Tooltip>
+			)}
 			<Card>
 				<CardHeader className="flex justify-between">
 					<h2 className="text-2xl font-bold">Host</h2>
