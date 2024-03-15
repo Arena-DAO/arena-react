@@ -186,7 +186,7 @@ const ViewCompetition = ({
 				{data?.host && status === "active" && (
 					<ProcessForm competitionId={competitionId} host={data.host} />
 				)}
-				{data?.is_expired && (
+				{data?.is_expired && status !== "inactive" && (
 					<ProcessForm
 						competitionId={competitionId}
 						setCompetitionStatus={setStatus}
