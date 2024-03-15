@@ -5194,14 +5194,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:18.2.65":
-  version: 18.2.65
-  resolution: "@types/react@npm:18.2.65"
+"@types/react@npm:18.2.66":
+  version: 18.2.66
+  resolution: "@types/react@npm:18.2.66"
   dependencies:
     "@types/prop-types": "npm:*"
     "@types/scheduler": "npm:*"
     csstype: "npm:^3.0.2"
-  checksum: 10c0/91158b5a9e90489a5984bb610c3692001ecdf1d286c78384252698bcb306ef88e9434e75f01bf7739017e949e7690b7d6f1b7ef9d7097f86f3f649482a33604b
+  checksum: 10c0/56e4b841f2daf03a0b3268d4f2bcf5841167fe56742b9f1c076fad66587fb59191bdaba4d5727dbfbcff750d5e8797fdd4e57d8d9704b0bfc6ad31ee1e268a70
   languageName: node
   linkType: hard
 
@@ -5649,14 +5649,14 @@ __metadata:
     "@tanstack/react-query": "npm:4.36.1"
     "@types/lodash": "npm:^4.17.0"
     "@types/node": "npm:^20.11.27"
-    "@types/react": "npm:18.2.65"
+    "@types/react": "npm:18.2.66"
     "@types/react-dom": "npm:^18.2.22"
     autoprefixer: "npm:^10.4.18"
-    chain-registry: "npm:1.29.1"
+    chain-registry: "npm:1.30.0"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^6.1.0"
     date-fns: "npm:^3.4.0"
-    framer-motion: "npm:^11.0.12"
+    framer-motion: "npm:^11.0.13"
     http-proxy-middleware: "npm:^2.0.6"
     lodash: "npm:^4.17.21"
     million: "npm:^3.0.6"
@@ -6148,13 +6148,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.29.1":
-  version: 1.29.1
-  resolution: "chain-registry@npm:1.29.1"
+"chain-registry@npm:1.30.0":
+  version: 1.30.0
+  resolution: "chain-registry@npm:1.30.0"
   dependencies:
     "@babel/runtime": "npm:^7.21.0"
     "@chain-registry/types": "npm:^0.18.1"
-  checksum: 10c0/f7b13c90a13dcf4467a8b1fe1bd8fa870430433eaebe184cc9a1fcc30cf0cd085d291ffea4ff26650184f9377f555802869045c9c05c69939ecb6cd4b1800b24
+  checksum: 10c0/433df22e86d1e750daef4c224c48dbca49d6a3f3f4c309e7eaec264dbb40a72c0df025891858bbe597f4477bbe2b61c919f5e2c6db3f2adfb8fefefd5e06975f
   languageName: node
   linkType: hard
 
@@ -7243,9 +7243,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^11.0.12":
-  version: 11.0.12
-  resolution: "framer-motion@npm:11.0.12"
+"framer-motion@npm:^11.0.13":
+  version: 11.0.13
+  resolution: "framer-motion@npm:11.0.13"
   dependencies:
     tslib: "npm:^2.4.0"
   peerDependencies:
@@ -7259,7 +7259,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/a29ddc34f8d99208e9e76ce09fa2ae431630ba7c57b7efea240b4a6effb63cfe06ca5091fa737bb599efe436d2f8223018a9363b0bd2c02d2e19bdd9e30d8342
+  checksum: 10c0/788d5c2a0d5e1e8739bfa66d19cb3a274a25f5c724111cc171ec2d2cde2873e43192ca390ce90b3cce28e29fdaa6c63ebf4b5e083f7c986d115b7f69f3149fbc
   languageName: node
   linkType: hard
 

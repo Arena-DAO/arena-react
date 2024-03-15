@@ -15,12 +15,22 @@ import {
 	Link,
 	Select,
 	SelectItem,
+	Table,
+	TableBody,
+	TableCell,
+	TableColumn,
+	TableHeader,
+	TableRow,
 	Textarea,
 	Tooltip,
 } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { BsYinYang } from "react-icons/bs";
-import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
+import { toast } from "react-toastify";
+import {
+	ArenaWagerModuleClient,
+	ArenaWagerModuleQueryClient,
+} from "~/codegen/ArenaWagerModule.client";
 import { useArenaWagerModuleCompetitionQuery } from "~/codegen/ArenaWagerModule.react-query";
 import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
@@ -156,25 +166,32 @@ const ViewCompetition = ({
 					cosmWasmClient={cosmWasmClient}
 				/>
 			))}
-			<Card>
-				<CardHeader>Rules</CardHeader>
-				<CardBody>
-					<ol className="list-decimal list-inside">
-						{data?.rules.map((rule, i) => (
-							// biome-ignore lint/suspicious/noArrayIndexKey: No better option
-							<li key={i}>{rule}</li>
-						))}
-					</ol>
-				</CardBody>
-			</Card>
-			{data?.host &&
-				(data?.status === "active" || data?.status === "jailed") && (
+			{data?.rules && (
+				<Table aria-label="Rules">
+					<TableHeader>
+						<TableColumn>Rule</TableColumn>
+					</TableHeader>
+					<TableBody emptyContent="No rules given..." items={data.rules}>
+						{(rule: string) => (
+							<TableRow key={rule}>
+								<TableCell>{rule}</TableCell>
+							</TableRow>
+						)}
+					</TableBody>
+				</Table>
+			)}
+			<div className="block space-x-4">
+				{data?.host && (status === "active" || status === "jailed") && (
 					<ProcessForm
 						competitionId={competitionId}
 						host={data.host}
-						status={data.status}
+						status={status}
 					/>
 				)}
+				{data?.is_expired && (
+					<ProcessForm competitionId={competitionId} is_expired />
+				)}
+			</div>
 			{data?.escrow && (
 				<EscrowSection
 					cosmWasmClient={cosmWasmClient}

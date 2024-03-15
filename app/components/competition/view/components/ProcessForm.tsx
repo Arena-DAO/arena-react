@@ -17,6 +17,7 @@ import {
 	TableColumn,
 	TableHeader,
 	TableRow,
+	Textarea,
 	useDisclosure,
 } from "@nextui-org/react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
@@ -24,33 +25,45 @@ import { FiExternalLink, FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import { ArenaWagerModuleClient } from "~/codegen/ArenaWagerModule.client";
-import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import { AddressSchema, DistributionSchema } from "~/config/schemas";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { keyboardDelegateFixSpace } from "~/helpers/NextUIHelpers";
 import { useEnv } from "~/hooks/useEnv";
 
-interface ProcessFormProps {
+type ProcessFormProps = {
 	competitionId: string;
-	host: string;
-	status: CompetitionStatus;
-}
+} & ({ host: string; status: "active" | "jailed" } | { is_expired: true });
 
-const ProcessFormSchema = z.object({
-	distribution: DistributionSchema,
-	remainderAddr: AddressSchema,
-});
+const ProcessForm = ({ competitionId, ...props }: ProcessFormProps) => {
+	const ProcessFormSchema = z
+		.object({
+			distribution: DistributionSchema,
+			remainderAddr: AddressSchema,
+			title: z.string(),
+			description: z.string(),
+		})
+		.refine((x) => "is_expired" in props && !x.title, "Title is required")
+		.refine(
+			(x) => "is_expired" in props && !x.description,
+			"Description is required",
+		);
 
-type ProcessFormValues = z.infer<typeof ProcessFormSchema>;
+	type ProcessFormValues = z.infer<typeof ProcessFormSchema>;
 
-const ProcessForm = ({ competitionId, host, status }: ProcessFormProps) => {
 	const { data: env } = useEnv();
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
 	const {
 		control,
 		formState: { errors, isSubmitting },
 		handleSubmit,
-	} = useForm<ProcessFormValues>({ resolver: zodResolver(ProcessFormSchema) });
+	} = useForm<ProcessFormValues>({
+		resolver: zodResolver(ProcessFormSchema),
+		defaultValues: {
+			title: `Jailed Competition - ${competitionId}`,
+			description:
+				"The competition has expired, and the Arena DAO should determine if this result is correct.",
+		},
+	});
 	const { fields, append, remove } = useFieldArray({
 		control,
 		name: "distribution",
@@ -63,21 +76,37 @@ const ProcessForm = ({ competitionId, host, status }: ProcessFormProps) => {
 			if (!address) throw "Could not get user address";
 
 			const client = await getSigningCosmWasmClient();
+
 			const competitionClient = new ArenaWagerModuleClient(
 				client,
 				address,
 				env.ARENA_WAGER_MODULE_ADDRESS,
 			);
-
-			await competitionClient.processCompetition({
-				competitionId,
-				distribution: values.distribution.map(({ addr, percentage }) => {
-					return { addr, percentage: percentage.toString() };
-				}),
-				remainderAddr: values.remainderAddr,
+			const distribution = values.distribution.map(({ addr, percentage }) => {
+				return { addr, percentage: percentage.toString() };
 			});
 
-			toast.success("The competition has been processed successfully");
+			if ("status" in props) {
+				await competitionClient.processCompetition({
+					competitionId,
+					distribution,
+					remainderAddr: values.remainderAddr,
+				});
+
+				toast.success("The competition has been processed successfully");
+			} else {
+				await competitionClient.jailCompetition({
+					proposeMessage: {
+						id: competitionId,
+						distribution,
+						remainder_addr: values.remainderAddr,
+						title: values.title,
+						description: values.description,
+					},
+				});
+
+				toast.success("The competition has been jailed");
+			}
 			// biome-ignore lint/suspicious/noExplicitAny: try-catch
 		} catch (e: any) {
 			console.error(e);
@@ -85,61 +114,97 @@ const ProcessForm = ({ competitionId, host, status }: ProcessFormProps) => {
 		}
 	};
 	const tryOpen = () => {
-		if (
-			(status === "active" && address === host) ||
-			(status === "jailed" && address === env.ARENA_DAO_ADDRESS)
-		) {
-			onOpen();
+		if ("status" in props) {
+			if (
+				(props.status === "active" && address === props.host) ||
+				(props.status === "jailed" && address === env.ARENA_DAO_ADDRESS)
+			) {
+				onOpen();
+			} else {
+				toast.info(
+					<div className="flex space-between">
+						<div>
+							Processing must happen through the{" "}
+							{props.status === "active" ? "host" : "Arena DAO"}
+						</div>
+						{props.status === "active" &&
+							isValidContractAddress(props.host) && (
+								<Button
+									as={Link}
+									href={`${env.DAO_DAO_URL}/dao/${
+										props.host
+									}/apps?url=${encodeURIComponent(window.location.href)}`}
+									isExternal
+									isIconOnly
+									aria-label="Handle on DAO DAO"
+								>
+									<FiExternalLink />
+								</Button>
+							)}
+						{props.status === "jailed" && (
+							<Button
+								as={Link}
+								href={`${env.DAO_DAO_URL}/dao/${
+									env.ARENA_DAO_ADDRESS
+								}/apps?url=${encodeURIComponent(window.location.href)}`}
+								isExternal
+								isIconOnly
+								aria-label="Handle on DAO DAO"
+							>
+								<FiExternalLink />
+							</Button>
+						)}
+					</div>,
+				);
+			}
 		} else {
-			toast.info(
-				<div className="flex space-between">
-					<div>
-						Processing must happen through the{" "}
-						{status === "active" ? "host" : "Arena DAO"}
-					</div>
-					{status === "active" && isValidContractAddress(host) && (
-						<Button
-							as={Link}
-							href={`${
-								env.DAO_DAO_URL
-							}/dao/${host}/apps?url=${encodeURIComponent(
-								window.location.href,
-							)}`}
-							isExternal
-							isIconOnly
-							aria-label="Handle on DAO DAO"
-						>
-							<FiExternalLink />
-						</Button>
-					)}
-					{status === "jailed" && (
-						<Button
-							as={Link}
-							href={`${env.DAO_DAO_URL}/dao/${
-								env.ARENA_DAO_ADDRESS
-							}/apps?url=${encodeURIComponent(window.location.href)}`}
-							isExternal
-							isIconOnly
-							aria-label="Handle on DAO DAO"
-						>
-							<FiExternalLink />
-						</Button>
-					)}
-				</div>,
-			);
+			onOpen();
 		}
 	};
 
 	if (!address) {
 		return null;
 	}
+
+	const action = "is_expired" in props ? "Jail" : "Process";
 	return (
 		<>
-			<Button onClick={tryOpen}>Process</Button>
+			<Button onClick={tryOpen}>{action}</Button>
 			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl">
 				<ModalContent>
-					<ModalHeader>Process Competition</ModalHeader>
+					<ModalHeader>{action} Competition</ModalHeader>
 					<ModalBody className="space-y-4">
+						{"is_expired" in props && (
+							<>
+								<Controller
+									control={control}
+									name="title"
+									render={({ field }) => (
+										<Input
+											label="Proposal Title"
+											autoFocus
+											isDisabled={isSubmitting}
+											isInvalid={!!errors.title}
+											errorMessage={errors.title?.message}
+											{...field}
+										/>
+									)}
+								/>
+								<Controller
+									control={control}
+									name="description"
+									render={({ field }) => (
+										<Textarea
+											label="Proposal Description"
+											isDisabled={isSubmitting}
+											isInvalid={!!errors.description}
+											errorMessage={errors.description?.message}
+											{...field}
+										/>
+									)}
+								/>
+							</>
+						)}
 						<Controller
 							control={control}
 							name="remainderAddr"
