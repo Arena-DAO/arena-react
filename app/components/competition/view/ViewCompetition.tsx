@@ -1,6 +1,7 @@
 "use client";
 
 import { CopyAddressButton } from "@/components/CopyAddressButton";
+import MaybeLink from "@/components/MaybeLink";
 import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
 import {
@@ -36,24 +37,24 @@ import { formatExpirationTime } from "~/helpers/DateHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import type { WithClient } from "~/types/util";
 import EscrowSection from "./components/EscrowSection";
+import EvidenceSection from "./components/EvidenceSection";
 import ProcessForm from "./components/ProcessForm";
 import RulesetsSection from "./components/RulesetsSection";
 
 interface ViewCompetitionProps {
 	competitionId: string;
+	moduleAddr: string;
 }
 
 const ViewCompetition = ({
 	cosmWasmClient,
 	competitionId,
+	moduleAddr,
 }: WithClient<ViewCompetitionProps>) => {
 	const { data: env } = useEnv();
 	const { address } = useChain(env.CHAIN);
 	const { data } = useArenaWagerModuleCompetitionQuery({
-		client: new ArenaWagerModuleQueryClient(
-			cosmWasmClient,
-			env.ARENA_WAGER_MODULE_ADDRESS,
-		),
+		client: new ArenaWagerModuleQueryClient(cosmWasmClient, moduleAddr),
 		args: {
 			competitionId,
 		},
@@ -87,7 +88,12 @@ const ViewCompetition = ({
 							content={<BsHourglassBottom />}
 							color="warning"
 							aria-label="Expired"
-							isInvisible={!(data.is_expired && status === "active")}
+							isInvisible={
+								!(
+									data.is_expired &&
+									(status === "active" || status === "pending")
+								)
+							}
 						>
 							<Chip color={statusColors[status]}>{status}</Chip>
 						</Badge>
@@ -179,18 +185,33 @@ const ViewCompetition = ({
 						{data.rules.map((rule, i) => (
 							// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
 							<TableRow key={i}>
-								<TableCell>{rule}</TableCell>
+								<TableCell>
+									<MaybeLink content={rule} />
+								</TableCell>
 							</TableRow>
 						))}
 					</TableBody>
 				</Table>
 			)}
+			{(status === "jailed" || status === "inactive") && (
+				<EvidenceSection
+					moduleAddr={moduleAddr}
+					competitionId={competitionId}
+					cosmWasmClient={cosmWasmClient}
+					hideIfEmpty={status === "inactive"}
+				/>
+			)}
 			<div className="block space-x-2">
 				{data?.host && status === "active" && (
-					<ProcessForm competitionId={competitionId} host={data.host} />
+					<ProcessForm
+						moduleAddr={moduleAddr}
+						competitionId={competitionId}
+						host={data.host}
+					/>
 				)}
 				{data?.is_expired && status !== "inactive" && (
 					<ProcessForm
+						moduleAddr={moduleAddr}
 						competitionId={competitionId}
 						setCompetitionStatus={setStatus}
 						is_expired

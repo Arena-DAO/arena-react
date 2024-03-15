@@ -192,6 +192,7 @@ export type String = string;
 export type ArrayOfEvidence = Evidence[];
 export interface Evidence {
   content: string;
+  id: Uint128;
   submit_time: Timestamp;
   submit_user: Addr;
 }

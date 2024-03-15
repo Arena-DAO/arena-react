@@ -223,6 +223,7 @@ export default function CreateCompetitionForm() {
 												<Tooltip content="Delete rule">
 													<Button
 														isIconOnly
+														isDisabled={isSubmitting}
 														aria-label="Delete Rule"
 														variant="faded"
 														onClick={() => rulesRemove(i)}
@@ -243,6 +244,7 @@ export default function CreateCompetitionForm() {
 			<Button
 				onClick={() => rulesAppend({ rule: "" })}
 				aria-label="Add rule"
+				isDisabled={isSubmitting}
 				startContent={<FiPlus />}
 			>
 				Add Rule
@@ -282,6 +284,7 @@ export default function CreateCompetitionForm() {
 																isIconOnly
 																aria-label="Delete Team"
 																variant="faded"
+																isDisabled={isSubmitting}
 																onClick={() => duesRemove(index)}
 															>
 																<FiTrash />
@@ -308,6 +311,7 @@ export default function CreateCompetitionForm() {
 				onClick={() =>
 					duesAppend({ addr: "", balance: { native: [], cw20: [], cw721: [] } })
 				}
+				isDisabled={isSubmitting}
 				aria-label="Add team"
 				startContent={<FiPlus />}
 			>

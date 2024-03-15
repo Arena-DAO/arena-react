@@ -102,7 +102,12 @@ const CompetitionModuleSectionItems = ({
 								content={<BsHourglassBottom />}
 								color="warning"
 								aria-label="Expired"
-								isInvisible={!(item.is_expired && item.status === "active")}
+								isInvisible={
+									!(
+										item.is_expired &&
+										(item.status === "active" || item.status === "pending")
+									)
+								}
 							>
 								<Chip color={statusColors[item.status]}>{item.status}</Chip>
 							</Badge>

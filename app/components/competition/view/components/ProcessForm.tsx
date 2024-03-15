@@ -34,6 +34,7 @@ import { useEnv } from "~/hooks/useEnv";
 
 type ProcessFormProps = {
 	competitionId: string;
+	moduleAddr: string;
 } & (
 	| { host: string }
 	| {
@@ -42,7 +43,11 @@ type ProcessFormProps = {
 	  }
 );
 
-const ProcessForm = ({ competitionId, ...props }: ProcessFormProps) => {
+const ProcessForm = ({
+	moduleAddr,
+	competitionId,
+	...props
+}: ProcessFormProps) => {
 	const ProcessFormSchema = z
 		.object({
 			distribution: DistributionSchema,
@@ -101,7 +106,7 @@ const ProcessForm = ({ competitionId, ...props }: ProcessFormProps) => {
 			const competitionClient = new ArenaWagerModuleClient(
 				client,
 				address,
-				env.ARENA_WAGER_MODULE_ADDRESS,
+				moduleAddr,
 			);
 			const distribution = values.distribution.map(({ addr, percentage }) => {
 				return { addr, percentage: percentage.toString() };
@@ -284,6 +289,7 @@ const ProcessForm = ({ competitionId, ...props }: ProcessFormProps) => {
 													aria-label="Delete Recipient"
 													variant="faded"
 													onClick={() => remove(i)}
+													isDisabled={isSubmitting}
 												>
 													<FiTrash />
 												</Button>
@@ -292,9 +298,9 @@ const ProcessForm = ({ competitionId, ...props }: ProcessFormProps) => {
 									))}
 								</TableBody>
 							</Table>
-							<div className="text-danger">
-								{errors.distribution?.message}{" "}
-								{errors.distribution?.root?.message}
+							<div className="text-danger text-xs">
+								<p>{errors.distribution?.message}</p>
+								<p>{errors.distribution?.root?.message}</p>
 							</div>
 						</div>
 					</ModalBody>
@@ -303,6 +309,7 @@ const ProcessForm = ({ competitionId, ...props }: ProcessFormProps) => {
 							onClick={() => append({ addr: "", percentage: 0 })}
 							aria-label="Add Recipient"
 							startContent={<FiPlus />}
+							isDisabled={isSubmitting}
 						>
 							Add Recipient
 						</Button>

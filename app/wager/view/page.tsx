@@ -3,8 +3,10 @@
 import ViewCompetition from "@/components/competition/view/ViewCompetition";
 import { useSearchParams } from "next/navigation";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
+import { useEnv } from "~/hooks/useEnv";
 
 const ViewWager = () => {
+	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const searchParams = useSearchParams();
 	const competitionId = searchParams?.get("competitionId");
@@ -18,6 +20,7 @@ const ViewWager = () => {
 				<ViewCompetition
 					cosmWasmClient={cosmWasmClient}
 					competitionId={competitionId}
+					moduleAddr={env.ARENA_WAGER_MODULE_ADDRESS}
 				/>
 			)}
 		</>

@@ -17,10 +17,8 @@ export function CopyAddressButton({
 	});
 
 	return (
-		<Tooltip content={isCopied ? "Address Copied!" : "Copy Address"}>
-			<Button isIconOnly onClick={setCopied} {...props}>
-				{isCopied ? <FiCheck /> : <FiCopy />}
-			</Button>
-		</Tooltip>
+		<Button isIconOnly onClick={setCopied} aria-label="Copy address" {...props}>
+			{isCopied ? <FiCheck /> : <FiCopy />}
+		</Button>
 	);
 }

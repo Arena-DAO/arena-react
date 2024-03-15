@@ -51,7 +51,9 @@ function findAssetInAssets(
 	if (assets) {
 		const denom = isCw20 ? `cw20:${denomOrAddress}` : denomOrAddress;
 		return assets.find((asset) =>
-			asset?.denom_units?.find((denomUnit) => denomUnit?.denom === denom),
+			asset?.denom_units?.find(
+				(denomUnit) => denomUnit?.denom?.toLowerCase() === denom,
+			),
 		);
 	}
 	return undefined;
@@ -64,7 +66,11 @@ export async function getCw20Asset(
 	prefix?: string,
 ): Promise<Asset> {
 	const isAddress = isValidContractAddress(denomOrAddress, prefix);
-	const localAsset = findAssetInAssets(denomOrAddress, assets, isAddress);
+	const localAsset = findAssetInAssets(
+		denomOrAddress.toLowerCase(),
+		assets,
+		isAddress,
+	);
 	if (localAsset) {
 		return localAsset;
 	}
@@ -86,9 +92,9 @@ export async function getCw20Asset(
 		address: denomOrAddress,
 		denom_units: [
 			{ denom: `cw20:${denomOrAddress}`, exponent: 0 },
-			{ denom: tokenInfo.symbol.toLowerCase(), exponent: tokenInfo.decimals },
+			{ denom: tokenInfo.symbol, exponent: tokenInfo.decimals },
 		],
-		base: tokenInfo.symbol.toLowerCase(),
+		base: tokenInfo.symbol,
 		name: tokenInfo.name,
 		symbol: tokenInfo.symbol,
 		logo_URIs: {
@@ -107,7 +113,7 @@ export async function getNativeAsset(
 	apiUrl: string,
 	assets?: Asset[],
 ): Promise<Asset> {
-	const localAsset = findAssetInAssets(denom, assets);
+	const localAsset = findAssetInAssets(denom.toLowerCase(), assets);
 	if (localAsset) {
 		return localAsset;
 	}

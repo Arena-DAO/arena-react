@@ -1,10 +1,17 @@
 "use client";
 
-import { Avatar, Skeleton, User, type UserProps } from "@nextui-org/react";
+import {
+	Avatar,
+	Skeleton,
+	Tooltip,
+	User,
+	type UserProps,
+} from "@nextui-org/react";
 import { isValidBech32Address } from "~/helpers/AddressHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import { useProfileData } from "~/hooks/useProfile";
 import type { WithClient } from "~/types/util";
+import { CopyAddressButton } from "./CopyAddressButton";
 
 export interface ProfileProps extends Omit<UserProps, "name"> {
 	address: string;
@@ -37,14 +44,19 @@ const Profile = ({
 
 	return (
 		<Skeleton isLoaded={!isLoading}>
-			<User
-				{...props}
-				name={data?.name ?? data?.address}
-				avatarProps={{
-					src: data?.imageUrl,
-					showFallback: true,
-				}}
-			/>
+			<Tooltip
+				content={<CopyAddressButton address={data?.address ?? ""} />}
+				closeDelay={1000}
+			>
+				<User
+					{...props}
+					name={data?.name ?? data?.address}
+					avatarProps={{
+						src: data?.imageUrl,
+						showFallback: true,
+					}}
+				/>
+			</Tooltip>
 		</Skeleton>
 	);
 };
