@@ -161,17 +161,18 @@ const ViewCompetition = ({
 					cosmWasmClient={cosmWasmClient}
 				/>
 			))}
-			{data?.rules && (
+			{data && (
 				<Table aria-label="Rules">
 					<TableHeader>
 						<TableColumn>Rule</TableColumn>
 					</TableHeader>
-					<TableBody emptyContent="No rules given..." items={data.rules}>
-						{(rule: string) => (
-							<TableRow key={rule}>
+					<TableBody emptyContent="No rules given...">
+						{data.rules.map((rule, i) => (
+							// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+							<TableRow key={i}>
 								<TableCell>{rule}</TableCell>
 							</TableRow>
-						)}
+						))}
 					</TableBody>
 				</Table>
 			)}

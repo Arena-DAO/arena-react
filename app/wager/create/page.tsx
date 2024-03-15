@@ -5,7 +5,6 @@ import CreateCompetitionForm, {
 } from "@/components/competition/create/CreateCompetitionForm";
 import { toBinary } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
-import { UTCDate } from "@date-fns/utc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@nextui-org/react";
 import { addSeconds, formatISO } from "date-fns";

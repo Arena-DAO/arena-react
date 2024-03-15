@@ -12,6 +12,7 @@ import {
 } from "@nextui-org/react";
 import { Image } from "@nextui-org/react";
 import NextImage from "next/image";
+import NextLink from "next/link";
 import { useState } from "react";
 import { useEnv } from "~/hooks/useEnv";
 import WalletConnectToggle from "./WalletConnectToggle";
@@ -32,7 +33,7 @@ export default function AppNavbar() {
 	];
 
 	return (
-		<Navbar onMenuOpenChange={setIsMenuOpen}>
+		<Navbar onMenuOpenChange={setIsMenuOpen} isMenuOpen={isMenuOpen}>
 			<NavbarContent>
 				<NavbarMenuToggle
 					aria-label={isMenuOpen ? "Close menu" : "Open menu"}
@@ -60,6 +61,7 @@ export default function AppNavbar() {
 				{navbarItems.map((item) => (
 					<NavbarItem key={item.href}>
 						<Link
+							as={NextLink}
 							href={item.href}
 							className="font-bold"
 							isExternal={item.isExternal}
@@ -78,10 +80,12 @@ export default function AppNavbar() {
 				{navbarItems.map((item) => (
 					<NavbarMenuItem key={item.href}>
 						<Link
+							as={NextLink}
 							className="w-full font-bold"
 							href={item.href}
 							size="lg"
 							isExternal={item.isExternal}
+							onClick={() => setIsMenuOpen(false)}
 						>
 							{item.label}
 						</Link>
