@@ -20,11 +20,13 @@ import {
 	Textarea,
 	useDisclosure,
 } from "@nextui-org/react";
+import type { Dispatch, SetStateAction } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { FiExternalLink, FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
-import { z } from "zod";
+import { ZodIssueCode, z } from "zod";
 import { ArenaWagerModuleClient } from "~/codegen/ArenaWagerModule.client";
+import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import { AddressSchema, DistributionSchema } from "~/config/schemas";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { keyboardDelegateFixSpace } from "~/helpers/NextUIHelpers";
@@ -32,7 +34,13 @@ import { useEnv } from "~/hooks/useEnv";
 
 type ProcessFormProps = {
 	competitionId: string;
-} & ({ host: string; status: "active" | "jailed" } | { is_expired: true });
+} & (
+	| { host: string; status: "active" | "jailed" }
+	| {
+			is_expired: true;
+			setCompetitionStatus: Dispatch<SetStateAction<CompetitionStatus>>;
+	  }
+);
 
 const ProcessForm = ({ competitionId, ...props }: ProcessFormProps) => {
 	const ProcessFormSchema = z
@@ -42,11 +50,24 @@ const ProcessForm = ({ competitionId, ...props }: ProcessFormProps) => {
 			title: z.string(),
 			description: z.string(),
 		})
-		.refine((x) => "is_expired" in props && !x.title, "Title is required")
-		.refine(
-			(x) => "is_expired" in props && !x.description,
-			"Description is required",
-		);
+		.superRefine((val, ctx) => {
+			if ("is_expired" in props) {
+				if (!val.title) {
+					ctx.addIssue({
+						code: ZodIssueCode.custom,
+						path: ["title"],
+						message: "Title is required",
+					});
+				}
+				if (!val.description) {
+					ctx.addIssue({
+						code: ZodIssueCode.custom,
+						path: ["description"],
+						message: "Description is required",
+					});
+				}
+			}
+		});
 
 	type ProcessFormValues = z.infer<typeof ProcessFormSchema>;
 
@@ -86,15 +107,7 @@ const ProcessForm = ({ competitionId, ...props }: ProcessFormProps) => {
 				return { addr, percentage: percentage.toString() };
 			});
 
-			if ("status" in props) {
-				await competitionClient.processCompetition({
-					competitionId,
-					distribution,
-					remainderAddr: values.remainderAddr,
-				});
-
-				toast.success("The competition has been processed successfully");
-			} else {
+			if ("is_expired" in props) {
 				await competitionClient.jailCompetition({
 					proposeMessage: {
 						id: competitionId,
@@ -106,6 +119,15 @@ const ProcessForm = ({ competitionId, ...props }: ProcessFormProps) => {
 				});
 
 				toast.success("The competition has been jailed");
+				props.setCompetitionStatus("jailed");
+			} else {
+				await competitionClient.processCompetition({
+					competitionId,
+					distribution,
+					remainderAddr: values.remainderAddr,
+				});
+
+				toast.success("The competition has been processed successfully");
 			}
 			// biome-ignore lint/suspicious/noExplicitAny: try-catch
 		} catch (e: any) {
@@ -114,7 +136,9 @@ const ProcessForm = ({ competitionId, ...props }: ProcessFormProps) => {
 		}
 	};
 	const tryOpen = () => {
-		if ("status" in props) {
+		if ("is_expired" in props) {
+			onOpen();
+		} else {
 			if (
 				(props.status === "active" && address === props.host) ||
 				(props.status === "jailed" && address === env.ARENA_DAO_ADDRESS)
@@ -157,8 +181,6 @@ const ProcessForm = ({ competitionId, ...props }: ProcessFormProps) => {
 					</div>,
 				);
 			}
-		} else {
-			onOpen();
 		}
 	};
 

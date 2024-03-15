@@ -25,7 +25,12 @@ import {
 	Tooltip,
 } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-import { BsYinYang } from "react-icons/bs";
+import {
+	BsClock,
+	BsClockFill,
+	BsHourglassBottom,
+	BsYinYang,
+} from "react-icons/bs";
 import { toast } from "react-toastify";
 import {
 	ArenaWagerModuleClient,
@@ -75,10 +80,11 @@ const ViewCompetition = ({
 					<h2 className="text-2xl font-bold">Host</h2>
 					{data && (
 						<Badge
-							content="expired"
+							isOneChar
+							content={<BsHourglassBottom />}
 							color="warning"
 							aria-label="Expired"
-							isInvisible={!data.is_expired}
+							isInvisible={!data.is_expired || status === "jailed"}
 						>
 							<Chip color={statusColors[status]}>{status}</Chip>
 						</Badge>
@@ -176,7 +182,7 @@ const ViewCompetition = ({
 					</TableBody>
 				</Table>
 			)}
-			<div className="block space-x-4">
+			<div className="block space-x-2">
 				{data?.host && (status === "active" || status === "jailed") && (
 					<ProcessForm
 						competitionId={competitionId}
@@ -185,7 +191,11 @@ const ViewCompetition = ({
 					/>
 				)}
 				{data?.is_expired && (
-					<ProcessForm competitionId={competitionId} is_expired />
+					<ProcessForm
+						competitionId={competitionId}
+						setCompetitionStatus={setStatus}
+						is_expired
+					/>
 				)}
 			</div>
 			{data?.escrow && (

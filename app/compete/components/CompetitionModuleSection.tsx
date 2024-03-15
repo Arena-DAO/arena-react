@@ -1,6 +1,7 @@
 "use client";
 
 import {
+	Badge,
 	Button,
 	Chip,
 	Spinner,
@@ -14,7 +15,7 @@ import {
 import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { BsPlus } from "react-icons/bs";
+import { BsHourglassBottom, BsPlus } from "react-icons/bs";
 import { useAsyncList } from "react-stately";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import type { CompetitionResponseForEmpty } from "~/codegen/ArenaWagerModule.types";
@@ -96,7 +97,15 @@ const CompetitionModuleSectionItems = ({
 					<TableRow key={item.id}>
 						<TableCell>{item.name}</TableCell>
 						<TableCell>
-							<Chip color={statusColors[item.status]}>{item.status}</Chip>
+							<Badge
+								isOneChar
+								content={<BsHourglassBottom />}
+								color="warning"
+								aria-label="Expired"
+								isInvisible={!item.is_expired || item.status === "jailed"}
+							>
+								<Chip color={statusColors[item.status]}>{item.status}</Chip>
+							</Badge>
 						</TableCell>
 						<TableCell>{item.description}</TableCell>
 						<TableCell>
