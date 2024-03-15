@@ -42,7 +42,7 @@ const CreateWager = () => {
 	const formMethods = useForm<CreateCompetitionFormValues>({
 		defaultValues: {
 			expiration: {
-				at_time: formatISO(addSeconds(new UTCDate(), 14 * 24 * 60 * 60)).slice(
+				at_time: formatISO(addSeconds(new Date(), 14 * 24 * 60 * 60)).slice(
 					0,
 					16,
 				), // Default to 2 weeks from now

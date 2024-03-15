@@ -189,11 +189,6 @@ export default function CreateCompetitionForm() {
 										? (errors.expiration.at_time as FieldError).message
 										: ""
 								}
-								endContent={
-									<div className="pointer-events-none flex items-center">
-										<span className="text-default-400 text-small">UTC</span>
-									</div>
-								}
 								{...field}
 								value={watchExpiration.at_time}
 							/>

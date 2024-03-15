@@ -8,7 +8,7 @@ const Layout = ({ children }: PropsWithChildren) => {
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<head>
-				<title>The Ultimate Arena 🏆</title>
+				<title>The Arena 🏆</title>
 				<meta charSet="UTF-8" />
 				<meta
 					name="description"
