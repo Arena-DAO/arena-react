@@ -35,7 +35,7 @@ import { useEnv } from "~/hooks/useEnv";
 type ProcessFormProps = {
 	competitionId: string;
 } & (
-	| { host: string; status: "active" | "jailed" }
+	| { host: string }
 	| {
 			is_expired: true;
 			setCompetitionStatus: Dispatch<SetStateAction<CompetitionStatus>>;
@@ -139,37 +139,17 @@ const ProcessForm = ({ competitionId, ...props }: ProcessFormProps) => {
 		if ("is_expired" in props) {
 			onOpen();
 		} else {
-			if (
-				(props.status === "active" && address === props.host) ||
-				(props.status === "jailed" && address === env.ARENA_DAO_ADDRESS)
-			) {
+			if (address === props.host) {
 				onOpen();
 			} else {
 				toast.info(
 					<div className="flex space-between">
-						<div>
-							Processing must happen through the{" "}
-							{props.status === "active" ? "host" : "Arena DAO"}
-						</div>
-						{props.status === "active" &&
-							isValidContractAddress(props.host) && (
-								<Button
-									as={Link}
-									href={`${env.DAO_DAO_URL}/dao/${
-										props.host
-									}/apps?url=${encodeURIComponent(window.location.href)}`}
-									isExternal
-									isIconOnly
-									aria-label="Handle on DAO DAO"
-								>
-									<FiExternalLink />
-								</Button>
-							)}
-						{props.status === "jailed" && (
+						<div>Processing must happen through the host</div>
+						{isValidContractAddress(props.host) && (
 							<Button
 								as={Link}
 								href={`${env.DAO_DAO_URL}/dao/${
-									env.ARENA_DAO_ADDRESS
+									props.host
 								}/apps?url=${encodeURIComponent(window.location.href)}`}
 								isExternal
 								isIconOnly

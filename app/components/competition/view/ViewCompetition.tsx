@@ -84,7 +84,7 @@ const ViewCompetition = ({
 							content={<BsHourglassBottom />}
 							color="warning"
 							aria-label="Expired"
-							isInvisible={!data.is_expired || status === "jailed"}
+							isInvisible={!(data.is_expired && status === "active")}
 						>
 							<Chip color={statusColors[status]}>{status}</Chip>
 						</Badge>
@@ -183,12 +183,8 @@ const ViewCompetition = ({
 				</Table>
 			)}
 			<div className="block space-x-2">
-				{data?.host && (status === "active" || status === "jailed") && (
-					<ProcessForm
-						competitionId={competitionId}
-						host={data.host}
-						status={status}
-					/>
+				{data?.host && status === "active" && (
+					<ProcessForm competitionId={competitionId} host={data.host} />
 				)}
 				{data?.is_expired && (
 					<ProcessForm
