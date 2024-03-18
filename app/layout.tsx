@@ -12,7 +12,8 @@ const Layout = ({ children }: PropsWithChildren) => {
 				<meta charSet="UTF-8" />
 				<meta
 					name="description"
-					content="Where wagers ignite rivalries, tournaments crown champions, and leagues forge legends."
+					content="A hub for competitive communities. 
+					Dive into our framework for secure competitions including wagers, leagues, & tournaments. Play games for money."
 				/>
 				<link rel="icon" href="/favicon.ico" />
 				<link
