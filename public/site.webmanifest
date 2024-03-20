@@ -1,21 +1,21 @@
 {
-  "name": "The Ultimate Arena 🏆",
-  "short_name": "Arena DAO",
-  "icons": [
-    {
-      "src": "/android-chrome-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/android-chrome-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ],
-  "theme_color": "#FF6600",
-  "background_color": "#FDF5E6",
-  "display": "standalone",
-  "lang": "en",
-  "categories": ["finance", "gaming", "social"]
+	"name": "The Arena 🏆",
+	"short_name": "The Arena",
+	"icons": [
+		{
+			"src": "/android-chrome-192x192.png",
+			"sizes": "192x192",
+			"type": "image/png"
+		},
+		{
+			"src": "/android-chrome-512x512.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		}
+	],
+	"theme_color": "#FF6600",
+	"background_color": "#FDF5E6",
+	"display": "standalone",
+	"lang": "en",
+	"categories": ["dao", "gaming", "social", "wagers", "leagues", "tournaments"]
 }

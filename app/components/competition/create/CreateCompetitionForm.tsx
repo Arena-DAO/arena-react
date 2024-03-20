@@ -8,6 +8,7 @@ import {
 	CardBody,
 	CardHeader,
 	Input,
+	Link,
 	Select,
 	SelectItem,
 	Table,
@@ -27,6 +28,7 @@ import {
 	useFieldArray,
 	useFormContext,
 } from "react-hook-form";
+import { BsArrowLeft } from "react-icons/bs";
 import { FiPlus, FiTrash } from "react-icons/fi";
 import type { z } from "zod";
 import type { CreateCompetitionSchema } from "~/config/schemas";
@@ -81,6 +83,13 @@ export default function CreateCompetitionForm() {
 
 	return (
 		<>
+			{category && (
+				<Tooltip content="Return to competitions">
+					<Button as={Link} isIconOnly href={`/compete?category=${category}`}>
+						<BsArrowLeft />
+					</Button>
+				</Tooltip>
+			)}
 			<Controller
 				control={control}
 				name="name"

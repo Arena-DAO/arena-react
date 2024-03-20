@@ -104,6 +104,12 @@
 					"category_id": 15
 				}
 			]
+		},
+		{
+			"url": "miscellaneous",
+			"title": "Miscellaneous",
+			"img": "/category_images/default_trophy.jpg",
+			"category_id": null
 		}
 	]
 }

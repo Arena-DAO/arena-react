@@ -2,11 +2,17 @@
 	"search.exclude": {
 		"**/.yarn": true
 	},
+	"files.associations": {
+		"*.css": "tailwindcss"
+	},
 	"typescript.enablePromptUseWorkspaceTsdk": true,
 	"[javascript]": {
 		"editor.defaultFormatter": "biomejs.biome"
 	},
 	"[json]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[jsonc]": {
 		"editor.defaultFormatter": "biomejs.biome"
 	},
 	"editor.defaultFormatter": "biomejs.biome",

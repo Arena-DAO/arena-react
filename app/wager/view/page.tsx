@@ -15,7 +15,8 @@ const ViewWager = () => {
 		return <h1 className="text-5xl text-center">Wager id not provided...</h1>;
 	}
 	return (
-		<>
+		<div className="space-y-4">
+			<h1 className="text-5xl text-center">View Wager</h1>
 			{cosmWasmClient && (
 				<ViewCompetition
 					cosmWasmClient={cosmWasmClient}
@@ -23,7 +24,7 @@ const ViewWager = () => {
 					moduleAddr={env.ARENA_WAGER_MODULE_ADDRESS}
 				/>
 			)}
-		</>
+		</div>
 	);
 };
 
