@@ -5,7 +5,7 @@
 */
 
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import { InstantiateMsg, Empty, ExecuteMsg, Decimal, Uint128, Binary, Admin, Expiration, Timestamp, Uint64, ModuleInfo, Action, ProposeMessage, MemberPercentageForString, ModuleInstantiateInfo, EmptyWrapper, QueryMsg, CompetitionsFilter, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, ArrayOfCompetitionResponseForEmpty, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, ArrayOfMemberPercentageForString } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Decimal, Uint128, Binary, Admin, Expiration, Timestamp, Uint64, ModuleInfo, Action, ProposeMessage, DistributionForString, MemberPercentageForString, ModuleInstantiateInfo, EmptyWrapper, QueryMsg, CompetitionsFilter, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, ArrayOfCompetitionResponseForEmpty, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString } from "./ArenaWagerModule.types";
 import { ArenaWagerModuleQueryClient } from "./ArenaWagerModule.client";
 export interface ArenaWagerModuleReactQuery<TResponse, TData = TResponse> {
   client: ArenaWagerModuleQueryClient;
@@ -34,17 +34,17 @@ export function useArenaWagerModuleQueryExtensionQuery<TData = Binary>({
     msg: args.msg
   }), options);
 }
-export interface ArenaWagerModuleResultQuery<TData> extends ArenaWagerModuleReactQuery<ArrayOfMemberPercentageForString, TData> {
+export interface ArenaWagerModuleResultQuery<TData> extends ArenaWagerModuleReactQuery<DistributionForString, TData> {
   args: {
     competitionId: Uint128;
   };
 }
-export function useArenaWagerModuleResultQuery<TData = ArrayOfMemberPercentageForString>({
+export function useArenaWagerModuleResultQuery<TData = DistributionForString>({
   client,
   args,
   options
 }: ArenaWagerModuleResultQuery<TData>) {
-  return useQuery<ArrayOfMemberPercentageForString, Error, TData>(["arenaWagerModuleResult", client.contractAddress, JSON.stringify(args)], () => client.result({
+  return useQuery<DistributionForString, Error, TData>(["arenaWagerModuleResult", client.contractAddress, JSON.stringify(args)], () => client.result({
     competitionId: args.competitionId
   }), options);
 }

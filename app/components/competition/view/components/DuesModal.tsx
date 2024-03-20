@@ -65,7 +65,7 @@ const DuesModal = ({
 	}, [version]);
 
 	return (
-		<>
+		<span>
 			<Button onPress={onOpen}>View Dues</Button>
 			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
 				<ModalContent>
@@ -117,7 +117,7 @@ const DuesModal = ({
 					</ModalBody>
 				</ModalContent>
 			</Modal>
-		</>
+		</span>
 	);
 };
 

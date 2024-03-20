@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { Uint128, InstantiateMsg, MemberBalanceUnchecked, BalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, MemberPercentageForString, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, TaxInformationForString, QueryMsg, MigrateMsg, NullableBalanceVerified, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceChecked, MemberBalanceChecked, NullableArrayOfMemberPercentageForString, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
+import { Uint128, InstantiateMsg, MemberBalanceUnchecked, BalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, DistributionForString, MemberPercentageForString, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, TaxInformationForString, QueryMsg, MigrateMsg, NullableBalanceVerified, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceChecked, MemberBalanceChecked, NullableDistributionForString, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
 export interface ArenaEscrowReadOnlyInterface {
   contractAddress: string;
   balances: ({
@@ -52,7 +52,7 @@ export interface ArenaEscrowReadOnlyInterface {
     addr
   }: {
     addr: string;
-  }) => Promise<NullableArrayOfMemberPercentageForString>;
+  }) => Promise<NullableDistributionForString>;
   dumpState: ({
     addr
   }: {
@@ -175,7 +175,7 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
     addr
   }: {
     addr: string;
-  }): Promise<NullableArrayOfMemberPercentageForString> => {
+  }): Promise<NullableDistributionForString> => {
     return this.client.queryContractSmart(this.contractAddress, {
       distribution: {
         addr
@@ -212,7 +212,7 @@ export interface ArenaEscrowInterface extends ArenaEscrowReadOnlyInterface {
   setDistribution: ({
     distribution
   }: {
-    distribution: MemberPercentageForString[];
+    distribution: DistributionForString;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   receiveNative: (fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   receive: ({
@@ -235,11 +235,9 @@ export interface ArenaEscrowInterface extends ArenaEscrowReadOnlyInterface {
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   distribute: ({
     distribution,
-    remainderAddr,
     taxInfo
   }: {
-    distribution: MemberPercentageForString[];
-    remainderAddr: string;
+    distribution: DistributionForString;
     taxInfo?: TaxInformationForString;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   lock: ({
@@ -286,7 +284,7 @@ export class ArenaEscrowClient extends ArenaEscrowQueryClient implements ArenaEs
   setDistribution = async ({
     distribution
   }: {
-    distribution: MemberPercentageForString[];
+    distribution: DistributionForString;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       set_distribution: {
@@ -335,17 +333,14 @@ export class ArenaEscrowClient extends ArenaEscrowQueryClient implements ArenaEs
   };
   distribute = async ({
     distribution,
-    remainderAddr,
     taxInfo
   }: {
-    distribution: MemberPercentageForString[];
-    remainderAddr: string;
+    distribution: DistributionForString;
     taxInfo?: TaxInformationForString;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       distribute: {
         distribution,
-        remainder_addr: remainderAddr,
         tax_info: taxInfo
       }
     }, fee, memo, _funds);

@@ -183,7 +183,7 @@ const ViewCompetition = ({
 					</TableHeader>
 					<TableBody emptyContent="No rules given...">
 						{data.rules.map((rule, i) => (
-							// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+							// biome-ignore lint/suspicious/noArrayIndexKey: Best option for now
 							<TableRow key={i}>
 								<TableCell>
 									<MaybeLink content={rule} />

@@ -64,7 +64,7 @@ const BalancesModal = ({
 	}, [version]);
 
 	return (
-		<>
+		<span>
 			<Button onPress={onOpen}>View Balances</Button>
 			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
 				<ModalContent>
@@ -116,7 +116,7 @@ const BalancesModal = ({
 					</ModalBody>
 				</ModalContent>
 			</Modal>
-		</>
+		</span>
 	);
 };
 

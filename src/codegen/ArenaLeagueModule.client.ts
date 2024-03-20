@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { Binary, InstantiateMsg, TournamentExt, ExecuteMsg, Decimal, Uint128, Admin, Expiration, Timestamp, Uint64, ModuleInfo, Duration, ExecuteExt, Result, Action, ProposeMessage, MemberPercentageForString, ModuleInstantiateInfo, CompetitionInstantiateExt, MatchResult, QueryMsg, CompetitionsFilter, CompetitionStatus, QueryExt, MigrateMsg, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForCompetitionExt, CompetitionExt, ArrayOfCompetitionResponseForCompetitionExt, ConfigForTournamentExt, String, ArrayOfEvidence, Evidence, OwnershipForString, ArrayOfMemberPercentageForString } from "./ArenaLeagueModule.types";
+import { Binary, InstantiateMsg, TournamentExt, ExecuteMsg, Decimal, Uint128, Admin, Expiration, Timestamp, Uint64, ModuleInfo, Duration, ExecuteExt, Result, Action, ProposeMessage, DistributionForString, MemberPercentageForString, ModuleInstantiateInfo, CompetitionInstantiateExt, MatchResult, QueryMsg, CompetitionsFilter, CompetitionStatus, QueryExt, MigrateMsg, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForCompetitionExt, CompetitionExt, ArrayOfCompetitionResponseForCompetitionExt, ConfigForTournamentExt, String, ArrayOfEvidence, Evidence, OwnershipForString } from "./ArenaLeagueModule.types";
 export interface ArenaLeagueModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForTournamentExt>;
@@ -39,7 +39,7 @@ export interface ArenaLeagueModuleReadOnlyInterface {
     competitionId
   }: {
     competitionId: Uint128;
-  }) => Promise<ArrayOfMemberPercentageForString>;
+  }) => Promise<DistributionForString>;
   queryExtension: ({
     msg
   }: {
@@ -129,7 +129,7 @@ export class ArenaLeagueModuleQueryClient implements ArenaLeagueModuleReadOnlyIn
     competitionId
   }: {
     competitionId: Uint128;
-  }): Promise<ArrayOfMemberPercentageForString> => {
+  }): Promise<DistributionForString> => {
     return this.client.queryContractSmart(this.contractAddress, {
       result: {
         competition_id: competitionId
@@ -177,7 +177,7 @@ export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInt
     distribution
   }: {
     competitionId: Uint128;
-    distribution: MemberPercentageForString[];
+    distribution: DistributionForString;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   createCompetition: ({
     categoryId,
@@ -210,13 +210,11 @@ export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInt
   processCompetition: ({
     competitionId,
     distribution,
-    remainderAddr,
     taxCw20Msg,
     taxCw721Msg
   }: {
     competitionId: Uint128;
-    distribution: MemberPercentageForString[];
-    remainderAddr: string;
+    distribution: DistributionForString;
     taxCw20Msg?: Binary;
     taxCw721Msg?: Binary;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
@@ -292,7 +290,7 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
     distribution
   }: {
     competitionId: Uint128;
-    distribution: MemberPercentageForString[];
+    distribution: DistributionForString;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       execute_competition_hook: {
@@ -353,13 +351,11 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
   processCompetition = async ({
     competitionId,
     distribution,
-    remainderAddr,
     taxCw20Msg,
     taxCw721Msg
   }: {
     competitionId: Uint128;
-    distribution: MemberPercentageForString[];
-    remainderAddr: string;
+    distribution: DistributionForString;
     taxCw20Msg?: Binary;
     taxCw721Msg?: Binary;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
@@ -367,7 +363,6 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
       process_competition: {
         competition_id: competitionId,
         distribution,
-        remainder_addr: remainderAddr,
         tax_cw20_msg: taxCw20Msg,
         tax_cw721_msg: taxCw721Msg
       }

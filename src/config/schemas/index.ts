@@ -7,6 +7,7 @@ import DistributionSchema from "./DistributionSchema";
 import DueSchema from "./DueSchema";
 import DurationSchema from "./DurationSchema";
 import ExpirationSchema from "./ExpirationSchema";
+import MemberPercentageSchema from "./MemberPercentageSchema";
 import PercentageThresholdSchema from "./PercentageThresholdSchema";
 import RulesSchema from "./RulesSchema";
 import RulesetsSchema from "./RulesetsSchema";
@@ -17,7 +18,7 @@ export {
 	Uint128Schema as AmountSchema,
 	BalanceSchema,
 	CreateCompetitionSchema,
-	DistributionSchema,
+	MemberPercentageSchema,
 	DueSchema,
 	DurationSchema,
 	ExpirationSchema,
@@ -26,4 +27,5 @@ export {
 	RulesSchema,
 	TimestampSchema,
 	DecimalSchema,
+	DistributionSchema,
 };

@@ -121,12 +121,15 @@ export type EditCompetitionCategory = {
 export type Status = "open" | "rejected" | "passed" | "executed" | "closed" | "execution_failed";
 export interface ProposeMessage {
   description: string;
-  distribution: MemberPercentageForString[];
+  distribution: DistributionForString;
   id: Uint128;
-  remainder_addr: string;
   tax_cw20_msg?: Binary | null;
   tax_cw721_msg?: Binary | null;
   title: string;
+}
+export interface DistributionForString {
+  member_percentages: MemberPercentageForString[];
+  remainder_addr: string;
 }
 export interface MemberPercentageForString {
   addr: string;

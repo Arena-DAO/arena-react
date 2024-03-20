@@ -29,7 +29,7 @@ export type ExecuteMsg = {
 } | {
   execute_competition_hook: {
     competition_id: Uint128;
-    distribution: MemberPercentageForString[];
+    distribution: DistributionForString;
   };
 } | {
   create_competition: {
@@ -51,8 +51,7 @@ export type ExecuteMsg = {
 } | {
   process_competition: {
     competition_id: Uint128;
-    distribution: MemberPercentageForString[];
-    remainder_addr: string;
+    distribution: DistributionForString;
     tax_cw20_msg?: Binary | null;
     tax_cw721_msg?: Binary | null;
   };
@@ -99,12 +98,15 @@ export type Action = {
 } | "accept_ownership" | "renounce_ownership";
 export interface ProposeMessage {
   description: string;
-  distribution: MemberPercentageForString[];
+  distribution: DistributionForString;
   id: Uint128;
-  remainder_addr: string;
   tax_cw20_msg?: Binary | null;
   tax_cw721_msg?: Binary | null;
   title: string;
+}
+export interface DistributionForString {
+  member_percentages: MemberPercentageForString[];
+  remainder_addr: string;
 }
 export interface MemberPercentageForString {
   addr: string;
@@ -201,4 +203,3 @@ export interface OwnershipForString {
   pending_expiry?: Expiration | null;
   pending_owner?: string | null;
 }
-export type ArrayOfMemberPercentageForString = MemberPercentageForString[];

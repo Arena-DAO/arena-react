@@ -138,7 +138,7 @@ const EscrowSection = ({
 		);
 	}
 	return (
-		<>
+		<div className="space-y-4">
 			{data.balance && (
 				<Card>
 					<CardHeader>User Balance</CardHeader>
@@ -186,7 +186,7 @@ const EscrowSection = ({
 					</CardBody>
 				</Card>
 			)}
-			<ButtonGroup>
+			<div className="block space-x-2">
 				<DuesModal
 					escrow={escrow}
 					cosmWasmClient={cosmWasmClient}
@@ -197,8 +197,8 @@ const EscrowSection = ({
 					cosmWasmClient={cosmWasmClient}
 					version={version}
 				/>
-			</ButtonGroup>
-		</>
+			</div>
+		</div>
 	);
 };
 

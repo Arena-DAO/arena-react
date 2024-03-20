@@ -126,7 +126,7 @@ const EvidenceSection = ({
 	if (list.items.length === 0 && hideIfEmpty) return null;
 
 	return (
-		<>
+		<div className="space-y-4">
 			<Table
 				isHeaderSticky
 				aria-label="Evidence"
@@ -225,7 +225,7 @@ const EvidenceSection = ({
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
-		</>
+		</div>
 	);
 };
 

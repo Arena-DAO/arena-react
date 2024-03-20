@@ -5,7 +5,7 @@
 */
 
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import { Uint128, InstantiateMsg, MemberBalanceUnchecked, BalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, MemberPercentageForString, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, TaxInformationForString, QueryMsg, MigrateMsg, NullableBalanceVerified, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceChecked, MemberBalanceChecked, NullableArrayOfMemberPercentageForString, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
+import { Uint128, InstantiateMsg, MemberBalanceUnchecked, BalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, DistributionForString, MemberPercentageForString, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, TaxInformationForString, QueryMsg, MigrateMsg, NullableBalanceVerified, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceChecked, MemberBalanceChecked, NullableDistributionForString, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
 import { ArenaEscrowQueryClient } from "./ArenaEscrow.client";
 export interface ArenaEscrowReactQuery<TResponse, TData = TResponse> {
   client: ArenaEscrowQueryClient;
@@ -34,17 +34,17 @@ export function useArenaEscrowDumpStateQuery<TData = DumpStateResponse>({
     addr: args.addr
   }), options);
 }
-export interface ArenaEscrowDistributionQuery<TData> extends ArenaEscrowReactQuery<NullableArrayOfMemberPercentageForString, TData> {
+export interface ArenaEscrowDistributionQuery<TData> extends ArenaEscrowReactQuery<NullableDistributionForString, TData> {
   args: {
     addr: string;
   };
 }
-export function useArenaEscrowDistributionQuery<TData = NullableArrayOfMemberPercentageForString>({
+export function useArenaEscrowDistributionQuery<TData = NullableDistributionForString>({
   client,
   args,
   options
 }: ArenaEscrowDistributionQuery<TData>) {
-  return useQuery<NullableArrayOfMemberPercentageForString, Error, TData>(["arenaEscrowDistribution", client.contractAddress, JSON.stringify(args)], () => client.distribution({
+  return useQuery<NullableDistributionForString, Error, TData>(["arenaEscrowDistribution", client.contractAddress, JSON.stringify(args)], () => client.distribution({
     addr: args.addr
   }), options);
 }

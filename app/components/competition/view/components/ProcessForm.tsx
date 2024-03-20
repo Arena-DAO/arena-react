@@ -27,9 +27,10 @@ import { toast } from "react-toastify";
 import { ZodIssueCode, z } from "zod";
 import { ArenaWagerModuleClient } from "~/codegen/ArenaWagerModule.client";
 import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
-import { AddressSchema, DistributionSchema } from "~/config/schemas";
+import { DistributionSchema } from "~/config/schemas";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { keyboardDelegateFixSpace } from "~/helpers/NextUIHelpers";
+import { convertToDistribution } from "~/helpers/SchemaHelpers";
 import { useEnv } from "~/hooks/useEnv";
 
 type ProcessFormProps = {
@@ -51,7 +52,6 @@ const ProcessForm = ({
 	const ProcessFormSchema = z
 		.object({
 			distribution: DistributionSchema,
-			remainderAddr: AddressSchema,
 			title: z.string(),
 			description: z.string(),
 		})
@@ -92,7 +92,7 @@ const ProcessForm = ({
 	});
 	const { fields, append, remove } = useFieldArray({
 		control,
-		name: "distribution",
+		name: "distribution.member_percentages",
 	});
 
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -108,16 +108,13 @@ const ProcessForm = ({
 				address,
 				moduleAddr,
 			);
-			const distribution = values.distribution.map(({ addr, percentage }) => {
-				return { addr, percentage: percentage.toString() };
-			});
+			const distribution = convertToDistribution(values.distribution);
 
 			if ("is_expired" in props) {
 				await competitionClient.jailCompetition({
 					proposeMessage: {
 						id: competitionId,
 						distribution,
-						remainder_addr: values.remainderAddr,
 						title: values.title,
 						description: values.description,
 					},
@@ -129,7 +126,6 @@ const ProcessForm = ({
 				await competitionClient.processCompetition({
 					competitionId,
 					distribution,
-					remainderAddr: values.remainderAddr,
 				});
 
 				toast.success("The competition has been processed successfully");
@@ -175,7 +171,7 @@ const ProcessForm = ({
 
 	const action = "is_expired" in props ? "Jail" : "Process";
 	return (
-		<>
+		<span>
 			<Button onClick={tryOpen}>{action}</Button>
 			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl">
 				<ModalContent>
@@ -214,14 +210,14 @@ const ProcessForm = ({
 						)}
 						<Controller
 							control={control}
-							name="remainderAddr"
+							name="distribution.remainder_addr"
 							render={({ field }) => (
 								<Input
 									label="Remainder Address"
 									autoFocus
 									isDisabled={isSubmitting}
-									isInvalid={!!errors.remainderAddr}
-									errorMessage={errors.remainderAddr?.message}
+									isInvalid={!!errors.distribution?.remainder_addr}
+									errorMessage={errors.distribution?.remainder_addr?.message}
 									{...field}
 								/>
 							)}
@@ -242,14 +238,18 @@ const ProcessForm = ({
 											<TableCell>
 												<Controller
 													control={control}
-													name={`distribution.${i}.addr`}
+													name={`distribution.member_percentages.${i}.addr`}
 													render={({ field }) => (
 														<Input
 															label={`Member ${i + 1}`}
 															isDisabled={isSubmitting}
-															isInvalid={!!errors.distribution?.[i]?.addr}
+															isInvalid={
+																!!errors.distribution?.member_percentages?.[i]
+																	?.addr
+															}
 															errorMessage={
-																errors.distribution?.[i]?.addr?.message
+																errors.distribution?.member_percentages?.[i]
+																	?.addr?.message
 															}
 															{...field}
 														/>
@@ -259,7 +259,7 @@ const ProcessForm = ({
 											<TableCell>
 												<Controller
 													control={control}
-													name={`distribution.${i}.percentage`}
+													name={`distribution.member_percentages.${i}.percentage`}
 													render={({ field }) => (
 														<Input
 															type="number"
@@ -268,9 +268,13 @@ const ProcessForm = ({
 															step=".01"
 															label="Percentage"
 															isDisabled={isSubmitting}
-															isInvalid={!!errors.distribution?.[i]?.percentage}
+															isInvalid={
+																!!errors.distribution?.member_percentages?.[i]
+																	?.percentage
+															}
 															errorMessage={
-																errors.distribution?.[i]?.percentage?.message
+																errors.distribution?.member_percentages?.[i]
+																	?.percentage?.message
 															}
 															{...field}
 															value={field.value?.toString()}
@@ -319,7 +323,7 @@ const ProcessForm = ({
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
-		</>
+		</span>
 	);
 };
 

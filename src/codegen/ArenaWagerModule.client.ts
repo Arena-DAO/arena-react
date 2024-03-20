@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Decimal, Uint128, Binary, Admin, Expiration, Timestamp, Uint64, ModuleInfo, Action, ProposeMessage, MemberPercentageForString, ModuleInstantiateInfo, EmptyWrapper, QueryMsg, CompetitionsFilter, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, ArrayOfCompetitionResponseForEmpty, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, ArrayOfMemberPercentageForString } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Decimal, Uint128, Binary, Admin, Expiration, Timestamp, Uint64, ModuleInfo, Action, ProposeMessage, DistributionForString, MemberPercentageForString, ModuleInstantiateInfo, EmptyWrapper, QueryMsg, CompetitionsFilter, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, ArrayOfCompetitionResponseForEmpty, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString } from "./ArenaWagerModule.types";
 export interface ArenaWagerModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForEmpty>;
@@ -39,7 +39,7 @@ export interface ArenaWagerModuleReadOnlyInterface {
     competitionId
   }: {
     competitionId: Uint128;
-  }) => Promise<ArrayOfMemberPercentageForString>;
+  }) => Promise<DistributionForString>;
   queryExtension: ({
     msg
   }: {
@@ -129,7 +129,7 @@ export class ArenaWagerModuleQueryClient implements ArenaWagerModuleReadOnlyInte
     competitionId
   }: {
     competitionId: Uint128;
-  }): Promise<ArrayOfMemberPercentageForString> => {
+  }): Promise<DistributionForString> => {
     return this.client.queryContractSmart(this.contractAddress, {
       result: {
         competition_id: competitionId
@@ -177,7 +177,7 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
     distribution
   }: {
     competitionId: Uint128;
-    distribution: MemberPercentageForString[];
+    distribution: DistributionForString;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   createCompetition: ({
     categoryId,
@@ -210,13 +210,11 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
   processCompetition: ({
     competitionId,
     distribution,
-    remainderAddr,
     taxCw20Msg,
     taxCw721Msg
   }: {
     competitionId: Uint128;
-    distribution: MemberPercentageForString[];
-    remainderAddr: string;
+    distribution: DistributionForString;
     taxCw20Msg?: Binary;
     taxCw721Msg?: Binary;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
@@ -292,7 +290,7 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
     distribution
   }: {
     competitionId: Uint128;
-    distribution: MemberPercentageForString[];
+    distribution: DistributionForString;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       execute_competition_hook: {
@@ -353,13 +351,11 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
   processCompetition = async ({
     competitionId,
     distribution,
-    remainderAddr,
     taxCw20Msg,
     taxCw721Msg
   }: {
     competitionId: Uint128;
-    distribution: MemberPercentageForString[];
-    remainderAddr: string;
+    distribution: DistributionForString;
     taxCw20Msg?: Binary;
     taxCw721Msg?: Binary;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
@@ -367,7 +363,6 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
       process_competition: {
         competition_id: competitionId,
         distribution,
-        remainder_addr: remainderAddr,
         tax_cw20_msg: taxCw20Msg,
         tax_cw721_msg: taxCw721Msg
       }
