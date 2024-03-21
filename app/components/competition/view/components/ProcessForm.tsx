@@ -4,6 +4,9 @@ import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	Button,
+	Card,
+	CardBody,
+	CardFooter,
 	Input,
 	Link,
 	Modal,
@@ -223,91 +226,106 @@ const ProcessForm = ({
 								/>
 							)}
 						/>
-						<div>
-							<Table
-								aria-label="Distribution"
-								keyboardDelegate={keyboardDelegateFixSpace}
-							>
-								<TableHeader>
-									<TableColumn>Member</TableColumn>
-									<TableColumn>Percentage</TableColumn>
-									<TableColumn>Action</TableColumn>
-								</TableHeader>
-								<TableBody emptyContent="No distribution given">
-									{fields?.map((memberPercentage, i) => (
-										<TableRow key={memberPercentage.id}>
-											<TableCell>
-												<Controller
-													control={control}
-													name={`distribution.member_percentages.${i}.addr`}
-													render={({ field }) => (
-														<Input
-															label={`Member ${i + 1}`}
-															isDisabled={isSubmitting}
-															isInvalid={
-																!!errors.distribution?.member_percentages?.[i]
-																	?.addr
-															}
-															errorMessage={
-																errors.distribution?.member_percentages?.[i]
-																	?.addr?.message
-															}
-															{...field}
-														/>
-													)}
-												/>
-											</TableCell>
-											<TableCell>
-												<Controller
-													control={control}
-													name={`distribution.member_percentages.${i}.percentage`}
-													render={({ field }) => (
-														<Input
-															type="number"
-															min="0"
-															max="1"
-															step=".01"
-															label="Percentage"
-															isDisabled={isSubmitting}
-															isInvalid={
-																!!errors.distribution?.member_percentages?.[i]
-																	?.percentage
-															}
-															errorMessage={
-																errors.distribution?.member_percentages?.[i]
-																	?.percentage?.message
-															}
-															{...field}
-															value={field.value?.toString()}
-															onChange={(e) =>
-																field.onChange(
-																	Number.parseFloat(e.target.value),
-																)
-															}
-														/>
-													)}
-												/>
-											</TableCell>
-											<TableCell>
-												<Button
-													isIconOnly
-													aria-label="Delete Recipient"
-													variant="faded"
-													onClick={() => remove(i)}
-													isDisabled={isSubmitting}
-												>
-													<FiTrash />
-												</Button>
-											</TableCell>
-										</TableRow>
-									))}
-								</TableBody>
-							</Table>
-							<div className="text-danger text-xs">
-								<p>{errors.distribution?.message}</p>
-								<p>{errors.distribution?.root?.message}</p>
-							</div>
-						</div>
+						<Card>
+							<CardBody>
+								<Table
+									aria-label="Distribution"
+									keyboardDelegate={keyboardDelegateFixSpace}
+								>
+									<TableHeader>
+										<TableColumn>Member</TableColumn>
+										<TableColumn>Percentage</TableColumn>
+										<TableColumn>Action</TableColumn>
+									</TableHeader>
+									<TableBody emptyContent="No distribution (draw)">
+										{fields?.map((memberPercentage, i) => (
+											<TableRow key={memberPercentage.id}>
+												<TableCell>
+													<Controller
+														control={control}
+														name={`distribution.member_percentages.${i}.addr`}
+														render={({ field }) => (
+															<Input
+																label={`Member ${i + 1}`}
+																isDisabled={isSubmitting}
+																isInvalid={
+																	!!errors.distribution?.member_percentages?.[i]
+																		?.addr
+																}
+																errorMessage={
+																	errors.distribution?.member_percentages?.[i]
+																		?.addr?.message
+																}
+																{...field}
+															/>
+														)}
+													/>
+												</TableCell>
+												<TableCell>
+													<Controller
+														control={control}
+														name={`distribution.member_percentages.${i}.percentage`}
+														render={({ field }) => (
+															<Input
+																type="number"
+																min="0"
+																max="1"
+																step=".01"
+																label="Percentage"
+																isDisabled={isSubmitting}
+																isInvalid={
+																	!!errors.distribution?.member_percentages?.[i]
+																		?.percentage
+																}
+																errorMessage={
+																	errors.distribution?.member_percentages?.[i]
+																		?.percentage?.message
+																}
+																{...field}
+																value={field.value?.toString()}
+																onChange={(e) =>
+																	field.onChange(
+																		Number.parseFloat(e.target.value),
+																	)
+																}
+															/>
+														)}
+													/>
+												</TableCell>
+												<TableCell>
+													<Button
+														isIconOnly
+														aria-label="Delete Recipient"
+														variant="faded"
+														onClick={() => remove(i)}
+														isDisabled={isSubmitting}
+													>
+														<FiTrash />
+													</Button>
+												</TableCell>
+											</TableRow>
+										))}
+									</TableBody>
+								</Table>
+								<div className="text-danger text-xs">
+									<p>{errors.distribution?.message}</p>
+									<p>{errors.distribution?.member_percentages?.message}</p>
+									<p>
+										{errors.distribution?.member_percentages?.root?.message}
+									</p>
+								</div>
+							</CardBody>
+							<CardFooter>
+								<Button
+									onClick={() => append({ addr: "", percentage: 0 })}
+									aria-label="Add Recipient"
+									startContent={<FiPlus />}
+									isDisabled={isSubmitting}
+								>
+									Add Recipient
+								</Button>
+							</CardFooter>
+						</Card>
 						<Progress
 							aria-label="Total Percentage"
 							value={fields.reduce((acc, x) => acc + x.percentage, 0) * 100}
@@ -316,14 +334,6 @@ const ProcessForm = ({
 						/>
 					</ModalBody>
 					<ModalFooter>
-						<Button
-							onClick={() => append({ addr: "", percentage: 0 })}
-							aria-label="Add Recipient"
-							startContent={<FiPlus />}
-							isDisabled={isSubmitting}
-						>
-							Add Recipient
-						</Button>
 						<Button onClick={handleSubmit(onSubmit)} isLoading={isSubmitting}>
 							Submit
 						</Button>

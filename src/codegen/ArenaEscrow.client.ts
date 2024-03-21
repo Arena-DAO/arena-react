@@ -212,7 +212,7 @@ export interface ArenaEscrowInterface extends ArenaEscrowReadOnlyInterface {
   setDistribution: ({
     distribution
   }: {
-    distribution: DistributionForString;
+    distribution?: DistributionForString;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   receiveNative: (fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   receive: ({
@@ -237,7 +237,7 @@ export interface ArenaEscrowInterface extends ArenaEscrowReadOnlyInterface {
     distribution,
     taxInfo
   }: {
-    distribution: DistributionForString;
+    distribution?: DistributionForString;
     taxInfo?: TaxInformationForString;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   lock: ({
@@ -284,7 +284,7 @@ export class ArenaEscrowClient extends ArenaEscrowQueryClient implements ArenaEs
   setDistribution = async ({
     distribution
   }: {
-    distribution: DistributionForString;
+    distribution?: DistributionForString;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       set_distribution: {
@@ -335,7 +335,7 @@ export class ArenaEscrowClient extends ArenaEscrowQueryClient implements ArenaEs
     distribution,
     taxInfo
   }: {
-    distribution: DistributionForString;
+    distribution?: DistributionForString;
     taxInfo?: TaxInformationForString;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {

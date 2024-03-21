@@ -17,13 +17,20 @@ export function convertToExpiration(
 
 export function convertToDistribution(
 	distributionSchema: z.infer<typeof DistributionSchema>,
-): DistributionForString {
+): DistributionForString | undefined {
+	if (
+		!distributionSchema ||
+		distributionSchema.member_percentages.length === 0
+	) {
+		return undefined;
+	}
 	return {
 		member_percentages: distributionSchema.member_percentages.map(
 			({ addr, percentage }) => {
 				return { addr, percentage: percentage.toString() };
 			},
 		),
-		remainder_addr: distributionSchema.remainder_addr,
+		// biome-ignore lint/style/noNonNullAssertion: This is handled by the distributionSchema superRefine check
+		remainder_addr: distributionSchema.remainder_addr!,
 	};
 }

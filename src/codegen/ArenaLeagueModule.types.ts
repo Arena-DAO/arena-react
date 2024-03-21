@@ -32,7 +32,7 @@ export type ExecuteMsg = {
 } | {
   execute_competition_hook: {
     competition_id: Uint128;
-    distribution: DistributionForString;
+    distribution?: DistributionForString | null;
   };
 } | {
   create_competition: {
@@ -54,7 +54,7 @@ export type ExecuteMsg = {
 } | {
   process_competition: {
     competition_id: Uint128;
-    distribution: DistributionForString;
+    distribution?: DistributionForString | null;
     tax_cw20_msg?: Binary | null;
     tax_cw721_msg?: Binary | null;
   };
@@ -118,7 +118,7 @@ export type Action = {
 } | "accept_ownership" | "renounce_ownership";
 export interface ProposeMessage {
   description: string;
-  distribution: DistributionForString;
+  distribution?: DistributionForString | null;
   id: Uint128;
   tax_cw20_msg?: Binary | null;
   tax_cw721_msg?: Binary | null;
@@ -273,3 +273,4 @@ export interface OwnershipForString {
   pending_expiry?: Expiration | null;
   pending_owner?: string | null;
 }
+export type NullableDistributionForString = DistributionForString | null;

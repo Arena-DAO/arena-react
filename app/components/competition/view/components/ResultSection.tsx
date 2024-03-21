@@ -44,38 +44,42 @@ const ResultSection = ({
 			<Card>
 				<CardHeader>Result</CardHeader>
 				<CardBody className="space-y-4">
-					<Input
-						label="Remainder Address"
-						value={data?.remainder_addr}
-						readOnly
-					/>
+					{!data && <p className="text-lg font-bold">Draw</p>}
 					{data && (
-						<Table aria-label="Distribution" removeWrapper>
-							<TableHeader>
-								<TableColumn>Member</TableColumn>
-								<TableColumn>Percentage</TableColumn>
-							</TableHeader>
-							<TableBody>
-								{data.member_percentages.map((item) => (
-									<TableRow key={item.addr}>
-										<TableCell>
-											<Profile
-												cosmWasmClient={cosmWasmClient}
-												address={item.addr}
-											/>
-										</TableCell>
-										<TableCell>
-											<Progress
-												aria-label="Percentage"
-												value={Number.parseFloat(item.percentage) * 100}
-												color="primary"
-												showValueLabel
-											/>
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
+						<>
+							<Input
+								label="Remainder Address"
+								value={data?.remainder_addr}
+								readOnly
+							/>
+
+							<Table aria-label="Distribution" removeWrapper>
+								<TableHeader>
+									<TableColumn>Member</TableColumn>
+									<TableColumn>Percentage</TableColumn>
+								</TableHeader>
+								<TableBody>
+									{data.member_percentages.map((item) => (
+										<TableRow key={item.addr}>
+											<TableCell>
+												<Profile
+													cosmWasmClient={cosmWasmClient}
+													address={item.addr}
+												/>
+											</TableCell>
+											<TableCell>
+												<Progress
+													aria-label="Percentage"
+													value={Number.parseFloat(item.percentage) * 100}
+													color="primary"
+													showValueLabel
+												/>
+											</TableCell>
+										</TableRow>
+									))}
+								</TableBody>
+							</Table>
+						</>
 					)}
 				</CardBody>
 			</Card>

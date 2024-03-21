@@ -37,7 +37,7 @@ export type ExecuteMsg = {
   };
 } | {
   set_distribution: {
-    distribution: DistributionForString;
+    distribution?: DistributionForString | null;
   };
 } | {
   receive_native: {};
@@ -90,7 +90,7 @@ export interface Cw721ReceiveMsg {
   token_id: string;
 }
 export interface CompetitionEscrowDistributeMsg {
-  distribution: DistributionForString;
+  distribution?: DistributionForString | null;
   tax_info?: TaxInformationForString | null;
 }
 export interface TaxInformationForString {

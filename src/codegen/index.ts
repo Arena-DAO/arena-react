@@ -16,12 +16,12 @@ import * as _8 from "./ArenaEscrow.react-query";
 import * as _9 from "./ArenaCore.types";
 import * as _10 from "./ArenaCore.client";
 import * as _11 from "./ArenaCore.react-query";
-import * as _12 from "./Cw20Base.types";
-import * as _13 from "./Cw20Base.client";
-import * as _14 from "./Cw20Base.react-query";
-import * as _15 from "./Cw721Base.types";
-import * as _16 from "./Cw721Base.client";
-import * as _17 from "./Cw721Base.react-query";
+import * as _12 from "./Cw721Base.types";
+import * as _13 from "./Cw721Base.client";
+import * as _14 from "./Cw721Base.react-query";
+import * as _15 from "./Cw20Base.types";
+import * as _16 from "./Cw20Base.client";
+import * as _17 from "./Cw20Base.react-query";
 import * as _18 from "./DaoDaoCore.types";
 import * as _19 from "./DaoDaoCore.client";
 import * as _20 from "./DaoDaoCore.react-query";
@@ -31,24 +31,24 @@ import * as _23 from "./DaoVotingTokenStaked.react-query";
 import * as _24 from "./DaoVotingCw721Staked.types";
 import * as _25 from "./DaoVotingCw721Staked.client";
 import * as _26 from "./DaoVotingCw721Staked.react-query";
-import * as _27 from "./DaoVotingCw721Roles.types";
-import * as _28 from "./DaoVotingCw721Roles.client";
-import * as _29 from "./DaoVotingCw721Roles.react-query";
-import * as _30 from "./DaoVotingCw4.types";
-import * as _31 from "./DaoVotingCw4.client";
-import * as _32 from "./DaoVotingCw4.react-query";
-import * as _33 from "./DaoVotingCw20Staked.types";
-import * as _34 from "./DaoVotingCw20Staked.client";
-import * as _35 from "./DaoVotingCw20Staked.react-query";
-import * as _36 from "./DaoProposalSingle.types";
-import * as _37 from "./DaoProposalSingle.client";
-import * as _38 from "./DaoProposalSingle.react-query";
-import * as _39 from "./DaoProposalCondorcet.types";
-import * as _40 from "./DaoProposalCondorcet.client";
-import * as _41 from "./DaoProposalCondorcet.react-query";
-import * as _42 from "./DaoProposalMultiple.types";
-import * as _43 from "./DaoProposalMultiple.client";
-import * as _44 from "./DaoProposalMultiple.react-query";
+import * as _27 from "./DaoVotingCw20Staked.types";
+import * as _28 from "./DaoVotingCw20Staked.client";
+import * as _29 from "./DaoVotingCw20Staked.react-query";
+import * as _30 from "./DaoVotingCw721Roles.types";
+import * as _31 from "./DaoVotingCw721Roles.client";
+import * as _32 from "./DaoVotingCw721Roles.react-query";
+import * as _33 from "./DaoVotingCw4.types";
+import * as _34 from "./DaoVotingCw4.client";
+import * as _35 from "./DaoVotingCw4.react-query";
+import * as _36 from "./DaoProposalMultiple.types";
+import * as _37 from "./DaoProposalMultiple.client";
+import * as _38 from "./DaoProposalMultiple.react-query";
+import * as _39 from "./DaoProposalSingle.types";
+import * as _40 from "./DaoProposalSingle.client";
+import * as _41 from "./DaoProposalSingle.react-query";
+import * as _42 from "./DaoProposalCondorcet.types";
+import * as _43 from "./DaoProposalCondorcet.client";
+import * as _44 from "./DaoProposalCondorcet.react-query";
 export namespace contracts {
   export const ArenaWagerModule = { ..._0,
     ..._1,
@@ -66,11 +66,11 @@ export namespace contracts {
     ..._10,
     ..._11
   };
-  export const Cw20Base = { ..._12,
+  export const Cw721Base = { ..._12,
     ..._13,
     ..._14
   };
-  export const Cw721Base = { ..._15,
+  export const Cw20Base = { ..._15,
     ..._16,
     ..._17
   };
@@ -86,27 +86,27 @@ export namespace contracts {
     ..._25,
     ..._26
   };
-  export const DaoVotingCw721Roles = { ..._27,
+  export const DaoVotingCw20Staked = { ..._27,
     ..._28,
     ..._29
   };
-  export const DaoVotingCw4 = { ..._30,
+  export const DaoVotingCw721Roles = { ..._30,
     ..._31,
     ..._32
   };
-  export const DaoVotingCw20Staked = { ..._33,
+  export const DaoVotingCw4 = { ..._33,
     ..._34,
     ..._35
   };
-  export const DaoProposalSingle = { ..._36,
+  export const DaoProposalMultiple = { ..._36,
     ..._37,
     ..._38
   };
-  export const DaoProposalCondorcet = { ..._39,
+  export const DaoProposalSingle = { ..._39,
     ..._40,
     ..._41
   };
-  export const DaoProposalMultiple = { ..._42,
+  export const DaoProposalCondorcet = { ..._42,
     ..._43,
     ..._44
   };
