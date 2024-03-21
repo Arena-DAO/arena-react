@@ -4,6 +4,7 @@ import {
 	Badge,
 	Button,
 	Chip,
+	Link,
 	Spinner,
 	Table,
 	TableBody,
@@ -115,11 +116,8 @@ const CompetitionModuleSectionItems = ({
 						<TableCell>{item.description}</TableCell>
 						<TableCell>
 							<Button
-								onClick={() =>
-									router.push(
-										`/${path}/view?category=${category.url}&competitionId=${item.id}`,
-									)
-								}
+								as={Link}
+								href={`/${path}/view?category=${category.url}&competitionId=${item.id}`}
 							>
 								View
 							</Button>
@@ -133,16 +131,14 @@ const CompetitionModuleSectionItems = ({
 
 const CompetitionModuleSection = (props: CompetitionModuleSectionProps) => {
 	const { data: cosmWasmClient } = useCosmWasmClient();
-	const router = useRouter();
 
 	return (
 		<div className="space-y-4">
 			<div className="block text-right">
 				<Button
 					startContent={<BsPlus />}
-					onClick={() =>
-						router.push(`/${props.path}/create?category=${props.category.url}`)
-					}
+					as={Link}
+					href={`/${props.path}/create?category=${props.category.url}`}
 				>
 					Create
 				</Button>

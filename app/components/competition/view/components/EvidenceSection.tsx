@@ -6,6 +6,10 @@ import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	Button,
+	Card,
+	CardBody,
+	CardFooter,
+	CardHeader,
 	Input,
 	Modal,
 	ModalBody,
@@ -126,52 +130,60 @@ const EvidenceSection = ({
 	if (list.items.length === 0 && hideIfEmpty) return null;
 
 	return (
-		<div className="space-y-4">
-			<Table
-				isHeaderSticky
-				aria-label="Evidence"
-				baseRef={scrollerRef}
-				bottomContent={
-					hasMore ? (
-						<div className="flex w-full justify-center">
-							<Spinner ref={loaderRef} color="white" />
-						</div>
-					) : null
-				}
-				classNames={{
-					base: "max-h-[520px] overflow-auto table-auto",
-				}}
-			>
-				<TableHeader>
-					<TableColumn>Evidence Time</TableColumn>
-					<TableColumn>Submission User</TableColumn>
-					<TableColumn>Content</TableColumn>
-				</TableHeader>
-				<TableBody
-					emptyContent="No evidence available"
-					items={list.items}
-					isLoading={list.isLoading}
-					loadingContent={<Spinner color="white" />}
-				>
-					{(item: Evidence) => (
-						<TableRow key={item.id}>
-							<TableCell>
-								{formatTimestampToDisplay(item.submit_time)}
-							</TableCell>
-							<TableCell>
-								<Profile
-									address={item.submit_user}
-									cosmWasmClient={cosmWasmClient}
-								/>
-							</TableCell>
-							<TableCell>
-								<MaybeLink content={item.content} />
-							</TableCell>
-						</TableRow>
-					)}
-				</TableBody>
-			</Table>
-			<Button onClick={onOpen}>Add Evidence</Button>
+		<>
+			<Card>
+				<CardHeader>Evidence</CardHeader>
+				<CardBody>
+					<Table
+						isHeaderSticky
+						aria-label="Evidence"
+						baseRef={scrollerRef}
+						removeWrapper
+						bottomContent={
+							hasMore ? (
+								<div className="flex w-full justify-center">
+									<Spinner ref={loaderRef} color="white" />
+								</div>
+							) : null
+						}
+						classNames={{
+							base: "max-h-[520px] overflow-auto table-auto",
+						}}
+					>
+						<TableHeader>
+							<TableColumn>Evidence Time</TableColumn>
+							<TableColumn>Submission User</TableColumn>
+							<TableColumn>Content</TableColumn>
+						</TableHeader>
+						<TableBody
+							emptyContent="No evidence available"
+							items={list.items}
+							isLoading={list.isLoading}
+							loadingContent={<Spinner color="white" />}
+						>
+							{(item: Evidence) => (
+								<TableRow key={item.id}>
+									<TableCell>
+										{formatTimestampToDisplay(item.submit_time)}
+									</TableCell>
+									<TableCell>
+										<Profile
+											address={item.submit_user}
+											cosmWasmClient={cosmWasmClient}
+										/>
+									</TableCell>
+									<TableCell>
+										<MaybeLink content={item.content} />
+									</TableCell>
+								</TableRow>
+							)}
+						</TableBody>
+					</Table>
+				</CardBody>
+				<CardFooter>
+					<Button onClick={onOpen}>Add Evidence</Button>
+				</CardFooter>
+			</Card>
 			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl">
 				<ModalContent>
 					<ModalHeader>Add Evidence</ModalHeader>
@@ -225,7 +237,7 @@ const EvidenceSection = ({
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
-		</div>
+		</>
 	);
 };
 

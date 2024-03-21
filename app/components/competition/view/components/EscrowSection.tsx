@@ -41,7 +41,7 @@ const EscrowSection = ({
 }: WithClient<EscrowSectionProps>) => {
 	const { data: env } = useEnv();
 	const { getSigningCosmWasmClient } = useChain(env.CHAIN);
-	const { data, isLoading, refetch } = useArenaEscrowDumpStateQuery({
+	const { data, isLoading, refetch, isError } = useArenaEscrowDumpStateQuery({
 		client: new ArenaEscrowQueryClient(cosmWasmClient, escrow),
 		args: { addr: address },
 	});
@@ -138,7 +138,7 @@ const EscrowSection = ({
 		);
 	}
 	return (
-		<div className="space-y-4">
+		<>
 			{data.balance && (
 				<Card>
 					<CardHeader>User Balance</CardHeader>
@@ -186,7 +186,7 @@ const EscrowSection = ({
 					</CardBody>
 				</Card>
 			)}
-			<div className="block space-x-2">
+			<ButtonGroup>
 				<DuesModal
 					escrow={escrow}
 					cosmWasmClient={cosmWasmClient}
@@ -197,8 +197,8 @@ const EscrowSection = ({
 					cosmWasmClient={cosmWasmClient}
 					version={version}
 				/>
-			</div>
-		</div>
+			</ButtonGroup>
+		</>
 	);
 };
 

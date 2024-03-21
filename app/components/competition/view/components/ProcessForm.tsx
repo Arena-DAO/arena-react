@@ -171,7 +171,7 @@ const ProcessForm = ({
 
 	const action = "is_expired" in props ? "Jail" : "Process";
 	return (
-		<span>
+		<>
 			<Button onClick={tryOpen}>{action}</Button>
 			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl">
 				<ModalContent>
@@ -323,7 +323,7 @@ const ProcessForm = ({
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
-		</span>
+		</>
 	);
 };
 

@@ -39,6 +39,7 @@ import type { WithClient } from "~/types/util";
 import EscrowSection from "./components/EscrowSection";
 import EvidenceSection from "./components/EvidenceSection";
 import ProcessForm from "./components/ProcessForm";
+import ResultSection from "./components/ResultSection";
 import RulesetsSection from "./components/RulesetsSection";
 
 interface ViewCompetitionProps {
@@ -71,7 +72,7 @@ const ViewCompetition = ({
 	const category = searchParams?.get("category");
 
 	return (
-		<div className="space-y-4">
+		<>
 			{category && (
 				<Tooltip content="Return to competitions">
 					<Button as={Link} isIconOnly href={`/compete?category=${category}`}>
@@ -170,28 +171,33 @@ const ViewCompetition = ({
 					</>
 				)}
 			</div>
-			{data?.rulesets.map((rulesetId) => (
-				<RulesetsSection
-					rulesetId={rulesetId}
-					cosmWasmClient={cosmWasmClient}
-				/>
-			))}
 			{data && (
-				<Table aria-label="Rules">
-					<TableHeader>
-						<TableColumn>Rule</TableColumn>
-					</TableHeader>
-					<TableBody emptyContent="No rules given...">
-						{data.rules.map((rule, i) => (
-							// biome-ignore lint/suspicious/noArrayIndexKey: Best option for now
-							<TableRow key={i}>
-								<TableCell>
-									<MaybeLink content={rule} />
-								</TableCell>
-							</TableRow>
+				<Card>
+					<CardHeader>Rules</CardHeader>
+					<CardBody className="space-y-4">
+						{data.rulesets.map((rulesetId) => (
+							<RulesetsSection
+								rulesetId={rulesetId}
+								cosmWasmClient={cosmWasmClient}
+							/>
 						))}
-					</TableBody>
-				</Table>
+						<Table aria-label="Rules" removeWrapper>
+							<TableHeader>
+								<TableColumn>Rule</TableColumn>
+							</TableHeader>
+							<TableBody emptyContent="No rules given...">
+								{data.rules.map((item, i) => (
+									// biome-ignore lint/suspicious/noArrayIndexKey: Best option for now
+									<TableRow key={i}>
+										<TableCell>
+											<MaybeLink content={item} />
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					</CardBody>
+				</Card>
 			)}
 			{(status === "jailed" || status === "inactive") && (
 				<EvidenceSection
@@ -226,7 +232,14 @@ const ViewCompetition = ({
 					setCompetitionStatus={setStatus}
 				/>
 			)}
-		</div>
+			{status === "inactive" && (
+				<ResultSection
+					cosmWasmClient={cosmWasmClient}
+					moduleAddr={moduleAddr}
+					competitionId={competitionId}
+				/>
+			)}
+		</>
 	);
 };
 
