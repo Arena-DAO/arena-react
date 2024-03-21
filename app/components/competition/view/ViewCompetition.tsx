@@ -38,6 +38,7 @@ import { useEnv } from "~/hooks/useEnv";
 import type { WithClient } from "~/types/util";
 import EscrowSection from "./components/EscrowSection";
 import EvidenceSection from "./components/EvidenceSection";
+import PresetDistributionForm from "./components/PresetDistributionForm";
 import ProcessForm from "./components/ProcessForm";
 import ResultSection from "./components/ResultSection";
 import RulesetsSection from "./components/RulesetsSection";
@@ -221,6 +222,12 @@ const ViewCompetition = ({
 						competitionId={competitionId}
 						setCompetitionStatus={setStatus}
 						is_expired
+					/>
+				)}
+				{status !== "inactive" && data?.escrow && (
+					<PresetDistributionForm
+						escrow={data.escrow}
+						cosmWasmClient={cosmWasmClient}
 					/>
 				)}
 			</div>
