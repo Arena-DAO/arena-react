@@ -6,6 +6,7 @@ import {
 	Button,
 	Card,
 	CardBody,
+	CardFooter,
 	CardHeader,
 	Input,
 	Link,
@@ -211,90 +212,39 @@ export default function CreateCompetitionForm() {
 					cosmWasmClient={cosmWasmClient}
 				/>
 			)}
-			<Table aria-label="Rules" keyboardDelegate={keyboardDelegateFixSpace}>
-				<TableHeader>
-					<TableColumn>Rules</TableColumn>
-				</TableHeader>
-				<TableBody emptyContent="No rules given">
-					{rulesFields?.map((rule, i) => (
-						<TableRow key={rule.id}>
-							<TableCell>
-								<Controller
-									control={control}
-									name={`rules.${i}.rule`}
-									render={({ field }) => (
-										<Input
-											label={`Rule ${i + 1}`}
-											isDisabled={isSubmitting}
-											isInvalid={!!errors.rules?.[i]?.rule}
-											errorMessage={errors.rules?.[i]?.rule?.message}
-											endContent={
-												<Tooltip content="Delete rule">
-													<Button
-														isIconOnly
-														isDisabled={isSubmitting}
-														aria-label="Delete Rule"
-														variant="faded"
-														onClick={() => rulesRemove(i)}
-													>
-														<FiTrash />
-													</Button>
-												</Tooltip>
-											}
-											{...field}
-										/>
-									)}
-								/>
-							</TableCell>
-						</TableRow>
-					))}
-				</TableBody>
-			</Table>
-			<Button
-				onClick={() => rulesAppend({ rule: "" })}
-				aria-label="Add rule"
-				isDisabled={isSubmitting}
-				startContent={<FiPlus />}
-			>
-				Add Rule
-			</Button>
-			<Table aria-label="Teams" keyboardDelegate={keyboardDelegateFixSpace}>
-				<TableHeader>
-					<TableColumn>Teams</TableColumn>
-				</TableHeader>
-				<TableBody emptyContent="No teams provided">
-					{duesFields.map((due, index) => (
-						<TableRow key={due.id}>
-							<TableCell>
-								<Card>
-									<CardHeader className="flex justify-between">
-										<div className="text-nowrap mr-4">Team {index + 1}</div>
-										{cosmWasmClient && (
-											<DueProfile
-												cosmWasmClient={cosmWasmClient}
-												index={index}
-												control={control}
-											/>
-										)}
-									</CardHeader>
-									<CardBody className="space-y-4">
+			<Card>
+				<CardHeader>Rules</CardHeader>
+				<CardBody>
+					<Table
+						aria-label="Rules"
+						keyboardDelegate={keyboardDelegateFixSpace}
+						hideHeader
+						removeWrapper
+					>
+						<TableHeader>
+							<TableColumn>Rules</TableColumn>
+						</TableHeader>
+						<TableBody emptyContent="No rules given">
+							{rulesFields?.map((rule, i) => (
+								<TableRow key={rule.id}>
+									<TableCell>
 										<Controller
 											control={control}
-											name={`dues.${index}.addr`}
+											name={`rules.${i}.rule`}
 											render={({ field }) => (
 												<Input
-													label="Address"
+													label={`Rule ${i + 1}`}
 													isDisabled={isSubmitting}
-													isInvalid={!!errors.dues?.[index]?.addr}
-													errorMessage={errors.dues?.[index]?.addr?.message}
+													isInvalid={!!errors.rules?.[i]?.rule}
+													errorMessage={errors.rules?.[i]?.rule?.message}
 													endContent={
-														<Tooltip content="Delete Team">
+														<Tooltip content="Delete rule">
 															<Button
 																isIconOnly
-																aria-label="Delete Team"
-																variant="faded"
 																isDisabled={isSubmitting}
-																onClick={() => duesRemove(index)}
+																aria-label="Delete Rule"
+																variant="faded"
+																onClick={() => rulesRemove(i)}
 															>
 																<FiTrash />
 															</Button>
@@ -304,28 +254,106 @@ export default function CreateCompetitionForm() {
 												/>
 											)}
 										/>
-										<DueBalance
-											control={control}
-											index={index}
-											getValues={getValues}
-										/>
-									</CardBody>
-								</Card>
-							</TableCell>
-						</TableRow>
-					))}
-				</TableBody>
-			</Table>
-			<Button
-				onClick={() =>
-					duesAppend({ addr: "", balance: { native: [], cw20: [], cw721: [] } })
-				}
-				isDisabled={isSubmitting}
-				aria-label="Add team"
-				startContent={<FiPlus />}
-			>
-				Add Team
-			</Button>
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				</CardBody>
+				<CardFooter>
+					<Button
+						onClick={() => rulesAppend({ rule: "" })}
+						aria-label="Add rule"
+						isDisabled={isSubmitting}
+						startContent={<FiPlus />}
+					>
+						Add Rule
+					</Button>
+				</CardFooter>
+			</Card>
+			<Card>
+				<CardHeader>Teams</CardHeader>
+				<CardBody>
+					<Table
+						aria-label="Teams"
+						keyboardDelegate={keyboardDelegateFixSpace}
+						removeWrapper
+						hideHeader
+					>
+						<TableHeader>
+							<TableColumn>Teams</TableColumn>
+						</TableHeader>
+						<TableBody emptyContent="No teams provided">
+							{duesFields.map((due, index) => (
+								<TableRow key={due.id}>
+									<TableCell>
+										<Card>
+											<CardHeader className="flex justify-between">
+												<div className="text-nowrap mr-4">Team {index + 1}</div>
+												{cosmWasmClient && (
+													<DueProfile
+														cosmWasmClient={cosmWasmClient}
+														index={index}
+														control={control}
+													/>
+												)}
+											</CardHeader>
+											<CardBody className="space-y-4">
+												<Controller
+													control={control}
+													name={`dues.${index}.addr`}
+													render={({ field }) => (
+														<Input
+															label="Address"
+															isDisabled={isSubmitting}
+															isInvalid={!!errors.dues?.[index]?.addr}
+															errorMessage={errors.dues?.[index]?.addr?.message}
+															endContent={
+																<Tooltip content="Delete Team">
+																	<Button
+																		isIconOnly
+																		aria-label="Delete Team"
+																		variant="faded"
+																		isDisabled={isSubmitting}
+																		onClick={() => duesRemove(index)}
+																	>
+																		<FiTrash />
+																	</Button>
+																</Tooltip>
+															}
+															{...field}
+														/>
+													)}
+												/>
+												<DueBalance
+													control={control}
+													index={index}
+													getValues={getValues}
+												/>
+											</CardBody>
+										</Card>
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				</CardBody>
+				<CardFooter>
+					<Button
+						onClick={() =>
+							duesAppend({
+								addr: "",
+								balance: { native: [], cw20: [], cw721: [] },
+							})
+						}
+						isDisabled={isSubmitting}
+						aria-label="Add team"
+						startContent={<FiPlus />}
+					>
+						Add Team
+					</Button>
+				</CardFooter>
+			</Card>
 			<Accordion variant="shadow">
 				<AccordionItem
 					key="1"
