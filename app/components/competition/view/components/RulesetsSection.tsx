@@ -24,14 +24,14 @@ const RulesetsSection = ({
 
 	return (
 		<Card>
-			<CardHeader>Ruleset {rulesetId}</CardHeader>
+			<CardHeader className="pb-0">Ruleset {rulesetId}</CardHeader>
 			<CardBody className="space-y-2">
 				<p>{parsedData?.description}</p>
-				<ol className="list-inside list-decimal">
+				<ul className="list-inside list-disc">
 					{parsedData?.rules.map((rule) => (
 						<li>{rule}</li>
 					))}
-				</ol>
+				</ul>
 			</CardBody>
 		</Card>
 	);

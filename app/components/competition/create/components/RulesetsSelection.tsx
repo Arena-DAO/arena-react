@@ -2,6 +2,9 @@
 
 import {
 	Button,
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
 	Spinner,
 	Switch,
 	Table,
@@ -84,7 +87,7 @@ const RulesetsSelection = ({
 		>
 			<TableHeader>
 				<TableColumn>Rulesets</TableColumn>
-				<TableColumn>Actions</TableColumn>
+				<TableColumn className="text-right">Actions</TableColumn>
 			</TableHeader>
 			<TableBody
 				emptyContent="No rulesets available"
@@ -95,8 +98,20 @@ const RulesetsSelection = ({
 				{(item: Ruleset) => (
 					<TableRow key={item.id}>
 						<TableCell>{item.description}</TableCell>
-						<TableCell className="space-x-4">
-							<Button>View</Button>
+						<TableCell className="space-x-4 text-right">
+							<Popover placement="left">
+								<PopoverTrigger>
+									<Button>View</Button>
+								</PopoverTrigger>
+								<PopoverContent>
+									<ul className="list-disc list-inside">
+										{item.rules.map((rule, i) => (
+											// biome-ignore lint/suspicious/noArrayIndexKey: Best option for now
+											<li key={i}>{rule}</li>
+										))}
+									</ul>
+								</PopoverContent>
+							</Popover>
 							<Switch
 								aria-label="Selected"
 								onValueChange={(isSelected) => {
