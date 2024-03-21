@@ -11,6 +11,7 @@ import {
 	ModalContent,
 	ModalFooter,
 	ModalHeader,
+	Progress,
 	Table,
 	TableBody,
 	TableCell,
@@ -307,6 +308,12 @@ const ProcessForm = ({
 								<p>{errors.distribution?.root?.message}</p>
 							</div>
 						</div>
+						<Progress
+							aria-label="Total Percentage"
+							value={fields.reduce((acc, x) => acc + x.percentage, 0) * 100}
+							color="primary"
+							showValueLabel
+						/>
 					</ModalBody>
 					<ModalFooter>
 						<Button

@@ -4,6 +4,7 @@ import {
 	CardBody,
 	CardHeader,
 	Input,
+	Progress,
 	Skeleton,
 	Table,
 	TableBody,
@@ -64,10 +65,11 @@ const ResultSection = ({
 											/>
 										</TableCell>
 										<TableCell>
-											<Input
-												label="Percentage"
-												value={item.percentage}
-												readOnly
+											<Progress
+												aria-label="Percentage"
+												value={Number.parseFloat(item.percentage) * 100}
+												color="primary"
+												showValueLabel
 											/>
 										</TableCell>
 									</TableRow>

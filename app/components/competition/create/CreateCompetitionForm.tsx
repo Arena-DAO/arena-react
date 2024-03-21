@@ -330,6 +330,9 @@ export default function CreateCompetitionForm() {
 													index={index}
 													getValues={getValues}
 												/>
+												<div className="text-danger text-xs">
+													<p>{errors.dues?.[index]?.balance?.message}</p>
+												</div>
 											</CardBody>
 										</Card>
 									</TableCell>
