@@ -26,22 +26,25 @@ import type { WithClient } from "~/types/util";
 import BalanceDisplay from "./BalanceDisplay";
 import BalancesModal from "./BalancesModal";
 import DuesModal from "./DuesModal";
+import InitialDuesModal from "./InitialDuesModal";
 
 interface EscrowSectionProps {
 	escrow: string;
 	address?: string;
 	setCompetitionStatus: Dispatch<SetStateAction<CompetitionStatus>>;
+	status: CompetitionStatus;
 }
 
 const EscrowSection = ({
 	escrow,
 	cosmWasmClient,
 	address,
+	status,
 	setCompetitionStatus,
 }: WithClient<EscrowSectionProps>) => {
 	const { data: env } = useEnv();
 	const { getSigningCosmWasmClient } = useChain(env.CHAIN);
-	const { data, isLoading, refetch, isError } = useArenaEscrowDumpStateQuery({
+	const { data, isLoading, refetch } = useArenaEscrowDumpStateQuery({
 		client: new ArenaEscrowQueryClient(cosmWasmClient, escrow),
 		args: { addr: address },
 	});
@@ -187,11 +190,16 @@ const EscrowSection = ({
 				</Card>
 			)}
 			<ButtonGroup>
-				<DuesModal
-					escrow={escrow}
-					cosmWasmClient={cosmWasmClient}
-					version={version}
-				/>
+				{status === "pending" && (
+					<DuesModal
+						escrow={escrow}
+						cosmWasmClient={cosmWasmClient}
+						version={version}
+					/>
+				)}
+				{status !== "pending" && (
+					<InitialDuesModal escrow={escrow} cosmWasmClient={cosmWasmClient} />
+				)}
 				<BalancesModal
 					escrow={escrow}
 					cosmWasmClient={cosmWasmClient}

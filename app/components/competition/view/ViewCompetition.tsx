@@ -237,6 +237,7 @@ const ViewCompetition = ({
 					address={address}
 					escrow={data.escrow}
 					setCompetitionStatus={setStatus}
+					status={status}
 				/>
 			)}
 			{status === "inactive" && (
