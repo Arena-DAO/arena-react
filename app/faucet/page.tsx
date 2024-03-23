@@ -39,20 +39,24 @@ export default function Faucet() {
 		<div className="space-y-4">
 			<h1 className="text-5xl text-center">Juno Testnet Faucet</h1>
 			<form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-				<Controller
-					control={control}
-					name="address"
-					render={({ field }) => (
-						<Input
-							label="Address"
-							isDisabled={isSubmitting}
-							isInvalid={!!errors.address}
-							errorMessage={errors.address?.message}
-							{...field}
-						/>
-					)}
-				/>
-				<p className="text-xs">*Testnet faucet is down at the moment</p>
+				<span>
+					<Controller
+						control={control}
+						name="address"
+						render={({ field }) => (
+							<Input
+								label="Address"
+								isDisabled={isSubmitting}
+								isInvalid={!!errors.address}
+								errorMessage={errors.address?.message}
+								{...field}
+							/>
+						)}
+					/>
+					<p className="text-xs text-warning">
+						*Testnet faucet is down at the moment
+					</p>
+				</span>
 				<Button
 					type="submit"
 					isLoading={isSubmitting}

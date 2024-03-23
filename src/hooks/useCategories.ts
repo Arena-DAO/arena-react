@@ -9,6 +9,8 @@ interface CategoryBase {
 	img?: string;
 }
 
+type Keys = "id" | "url";
+
 export interface CategoryLeaf extends CategoryBase {
 	category_id: number | null;
 }
@@ -22,41 +24,43 @@ export type CategoryItem = CategoryLeaf | SubCategory;
 function setData(
 	categoryMap: Map<string, CategoryItem>,
 	daoItem: CategoryItem,
+	key: Keys,
 ) {
 	if ("children" in daoItem) {
 		for (const child of daoItem.children) {
-			setData(categoryMap, child);
+			setData(categoryMap, child, key);
 		}
 	}
-	categoryMap.set(daoItem.url, daoItem);
+
+	if (key === "id" && "category_id" in daoItem)
+		categoryMap.set(
+			daoItem?.category_id ? daoItem.category_id.toString() : "",
+			daoItem,
+		);
+	else categoryMap.set(daoItem.url, daoItem);
 }
 
-const getCategoryMap = (env: string) => {
+const getCategoryMap = (env: string, key: Keys) => {
 	const categoryMap = new Map<string, CategoryItem>();
-	categoryMap.set("other", {
-		url: "other",
-		title: "Other",
-		category_id: null,
-		img: "/default_trophy.jpg",
-	});
 	if (env === "development") {
 		const categoryData = dev_categories as SubCategory;
 
-		setData(categoryMap, categoryData);
+		setData(categoryMap, categoryData, key);
 		return categoryMap;
 	}
 	if (env === "production") {
 		const categoryData = prod_categories as SubCategory;
 
-		setData(categoryMap, categoryData);
+		setData(categoryMap, categoryData, key);
 		return categoryMap;
 	}
 	throw Error(`Unknown env: ${env}`);
 };
 
-export const useCategoryMap = () => {
+export const useCategoryMap = (key: Keys = "url") => {
 	const { data: env } = useEnv();
-	return useQuery(["categories"], () => getCategoryMap(env.ENV), {
-		initialData: getCategoryMap(env.ENV),
+	return useQuery(["categories", key], () => getCategoryMap(env.ENV, key), {
+		initialData: getCategoryMap(env.ENV, key),
+		staleTime: Number.POSITIVE_INFINITY,
 	});
 };

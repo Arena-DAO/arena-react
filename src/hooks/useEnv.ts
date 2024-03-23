@@ -113,5 +113,6 @@ function getEnv(): Env {
 export const useEnv = () => {
 	return useQuery(["env"], () => getEnv(), {
 		initialData: getEnv(),
+		staleTime: Number.POSITIVE_INFINITY,
 	});
 };

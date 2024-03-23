@@ -21,6 +21,6 @@ export const useToken = (
 					denomOrAddress,
 					assets?.assets,
 					env.BECH32_PREFIX,
-			  ),
+				),
 	);
 };

@@ -3,7 +3,6 @@
 import { Card, CardBody, CardHeader, Image, Link } from "@nextui-org/react";
 import { useTheme } from "next-themes";
 import NextImage from "next/image";
-import NextLink from "next/link";
 import Chart from "react-google-charts";
 import {
 	BsBookFill,
@@ -64,7 +63,7 @@ export default function HomePage() {
 				className="trophy_cursor mx-auto"
 			/>
 			<div className="block text-start">
-				<Link as={NextLink} href="#about" scroll={false}>
+				<Link href="#about">
 					<h2 id="about" className="text-foreground font-bold text-4xl">
 						<span className="text-primary">#</span> About
 					</h2>
@@ -96,7 +95,7 @@ export default function HomePage() {
 				/>
 			</div>
 			<div className="block text-start">
-				<Link as={NextLink} href="#initial_token_distribution" scroll={false}>
+				<Link href="#initial_token_distribution">
 					<h2
 						id="initial_token_distribution"
 						className="text-foreground font-bold text-4xl"
@@ -129,7 +128,7 @@ export default function HomePage() {
 				height={"400px"}
 			/>
 			<div className="block text-start">
-				<Link as={NextLink} href="#arena_core" scroll={false}>
+				<Link href="#arena_core">
 					<h2 id="arena_core" className="text-foreground font-bold text-4xl">
 						<span className="text-primary">#</span> Arena Core
 					</h2>
@@ -159,7 +158,7 @@ export default function HomePage() {
 				/>
 			</div>
 			<div className="block text-start">
-				<Link as={NextLink} href="#escrow" scroll={false}>
+				<Link href="#escrow">
 					<h2 id="escrow" className="text-foreground font-bold text-4xl">
 						<span className="text-primary">#</span> Escrows
 					</h2>
@@ -178,7 +177,7 @@ export default function HomePage() {
 				/>
 			</div>
 			<div className="block text-start">
-				<Link as={NextLink} href="#wagers" scroll={false}>
+				<Link href="#wagers">
 					<h2 id="wagers" className="text-foreground font-bold text-4xl">
 						<span className="text-primary">#</span> Wagers
 					</h2>
@@ -197,7 +196,7 @@ export default function HomePage() {
 				/>
 			</div>
 			<div className="block text-start">
-				<Link as={NextLink} href="#leagues" scroll={false}>
+				<Link href="#leagues">
 					<h2 id="leagues" className="text-foreground font-bold text-4xl">
 						<span className="text-primary">#</span> Leagues
 					</h2>

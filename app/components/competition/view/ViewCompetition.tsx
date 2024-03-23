@@ -136,8 +136,8 @@ const ViewCompetition = ({
 								"at_time" in data.expiration
 									? "at_time"
 									: "at_height" in data.expiration
-									  ? "at_height"
-									  : "never",
+										? "at_height"
+										: "never",
 							]}
 							isDisabled
 						>
