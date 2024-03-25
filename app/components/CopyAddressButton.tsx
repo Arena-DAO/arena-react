@@ -17,8 +17,14 @@ export function CopyAddressButton({
 	});
 
 	return (
-		<Button isIconOnly onClick={setCopied} aria-label="Copy address" {...props}>
-			{isCopied ? <FiCheck /> : <FiClipboard />}
+		<Button
+			onClick={setCopied}
+			aria-label="Copy address"
+			startContent={isCopied ? <FiCheck /> : <FiClipboard />}
+			isDisabled={isCopied}
+			{...props}
+		>
+			{isCopied ? "Copied" : "Copy Address"}
 		</Button>
 	);
 }

@@ -105,21 +105,18 @@ const ViewCompetition = ({
 					{data?.host && (
 						<div className="flex justify-between">
 							<Profile address={data.host} cosmWasmClient={cosmWasmClient} />
-							<ButtonGroup>
-								<CopyAddressButton address={data?.host} />
-								{isValidContractAddress(data.host, env.BECH32_PREFIX) && (
-									<Tooltip content="View on DAO DAO">
-										<Button
-											isIconOnly
-											as={Link}
-											href={`${env.DAO_DAO_URL}/dao/${data.host}`}
-											isExternal
-										>
-											<BsYinYang />
-										</Button>
-									</Tooltip>
-								)}
-							</ButtonGroup>
+							{isValidContractAddress(data.host, env.BECH32_PREFIX) && (
+								<Tooltip content="View on DAO DAO">
+									<Button
+										isIconOnly
+										as={Link}
+										href={`${env.DAO_DAO_URL}/dao/${data.host}`}
+										isExternal
+									>
+										<BsYinYang />
+									</Button>
+								</Tooltip>
+							)}
 						</div>
 					)}
 				</CardBody>

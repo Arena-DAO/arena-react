@@ -5,8 +5,8 @@ import { useEnv } from "./useEnv";
 
 interface CategoryBase {
 	url: string;
-	title?: string;
-	img?: string;
+	title: string;
+	img: string;
 }
 
 type Keys = "id" | "url";
@@ -32,12 +32,13 @@ function setData(
 		}
 	}
 
-	if (key === "id" && "category_id" in daoItem)
-		categoryMap.set(
-			daoItem?.category_id ? daoItem.category_id.toString() : "",
-			daoItem,
-		);
-	else categoryMap.set(daoItem.url, daoItem);
+	if (key === "id") {
+		if ("category_id" in daoItem)
+			categoryMap.set(
+				daoItem?.category_id ? daoItem.category_id.toString() : "",
+				daoItem,
+			);
+	} else categoryMap.set(daoItem.url, daoItem);
 }
 
 const getCategoryMap = (env: string, key: Keys) => {
