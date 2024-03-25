@@ -256,18 +256,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@biomejs/biome@npm:1.6.2":
-  version: 1.6.2
-  resolution: "@biomejs/biome@npm:1.6.2"
+"@biomejs/biome@npm:1.6.3":
+  version: 1.6.3
+  resolution: "@biomejs/biome@npm:1.6.3"
   dependencies:
-    "@biomejs/cli-darwin-arm64": "npm:1.6.2"
-    "@biomejs/cli-darwin-x64": "npm:1.6.2"
-    "@biomejs/cli-linux-arm64": "npm:1.6.2"
-    "@biomejs/cli-linux-arm64-musl": "npm:1.6.2"
-    "@biomejs/cli-linux-x64": "npm:1.6.2"
-    "@biomejs/cli-linux-x64-musl": "npm:1.6.2"
-    "@biomejs/cli-win32-arm64": "npm:1.6.2"
-    "@biomejs/cli-win32-x64": "npm:1.6.2"
+    "@biomejs/cli-darwin-arm64": "npm:1.6.3"
+    "@biomejs/cli-darwin-x64": "npm:1.6.3"
+    "@biomejs/cli-linux-arm64": "npm:1.6.3"
+    "@biomejs/cli-linux-arm64-musl": "npm:1.6.3"
+    "@biomejs/cli-linux-x64": "npm:1.6.3"
+    "@biomejs/cli-linux-x64-musl": "npm:1.6.3"
+    "@biomejs/cli-win32-arm64": "npm:1.6.3"
+    "@biomejs/cli-win32-x64": "npm:1.6.3"
   dependenciesMeta:
     "@biomejs/cli-darwin-arm64":
       optional: true
@@ -287,62 +287,62 @@ __metadata:
       optional: true
   bin:
     biome: bin/biome
-  checksum: 10c0/a1b0c5a557469c7f8c8501a2d78a8eb91fc678d639faf0566ccaf84be7b8ee38956a1a47d10b227b60004217cad80e44730a55505a2d00b01327921a421706ca
+  checksum: 10c0/5dd7a08e8c05eea2f687257c0d14c5fa0b433803ca9a003c447d501bc5167fb1a9d7daad12a7d177e1894666144d4c4897ec3efdfa78489d9606f08f222a5f60
   languageName: node
   linkType: hard
 
-"@biomejs/cli-darwin-arm64@npm:1.6.2":
-  version: 1.6.2
-  resolution: "@biomejs/cli-darwin-arm64@npm:1.6.2"
+"@biomejs/cli-darwin-arm64@npm:1.6.3":
+  version: 1.6.3
+  resolution: "@biomejs/cli-darwin-arm64@npm:1.6.3"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@biomejs/cli-darwin-x64@npm:1.6.2":
-  version: 1.6.2
-  resolution: "@biomejs/cli-darwin-x64@npm:1.6.2"
+"@biomejs/cli-darwin-x64@npm:1.6.3":
+  version: 1.6.3
+  resolution: "@biomejs/cli-darwin-x64@npm:1.6.3"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-arm64-musl@npm:1.6.2":
-  version: 1.6.2
-  resolution: "@biomejs/cli-linux-arm64-musl@npm:1.6.2"
+"@biomejs/cli-linux-arm64-musl@npm:1.6.3":
+  version: 1.6.3
+  resolution: "@biomejs/cli-linux-arm64-musl@npm:1.6.3"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-arm64@npm:1.6.2":
-  version: 1.6.2
-  resolution: "@biomejs/cli-linux-arm64@npm:1.6.2"
+"@biomejs/cli-linux-arm64@npm:1.6.3":
+  version: 1.6.3
+  resolution: "@biomejs/cli-linux-arm64@npm:1.6.3"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-x64-musl@npm:1.6.2":
-  version: 1.6.2
-  resolution: "@biomejs/cli-linux-x64-musl@npm:1.6.2"
+"@biomejs/cli-linux-x64-musl@npm:1.6.3":
+  version: 1.6.3
+  resolution: "@biomejs/cli-linux-x64-musl@npm:1.6.3"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-x64@npm:1.6.2":
-  version: 1.6.2
-  resolution: "@biomejs/cli-linux-x64@npm:1.6.2"
+"@biomejs/cli-linux-x64@npm:1.6.3":
+  version: 1.6.3
+  resolution: "@biomejs/cli-linux-x64@npm:1.6.3"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@biomejs/cli-win32-arm64@npm:1.6.2":
-  version: 1.6.2
-  resolution: "@biomejs/cli-win32-arm64@npm:1.6.2"
+"@biomejs/cli-win32-arm64@npm:1.6.3":
+  version: 1.6.3
+  resolution: "@biomejs/cli-win32-arm64@npm:1.6.3"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@biomejs/cli-win32-x64@npm:1.6.2":
-  version: 1.6.2
-  resolution: "@biomejs/cli-win32-x64@npm:1.6.2"
+"@biomejs/cli-win32-x64@npm:1.6.3":
+  version: 1.6.3
+  resolution: "@biomejs/cli-win32-x64@npm:1.6.3"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -1449,9 +1449,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@interchain-ui/react@npm:1.22.4":
-  version: 1.22.4
-  resolution: "@interchain-ui/react@npm:1.22.4"
+"@interchain-ui/react@npm:1.22.6":
+  version: 1.22.6
+  resolution: "@interchain-ui/react@npm:1.22.6"
   dependencies:
     "@floating-ui/core": "npm:^1.6.0"
     "@floating-ui/dom": "npm:^1.5.3"
@@ -1474,11 +1474,11 @@ __metadata:
     rainbow-sprinkles: "npm:^0.17.1"
     react-aria: "npm:^3.29.1"
     react-stately: "npm:^3.27.1"
-    zustand: "npm:^4.4.7"
+    zustand: "npm:^4.5.2"
   peerDependencies:
     react: ^18.x
     react-dom: ^18.x
-  checksum: 10c0/c8e759a41542f07a284a6bba6c7df24ec4cb27c39bca0dde3d183be5945aa5a918253dc8a586ab85e6cb722602752517d07b55e5c27702c27c0bac21b99c61d7
+  checksum: 10c0/7dc399c8d3364ab924e2bcfa8808fff98fb05ac58c88fe0ef07ae3e239f3f0cf25b476c483b48fc77153eee81b73e8cf0fd1d417ba2468d151b9a8d3af7bf4c7
   languageName: node
   linkType: hard
 
@@ -5214,14 +5214,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:18.2.69":
-  version: 18.2.69
-  resolution: "@types/react@npm:18.2.69"
+"@types/react@npm:18.2.70":
+  version: 18.2.70
+  resolution: "@types/react@npm:18.2.70"
   dependencies:
     "@types/prop-types": "npm:*"
     "@types/scheduler": "npm:*"
     csstype: "npm:^3.0.2"
-  checksum: 10c0/239b947ed8576a271057a6f571d0967098074b101a2bece244e88093dc8fb2f020872c463b8e78b2049334ba99158f6eef5960e51f73a389f86eee39b835d846
+  checksum: 10c0/2107b1fa8963cabe33d981cf1c0e3b7534c9d12b98c1046cd9f7975851690a0780db011f6a1d637ae4e612ef00c94ebdbe76a9e2f9e0f3baa6aad3213932af41
   languageName: node
   linkType: hard
 
@@ -5647,7 +5647,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "arena-react@workspace:."
   dependencies:
-    "@biomejs/biome": "npm:1.6.2"
+    "@biomejs/biome": "npm:1.6.3"
     "@chain-registry/types": "npm:^0.18.5"
     "@cosmjs/amino": "npm:^0.32.3"
     "@cosmjs/cosmwasm-stargate": "npm:0.32.3"
@@ -5662,17 +5662,17 @@ __metadata:
     "@cosmos-kit/vectis": "npm:^2.6.9"
     "@date-fns/utc": "npm:^1.2.0"
     "@hookform/resolvers": "npm:^3.3.4"
-    "@interchain-ui/react": "npm:1.22.4"
+    "@interchain-ui/react": "npm:1.22.6"
     "@nextui-org/react": "npm:^2.2.10"
     "@nextui-org/theme": "npm:^2.1.18"
     "@nextui-org/use-infinite-scroll": "npm:^2.1.2"
     "@tanstack/react-query": "npm:4.36.1"
     "@types/lodash": "npm:^4.17.0"
     "@types/node": "npm:^20.11.30"
-    "@types/react": "npm:18.2.69"
+    "@types/react": "npm:18.2.70"
     "@types/react-dom": "npm:^18.2.22"
     autoprefixer: "npm:^10.4.19"
-    chain-registry: "npm:1.33.8"
+    chain-registry: "npm:1.33.9"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^6.1.1"
     date-fns: "npm:^3.6.0"
@@ -6175,13 +6175,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.33.8":
-  version: 1.33.8
-  resolution: "chain-registry@npm:1.33.8"
+"chain-registry@npm:1.33.9":
+  version: 1.33.9
+  resolution: "chain-registry@npm:1.33.9"
   dependencies:
     "@babel/runtime": "npm:^7.21.0"
     "@chain-registry/types": "npm:^0.18.5"
-  checksum: 10c0/372c751b32936f9e4473a2a6e2cbc4394670a1c140a0e8ddb3bf0de92e9e12e9884b277262b3ba24b3d09dbff6fb48076f71d319c5a5b3de6aaaecd65fd4a84e
+  checksum: 10c0/86941098fef7bc17825ac544b080fd1749ab04d7b3ce781c9aff283496462ec0ea610c72dd76edadec73aeef2a1b8ae9a71ad678d7c74e863e859c49ab45dfd3
   languageName: node
   linkType: hard
 
@@ -11310,7 +11310,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zustand@npm:^4.4.7":
+"zustand@npm:^4.5.2":
   version: 4.5.2
   resolution: "zustand@npm:4.5.2"
   dependencies:
