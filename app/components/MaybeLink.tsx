@@ -1,11 +1,16 @@
 import { Link } from "@nextui-org/react";
+import { withIpfsSupport } from "~/helpers/IPFSHelpers";
 
 interface MaybeLinkProps {
 	content: string;
 }
 
 const MaybeLink = ({ content }: MaybeLinkProps) => {
-	const url = URL.canParse(content) ? new URL(content) : undefined;
+	const maybeIpfsUrl = withIpfsSupport(content);
+	const url =
+		maybeIpfsUrl && URL.canParse(maybeIpfsUrl)
+			? new URL(maybeIpfsUrl)
+			: undefined;
 
 	if (url?.href) {
 		return (
