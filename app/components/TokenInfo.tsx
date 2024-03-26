@@ -15,6 +15,9 @@ const TokenInfo = ({
 	isNative = false,
 	...props
 }: WithClient<TokenCardProps>) => {
+	denomOrAddress = isNative
+		? denomOrAddress
+		: denomOrAddress.replace("cw20:", "");
 	const {
 		data: token,
 		isLoading,

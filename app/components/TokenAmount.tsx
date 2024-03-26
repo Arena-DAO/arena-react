@@ -19,6 +19,10 @@ const TokenAmount = ({
 	isNative = false,
 	className,
 }: WithClient<TokenAmountProps>) => {
+	denomOrAddress = isNative
+		? denomOrAddress
+		: denomOrAddress.replace("cw20:", "");
+
 	const {
 		data: token,
 		isLoading,

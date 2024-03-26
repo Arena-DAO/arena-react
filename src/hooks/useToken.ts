@@ -12,13 +12,13 @@ export const useToken = (
 ) => {
 	const { data: env } = useEnv();
 	const { assets } = useChain(chain ?? env.CHAIN);
-
-	return useQuery(["token", denomOrAddress], async () =>
+	return useQuery(["token", denomOrAddress, isNative], async () =>
 		isNative
 			? await getNativeAsset(denomOrAddress, env.JUNO_API_URL, assets?.assets)
 			: await getCw20Asset(
 					cosmWasmClient,
 					denomOrAddress,
+					env.IPFS_GATEWAY,
 					assets?.assets,
 					env.BECH32_PREFIX,
 				),

@@ -4,12 +4,19 @@ import type { Metadata } from "cosmjs-types/cosmos/bank/v1beta1/bank";
 import type { Coin } from "cosmjs-types/cosmos/base/v1beta1/coin";
 import { Cw20BaseQueryClient } from "~/codegen/Cw20Base.client";
 import { isValidContractAddress } from "./AddressHelpers";
+import { withIpfsSupport } from "./IPFSHelpers";
 
 export function getTokenConversion(
 	coin: Coin,
 	to_denom: string,
 	asset: Asset,
 ): Coin {
+	if (asset.type_asset === "cw20") {
+		if (isValidContractAddress(coin.denom)) {
+			coin.denom = `cw20:${coin.denom}`;
+		}
+	}
+
 	if (coin.denom === to_denom) return coin;
 	const original_units = asset.denom_units.find(
 		(x) => x.denom.toLowerCase() === coin.denom.toLowerCase(),
@@ -49,10 +56,18 @@ function findAssetInAssets(
 	isCw20 = false,
 ) {
 	if (assets) {
-		const denom = isCw20 ? `cw20:${denomOrAddress}` : denomOrAddress;
+		if (isCw20) {
+			return assets
+				.filter((x) => x.type_asset === "cw20")
+				.find((asset) =>
+					asset?.denom_units?.find(
+						(denomUnit) => denomUnit?.denom?.toLowerCase() === denomOrAddress,
+					),
+				);
+		}
 		return assets.find((asset) =>
 			asset?.denom_units?.find(
-				(denomUnit) => denomUnit?.denom?.toLowerCase() === denom,
+				(denomUnit) => denomUnit?.denom?.toLowerCase() === denomOrAddress,
 			),
 		);
 	}
@@ -62,19 +77,21 @@ function findAssetInAssets(
 export async function getCw20Asset(
 	cosmWasmClient: CosmWasmClient,
 	denomOrAddress: string,
+	ipfsGateway: string,
 	assets?: Asset[],
 	prefix?: string,
 ): Promise<Asset> {
 	const isAddress = isValidContractAddress(denomOrAddress, prefix);
 	const localAsset = findAssetInAssets(
-		denomOrAddress.toLowerCase(),
+		isAddress
+			? `cw20:${denomOrAddress.toLowerCase()}`
+			: denomOrAddress.toLowerCase(),
 		assets,
-		isAddress,
+		true,
 	);
 	if (localAsset) {
 		return localAsset;
 	}
-
 	if (!isAddress) {
 		throw new Error("Cannot find cw20 asset");
 	}
@@ -94,8 +111,9 @@ export async function getCw20Asset(
 			{ denom: `cw20:${denomOrAddress}`, exponent: 0 },
 			{ denom: tokenInfo.symbol, exponent: tokenInfo.decimals },
 		],
-		base: tokenInfo.symbol,
+		base: `cw20:${denomOrAddress}`,
 		name: tokenInfo.name,
+		display: tokenInfo.symbol,
 		symbol: tokenInfo.symbol,
 		logo_URIs: {
 			svg:
@@ -103,7 +121,7 @@ export async function getCw20Asset(
 					? logo
 						? `data:${logo.mime_type};base64,${logo.data}`
 						: undefined
-					: marketingInfo?.logo?.url,
+					: withIpfsSupport(ipfsGateway, marketingInfo?.logo?.url),
 		},
 	} as Asset;
 }

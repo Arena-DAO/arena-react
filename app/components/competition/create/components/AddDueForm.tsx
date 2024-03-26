@@ -151,6 +151,7 @@ const AddDueForm = ({
 					const cw20 = await getCw20Asset(
 						cosmWasmClient,
 						values.denomOrAddress,
+						env.IPFS_GATEWAY,
 						assets?.assets,
 						env.BECH32_PREFIX,
 					);
@@ -223,7 +224,9 @@ const AddDueForm = ({
 			}
 
 			onClose();
-		} catch {
+			// biome-ignore lint/suspicious/noExplicitAny: try-catch
+		} catch (e: any) {
+			console.error(e);
 			setError("denomOrAddress", { message: "Invalid address or denom" });
 		}
 	};
