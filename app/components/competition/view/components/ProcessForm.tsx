@@ -22,6 +22,7 @@ import {
 	TableHeader,
 	TableRow,
 	Textarea,
+	Tooltip,
 	useDisclosure,
 } from "@nextui-org/react";
 import type { Dispatch, SetStateAction } from "react";
@@ -100,6 +101,11 @@ const ProcessForm = ({
 	});
 
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
+	const {
+		isOpen: isFrameOpen,
+		onOpen: onFrameOpen,
+		onOpenChange: onFrameOpenChange,
+	} = useDisclosure();
 
 	const onSubmit = async (values: ProcessFormValues) => {
 		try {
@@ -147,36 +153,21 @@ const ProcessForm = ({
 			if (address === props.host) {
 				onOpen();
 			} else {
-				toast.info(
-					<div className="flex space-between">
-						<div>Processing must happen through the host</div>
-						{isValidContractAddress(props.host) && (
-							<Button
-								as={Link}
-								href={`${env.DAO_DAO_URL}/dao/${
-									props.host
-								}/apps?url=${encodeURIComponent(window.location.href)}`}
-								isExternal
-								isIconOnly
-								aria-label="Handle on DAO DAO"
-							>
-								<FiExternalLink />
-							</Button>
-						)}
-					</div>,
-				);
+				onFrameOpen();
+				toast.info("Processing must happen through the host.", {
+					closeButton: false,
+					pauseOnHover: false,
+				});
 			}
 		}
 	};
 
-	if (!address) {
-		return null;
-	}
-
 	const action = "is_expired" in props ? "Jail" : "Process";
 	return (
 		<>
-			<Button onClick={tryOpen}>{action}</Button>
+			<Button onClick={tryOpen} isDisabled={!address}>
+				{action}
+			</Button>
 			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl">
 				<ModalContent>
 					<ModalHeader>{action} Competition</ModalHeader>
@@ -340,6 +331,25 @@ const ProcessForm = ({
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
+			{"host" in props && isValidContractAddress(props.host) && (
+				<Modal
+					isOpen={isFrameOpen}
+					onOpenChange={onFrameOpenChange}
+					size="full"
+				>
+					<ModalContent>
+						<ModalBody>
+							<iframe
+								title="Host DAO Process"
+								src={`${env.DAO_DAO_URL}/dao/${
+									props.host
+								}/apps?url=${encodeURIComponent(window.location.href)}`}
+								className="h-full"
+							/>
+						</ModalBody>
+					</ModalContent>
+				</Modal>
+			)}
 		</>
 	);
 };
