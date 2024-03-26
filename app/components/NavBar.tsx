@@ -40,10 +40,9 @@ export default function AppNavbar() {
 			ariaLabel: "DAO Menu Items",
 			dropdownItems: [
 				{
-					href: `${env.DAO_DAO_URL}/dao/${env.ARENA_DAO_ADDRESS}/proposals`,
-					label: "Participate",
-					description: "Go to the Arena DAO's proposals page",
-					isExternal: true,
+					href: "/dao",
+					label: "DAO",
+					description: "View the Arena DAO on DAO DAO",
 				},
 				{
 					href: "/jailhouse",
@@ -56,7 +55,11 @@ export default function AppNavbar() {
 	];
 
 	return (
-		<Navbar onMenuOpenChange={setIsMenuOpen} isMenuOpen={isMenuOpen}>
+		<Navbar
+			onMenuOpenChange={setIsMenuOpen}
+			isMenuOpen={isMenuOpen}
+			className="fixed"
+		>
 			<NavbarContent>
 				<NavbarMenuToggle
 					aria-label={isMenuOpen ? "Close menu" : "Open menu"}
@@ -108,8 +111,6 @@ export default function AppNavbar() {
 										key={dropdownItem.label}
 										description={dropdownItem.description}
 										href={dropdownItem.href}
-										target={dropdownItem.isExternal ? "_blank" : ""}
-										rel={dropdownItem.isExternal ? "noopener noreferrer" : ""}
 									>
 										{dropdownItem.label}
 									</DropdownItem>
@@ -165,8 +166,6 @@ export default function AppNavbar() {
 											key={dropdownItem.label}
 											description={dropdownItem.description}
 											href={dropdownItem.href}
-											target={dropdownItem.isExternal ? "_blank" : ""}
-											rel={dropdownItem.isExternal ? "noopener noreferrer" : ""}
 											onPress={() => setIsMenuOpen(false)}
 										>
 											{dropdownItem.label}

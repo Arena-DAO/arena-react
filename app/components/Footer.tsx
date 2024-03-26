@@ -21,7 +21,7 @@ export default function Footer() {
 	const { setTheme } = useTheme();
 
 	return (
-		<Navbar as="footer">
+		<Navbar as="footer" className="fixed bottom-0 left-0 top-auto">
 			<NavbarContent>
 				<ButtonGroup variant="light">
 					<Button

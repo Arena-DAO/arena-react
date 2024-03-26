@@ -58,7 +58,7 @@ function InnerProviders({ children }: PropsWithChildren) {
 			}}
 		>
 			{children}
-			<ToastContainer position="bottom-right" stacked theme={theme} />
+			<ToastContainer position="bottom-right" theme={theme} />
 		</ChainProvider>
 	);
 }

@@ -36,15 +36,16 @@ const Layout = ({ children }: PropsWithChildren) => {
 				<link rel="manifest" href="/site.webmanifest" />
 				<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
 			</head>
-			<body className="font-roboto">
+			<body className="font-roboto min-h-screen">
 				<Providers>
-					<div className="flex min-h-screen flex-col">
-						<AppNavbar />
-						<div className="container mx-auto flex-grow pt-8">
-							<ErrorBoundary>{children}</ErrorBoundary>
-						</div>
-						<Footer />
+					<AppNavbar />
+					<div
+						className="container min-h-full max-h-fit mx-auto"
+						style={{ paddingTop: "4rem", paddingBottom: "4rem" }}
+					>
+						<ErrorBoundary>{children}</ErrorBoundary>
 					</div>
+					<Footer />
 				</Providers>
 			</body>
 		</html>
