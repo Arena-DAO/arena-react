@@ -11,6 +11,7 @@ interface Env {
 	DEFAULT_TEAM_VOTING_DURATION_TIME: number;
 	PAGINATION_LIMIT: number;
 	ARENA_TAX: number;
+	IBC_FUN: string;
 
 	// Variables specific to both .env.development and .env.production
 	CHAIN: string;
@@ -54,6 +55,7 @@ const checkEnvNumber = (key: string | undefined): number => {
 
 function getEnv(): Env {
 	return {
+		IBC_FUN: checkEnv(process.env.NEXT_PUBLIC_IBC_FUN),
 		BECH32_PREFIX: checkEnv(process.env.NEXT_PUBLIC_BECH32_PREFIX),
 		GAS_PRICE: checkEnv(process.env.NEXT_PUBLIC_GAS_PRICE),
 		PFPK_URL: checkEnv(process.env.NEXT_PUBLIC_PFPK_URL),

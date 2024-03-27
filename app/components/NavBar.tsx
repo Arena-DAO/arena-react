@@ -22,33 +22,70 @@ import { BsChevronDown } from "react-icons/bs";
 import { useEnv } from "~/hooks/useEnv";
 import WalletConnectToggle from "./WalletConnectToggle";
 
+interface MenuItem {
+	href?: string;
+	label: string;
+	isExternal?: boolean;
+	isDropdown?: boolean;
+	ariaLabel?: string;
+	dropdownItems?: MenuDropdownItem[];
+}
+
+interface MenuDropdownItem {
+	href?: string;
+	label: string;
+	description?: string;
+	isExternal?: boolean;
+}
+
 export default function AppNavbar() {
 	const { data: env } = useEnv();
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-	const navbarItems = [
+	const navbarItems: MenuItem[] = [
 		{ href: "/compete", label: "Compete" },
-		...(env.ENV === "development"
-			? [{ href: "/faucet", label: "Faucet" }]
-			: []),
-		...(env.ENV === "production"
-			? [{ href: env.OSMOSIS_URL, label: "Buy", isExternal: true }]
-			: []),
 		{
 			label: "DAO",
 			isDropdown: true,
 			ariaLabel: "DAO Menu Items",
 			dropdownItems: [
 				{
-					href: "/dao",
+					href: "/dao/dao",
 					label: "DAO",
 					description: "View the Arena DAO on DAO DAO",
 				},
 				{
-					href: "/jailhouse",
+					href: "/resources/buy",
+					label: "Buy",
+					description: "Get $ARENA to participate in the DAO",
+				},
+				{
+					href: "/dao/jailhouse",
 					description:
 						"View jailed competitions needing action through the DAO",
 					label: "Jailhouse",
+				},
+			],
+		},
+		{
+			label: "Resources",
+			isDropdown: true,
+			ariaLabel: "Additional Resources",
+			dropdownItems: [
+				...(env.ENV === "development"
+					? [
+							{
+								href: "/resources/faucet",
+								label: "Faucet",
+								description: "Get testnet gas to explore The Arena",
+							},
+						]
+					: []),
+				{
+					href: "/resources/bridge",
+					label: "Bridge",
+					description:
+						"Transfer funds from other chains into the Juno ecosystem",
 				},
 			],
 		},

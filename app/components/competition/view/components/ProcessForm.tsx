@@ -148,8 +148,10 @@ const ProcessForm = ({
 				onOpen();
 			} else {
 				toast.info(
-					<div className="flex space-between">
-						<div>Processing must happen through the host</div>
+					<div className="flex justify-between">
+						<div className="my-auto">
+							Processing must happen through the host
+						</div>
 						{isValidContractAddress(props.host) && (
 							<Button
 								as={Link}
