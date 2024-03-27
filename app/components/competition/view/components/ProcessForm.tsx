@@ -231,6 +231,7 @@ const ProcessForm = ({
 								<Table
 									aria-label="Distribution"
 									keyboardDelegate={keyboardDelegateFixSpace}
+									removeWrapper
 								>
 									<TableHeader>
 										<TableColumn>Member</TableColumn>
@@ -257,6 +258,7 @@ const ProcessForm = ({
 																		?.addr?.message
 																}
 																{...field}
+																className="min-w-[350px]"
 															/>
 														)}
 													/>
@@ -288,6 +290,7 @@ const ProcessForm = ({
 																		Number.parseFloat(e.target.value),
 																	)
 																}
+																className="min-w-[120px]"
 															/>
 														)}
 													/>

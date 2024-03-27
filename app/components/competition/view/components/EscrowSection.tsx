@@ -189,23 +189,25 @@ const EscrowSection = ({
 					</CardBody>
 				</Card>
 			)}
-			<ButtonGroup>
-				{status === "pending" && (
-					<DuesModal
+			<div className="overflow-x-auto">
+				<ButtonGroup>
+					{status === "pending" && (
+						<DuesModal
+							escrow={escrow}
+							cosmWasmClient={cosmWasmClient}
+							version={version}
+						/>
+					)}
+					{status !== "pending" && (
+						<InitialDuesModal escrow={escrow} cosmWasmClient={cosmWasmClient} />
+					)}
+					<BalancesModal
 						escrow={escrow}
 						cosmWasmClient={cosmWasmClient}
 						version={version}
 					/>
-				)}
-				{status !== "pending" && (
-					<InitialDuesModal escrow={escrow} cosmWasmClient={cosmWasmClient} />
-				)}
-				<BalancesModal
-					escrow={escrow}
-					cosmWasmClient={cosmWasmClient}
-					version={version}
-				/>
-			</ButtonGroup>
+				</ButtonGroup>
+			</div>
 		</>
 	);
 };

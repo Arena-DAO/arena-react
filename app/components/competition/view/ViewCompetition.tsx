@@ -205,7 +205,7 @@ const ViewCompetition = ({
 					hideIfEmpty={status === "inactive"}
 				/>
 			)}
-			<div className="block space-x-2">
+			<div className="block space-x-2 overflow-x-auto">
 				{data?.host && status === "active" && (
 					<ProcessForm
 						moduleAddr={moduleAddr}

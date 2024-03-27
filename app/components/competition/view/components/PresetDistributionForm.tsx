@@ -166,6 +166,7 @@ const PresetDistributionForm = ({
 								<Table
 									aria-label="Distribution"
 									keyboardDelegate={keyboardDelegateFixSpace}
+									removeWrapper
 								>
 									<TableHeader>
 										<TableColumn>Member</TableColumn>
@@ -192,6 +193,7 @@ const PresetDistributionForm = ({
 																		?.addr?.message
 																}
 																{...field}
+																className="min-w-[350px]"
 															/>
 														)}
 													/>
@@ -223,6 +225,7 @@ const PresetDistributionForm = ({
 																		Number.parseFloat(e.target.value),
 																	)
 																}
+																className="min-w-[120px]"
 															/>
 														)}
 													/>
