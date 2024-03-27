@@ -25,7 +25,7 @@ import {
 	useDisclosure,
 } from "@nextui-org/react";
 import type { Dispatch, SetStateAction } from "react";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { FiExternalLink, FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { ZodIssueCode, z } from "zod";
@@ -85,6 +85,7 @@ const ProcessForm = ({
 	const {
 		control,
 		formState: { errors, isSubmitting },
+		watch,
 		handleSubmit,
 	} = useForm<ProcessFormValues>({
 		resolver: zodResolver(ProcessFormSchema),
@@ -92,12 +93,16 @@ const ProcessForm = ({
 			title: `Jailed Competition - ${competitionId}`,
 			description:
 				"The competition has expired, and the Arena DAO should determine if this result is correct.",
+			distribution: {
+				member_percentages: [],
+			},
 		},
 	});
 	const { fields, append, remove } = useFieldArray({
 		control,
 		name: "distribution.member_percentages",
 	});
+	const percentages = watch("distribution.member_percentages");
 
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -177,7 +182,12 @@ const ProcessForm = ({
 			<Button onClick={tryOpen} isDisabled={!address}>
 				{action}
 			</Button>
-			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl">
+			<Modal
+				isOpen={isOpen}
+				onOpenChange={onOpenChange}
+				size="5xl"
+				scrollBehavior="outside"
+			>
 				<ModalContent>
 					<ModalHeader>{action} Competition</ModalHeader>
 					<ModalBody className="space-y-4">
@@ -331,7 +341,9 @@ const ProcessForm = ({
 						</Card>
 						<Progress
 							aria-label="Total Percentage"
-							value={fields.reduce((acc, x) => acc + x.percentage, 0) * 100}
+							value={
+								percentages.reduce((acc, x) => acc + x.percentage, 0) * 100
+							}
 							color="primary"
 							showValueLabel
 						/>

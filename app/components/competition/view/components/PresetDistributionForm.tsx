@@ -70,13 +70,20 @@ const PresetDistributionForm = ({
 		control,
 		formState: { errors, isSubmitting },
 		handleSubmit,
+		watch,
 	} = useForm<ProcessFormValues>({
+		defaultValues: {
+			distribution: {
+				member_percentages: [],
+			},
+		},
 		resolver: zodResolver(ProcessFormSchema),
 	});
 	const { fields, append, remove } = useFieldArray({
 		control,
 		name: "distribution.member_percentages",
 	});
+	const percentages = watch("distribution.member_percentages");
 
 	const onSubmit = async (values: ProcessFormValues) => {
 		try {
@@ -105,7 +112,12 @@ const PresetDistributionForm = ({
 	return (
 		<>
 			<Button onClick={onOpen}>Set Preset</Button>
-			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl">
+			<Modal
+				isOpen={isOpen}
+				onOpenChange={onOpenChange}
+				size="5xl"
+				scrollBehavior="outside"
+			>
 				<ModalContent>
 					<ModalHeader>Set Preset Distribution</ModalHeader>
 					<ModalBody className="space-y-4">
@@ -255,7 +267,9 @@ const PresetDistributionForm = ({
 								<Progress
 									className="mt-4"
 									aria-label="Total Percentage"
-									value={fields.reduce((acc, x) => acc + x.percentage, 0) * 100}
+									value={
+										percentages.reduce((acc, x) => acc + x.percentage, 0) * 100
+									}
 									color="primary"
 									showValueLabel
 								/>
