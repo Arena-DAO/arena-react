@@ -3,7 +3,10 @@
 		"**/.yarn": true
 	},
 	"files.associations": {
-		"*.css": "tailwindcss"
+		"*.css": "tailwindcss",
+		"*.env.development": "env",
+		"*.env.production": "env",
+		"*.env": "env"
 	},
 	"typescript.enablePromptUseWorkspaceTsdk": true,
 	"[javascript]": {
@@ -19,5 +22,8 @@
 	"editor.codeActionsOnSave": {
 		"quickfix.biome": "explicit",
 		"source.organizeImports.biome": "explicit"
+	},
+	"[env]": {
+		"editor.defaultFormatter": "IronGeek.vscode-env"
 	}
 }
