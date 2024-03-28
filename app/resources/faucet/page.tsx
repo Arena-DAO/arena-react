@@ -34,7 +34,7 @@ export default function Faucet() {
 		}
 	};
 
-	if (!env.FAUCET_URL) return <h1>Faucet is not defined...</h1>;
+	if (env.FAUCET_URL === undefined) return <h1>Faucet is not defined...</h1>;
 	return (
 		<div className="space-y-4">
 			<h1 className="text-5xl text-center">Juno Testnet Faucet</h1>

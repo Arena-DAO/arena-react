@@ -55,15 +55,16 @@ export default function AppNavbar() {
 					description: "View the Arena DAO on DAO DAO",
 				},
 				{
-					href: "/resources/buy",
-					label: "Buy",
-					description: "Get $ARENA to participate in the DAO",
-				},
-				{
 					href: "/dao/jailhouse",
 					description:
 						"View jailed competitions needing action through the DAO",
 					label: "Jailhouse",
+				},
+				{
+					href: "/dao/sales",
+					description:
+						"Participate in sales rounds to bootstrap the DAO's liquidity",
+					label: "Sales Rounds",
 				},
 			],
 		},
@@ -81,6 +82,11 @@ export default function AppNavbar() {
 							},
 						]
 					: []),
+				{
+					href: "/resources/buy",
+					label: "Buy",
+					description: "Get $ARENA to participate in the DAO",
+				},
 				{
 					href: "/resources/bridge",
 					label: "Bridge",
