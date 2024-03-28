@@ -2,7 +2,8 @@ import { z } from "zod";
 
 const DecimalSchema = z
 	.number()
-	.min(0, { message: "Percentage must be non-negative" })
-	.max(1, { message: "Percentage cannot exceed 1" });
+	.gt(0, { message: "Percentage must be greater than 0" })
+	.max(100, { message: "Percentage cannot exceed 100" })
+	.transform((x) => x / 100);
 
 export default DecimalSchema;

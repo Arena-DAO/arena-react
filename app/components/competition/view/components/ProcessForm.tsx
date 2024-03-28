@@ -26,6 +26,7 @@ import {
 } from "@nextui-org/react";
 import type { Dispatch, SetStateAction } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
+import { BsPercent } from "react-icons/bs";
 import { FiExternalLink, FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { ZodIssueCode, z } from "zod";
@@ -281,8 +282,8 @@ const ProcessForm = ({
 															<Input
 																type="number"
 																min="0"
-																max="1"
-																step=".01"
+																max="100"
+																step="1"
 																label="Percentage"
 																isDisabled={isSubmitting}
 																isInvalid={
@@ -293,6 +294,7 @@ const ProcessForm = ({
 																	errors.distribution?.member_percentages?.[i]
 																		?.percentage?.message
 																}
+																endContent={<BsPercent />}
 																{...field}
 																value={field.value?.toString()}
 																onChange={(e) =>
@@ -341,9 +343,7 @@ const ProcessForm = ({
 						</Card>
 						<Progress
 							aria-label="Total Percentage"
-							value={
-								percentages.reduce((acc, x) => acc + x.percentage, 0) * 100
-							}
+							value={percentages.reduce((acc, x) => acc + x.percentage, 0)}
 							color="primary"
 							showValueLabel
 						/>
