@@ -1,6 +1,7 @@
 import type { Asset } from "@chain-registry/types";
 import type { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import type { Metadata } from "cosmjs-types/cosmos/bank/v1beta1/bank";
+import { QueryClient, setupBankExtension } from "@cosmjs/stargate";
+import { Comet38Client } from "@cosmjs/tendermint-rpc";
 import type { Coin } from "cosmjs-types/cosmos/base/v1beta1/coin";
 import { Cw20BaseQueryClient } from "~/codegen/Cw20Base.client";
 import { isValidContractAddress } from "./AddressHelpers";
@@ -81,6 +82,7 @@ export async function getCw20Asset(
 	assets?: Asset[],
 	prefix?: string,
 ): Promise<Asset> {
+	// Try to find the asset locally
 	const isAddress = isValidContractAddress(denomOrAddress, prefix);
 	const localAsset = findAssetInAssets(
 		isAddress
@@ -92,68 +94,58 @@ export async function getCw20Asset(
 	if (localAsset) {
 		return localAsset;
 	}
-	if (!isAddress) {
-		throw new Error("Cannot find cw20 asset");
+
+	// If given a cw20 address, then just query the cw20 contract
+	if (isAddress) {
+		const client = new Cw20BaseQueryClient(cosmWasmClient, denomOrAddress);
+		const tokenInfo = await client.tokenInfo();
+		const marketingInfo = await client.marketingInfo();
+		const logo =
+			marketingInfo?.logo === "embedded"
+				? await client.downloadLogo()
+				: undefined;
+		return {
+			description: "A cw20 token with information form the contract",
+			type_asset: "cw20",
+			address: denomOrAddress,
+			denom_units: [
+				{ denom: `cw20:${denomOrAddress}`, exponent: 0 },
+				{ denom: tokenInfo.symbol, exponent: tokenInfo.decimals },
+			],
+			base: `cw20:${denomOrAddress}`,
+			name: tokenInfo.name,
+			display: tokenInfo.symbol,
+			symbol: tokenInfo.symbol,
+			logo_URIs: {
+				svg:
+					marketingInfo?.logo === "embedded"
+						? logo
+							? `data:${logo.mime_type};base64,${logo.data}`
+							: undefined
+						: withIpfsSupport(ipfsGateway, marketingInfo?.logo?.url),
+			},
+		} as Asset;
 	}
 
-	const client = new Cw20BaseQueryClient(cosmWasmClient, denomOrAddress);
-	const tokenInfo = await client.tokenInfo();
-	const marketingInfo = await client.marketingInfo();
-	const logo =
-		marketingInfo?.logo === "embedded"
-			? await client.downloadLogo()
-			: undefined;
-	return {
-		description: "A cw20 token with information form the contract",
-		type_asset: "cw20",
-		address: denomOrAddress,
-		denom_units: [
-			{ denom: `cw20:${denomOrAddress}`, exponent: 0 },
-			{ denom: tokenInfo.symbol, exponent: tokenInfo.decimals },
-		],
-		base: `cw20:${denomOrAddress}`,
-		name: tokenInfo.name,
-		display: tokenInfo.symbol,
-		symbol: tokenInfo.symbol,
-		logo_URIs: {
-			svg:
-				marketingInfo?.logo === "embedded"
-					? logo
-						? `data:${logo.mime_type};base64,${logo.data}`
-						: undefined
-					: withIpfsSupport(ipfsGateway, marketingInfo?.logo?.url),
-		},
-	} as Asset;
+	throw "Could not find cw20 token";
 }
 
 export async function getNativeAsset(
 	denom: string,
-	apiUrl: string,
+	rpcUrl: string,
 	assets?: Asset[],
 ): Promise<Asset> {
+	// Try to find the asset locally
 	const localAsset = findAssetInAssets(denom.toLowerCase(), assets);
 	if (localAsset) {
 		return localAsset;
 	}
 
-	// NOTE: This will not support tokenfactory denoms, because the slashes mess with the route
-	const response = await fetch(
-		`${apiUrl}/cosmos/bank/v1beta1/denoms_metadata/${denom}`,
-		{ mode: "no-cors" },
-	);
+	// Query the bank module
+	const queryClient = new QueryClient(await Comet38Client.connect(rpcUrl));
+	const bankExtension = setupBankExtension(queryClient);
 
-	if (!response.ok) {
-		const err = await response.json();
-		throw new Error(`${err.message || "Unknown error"}`);
-	}
-
-	const data = await response.json();
-
-	// Safely parse the JSON and ensure it's in the correct format
-	const metadata: Metadata = JSON.parse(data);
-	if (!metadata || !metadata.denomUnits) {
-		throw new Error("Could not parse the metadata");
-	}
+	const metadata = await bankExtension.bank.denomMetadata(denom);
 
 	return {
 		description: metadata.description,

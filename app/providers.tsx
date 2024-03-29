@@ -14,9 +14,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { assets, chains } from "chain-registry";
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
-import type { PropsWithChildren } from "react";
+import { type PropsWithChildren, useMemo } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
+import { Assets as ProdAssets } from "~/config/assets.production";
 import { useEnv } from "~/hooks/useEnv";
 import "~/styles/globals.css";
 
@@ -27,7 +28,7 @@ function InnerProviders({ children }: PropsWithChildren) {
 	const { data: env } = useEnv();
 	const signerOptions = {
 		signingCosmwasm: (chain: string | Chain) => {
-			if (typeof chain !== "string" && chain.chain_name.startsWith("juno"))
+			if (typeof chain !== "string" && chain.chain_name === env.CHAIN)
 				return {
 					gasPrice: GasPrice.fromString(
 						`${chain.fees?.fee_tokens[0]?.average_gas_price?.toString()}${
@@ -38,11 +39,24 @@ function InnerProviders({ children }: PropsWithChildren) {
 			return undefined;
 		},
 	};
+	const chainsMemo = useMemo(
+		() => chains.filter((x) => x.chain_name === env.CHAIN),
+		[env.CHAIN],
+	);
+	const assetsMemo = useMemo(() => {
+		const assetsList = assets.filter((x) => x.chain_name === env.CHAIN);
+
+		assetsList
+			.find((x) => x.chain_name === env.CHAIN)
+			?.assets.push(...(env.ENV === "development" ? [] : ProdAssets));
+
+		return assetsList;
+	}, [env.CHAIN, env.ENV]);
 
 	return (
 		<ChainProvider
-			chains={chains.filter((x) => x.chain_name.includes("juno"))}
-			assetLists={assets.filter((x) => x.chain_name.includes("juno"))}
+			chains={chainsMemo}
+			assetLists={assetsMemo}
 			wallets={[
 				...keplrWallets,
 				...leapWallets,

@@ -400,12 +400,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.18.8":
-  version: 0.18.8
-  resolution: "@chain-registry/types@npm:0.18.8"
+"@chain-registry/types@npm:^0.18.9":
+  version: 0.18.9
+  resolution: "@chain-registry/types@npm:0.18.9"
   dependencies:
     "@babel/runtime": "npm:^7.21.0"
-  checksum: 10c0/bfa697a8a430cc13d8dd54e97a7e3f07a5e370e8110389f34169040720c2537da572c743f5ba946ac0b4b11318fadf23804bf74695ae0a4657c537fd27001200
+  checksum: 10c0/85e1141505a3c5d944b35754e5adb951cbb38d71ecedfcae2ffdabcb8ca12531511f291acf7b79914f353a010ced3159ba17aa850b0ac1ae7d57b9396e6e527f
   languageName: node
   linkType: hard
 
@@ -5194,12 +5194,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.2.22":
-  version: 18.2.22
-  resolution: "@types/react-dom@npm:18.2.22"
+"@types/react-dom@npm:^18.2.23":
+  version: 18.2.23
+  resolution: "@types/react-dom@npm:18.2.23"
   dependencies:
     "@types/react": "npm:*"
-  checksum: 10c0/cd85b5f402126e44b8c7b573e74737389816abcc931b2b14d8f946ba81cce8637ea490419488fcae842efb1e2f69853bc30522e43fd8359e1007d4d14b8d8146
+  checksum: 10c0/9348e93558aa67b4b237bd0eab62e72e85f3e17a1c45fde04d874476269730f7c671b3d62390c4fca588da2a026e90cc74148abc349dbfd4ee5535a82ccdf38e
   languageName: node
   linkType: hard
 
@@ -5647,12 +5647,13 @@ __metadata:
   resolution: "arena-react@workspace:."
   dependencies:
     "@biomejs/biome": "npm:1.6.3"
-    "@chain-registry/types": "npm:^0.18.8"
+    "@chain-registry/types": "npm:^0.18.9"
     "@cosmjs/amino": "npm:^0.32.3"
     "@cosmjs/cosmwasm-stargate": "npm:0.32.3"
     "@cosmjs/encoding": "npm:^0.32.3"
     "@cosmjs/proto-signing": "npm:^0.32.3"
     "@cosmjs/stargate": "npm:^0.32.3"
+    "@cosmjs/tendermint-rpc": "npm:^0.32.3"
     "@cosmos-kit/keplr": "npm:2.6.9"
     "@cosmos-kit/leap": "npm:^2.6.12"
     "@cosmos-kit/ledger": "npm:^2.6.9"
@@ -5669,9 +5670,9 @@ __metadata:
     "@types/lodash": "npm:^4.17.0"
     "@types/node": "npm:^20.11.30"
     "@types/react": "npm:18.2.73"
-    "@types/react-dom": "npm:^18.2.22"
+    "@types/react-dom": "npm:^18.2.23"
     autoprefixer: "npm:^10.4.19"
-    chain-registry: "npm:1.33.12"
+    chain-registry: "npm:1.33.13"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^6.1.2"
     date-fns: "npm:^3.6.0"
@@ -6174,13 +6175,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.33.12":
-  version: 1.33.12
-  resolution: "chain-registry@npm:1.33.12"
+"chain-registry@npm:1.33.13":
+  version: 1.33.13
+  resolution: "chain-registry@npm:1.33.13"
   dependencies:
     "@babel/runtime": "npm:^7.21.0"
-    "@chain-registry/types": "npm:^0.18.8"
-  checksum: 10c0/99a2ea4be14ebc8522bfc4b6a498310f2feab272fd2fdfab0be28b1cc5e52efe503124bd9bd858e6f1af95d82bad8e36132798875052ddc46df6677e5942dc24
+    "@chain-registry/types": "npm:^0.18.9"
+  checksum: 10c0/d6ae9d38e7ecade5a44d192854cd07423072ecd0f37b38b5f037d0be231aad1f136f0066f556abdd0d28fe7787d8bc00a17779e0a572406ace751a3192a94948
   languageName: node
   linkType: hard
 

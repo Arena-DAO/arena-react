@@ -25,7 +25,7 @@ const TokenInfo = ({
 	} = useToken(cosmWasmClient, denomOrAddress, isNative);
 
 	if (isError) {
-		return null;
+		return <User name={denomOrAddress} {...props} />;
 	}
 
 	return (

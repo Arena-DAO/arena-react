@@ -188,35 +188,55 @@ const AddDueForm = ({
 					break;
 				}
 				case "native": {
-					const native = await getNativeAsset(
-						values.denomOrAddress,
-						env.JUNO_API_URL,
-						assets?.assets,
-					);
+					try {
+						const native = await getNativeAsset(
+							values.denomOrAddress,
+							env.JUNO_RPC_URL,
+							assets?.assets,
+						);
 
-					if (
-						getValues(`dues.${index}.balance.native`).find(
-							(x: { denom: string }) =>
-								native.denom_units.find((y) => y.denom === x.denom),
-						)
-					) {
-						setError("denomOrAddress", { message: "Cannot add duplicates" });
-						return;
-					}
+						if (
+							getValues(`dues.${index}.balance.native`).find(
+								(x: { denom: string }) =>
+									native.denom_units.find((y) => y.denom === x.denom),
+							)
+						) {
+							setError("denomOrAddress", { message: "Cannot add duplicates" });
+							return;
+						}
 
-					if (!values.amount) {
-						throw new Error("Amount is required for fungible tokens");
-					}
+						if (!values.amount) {
+							throw new Error("Amount is required for fungible tokens");
+						}
 
-					const token = getBaseToken(
-						{
+						const token = getBaseToken(
+							{
+								denom: values.denomOrAddress,
+								amount: values.amount.toString(),
+							},
+							native,
+						);
+
+						nativeAppend({ denom: token.denom, amount: BigInt(token.amount) });
+					} catch {
+						if (
+							getValues(`dues.${index}.balance.native`).find(
+								(x: { denom: string }) => values.denomOrAddress === x.denom,
+							)
+						) {
+							setError("denomOrAddress", { message: "Cannot add duplicates" });
+							return;
+						}
+
+						if (!values.amount) {
+							throw new Error("Amount is required for fungible tokens");
+						}
+
+						nativeAppend({
 							denom: values.denomOrAddress,
-							amount: values.amount.toString(),
-						},
-						native,
-					);
-
-					nativeAppend({ denom: token.denom, amount: BigInt(token.amount) });
+							amount: BigInt(values.amount),
+						});
+					}
 					break;
 				}
 				default:

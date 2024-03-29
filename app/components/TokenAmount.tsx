@@ -30,7 +30,7 @@ const TokenAmount = ({
 	} = useToken(cosmWasmClient, denomOrAddress, isNative);
 
 	if (isError) {
-		return null;
+		return <div className={className}>{amount.toString()}</div>;
 	}
 	if (isLoading) {
 		return <Spinner />;
