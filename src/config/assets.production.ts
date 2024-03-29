@@ -1,26 +1,34 @@
 import type { Asset } from "@chain-registry/types";
 
 const USDC = {
-	description: "USDC on Juno",
+	type_asset: "ics20",
+	description: "USD Coin on Juno",
 	denom_units: [
 		{
 			denom:
 				"ibc/4A482FA914A4B9B05801ED81C33713899F322B24F76A06F4B8FE872485EA22FF",
 			exponent: 0,
-			aliases: ["uusdc"],
+			aliases: ["uusdc", "microusdc"],
 		},
 		{
-			denom: "USDC",
+			denom: "usdc",
 			exponent: 6,
 		},
 	],
 	base: "ibc/4A482FA914A4B9B05801ED81C33713899F322B24F76A06F4B8FE872485EA22FF",
-	name: "USDC",
-	display: "USDC",
+	name: "USD Coin",
+	display: "usdc",
 	symbol: "USDC",
 	logo_URIs: {
 		png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/USDCoin.png",
+		svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/USDCoin.svg",
 	},
+	images: [
+		{
+			png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/USDCoin.png",
+			svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/noble/images/USDCoin.svg",
+		},
+	],
 	traces: [
 		{
 			type: "ibc",
@@ -31,6 +39,7 @@ const USDC = {
 			},
 			chain: {
 				channel_id: "channel-224",
+				path: "transfer/channel-224/uusdc",
 			},
 		},
 	],
