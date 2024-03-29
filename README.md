@@ -1,4 +1,5 @@
 # Arena DAO UI
+![image](https://img.shields.io/endpoint?url=https://cloudflare-pages-badges.ismellike.workers.dev/?projectName=arena-react)
 
 Welcome to the Arena DAO UI, a web application built using Next.js and Next UI. This application serves as a user interface for the Arena DAO smart contracts, enabling users to participate in competitions, and engage with the community.
 
