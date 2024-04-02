@@ -1,5 +1,6 @@
 "use client";
 
+import { useModalTheme } from "@cosmos-kit/react";
 import {
 	Button,
 	ButtonGroup,
@@ -19,6 +20,7 @@ import {
 
 export default function Footer() {
 	const { setTheme } = useTheme();
+	const { setModalTheme } = useModalTheme();
 
 	return (
 		<Navbar as="footer" className="fixed bottom-0 left-0 top-auto">
@@ -59,9 +61,11 @@ export default function Footer() {
 					color="primary"
 					startContent={<BsSunFill />}
 					endContent={<BsCloudMoonFill />}
-					onValueChange={(isSelected) =>
-						setTheme(isSelected ? "light" : "dark")
-					}
+					onValueChange={(isSelected) => {
+						const theme = isSelected ? "light" : "dark";
+						setTheme(theme);
+						setModalTheme(theme);
+					}}
 				/>
 			</NavbarContent>
 		</Navbar>

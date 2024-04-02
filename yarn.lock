@@ -400,12 +400,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.18.9":
-  version: 0.18.9
-  resolution: "@chain-registry/types@npm:0.18.9"
+"@chain-registry/types@npm:^0.18.12":
+  version: 0.18.12
+  resolution: "@chain-registry/types@npm:0.18.12"
   dependencies:
     "@babel/runtime": "npm:^7.21.0"
-  checksum: 10c0/85e1141505a3c5d944b35754e5adb951cbb38d71ecedfcae2ffdabcb8ca12531511f291acf7b79914f353a010ced3159ba17aa850b0ac1ae7d57b9396e6e527f
+  checksum: 10c0/6c98d87a59884d5384e5c1dfeb98a68a035e2c20273ea8ddd2640404a54db1e9e39f2022daaa72a97bebbb1fa894a7b1d06feddda8476646566b8fbe84d3844d
   languageName: node
   linkType: hard
 
@@ -819,28 +819,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmos-kit/station-extension@npm:^2.6.9":
-  version: 2.6.9
-  resolution: "@cosmos-kit/station-extension@npm:2.6.9"
+"@cosmos-kit/station-extension@npm:^2.6.10":
+  version: 2.6.10
+  resolution: "@cosmos-kit/station-extension@npm:2.6.10"
   dependencies:
     "@chain-registry/types": "npm:0.17.0"
     "@cosmos-kit/core": "npm:^2.8.9"
     "@terra-money/feather.js": "npm:^1.0.8"
-    "@terra-money/station-connector": "npm:^1.0.5"
+    "@terra-money/station-connector": "npm:^1.1.0"
     "@terra-money/wallet-types": "npm:^3.11.2"
   peerDependencies:
     "@cosmjs/amino": ">=0.32.2"
     "@cosmjs/proto-signing": ">=0.32.2"
-  checksum: 10c0/32e343f952951ec8112897c46580e3d268453c553caa7cdaf7a3a2158318f5026812ccc595fab3a8f33ab062911ff5508f8f35e1155e7f03b82fc65f6183014b
+  checksum: 10c0/3483de8662e0148c5e43d2d8c169881ffb7fce0f5a0ca0baad1ec42711e8912043f405de3fe0669155c35632444f28f003406c9071fa18259612e2be17b60990
   languageName: node
   linkType: hard
 
-"@cosmos-kit/station@npm:^2.5.9":
-  version: 2.5.9
-  resolution: "@cosmos-kit/station@npm:2.5.9"
+"@cosmos-kit/station@npm:^2.5.10":
+  version: 2.5.10
+  resolution: "@cosmos-kit/station@npm:2.5.10"
   dependencies:
-    "@cosmos-kit/station-extension": "npm:^2.6.9"
-  checksum: 10c0/ba8da3a39079c6eb092faf7f9032217f2ec0807ea7fde33f456d155a6da1ee148ebaf482f0962332812d010218734959da86c38318aaeed0dff5d65daea0058d
+    "@cosmos-kit/station-extension": "npm:^2.6.10"
+  checksum: 10c0/2911a659b1b612686a2f207f06bfdc688ffc4eb13f60abb35702a04b9309e206d14770bd39ef85ade95f82f67cb5ece3ccebb523219838971a5a528df3868ab6
   languageName: node
   linkType: hard
 
@@ -1449,9 +1449,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@interchain-ui/react@npm:1.22.6":
-  version: 1.22.6
-  resolution: "@interchain-ui/react@npm:1.22.6"
+"@interchain-ui/react@npm:1.22.8":
+  version: 1.22.8
+  resolution: "@interchain-ui/react@npm:1.22.8"
   dependencies:
     "@floating-ui/core": "npm:^1.6.0"
     "@floating-ui/dom": "npm:^1.5.3"
@@ -1478,7 +1478,7 @@ __metadata:
   peerDependencies:
     react: ^18.x
     react-dom: ^18.x
-  checksum: 10c0/7dc399c8d3364ab924e2bcfa8808fff98fb05ac58c88fe0ef07ae3e239f3f0cf25b476c483b48fc77153eee81b73e8cf0fd1d417ba2468d151b9a8d3af7bf4c7
+  checksum: 10c0/4f28525bde4c8ad0bf4787b3cbf410b7b579934111b19e4a967b1ae0242b008f965b509789f72d69ffe0f74e80a484aaa18f5ccabf1f91b0b05cb8d0c3e6ea81
   languageName: node
   linkType: hard
 
@@ -5074,16 +5074,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@terra-money/station-connector@npm:^1.0.5":
-  version: 1.0.16
-  resolution: "@terra-money/station-connector@npm:1.0.16"
+"@terra-money/station-connector@npm:^1.1.0":
+  version: 1.1.2
+  resolution: "@terra-money/station-connector@npm:1.1.2"
   dependencies:
     bech32: "npm:^2.0.0"
   peerDependencies:
     "@cosmjs/amino": ^0.31.0
-    "@terra-money/feather.js": ^1.0.8
+    "@terra-money/feather.js": ^3.0.0-beta.1
     axios: ^0.27.2
-  checksum: 10c0/026fb72527a17750edab14e954a4ba27fd913ebb7b3c84d4fcef5ea8ddf6aff8dff96e7ef076974161a4b18cc45225dd490e61918fc493b9c0b8d8a4cd3d656d
+  checksum: 10c0/3c77a7317767f8aa8a87feead65d0b405baac898f283dc322acddaacfdef50443e37dcc733fb8f49af3cf1baeb381ea1835e599df4beac924092d2b94a7a42b2
   languageName: node
   linkType: hard
 
@@ -5123,7 +5123,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/http-proxy@npm:^1.17.8":
+"@types/http-proxy@npm:^1.17.10":
   version: 1.17.14
   resolution: "@types/http-proxy@npm:1.17.14"
   dependencies:
@@ -5178,12 +5178,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.11.30":
-  version: 20.11.30
-  resolution: "@types/node@npm:20.11.30"
+"@types/node@npm:^20.12.2":
+  version: 20.12.2
+  resolution: "@types/node@npm:20.12.2"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 10c0/867cfaf969c6d8850d8d7304e7ab739898a50ecb1395b61ff2335644f5f48d7a46fbc4a14cee967aed65ec134b61a746edae70d1f32f11321ccf29165e3bc4e6
+  checksum: 10c0/bb47d115a8f95aadebdd6403fee16d149d6b5568ad53bacc42df34c2d572561e36ba47b05f7f68bada43752d7369b470a90df65b646af7502dfb799a21b4fca7
   languageName: node
   linkType: hard
 
@@ -5214,13 +5214,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:18.2.73":
-  version: 18.2.73
-  resolution: "@types/react@npm:18.2.73"
+"@types/react@npm:18.2.74":
+  version: 18.2.74
+  resolution: "@types/react@npm:18.2.74"
   dependencies:
     "@types/prop-types": "npm:*"
     csstype: "npm:^3.0.2"
-  checksum: 10c0/b6645ab3c20efa41cfccf58ce0be45419517a0ba4594e323dd400342fb1c1f9589d169cf9bfa85b5b0605e9097fe9de7734b6d0c533f5b9bc32aaadb624537a4
+  checksum: 10c0/347e38b4c5dc20d50ff71bf04b7caaef490e5ff695e74a0088a13fbb2a0c5d125a5ecfd142adfa30f0176da0e2734942c91ba61d95ce269c43b3265bd7379361
   languageName: node
   linkType: hard
 
@@ -5647,7 +5647,7 @@ __metadata:
   resolution: "arena-react@workspace:."
   dependencies:
     "@biomejs/biome": "npm:1.6.3"
-    "@chain-registry/types": "npm:^0.18.9"
+    "@chain-registry/types": "npm:^0.18.12"
     "@cosmjs/amino": "npm:^0.32.3"
     "@cosmjs/cosmwasm-stargate": "npm:0.32.3"
     "@cosmjs/encoding": "npm:^0.32.3"
@@ -5658,26 +5658,26 @@ __metadata:
     "@cosmos-kit/leap": "npm:^2.6.12"
     "@cosmos-kit/ledger": "npm:^2.6.9"
     "@cosmos-kit/react": "npm:2.10.11"
-    "@cosmos-kit/station": "npm:^2.5.9"
+    "@cosmos-kit/station": "npm:^2.5.10"
     "@cosmos-kit/vectis": "npm:^2.6.9"
     "@date-fns/utc": "npm:^1.2.0"
     "@hookform/resolvers": "npm:^3.3.4"
-    "@interchain-ui/react": "npm:1.22.6"
+    "@interchain-ui/react": "npm:1.22.8"
     "@nextui-org/react": "npm:^2.2.10"
     "@nextui-org/theme": "npm:^2.1.18"
     "@nextui-org/use-infinite-scroll": "npm:^2.1.2"
     "@tanstack/react-query": "npm:4.36.1"
     "@types/lodash": "npm:^4.17.0"
-    "@types/node": "npm:^20.11.30"
-    "@types/react": "npm:18.2.73"
+    "@types/node": "npm:^20.12.2"
+    "@types/react": "npm:18.2.74"
     "@types/react-dom": "npm:^18.2.23"
     autoprefixer: "npm:^10.4.19"
-    chain-registry: "npm:1.33.13"
+    chain-registry: "npm:1.33.17"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^6.1.2"
     date-fns: "npm:^3.6.0"
     framer-motion: "npm:^10.12.16"
-    http-proxy-middleware: "npm:^2.0.6"
+    http-proxy-middleware: "npm:^3.0.0"
     lodash: "npm:^4.17.21"
     million: "npm:^3.0.6"
     next: "npm:14.1.4"
@@ -6175,13 +6175,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.33.13":
-  version: 1.33.13
-  resolution: "chain-registry@npm:1.33.13"
+"chain-registry@npm:1.33.17":
+  version: 1.33.17
+  resolution: "chain-registry@npm:1.33.17"
   dependencies:
     "@babel/runtime": "npm:^7.21.0"
-    "@chain-registry/types": "npm:^0.18.9"
-  checksum: 10c0/d6ae9d38e7ecade5a44d192854cd07423072ecd0f37b38b5f037d0be231aad1f136f0066f556abdd0d28fe7787d8bc00a17779e0a572406ace751a3192a94948
+    "@chain-registry/types": "npm:^0.18.12"
+  checksum: 10c0/39eef12d9e95a2fa888b91e8914291d37ddf55fd1c1c9d479c08218c4df2c84f49a8593b1f6bbc9cf702912e88ecf4ac0b6b6aeb8de8f4c8253058e5dd0482e2
   languageName: node
   linkType: hard
 
@@ -7598,21 +7598,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"http-proxy-middleware@npm:^2.0.6":
-  version: 2.0.6
-  resolution: "http-proxy-middleware@npm:2.0.6"
+"http-proxy-middleware@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "http-proxy-middleware@npm:3.0.0"
   dependencies:
-    "@types/http-proxy": "npm:^1.17.8"
+    "@types/http-proxy": "npm:^1.17.10"
+    debug: "npm:^4.3.4"
     http-proxy: "npm:^1.18.1"
     is-glob: "npm:^4.0.1"
     is-plain-obj: "npm:^3.0.0"
-    micromatch: "npm:^4.0.2"
-  peerDependencies:
-    "@types/express": ^4.17.13
-  peerDependenciesMeta:
-    "@types/express":
-      optional: true
-  checksum: 10c0/25a0e550dd1900ee5048a692e0e9b2b6339d06d487a705d90c47e359e9c6561d648cd7862d001d090e651c9efffa1b6e5160fcf1f299b5fa4935f76e9754eb11
+    micromatch: "npm:^4.0.5"
+  checksum: 10c0/a3da2e9211483834384c27ad37dcff00dc8ea4990bb791f1383d3a5951f28f77fdc41dbaf2501a6607dcfca3dacac11e43bda22c4f68224abe532cbab8983ede
   languageName: node
   linkType: hard
 
@@ -8398,7 +8394,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"micromatch@npm:^4.0.2, micromatch@npm:^4.0.4, micromatch@npm:^4.0.5":
+"micromatch@npm:^4.0.4, micromatch@npm:^4.0.5":
   version: 4.0.5
   resolution: "micromatch@npm:4.0.5"
   dependencies:

@@ -17,7 +17,6 @@ import { useRouter } from "next/navigation";
 import { type PropsWithChildren, useMemo } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
-import { Assets as ProdAssets } from "~/config/assets.production";
 import { useEnv } from "~/hooks/useEnv";
 import "~/styles/globals.css";
 
@@ -46,12 +45,8 @@ function InnerProviders({ children }: PropsWithChildren) {
 	const assetsMemo = useMemo(() => {
 		const assetsList = assets.filter((x) => x.chain_name === env.CHAIN);
 
-		assetsList
-			.find((x) => x.chain_name === env.CHAIN)
-			?.assets.push(...(env.ENV === "development" ? [] : ProdAssets));
-
 		return assetsList;
-	}, [env.CHAIN, env.ENV]);
+	}, [env.CHAIN]);
 
 	return (
 		<ChainProvider
@@ -70,6 +65,8 @@ function InnerProviders({ children }: PropsWithChildren) {
 					projectId: env.WALLETCONNECT_PROJECT_ID,
 				},
 			}}
+			throwErrors="connect_only"
+			modalTheme={{ defaultTheme: theme === "light" ? "light" : "dark" }}
 		>
 			{children}
 			<ToastContainer position="bottom-right" theme={theme} />
