@@ -28,8 +28,10 @@ module.exports = {
 			},
 			themes: {
 				dark: {
-					extend: "dark",
 					colors: {
+						danger: {
+							DEFAULT: "#C22A28",
+						},
 						background: {
 							50: "#1A1A1A",
 							100: "#333333",
@@ -61,8 +63,11 @@ module.exports = {
 					},
 				},
 				light: {
-					extend: "light",
 					colors: {
+						danger: {
+							DEFAULT: "#C22A28",
+							foreground: "#000000",
+						},
 						background: {
 							50: "#F9F9F9",
 							100: "#F2F2F2",

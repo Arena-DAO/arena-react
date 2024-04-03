@@ -1,27 +1,19 @@
 "use client";
 
-import { useModalTheme } from "@cosmos-kit/react";
 import {
 	Button,
 	ButtonGroup,
 	Link,
 	Navbar,
 	NavbarContent,
-	Switch,
 } from "@nextui-org/react";
-import { useTheme } from "next-themes";
-import {
-	BsCloudMoonFill,
-	BsDiscord,
-	BsGithub,
-	BsSunFill,
-	BsTwitterX,
-} from "react-icons/bs";
+import dynamic from "next/dynamic";
+import { BsDiscord, BsGithub, BsTwitterX } from "react-icons/bs";
+const ColorModeSwitch = dynamic(() => import("./ColorModeSwitch"), {
+	ssr: false,
+});
 
 export default function Footer() {
-	const { setTheme } = useTheme();
-	const { setModalTheme } = useModalTheme();
-
 	return (
 		<Navbar as="footer" className="fixed bottom-0 left-0 top-auto">
 			<NavbarContent>
@@ -56,17 +48,7 @@ export default function Footer() {
 				</ButtonGroup>
 			</NavbarContent>
 			<NavbarContent as="div" justify="end">
-				<Switch
-					size="lg"
-					color="primary"
-					startContent={<BsSunFill />}
-					endContent={<BsCloudMoonFill />}
-					onValueChange={(isSelected) => {
-						const theme = isSelected ? "light" : "dark";
-						setTheme(theme);
-						setModalTheme(theme);
-					}}
-				/>
+				<ColorModeSwitch />
 			</NavbarContent>
 		</Navbar>
 	);

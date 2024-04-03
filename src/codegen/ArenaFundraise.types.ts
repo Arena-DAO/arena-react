@@ -75,6 +75,8 @@ export type NullableUint128 = Uint128 | null;
 export interface DumpStateResponse {
   config: Config;
   deposit?: Uint128 | null;
+  has_expired: boolean;
+  has_started?: boolean | null;
   reward?: Uint128 | null;
   total_deposited: Uint128;
 }

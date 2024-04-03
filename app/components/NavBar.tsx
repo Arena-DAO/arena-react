@@ -61,10 +61,9 @@ export default function AppNavbar() {
 					label: "Jailhouse",
 				},
 				{
-					href: "/dao/sales",
-					description:
-						"Participate in sales rounds to bootstrap the DAO's liquidity",
-					label: "Sales Rounds",
+					href: "/dao/fundraise",
+					description: "Participate in fundraise rounds for $ARENA",
+					label: "Fundraise",
 				},
 			],
 		},

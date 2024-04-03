@@ -66,6 +66,7 @@ function InnerProviders({ children }: PropsWithChildren) {
 				},
 			}}
 			throwErrors="connect_only"
+			logLevel={env.ENV === "production" ? "NONE" : undefined}
 			modalTheme={{ defaultTheme: theme === "light" ? "light" : "dark" }}
 		>
 			{children}
