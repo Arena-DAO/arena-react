@@ -11,6 +11,7 @@ import {
 	CardHeader,
 	Progress,
 	Skeleton,
+	Spinner,
 	Table,
 	TableBody,
 	TableCell,
@@ -26,7 +27,7 @@ import { useEnv } from "~/hooks/useEnv";
 import type { WithClient } from "~/types/util";
 
 interface FundraiseInfo {
-	fundraiseAddress?: string;
+	fundraiseAddress: string;
 }
 
 interface TableItem {
@@ -42,12 +43,10 @@ const FundraiseInfo = ({
 	const { data: env } = useEnv();
 	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
 	const { data, isLoading } = useArenaFundraiseDumpStateQuery({
-		// biome-ignore lint/style/noNonNullAssertion: Checked by react-query enabled flag
-		client: new ArenaFundraiseQueryClient(cosmWasmClient, fundraiseAddress!),
+		client: new ArenaFundraiseQueryClient(cosmWasmClient, fundraiseAddress),
 		args: {
 			addr: address,
 		},
-		options: { enabled: !!fundraiseAddress },
 	});
 
 	const routeAction = async () => {
@@ -130,7 +129,11 @@ const FundraiseInfo = ({
 								<TableColumn>Amount</TableColumn>
 							</TableRow>
 						</TableHeader>
-						<TableBody items={tableItems}>
+						<TableBody
+							items={tableItems}
+							isLoading={isLoading}
+							loadingContent={<Spinner color="white" />}
+						>
 							{(item) => (
 								<TableRow key={item.label}>
 									<TableCell>{item.label}</TableCell>

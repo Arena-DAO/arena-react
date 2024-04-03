@@ -31,7 +31,7 @@ const Fundraise = () => {
 				{(item) => (
 					<Tab key={item.id} title={item.title}>
 						<p>{item.description}</p>
-						{cosmWasmClient && (
+						{cosmWasmClient && item.address && (
 							<FundraiseInfo
 								fundraiseAddress={item.address}
 								cosmWasmClient={cosmWasmClient}

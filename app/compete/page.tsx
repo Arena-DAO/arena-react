@@ -44,7 +44,7 @@ const Compete = () => {
 		<div className="space-y-4">
 			<Breadcrumbs>
 				{breadcrumbItems.map((item) => (
-					<BreadcrumbItem href={`/compete?category=${item.url}`}>
+					<BreadcrumbItem key={item.url} href={`/compete?category=${item.url}`}>
 						{item.title}
 					</BreadcrumbItem>
 				))}
