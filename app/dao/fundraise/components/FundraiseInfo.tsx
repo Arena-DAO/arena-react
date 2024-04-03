@@ -29,6 +29,12 @@ interface FundraiseInfo {
 	fundraiseAddress?: string;
 }
 
+interface TableItem {
+	label: string;
+	denom: string;
+	amount: string;
+}
+
 const FundraiseInfo = ({
 	fundraiseAddress,
 	cosmWasmClient,
@@ -57,7 +63,7 @@ const FundraiseInfo = ({
 		}
 	};
 
-	const tableItems = useMemo(() => {
+	const tableItems: TableItem[] = useMemo(() => {
 		if (!data) return [];
 		const result = [
 			{
@@ -126,7 +132,7 @@ const FundraiseInfo = ({
 						</TableHeader>
 						<TableBody items={tableItems}>
 							{(item) => (
-								<TableRow>
+								<TableRow key={item.label}>
 									<TableCell>{item.label}</TableCell>
 									<TableCell>
 										<TokenInfo

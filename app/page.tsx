@@ -58,6 +58,7 @@ export default function HomePage() {
 				as={NextImage}
 				src="/future_of_competition.png"
 				alt="The future of competition"
+				priority
 				width="800"
 				height="400"
 				className="trophy_cursor mx-auto"
