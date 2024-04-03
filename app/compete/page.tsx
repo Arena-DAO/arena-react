@@ -1,8 +1,13 @@
 "use client";
 
-import { Tab, Tabs } from "@nextui-org/react";
+import { BreadcrumbItem, Breadcrumbs, Tab, Tabs } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
-import { type SubCategory, useCategoryMap } from "~/hooks/useCategories";
+import { useMemo } from "react";
+import {
+	type CategoryItem,
+	type SubCategory,
+	useCategoryMap,
+} from "~/hooks/useCategories";
 import { useEnv } from "~/hooks/useEnv";
 import CompetitionCategoryCard from "./components/CompetitionCategoryCard";
 import CompetitionModuleSection from "./components/CompetitionModuleSection";
@@ -15,11 +20,35 @@ const Compete = () => {
 	const category = searchParams?.get("category") ?? "";
 	const categoryItem = categories.get(category);
 
+	const breadcrumbItems: CategoryItem[] = useMemo(() => {
+		if (!categoryItem) return [];
+
+		const result = [];
+		let currentItem: CategoryItem | undefined = categoryItem;
+
+		while (currentItem) {
+			result.unshift(currentItem);
+
+			currentItem = currentItem.parent_url
+				? categories.get(currentItem.parent_url)
+				: undefined;
+		}
+
+		return result;
+	}, [categoryItem, categories.get]);
+
 	if (!categoryItem) {
 		return <h1 className="text-3xl">Category {category} not found</h1>;
 	}
 	return (
 		<div className="space-y-4">
+			<Breadcrumbs>
+				{breadcrumbItems.map((item) => (
+					<BreadcrumbItem href={`/compete?category=${item.url}`}>
+						{item.title}
+					</BreadcrumbItem>
+				))}
+			</Breadcrumbs>
 			<h1 className="text-5xl text-center">
 				{categoryItem.title} {"children" in categoryItem && "Categories"}
 			</h1>

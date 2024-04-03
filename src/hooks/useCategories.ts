@@ -7,6 +7,7 @@ interface CategoryBase {
 	url: string;
 	title: string;
 	img: string;
+	parent_url?: string;
 }
 
 type Keys = "id" | "url";
@@ -25,12 +26,15 @@ function setData(
 	categoryMap: Map<string, CategoryItem>,
 	daoItem: CategoryItem,
 	key: Keys,
+	parent_url?: string,
 ) {
 	if ("children" in daoItem) {
 		for (const child of daoItem.children) {
-			setData(categoryMap, child, key);
+			setData(categoryMap, child, key, daoItem.url);
 		}
 	}
+
+	daoItem.parent_url = parent_url;
 
 	if (key === "id") {
 		if ("category_id" in daoItem)
