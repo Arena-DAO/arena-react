@@ -82,9 +82,9 @@ export default function AppNavbar() {
 						]
 					: []),
 				{
-					href: "/resources/buy",
-					label: "Buy",
-					description: "Get $ARENA to participate in the DAO",
+					href: "/resources/docs",
+					label: "Docs",
+					description: "Learn more about how the Arena DAO works",
 				},
 				{
 					href: "/resources/bridge",

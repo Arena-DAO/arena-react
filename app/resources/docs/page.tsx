@@ -6,7 +6,7 @@ import { FiExternalLink } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { useEnv } from "~/hooks/useEnv";
 
-const Bridge = () => {
+const Docs = () => {
 	const { data: env } = useEnv();
 	useEffect(() => {
 		toast.info(
@@ -14,25 +14,25 @@ const Bridge = () => {
 				<div className="my-auto">View page directly...</div>
 				<Button
 					as={Link}
-					href={env.OSMOSIS_URL}
+					href={env.DOCS_URL}
 					isExternal
 					isIconOnly
-					aria-label="Osmosis"
+					aria-label="Docs"
 				>
 					<FiExternalLink />
 				</Button>
 			</div>,
 		);
-	}, [env.OSMOSIS_URL]);
+	}, [env.DOCS_URL]);
 
 	return (
 		<iframe
-			title="Osmosis"
-			src={env.OSMOSIS_URL}
+			title="Docs"
+			src={env.DOCS_URL}
 			className="w-screen left-0 fixed"
 			style={{ minHeight: "85dvh" }}
 		/>
 	);
 };
 
-export default Bridge;
+export default Docs;

@@ -256,18 +256,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@biomejs/biome@npm:1.6.3":
-  version: 1.6.3
-  resolution: "@biomejs/biome@npm:1.6.3"
+"@biomejs/biome@npm:1.6.4":
+  version: 1.6.4
+  resolution: "@biomejs/biome@npm:1.6.4"
   dependencies:
-    "@biomejs/cli-darwin-arm64": "npm:1.6.3"
-    "@biomejs/cli-darwin-x64": "npm:1.6.3"
-    "@biomejs/cli-linux-arm64": "npm:1.6.3"
-    "@biomejs/cli-linux-arm64-musl": "npm:1.6.3"
-    "@biomejs/cli-linux-x64": "npm:1.6.3"
-    "@biomejs/cli-linux-x64-musl": "npm:1.6.3"
-    "@biomejs/cli-win32-arm64": "npm:1.6.3"
-    "@biomejs/cli-win32-x64": "npm:1.6.3"
+    "@biomejs/cli-darwin-arm64": "npm:1.6.4"
+    "@biomejs/cli-darwin-x64": "npm:1.6.4"
+    "@biomejs/cli-linux-arm64": "npm:1.6.4"
+    "@biomejs/cli-linux-arm64-musl": "npm:1.6.4"
+    "@biomejs/cli-linux-x64": "npm:1.6.4"
+    "@biomejs/cli-linux-x64-musl": "npm:1.6.4"
+    "@biomejs/cli-win32-arm64": "npm:1.6.4"
+    "@biomejs/cli-win32-x64": "npm:1.6.4"
   dependenciesMeta:
     "@biomejs/cli-darwin-arm64":
       optional: true
@@ -287,62 +287,62 @@ __metadata:
       optional: true
   bin:
     biome: bin/biome
-  checksum: 10c0/5dd7a08e8c05eea2f687257c0d14c5fa0b433803ca9a003c447d501bc5167fb1a9d7daad12a7d177e1894666144d4c4897ec3efdfa78489d9606f08f222a5f60
+  checksum: 10c0/f85a5af7c4b3edb40c97a7a4fa2c78b91367cf31fe27d115d95f5f37d64c2b49091bb34d1495dfc8a053688b01fe9ed5746bc37bc99f0cec6d7915274df45a38
   languageName: node
   linkType: hard
 
-"@biomejs/cli-darwin-arm64@npm:1.6.3":
-  version: 1.6.3
-  resolution: "@biomejs/cli-darwin-arm64@npm:1.6.3"
+"@biomejs/cli-darwin-arm64@npm:1.6.4":
+  version: 1.6.4
+  resolution: "@biomejs/cli-darwin-arm64@npm:1.6.4"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@biomejs/cli-darwin-x64@npm:1.6.3":
-  version: 1.6.3
-  resolution: "@biomejs/cli-darwin-x64@npm:1.6.3"
+"@biomejs/cli-darwin-x64@npm:1.6.4":
+  version: 1.6.4
+  resolution: "@biomejs/cli-darwin-x64@npm:1.6.4"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-arm64-musl@npm:1.6.3":
-  version: 1.6.3
-  resolution: "@biomejs/cli-linux-arm64-musl@npm:1.6.3"
+"@biomejs/cli-linux-arm64-musl@npm:1.6.4":
+  version: 1.6.4
+  resolution: "@biomejs/cli-linux-arm64-musl@npm:1.6.4"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-arm64@npm:1.6.3":
-  version: 1.6.3
-  resolution: "@biomejs/cli-linux-arm64@npm:1.6.3"
+"@biomejs/cli-linux-arm64@npm:1.6.4":
+  version: 1.6.4
+  resolution: "@biomejs/cli-linux-arm64@npm:1.6.4"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-x64-musl@npm:1.6.3":
-  version: 1.6.3
-  resolution: "@biomejs/cli-linux-x64-musl@npm:1.6.3"
+"@biomejs/cli-linux-x64-musl@npm:1.6.4":
+  version: 1.6.4
+  resolution: "@biomejs/cli-linux-x64-musl@npm:1.6.4"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@biomejs/cli-linux-x64@npm:1.6.3":
-  version: 1.6.3
-  resolution: "@biomejs/cli-linux-x64@npm:1.6.3"
+"@biomejs/cli-linux-x64@npm:1.6.4":
+  version: 1.6.4
+  resolution: "@biomejs/cli-linux-x64@npm:1.6.4"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@biomejs/cli-win32-arm64@npm:1.6.3":
-  version: 1.6.3
-  resolution: "@biomejs/cli-win32-arm64@npm:1.6.3"
+"@biomejs/cli-win32-arm64@npm:1.6.4":
+  version: 1.6.4
+  resolution: "@biomejs/cli-win32-arm64@npm:1.6.4"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@biomejs/cli-win32-x64@npm:1.6.3":
-  version: 1.6.3
-  resolution: "@biomejs/cli-win32-x64@npm:1.6.3"
+"@biomejs/cli-win32-x64@npm:1.6.4":
+  version: 1.6.4
+  resolution: "@biomejs/cli-win32-x64@npm:1.6.4"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -400,12 +400,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.18.12":
-  version: 0.18.12
-  resolution: "@chain-registry/types@npm:0.18.12"
+"@chain-registry/types@npm:^0.18.13":
+  version: 0.18.13
+  resolution: "@chain-registry/types@npm:0.18.13"
   dependencies:
     "@babel/runtime": "npm:^7.21.0"
-  checksum: 10c0/6c98d87a59884d5384e5c1dfeb98a68a035e2c20273ea8ddd2640404a54db1e9e39f2022daaa72a97bebbb1fa894a7b1d06feddda8476646566b8fbe84d3844d
+  checksum: 10c0/84e223c64dd81f52b21822fec6bc8a146be1c1f25adfcbe7b6d35819c6a4a04f7a80d8c08a830dd5c4448b8a83849d319550c0ebc54d296cbd8ee290ff8f5825
   languageName: node
   linkType: hard
 
@@ -893,22 +893,6 @@ __metadata:
   version: 0.9.1
   resolution: "@emotion/hash@npm:0.9.1"
   checksum: 10c0/cdafe5da63fc1137f3db6e232fdcde9188b2b47ee66c56c29137199642a4086f42382d866911cfb4833cae2cc00271ab45cad3946b024f67b527bb7fac7f4c9d
-  languageName: node
-  linkType: hard
-
-"@emotion/is-prop-valid@npm:^0.8.2":
-  version: 0.8.8
-  resolution: "@emotion/is-prop-valid@npm:0.8.8"
-  dependencies:
-    "@emotion/memoize": "npm:0.7.4"
-  checksum: 10c0/f6be625f067c7fa56a12a4edaf090715616dc4fc7803c87212831f38c969350107b9709b1be54100e53153b18d9fa068eb4bf4f9ac66a37a8edf1bac9b64e279
-  languageName: node
-  linkType: hard
-
-"@emotion/memoize@npm:0.7.4":
-  version: 0.7.4
-  resolution: "@emotion/memoize@npm:0.7.4"
-  checksum: 10c0/b2376548fc147b43afd1ff005a80a1a025bd7eb4fb759fdb23e96e5ff290ee8ba16628a332848d600fb91c3cdc319eee5395fa33d8875e5d5a8c4ce18cddc18e
   languageName: node
   linkType: hard
 
@@ -1449,9 +1433,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@interchain-ui/react@npm:1.22.8":
-  version: 1.22.8
-  resolution: "@interchain-ui/react@npm:1.22.8"
+"@interchain-ui/react@npm:1.22.11":
+  version: 1.22.11
+  resolution: "@interchain-ui/react@npm:1.22.11"
   dependencies:
     "@floating-ui/core": "npm:^1.6.0"
     "@floating-ui/dom": "npm:^1.5.3"
@@ -1478,7 +1462,7 @@ __metadata:
   peerDependencies:
     react: ^18.x
     react-dom: ^18.x
-  checksum: 10c0/4f28525bde4c8ad0bf4787b3cbf410b7b579934111b19e4a967b1ae0242b008f965b509789f72d69ffe0f74e80a484aaa18f5ccabf1f91b0b05cb8d0c3e6ea81
+  checksum: 10c0/b7494d5d01282f211b1174ab8a9dcb48faf9b7389bfb5b624167542abd9f35786068fe966c3fe96488f72877a95e9c9cdad7859e87379e44dbf1c9b5f3360a02
   languageName: node
   linkType: hard
 
@@ -5178,12 +5162,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.12.2":
-  version: 20.12.2
-  resolution: "@types/node@npm:20.12.2"
+"@types/node@npm:^20.12.3":
+  version: 20.12.3
+  resolution: "@types/node@npm:20.12.3"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 10c0/bb47d115a8f95aadebdd6403fee16d149d6b5568ad53bacc42df34c2d572561e36ba47b05f7f68bada43752d7369b470a90df65b646af7502dfb799a21b4fca7
+  checksum: 10c0/45c8485a0e55276b42c26ba1df6c480e4e1a3a3abbf4ea0ff6b4e2823c4f77e32b7e166d4263d464f207cfea5bd4de8879b8df2c7132a727b0346a30191d6bea
   languageName: node
   linkType: hard
 
@@ -5646,8 +5630,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "arena-react@workspace:."
   dependencies:
-    "@biomejs/biome": "npm:1.6.3"
-    "@chain-registry/types": "npm:^0.18.12"
+    "@biomejs/biome": "npm:1.6.4"
+    "@chain-registry/types": "npm:^0.18.13"
     "@cosmjs/amino": "npm:^0.32.3"
     "@cosmjs/cosmwasm-stargate": "npm:0.32.3"
     "@cosmjs/encoding": "npm:^0.32.3"
@@ -5662,21 +5646,21 @@ __metadata:
     "@cosmos-kit/vectis": "npm:^2.6.9"
     "@date-fns/utc": "npm:^1.2.0"
     "@hookform/resolvers": "npm:^3.3.4"
-    "@interchain-ui/react": "npm:1.22.8"
+    "@interchain-ui/react": "npm:1.22.11"
     "@nextui-org/react": "npm:^2.2.10"
     "@nextui-org/theme": "npm:^2.1.18"
     "@nextui-org/use-infinite-scroll": "npm:^2.1.2"
     "@tanstack/react-query": "npm:4.36.1"
     "@types/lodash": "npm:^4.17.0"
-    "@types/node": "npm:^20.12.2"
+    "@types/node": "npm:^20.12.3"
     "@types/react": "npm:18.2.74"
     "@types/react-dom": "npm:^18.2.23"
     autoprefixer: "npm:^10.4.19"
-    chain-registry: "npm:1.33.17"
+    chain-registry: "npm:1.33.18"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^6.1.2"
     date-fns: "npm:^3.6.0"
-    framer-motion: "npm:^10.12.16"
+    framer-motion: "npm:^11.0.24"
     http-proxy-middleware: "npm:^3.0.0"
     lodash: "npm:^4.17.21"
     million: "npm:^3.0.6"
@@ -6175,13 +6159,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.33.17":
-  version: 1.33.17
-  resolution: "chain-registry@npm:1.33.17"
+"chain-registry@npm:1.33.18":
+  version: 1.33.18
+  resolution: "chain-registry@npm:1.33.18"
   dependencies:
     "@babel/runtime": "npm:^7.21.0"
-    "@chain-registry/types": "npm:^0.18.12"
-  checksum: 10c0/39eef12d9e95a2fa888b91e8914291d37ddf55fd1c1c9d479c08218c4df2c84f49a8593b1f6bbc9cf702912e88ecf4ac0b6b6aeb8de8f4c8253058e5dd0482e2
+    "@chain-registry/types": "npm:^0.18.13"
+  checksum: 10c0/c7b7ce7023bae2de3e267108cc0fb74af1c137894356b55c983457070685dcfabd5f373211521ae8b3a9062ab9b81d5dc74e5acfe393ed053f96bc651ec1afac
   languageName: node
   linkType: hard
 
@@ -7270,24 +7254,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^10.12.16":
-  version: 10.18.0
-  resolution: "framer-motion@npm:10.18.0"
+"framer-motion@npm:^11.0.24":
+  version: 11.0.24
+  resolution: "framer-motion@npm:11.0.24"
   dependencies:
-    "@emotion/is-prop-valid": "npm:^0.8.2"
     tslib: "npm:^2.4.0"
   peerDependencies:
+    "@emotion/is-prop-valid": "*"
     react: ^18.0.0
     react-dom: ^18.0.0
-  dependenciesMeta:
+  peerDependenciesMeta:
     "@emotion/is-prop-valid":
       optional: true
-  peerDependenciesMeta:
     react:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/0aea1b3dc5cf06687e31f3b6c0b6b1a2cd070afdd4a9d38ebf15715c662ca1d6d1c25e6778695e5ebff37a6ce92b031d036c02570370e6057e66aa9de9f9370f
+  checksum: 10c0/8d884a828ef3e03683fdd5bbe5de64751f2a97f379f332262142caf2ae76d5af5fb1e2810a1a5845fb3322c8990f568997d22ffe8f0ff0f2eb7e637c5e0a5266
   languageName: node
   linkType: hard
 

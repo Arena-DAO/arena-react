@@ -32,7 +32,7 @@ interface Env {
 	ARENA_WAGER_MODULE_ADDRESS: string;
 	ARENA_LEAGUE_MODULE_ADDRESS: string;
 	DAO_DAO_URL: string;
-	OSMOSIS_URL: string;
+	DOCS_URL: string;
 	JUNO_RPC_URL: string;
 	FAUCET_URL?: string;
 }
@@ -106,7 +106,7 @@ function getEnv(): Env {
 			process.env.NEXT_PUBLIC_ARENA_LEAGUE_MODULE_ADDRESS,
 		),
 		DAO_DAO_URL: checkEnv(process.env.NEXT_PUBLIC_DAO_DAO_URL),
-		OSMOSIS_URL: checkEnv(process.env.NEXT_PUBLIC_OSMOSIS_URL),
+		DOCS_URL: checkEnv(process.env.NEXT_PUBLIC_DOCS_URL),
 		JUNO_RPC_URL: checkEnv(process.env.NEXT_PUBLIC_JUNO_RPC_URL),
 		FAUCET_URL: process.env.NEXT_PUBLIC_FAUCET_URL,
 	};
