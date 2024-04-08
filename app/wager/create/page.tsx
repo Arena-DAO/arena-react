@@ -1,29 +1,46 @@
 "use client";
 
-import CreateCompetitionForm, {
-	type CreateCompetitionFormValues,
-} from "@/components/competition/create/CreateCompetitionForm";
+import Profile from "@/components/Profile";
+import CreateCompetitionForm from "@/components/competition/create/CreateCompetitionForm";
 import { toBinary } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@nextui-org/react";
+import { Button, Input, Link, Switch, Tooltip } from "@nextui-org/react";
 import { addSeconds, formatISO } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import { BsArrowLeft, BsInfoCircle } from "react-icons/bs";
 import { toast } from "react-toastify";
+import { z } from "zod";
 import type { InstantiateMsg as ArenaEscrowInstantiateMsg } from "~/codegen/ArenaEscrow.types";
 import { ArenaWagerModuleClient } from "~/codegen/ArenaWagerModule.client";
 import type { InstantiateMsg as DaoDaoCoreInstantiateMsg } from "~/codegen/DaoDaoCore.types";
 import type { InstantiateMsg as DAOProposalSingleInstantiateMsg } from "~/codegen/DaoProposalSingle.types";
 import type { InstantiateMsg as DAOVotingCW4InstantiateMsg } from "~/codegen/DaoVotingCw4.types";
-import { CreateCompetitionSchema } from "~/config/schemas";
+import { AddressSchema, CreateCompetitionSchema } from "~/config/schemas";
 import { convertToExpiration } from "~/helpers/SchemaHelpers";
 import { useCategoryMap } from "~/hooks/useCategories";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
+
+const CreateWagerSchema = CreateCompetitionSchema.extend({
+	isAutomaticHost: z.boolean(),
+	host: AddressSchema.optional(),
+}).superRefine((x, ctx) => {
+	if (!x.isAutomaticHost && !x.host) {
+		ctx.addIssue({
+			path: ["host"],
+			code: z.ZodIssueCode.custom,
+			message: "Host is required when not using an automatic host",
+		});
+	}
+});
+type CreateWagerFormValues = z.infer<typeof CreateWagerSchema>;
 
 const CreateWager = () => {
 	const { data: env } = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { getSigningCosmWasmClient, address, isWalletConnected } = useChain(
 		env.CHAIN,
 	);
@@ -38,7 +55,7 @@ const CreateWager = () => {
 			? categoryItem.category_id
 			: undefined
 		: undefined;
-	const formMethods = useForm<CreateCompetitionFormValues>({
+	const formMethods = useForm<CreateWagerFormValues>({
 		defaultValues: {
 			expiration: {
 				at_time: formatISO(addSeconds(new Date(), 14 * 24 * 60 * 60)).slice(
@@ -67,13 +84,20 @@ const CreateWager = () => {
 				categoryItem ? ` - ${categoryItem.title}` : ""
 			}`,
 			competition_dao_description: "A DAO for handling an Arena Competition.",
+			isAutomaticHost: true,
 		},
-		resolver: zodResolver(CreateCompetitionSchema),
+		resolver: zodResolver(CreateWagerSchema),
 	});
 	const {
 		handleSubmit,
-		formState: { isSubmitting },
+		formState: { isSubmitting, errors },
+		control,
+		watch,
+		setValue,
 	} = formMethods;
+
+	const watchIsAutomaticHost = watch("isAutomaticHost");
+	const watchHost = watch("host");
 
 	useEffect(() => {
 		const value = formMethods.getValues("dues.0.addr");
@@ -82,7 +106,7 @@ const CreateWager = () => {
 		}
 	}, [address, formMethods.getValues, formMethods.setValue]);
 
-	const onSubmit = async (values: CreateCompetitionFormValues) => {
+	const onSubmit = async (values: CreateWagerFormValues) => {
 		try {
 			const cosmWasmClient = await getSigningCosmWasmClient();
 			if (!address) throw "Could not get user address";
@@ -93,6 +117,63 @@ const CreateWager = () => {
 				env.ARENA_WAGER_MODULE_ADDRESS,
 			);
 
+			const host = values.isAutomaticHost
+				? {
+						new: {
+							info: {
+								admin: { address: { addr: env.ARENA_DAO_ADDRESS } },
+								code_id: env.CODE_ID_DAO_CORE,
+								label: "Arena Competition DAO",
+								msg: toBinary({
+									admin: env.ARENA_DAO_ADDRESS,
+									automatically_add_cw20s: true,
+									automatically_add_cw721s: true,
+									description: values.competition_dao_description,
+									name: values.competition_dao_name,
+									proposal_modules_instantiate_info: [
+										{
+											admin: { core_module: {} },
+											code_id: env.CODE_ID_DAO_PROPOSAL_SINGLE,
+											label: "DAO Proposal Single",
+											msg: toBinary({
+												allow_revoting: false,
+												close_proposal_on_execution_failure: true,
+												max_voting_period: {
+													time: env.DEFAULT_TEAM_VOTING_DURATION_TIME,
+												},
+												only_members_execute: true,
+												pre_propose_info: {
+													anyone_may_propose: {}, // Ideally want a module_can_propose and module_sender
+												},
+												threshold: {
+													absolute_percentage: { percentage: { percent: "1" } },
+												},
+											} as DAOProposalSingleInstantiateMsg),
+										},
+									],
+									voting_module_instantiate_info: {
+										admin: { core_module: {} },
+										code_id: env.CODE_ID_DAO_VOTING_CW4,
+										label: "DAO Voting CW4",
+										msg: toBinary({
+											group_contract: {
+												new: {
+													cw4_group_code_id: env.CODE_ID_CW4_GROUP,
+													initial_members: values.dues.map((x) => ({
+														addr: x.addr,
+														weight: 1,
+													})),
+												},
+											},
+										} as DAOVotingCW4InstantiateMsg),
+									},
+								} as DaoDaoCoreInstantiateMsg),
+							},
+						},
+					}
+				: // biome-ignore lint/style/noNonNullAssertion: Schema validation ensures this is populated
+					{ existing: { addr: values.host! } };
+
 			const msg = {
 				categoryId: category_id?.toString(),
 				description: values.description,
@@ -101,59 +182,7 @@ const CreateWager = () => {
 				rules: values.rules.map((x) => x.rule),
 				rulesets: values.rulesets.map((x) => x.ruleset_id.toString()),
 				instantiateExtension: {},
-				host: {
-					new: {
-						info: {
-							admin: { address: { addr: env.ARENA_DAO_ADDRESS } },
-							code_id: env.CODE_ID_DAO_CORE,
-							label: "Arena Competition DAO",
-							msg: toBinary({
-								admin: env.ARENA_DAO_ADDRESS,
-								automatically_add_cw20s: true,
-								automatically_add_cw721s: true,
-								description: values.competition_dao_description,
-								name: values.competition_dao_name,
-								proposal_modules_instantiate_info: [
-									{
-										admin: { core_module: {} },
-										code_id: env.CODE_ID_DAO_PROPOSAL_SINGLE,
-										label: "DAO Proposal Single",
-										msg: toBinary({
-											allow_revoting: false,
-											close_proposal_on_execution_failure: true,
-											max_voting_period: {
-												time: env.DEFAULT_TEAM_VOTING_DURATION_TIME,
-											},
-											only_members_execute: true,
-											pre_propose_info: {
-												anyone_may_propose: {}, // Ideally want a module_can_propose and module_sender
-											},
-											threshold: {
-												absolute_percentage: { percentage: { percent: "1" } },
-											},
-										} as DAOProposalSingleInstantiateMsg),
-									},
-								],
-								voting_module_instantiate_info: {
-									admin: { core_module: {} },
-									code_id: env.CODE_ID_DAO_VOTING_CW4,
-									label: "DAO Voting CW4",
-									msg: toBinary({
-										group_contract: {
-											new: {
-												cw4_group_code_id: env.CODE_ID_CW4_GROUP,
-												initial_members: values.dues.map((x) => ({
-													addr: x.addr,
-													weight: 1,
-												})),
-											},
-										},
-									} as DAOVotingCW4InstantiateMsg),
-								},
-							} as DaoDaoCoreInstantiateMsg),
-						},
-					},
-				},
+				host: host,
 				escrow: {
 					code_id: env.CODE_ID_ESCROW,
 					label: "Arena Escrow",
@@ -210,6 +239,54 @@ const CreateWager = () => {
 			<form onSubmit={handleSubmit(async (data) => await onSubmit(data))}>
 				<div className="space-y-4">
 					<h1 className="text-5xl text-center">Create a Wager</h1>
+					{category && (
+						<Tooltip content="Return to competitions">
+							<Button
+								as={Link}
+								isIconOnly
+								href={`/compete?category=${category}`}
+							>
+								<BsArrowLeft />
+							</Button>
+						</Tooltip>
+					)}
+					<div className="flex space-x-2">
+						<Switch
+							aria-label="Automatic Host"
+							defaultSelected={
+								formMethods.formState.defaultValues?.isAutomaticHost
+							}
+							onValueChange={(value) => setValue("isAutomaticHost", value)}
+						>
+							Use Automatic Host
+						</Switch>
+						<Tooltip content="If enabled, then a DAO is created with all members required to agree on proposals">
+							<Button isIconOnly variant="light">
+								<BsInfoCircle />
+							</Button>
+						</Tooltip>
+					</div>
+					{!watchIsAutomaticHost && (
+						<>
+							<Controller
+								control={control}
+								name="host"
+								render={({ field }) => (
+									<Input
+										type="text"
+										label="Host"
+										isDisabled={isSubmitting}
+										isInvalid={!!errors.host}
+										errorMessage={errors.host?.message}
+										{...field}
+									/>
+								)}
+							/>
+							{watchHost && cosmWasmClient && (
+								<Profile address={watchHost} cosmWasmClient={cosmWasmClient} />
+							)}
+						</>
+					)}
 					<CreateCompetitionForm />
 					<div className="flex">
 						<Button
