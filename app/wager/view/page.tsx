@@ -13,11 +13,11 @@ const ViewWager = () => {
 	const competitionId = searchParams?.get("competitionId");
 
 	if (!competitionId) {
-		return <h1 className="text-5xl text-center">Wager id not provided...</h1>;
+		return <h1 className="text-center text-5xl">Wager id not provided...</h1>;
 	}
 	return (
 		<div className="space-y-4">
-			<h1 className="text-5xl text-center">View Wager</h1>
+			<h1 className="text-center text-5xl">View Wager</h1>
 			{cosmWasmClient && (
 				<ViewCompetition
 					cosmWasmClient={cosmWasmClient}

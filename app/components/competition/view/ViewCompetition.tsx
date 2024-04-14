@@ -1,13 +1,10 @@
 "use client";
-
-import { CopyAddressButton } from "@/components/CopyAddressButton";
 import MaybeLink from "@/components/MaybeLink";
 import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
 import {
 	Badge,
 	Button,
-	ButtonGroup,
 	Card,
 	CardBody,
 	CardHeader,
@@ -83,7 +80,7 @@ const ViewCompetition = ({
 			)}
 			<Card>
 				<CardHeader className="flex justify-between">
-					<h2 className="text-2xl font-bold">Host</h2>
+					<h2 className="font-bold text-2xl">Host</h2>
 					{data && (
 						<Badge
 							isOneChar
@@ -128,7 +125,7 @@ const ViewCompetition = ({
 					<>
 						<Select
 							label="Expiration"
-							className="col-span-12 sm:col-span-6 md:col-span-4"
+							className="col-span-12 md:col-span-4 sm:col-span-6"
 							defaultSelectedKeys={[
 								"at_time" in data.expiration
 									? "at_time"
@@ -150,7 +147,7 @@ const ViewCompetition = ({
 						</Select>
 						{"at_height" in data.expiration && (
 							<Input
-								className="col-span-12 sm:col-span-6 lg:col-span-4"
+								className="col-span-12 lg:col-span-4 sm:col-span-6"
 								label="Height"
 								type="number"
 								value={data.expiration.at_height.toString()}
@@ -159,7 +156,7 @@ const ViewCompetition = ({
 						)}
 						{"at_time" in data.expiration && (
 							<Input
-								className="col-span-12 sm:col-span-6 lg:col-span-4"
+								className="col-span-12 lg:col-span-4 sm:col-span-6"
 								label="Time"
 								type="datetime-local"
 								value={formatExpirationTime(data.expiration.at_time)}

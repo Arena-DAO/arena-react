@@ -49,7 +49,7 @@ const Compete = () => {
 					</BreadcrumbItem>
 				))}
 			</Breadcrumbs>
-			<h1 className="text-5xl text-center">
+			<h1 className="text-center text-5xl">
 				{categoryItem.title} {"children" in categoryItem && "Categories"}
 			</h1>
 			{"children" in categoryItem && (

@@ -15,7 +15,7 @@ const ColorModeSwitch = dynamic(() => import("./ColorModeSwitch"), {
 
 export default function Footer() {
 	return (
-		<Navbar as="footer" className="fixed bottom-0 left-0 top-auto">
+		<Navbar as="footer" className="fixed top-auto bottom-0 left-0">
 			<NavbarContent>
 				<ButtonGroup variant="light">
 					<Button

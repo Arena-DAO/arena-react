@@ -29,7 +29,7 @@ const Bridge = () => {
 		<iframe
 			title="IBC FUN"
 			src={env.IBC_FUN}
-			className="w-screen left-0 fixed"
+			className="fixed left-0 w-screen"
 			style={{ minHeight: "85dvh" }}
 		/>
 	);

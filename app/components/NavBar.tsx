@@ -117,12 +117,12 @@ export default function AppNavbar() {
 							height="30"
 							removeWrapper
 						/>
-						<p className="font-bold text-inherit ml-2">Arena DAO</p>
+						<p className="ml-2 font-bold text-inherit">Arena DAO</p>
 					</Link>
 				</NavbarBrand>
 			</NavbarContent>
 
-			<NavbarContent className="hidden md:flex gap-4" justify="center">
+			<NavbarContent className="hidden gap-4 md:flex" justify="center">
 				{navbarItems.map((item) =>
 					item.isDropdown ? (
 						<Dropdown key={item.label}>
@@ -130,7 +130,7 @@ export default function AppNavbar() {
 								<DropdownTrigger>
 									<Button
 										disableRipple
-										className="p-0 font-bold text-medium bg-transparent data-[hover=true]:bg-transparent"
+										className="bg-transparent p-0 font-bold text-medium data-[hover=true]:bg-transparent"
 										color="primary"
 										endContent={<BsChevronDown />}
 										variant="light"
@@ -185,7 +185,7 @@ export default function AppNavbar() {
 								<DropdownTrigger>
 									<Button
 										disableRipple
-										className="p-0 w-full text-medium justify-start font-bold bg-transparent data-[hover=true]:bg-transparent"
+										className="w-full justify-start bg-transparent p-0 font-bold text-medium data-[hover=true]:bg-transparent"
 										color="primary"
 										endContent={<BsChevronDown />}
 										size="lg"
@@ -219,7 +219,7 @@ export default function AppNavbar() {
 					) : (
 						<NavbarMenuItem key={item.href}>
 							<Link
-								className="w-full font-bold py-1"
+								className="w-full py-1 font-bold"
 								href={item.href}
 								size="lg"
 								isExternal={item.isExternal}

@@ -1,9 +1,7 @@
 "use client";
 
 import {
-	Badge,
 	Button,
-	Chip,
 	Link,
 	Spinner,
 	Table,
@@ -15,12 +13,10 @@ import {
 } from "@nextui-org/react";
 import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
 import { useState } from "react";
-import { BsHourglassBottom } from "react-icons/bs";
 import { useAsyncList } from "react-stately";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import type { CompetitionResponseForEmpty } from "~/codegen/ArenaWagerModule.types";
-import { statusColors } from "~/helpers/ArenaHelpers";
-import { type CategoryLeaf, useCategoryMap } from "~/hooks/useCategories";
+import { useCategoryMap } from "~/hooks/useCategories";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import type { WithClient } from "~/types/util";

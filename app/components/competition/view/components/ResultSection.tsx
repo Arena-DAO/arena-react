@@ -44,7 +44,7 @@ const ResultSection = ({
 			<Card>
 				<CardHeader>Result</CardHeader>
 				<CardBody className="space-y-4">
-					{!data && <p className="text-lg font-bold">Draw</p>}
+					{!data && <p className="font-bold text-lg">Draw</p>}
 					{data && (
 						<>
 							<Input

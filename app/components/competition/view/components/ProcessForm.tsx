@@ -25,7 +25,7 @@ import {
 	useDisclosure,
 } from "@nextui-org/react";
 import type { Dispatch, SetStateAction } from "react";
-import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { BsPercent } from "react-icons/bs";
 import { FiExternalLink, FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";

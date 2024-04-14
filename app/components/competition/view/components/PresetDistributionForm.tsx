@@ -25,7 +25,7 @@ import {
 	useDisclosure,
 } from "@nextui-org/react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { BsPercent, BsTrash } from "react-icons/bs";
+import { BsPercent } from "react-icons/bs";
 import { FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { z } from "zod";

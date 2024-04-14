@@ -37,7 +37,7 @@ export default function Faucet() {
 	if (env.FAUCET_URL === undefined) return <h1>Faucet is not defined...</h1>;
 	return (
 		<div className="space-y-4">
-			<h1 className="text-5xl text-center">Juno Testnet Faucet</h1>
+			<h1 className="text-center text-5xl">Juno Testnet Faucet</h1>
 			<form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 				<span>
 					<Controller
@@ -53,7 +53,7 @@ export default function Faucet() {
 							/>
 						)}
 					/>
-					<p className="text-xs text-warning">
+					<p className="text-warning text-xs">
 						*Testnet faucet is down at the moment
 					</p>
 				</span>

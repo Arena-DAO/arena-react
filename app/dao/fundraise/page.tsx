@@ -26,7 +26,7 @@ const Fundraise = () => {
 
 	return (
 		<div className="space-y-4">
-			<h1 className="text-5xl text-center">Fundraises</h1>
+			<h1 className="text-center text-5xl">Fundraises</h1>
 			<Tabs items={fundraises}>
 				{(item) => (
 					<Tab key={item.id} title={item.title}>

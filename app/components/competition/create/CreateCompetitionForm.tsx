@@ -120,7 +120,7 @@ export default function CreateCompetitionForm() {
 			<div className="grid grid-cols-12 gap-4">
 				<Select
 					label="Expiration"
-					className="col-span-12 sm:col-span-6 md:col-span-4"
+					className="col-span-12 md:col-span-4 sm:col-span-6"
 					defaultSelectedKeys={["at_time"]}
 					onChange={(e) => {
 						switch (e.target.value) {
@@ -159,7 +159,7 @@ export default function CreateCompetitionForm() {
 						name="expiration.at_height"
 						render={({ field }) => (
 							<Input
-								className="col-span-12 sm:col-span-6 lg:col-span-4"
+								className="col-span-12 lg:col-span-4 sm:col-span-6"
 								label="Height"
 								type="number"
 								isDisabled={isSubmitting}
@@ -186,7 +186,7 @@ export default function CreateCompetitionForm() {
 						name="expiration.at_time"
 						render={({ field }) => (
 							<Input
-								className="col-span-12 sm:col-span-6 lg:col-span-4"
+								className="col-span-12 lg:col-span-4 sm:col-span-6"
 								type="datetime-local"
 								placeholder="Select date and time"
 								label="Time"
@@ -289,7 +289,7 @@ export default function CreateCompetitionForm() {
 									<TableCell>
 										<Card>
 											<CardHeader className="flex justify-between">
-												<div className="text-nowrap mr-4">Team {index + 1}</div>
+												<div className="mr-4 text-nowrap">Team {index + 1}</div>
 												{cosmWasmClient && (
 													<DueProfile
 														cosmWasmClient={cosmWasmClient}

@@ -26,7 +26,7 @@ const DAO = () => {
 		<iframe
 			title="Arena DAO"
 			src={href}
-			className="w-screen left-0 fixed"
+			className="fixed left-0 w-screen"
 			style={{ minHeight: "85dvh" }}
 		/>
 	);

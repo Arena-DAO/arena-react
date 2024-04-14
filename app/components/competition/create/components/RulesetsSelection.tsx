@@ -104,7 +104,7 @@ const RulesetsSelection = ({
 									<Button>View</Button>
 								</PopoverTrigger>
 								<PopoverContent>
-									<ul className="list-disc list-inside">
+									<ul className="list-inside list-disc">
 										{item.rules.map((rule, i) => (
 											// biome-ignore lint/suspicious/noArrayIndexKey: Best option for now
 											<li key={i}>{rule}</li>

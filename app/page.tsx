@@ -3,7 +3,6 @@
 import { Card, CardBody, CardHeader, Image, Link } from "@nextui-org/react";
 import { useTheme } from "next-themes";
 import NextImage from "next/image";
-import Chart from "react-google-charts";
 import {
 	BsBookFill,
 	BsBuildingFill,
@@ -31,9 +30,9 @@ interface FeatureProps {
 
 function Feature({ title, description, icon }: FeatureProps) {
 	return (
-		<Card className="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3 p-4">
+		<Card className="col-span-12 p-4 lg:col-span-3 md:col-span-4 sm:col-span-6">
 			<CardHeader>
-				<h3 className="flex gap-4 items-center ml-2 font-bold">
+				<h3 className="ml-2 flex items-center gap-4 font-bold">
 					<span className="text-primary">{icon}</span> {title}
 				</h3>
 			</CardHeader>
@@ -50,7 +49,7 @@ export default function HomePage() {
 
 	return (
 		<div className="space-y-4">
-			<h1 className="font-extrabold text-5xl text-center">
+			<h1 className="text-center font-extrabold text-5xl">
 				Welcome to the future of{" "}
 				<span className="text-primary">competition</span>!
 			</h1>
@@ -65,7 +64,7 @@ export default function HomePage() {
 			/>
 			<div className="block text-start">
 				<Link href="#about">
-					<h2 id="about" className="text-foreground font-bold text-4xl">
+					<h2 id="about" className="font-bold text-4xl text-foreground">
 						<span className="text-primary">#</span> About
 					</h2>
 				</Link>
@@ -96,41 +95,8 @@ export default function HomePage() {
 				/>
 			</div>
 			<div className="block text-start">
-				<Link href="#initial_token_distribution">
-					<h2
-						id="initial_token_distribution"
-						className="text-foreground font-bold text-4xl"
-					>
-						<span className="text-primary">#</span> Initial Token Distribution
-					</h2>
-				</Link>
-			</div>
-			<h4 className="text-xl font-bold">1B Supply</h4>
-			<em>(tentative)</em>
-			<Chart
-				chartType="PieChart"
-				className="text-foreground"
-				data={[
-					["Group", "Percentage"],
-					["Liquidity Bootstrapping", 30],
-					["Liquidity Incentives", 15],
-					["Community Pool", 30],
-					["Founder", 20],
-					["x/drip (airdrop)", 5],
-				]}
-				options={{
-					backgroundColor: "transparent",
-					legend: {
-						textStyle: { color: theme === "dark" ? "white" : "black" },
-					},
-				}}
-				legendToggle
-				width={"100%"}
-				height={"400px"}
-			/>
-			<div className="block text-start">
 				<Link href="#arena_core">
-					<h2 id="arena_core" className="text-foreground font-bold text-4xl">
+					<h2 id="arena_core" className="font-bold text-4xl text-foreground">
 						<span className="text-primary">#</span> Arena Core
 					</h2>
 				</Link>
@@ -160,7 +126,7 @@ export default function HomePage() {
 			</div>
 			<div className="block text-start">
 				<Link href="#escrow">
-					<h2 id="escrow" className="text-foreground font-bold text-4xl">
+					<h2 id="escrow" className="font-bold text-4xl text-foreground">
 						<span className="text-primary">#</span> Escrows
 					</h2>
 				</Link>
@@ -179,7 +145,7 @@ export default function HomePage() {
 			</div>
 			<div className="block text-start">
 				<Link href="#wagers">
-					<h2 id="wagers" className="text-foreground font-bold text-4xl">
+					<h2 id="wagers" className="font-bold text-4xl text-foreground">
 						<span className="text-primary">#</span> Wagers
 					</h2>
 				</Link>
@@ -198,7 +164,7 @@ export default function HomePage() {
 			</div>
 			<div className="block text-start">
 				<Link href="#leagues">
-					<h2 id="leagues" className="text-foreground font-bold text-4xl">
+					<h2 id="leagues" className="font-bold text-4xl text-foreground">
 						<span className="text-primary">#</span> Leagues
 					</h2>
 				</Link>

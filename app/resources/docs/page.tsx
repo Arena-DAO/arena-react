@@ -29,7 +29,7 @@ const Docs = () => {
 		<iframe
 			title="Docs"
 			src={env.DOCS_URL}
-			className="w-screen left-0 fixed"
+			className="fixed left-0 w-screen"
 			style={{ minHeight: "85dvh" }}
 		/>
 	);
