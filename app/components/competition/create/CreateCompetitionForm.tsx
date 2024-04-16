@@ -1,5 +1,6 @@
 "use client";
 
+import { parseAbsoluteToLocal } from "@internationalized/date";
 import {
 	Accordion,
 	AccordionItem,
@@ -8,6 +9,7 @@ import {
 	CardBody,
 	CardFooter,
 	CardHeader,
+	DatePicker,
 	Input,
 	Select,
 	SelectItem,
@@ -112,6 +114,7 @@ export default function CreateCompetitionForm() {
 				<Select
 					label="Expiration"
 					className="col-span-12 md:col-span-4 sm:col-span-6"
+					isDisabled={isSubmitting}
 					defaultSelectedKeys={["at_time"]}
 					onChange={(e) => {
 						switch (e.target.value) {
@@ -176,10 +179,9 @@ export default function CreateCompetitionForm() {
 						control={control}
 						name="expiration.at_time"
 						render={({ field }) => (
-							<Input
+							<DatePicker
+								showMonthAndYearPickers
 								className="col-span-12 lg:col-span-4 sm:col-span-6"
-								type="datetime-local"
-								placeholder="Select date and time"
 								label="Time"
 								isDisabled={isSubmitting}
 								isInvalid={
@@ -191,7 +193,8 @@ export default function CreateCompetitionForm() {
 										: ""
 								}
 								{...field}
-								value={watchExpiration.at_time}
+								value={parseAbsoluteToLocal(watchExpiration.at_time)}
+								onChange={(x) => field.onChange(x.toAbsoluteString())}
 							/>
 						)}
 					/>

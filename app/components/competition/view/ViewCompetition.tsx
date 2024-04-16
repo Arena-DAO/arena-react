@@ -9,6 +9,7 @@ import {
 	CardBody,
 	CardHeader,
 	Chip,
+	DatePicker,
 	Input,
 	Link,
 	Select,
@@ -155,12 +156,11 @@ const ViewCompetition = ({
 							/>
 						)}
 						{"at_time" in data.expiration && (
-							<Input
+							<DatePicker
 								className="col-span-12 lg:col-span-4 sm:col-span-6"
 								label="Time"
-								type="datetime-local"
 								value={formatExpirationTime(data.expiration.at_time)}
-								readOnly
+								isReadOnly
 							/>
 						)}
 					</>
@@ -172,6 +172,7 @@ const ViewCompetition = ({
 					<CardBody className="space-y-4">
 						{data.rulesets.map((rulesetId) => (
 							<RulesetsSection
+								key={rulesetId}
 								rulesetId={rulesetId}
 								cosmWasmClient={cosmWasmClient}
 							/>

@@ -6,7 +6,7 @@ import { toBinary } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Input, Link, Switch, Tooltip } from "@nextui-org/react";
-import { addSeconds, formatISO } from "date-fns";
+import { addWeeks } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
@@ -58,10 +58,7 @@ const CreateWager = () => {
 	const formMethods = useForm<CreateWagerFormValues>({
 		defaultValues: {
 			expiration: {
-				at_time: formatISO(addSeconds(new Date(), 14 * 24 * 60 * 60)).slice(
-					0,
-					16,
-				), // Default to 2 weeks from now
+				at_time: addWeeks(new Date(), 2).toISOString(), // Default to 2 weeks from now
 			},
 			rules: [],
 			dues: [

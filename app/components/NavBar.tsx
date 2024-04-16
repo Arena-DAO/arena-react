@@ -10,14 +10,12 @@ import {
 	Navbar,
 	NavbarBrand,
 	NavbarContent,
-	NavbarItem,
 	NavbarMenu,
-	NavbarMenuItem,
 	NavbarMenuToggle,
 } from "@nextui-org/react";
 import { Image } from "@nextui-org/react";
 import NextImage from "next/image";
-import { useState } from "react";
+import { type Dispatch, type SetStateAction, useState } from "react";
 import { BsChevronDown } from "react-icons/bs";
 import { useEnv } from "~/hooks/useEnv";
 import WalletConnectToggle from "./WalletConnectToggle";
@@ -37,6 +35,69 @@ interface MenuDropdownItem {
 	description?: string;
 	isExternal?: boolean;
 }
+
+interface DynamicNavbarItem {
+	item: MenuItem;
+	setIsMenuOpen: Dispatch<SetStateAction<boolean>>;
+	dropdownButtonClass: string;
+	linkClass: string;
+}
+
+const DynamicNavbarItem = ({
+	item,
+	setIsMenuOpen,
+	dropdownButtonClass,
+	linkClass,
+}: DynamicNavbarItem) => {
+	if (item.isDropdown)
+		return (
+			<Dropdown>
+				<DropdownTrigger>
+					<Button
+						disableRipple
+						className={dropdownButtonClass}
+						color="primary"
+						endContent={<BsChevronDown />}
+						size="lg"
+						variant="light"
+					>
+						{item.label}
+					</Button>
+				</DropdownTrigger>
+				<DropdownMenu
+					aria-label={item.ariaLabel}
+					itemClasses={{
+						base: "gap-4",
+						title: "text-primary font-semibold",
+					}}
+					items={item.dropdownItems}
+				>
+					{(dropdownItem) => (
+						<DropdownItem
+							as={Link}
+							key={dropdownItem.label}
+							description={dropdownItem.description}
+							href={dropdownItem.href}
+							onPress={() => setIsMenuOpen(false)}
+						>
+							{dropdownItem.label}
+						</DropdownItem>
+					)}
+				</DropdownMenu>
+			</Dropdown>
+		);
+	return (
+		<Link
+			className={linkClass}
+			href={item.href}
+			size="lg"
+			isExternal={item.isExternal}
+			onClick={() => setIsMenuOpen(false)}
+		>
+			{item.label}
+		</Link>
+	);
+};
 
 export default function AppNavbar() {
 	const { data: env } = useEnv();
@@ -123,54 +184,15 @@ export default function AppNavbar() {
 			</NavbarContent>
 
 			<NavbarContent className="hidden gap-4 md:flex" justify="center">
-				{navbarItems.map((item) =>
-					item.isDropdown ? (
-						<Dropdown key={item.label}>
-							<NavbarItem>
-								<DropdownTrigger>
-									<Button
-										disableRipple
-										className="bg-transparent p-0 font-bold text-medium data-[hover=true]:bg-transparent"
-										color="primary"
-										endContent={<BsChevronDown />}
-										variant="light"
-									>
-										{item.label}
-									</Button>
-								</DropdownTrigger>
-							</NavbarItem>
-							<DropdownMenu
-								aria-label={item.ariaLabel}
-								itemClasses={{
-									base: "gap-4",
-									title: "text-primary font-semibold",
-								}}
-								items={item.dropdownItems}
-							>
-								{(dropdownItem) => (
-									<DropdownItem
-										as={Link}
-										key={dropdownItem.label}
-										description={dropdownItem.description}
-										href={dropdownItem.href}
-									>
-										{dropdownItem.label}
-									</DropdownItem>
-								)}
-							</DropdownMenu>
-						</Dropdown>
-					) : (
-						<NavbarItem key={item.href}>
-							<Link
-								href={item.href}
-								className="font-bold"
-								isExternal={item.isExternal}
-							>
-								{item.label}
-							</Link>
-						</NavbarItem>
-					),
-				)}
+				{navbarItems.map((item) => (
+					<DynamicNavbarItem
+						key={item.label}
+						item={item}
+						setIsMenuOpen={setIsMenuOpen}
+						dropdownButtonClass="bg-transparent p-0 font-bold text-medium data-[hover=true]:bg-transparent"
+						linkClass="font-bold"
+					/>
+				))}
 			</NavbarContent>
 
 			<NavbarContent as="div" justify="end">
@@ -178,58 +200,15 @@ export default function AppNavbar() {
 			</NavbarContent>
 
 			<NavbarMenu>
-				{navbarItems.map((item) =>
-					item.isDropdown ? (
-						<NavbarMenuItem key={item.label}>
-							<Dropdown>
-								<DropdownTrigger>
-									<Button
-										disableRipple
-										className="w-full justify-start bg-transparent p-0 font-bold text-medium data-[hover=true]:bg-transparent"
-										color="primary"
-										endContent={<BsChevronDown />}
-										size="lg"
-										variant="light"
-									>
-										{item.label}
-									</Button>
-								</DropdownTrigger>
-								<DropdownMenu
-									aria-label={item.ariaLabel}
-									itemClasses={{
-										base: "gap-4",
-										title: "text-primary font-semibold",
-									}}
-									items={item.dropdownItems}
-								>
-									{(dropdownItem) => (
-										<DropdownItem
-											as={Link}
-											key={dropdownItem.label}
-											description={dropdownItem.description}
-											href={dropdownItem.href}
-											onPress={() => setIsMenuOpen(false)}
-										>
-											{dropdownItem.label}
-										</DropdownItem>
-									)}
-								</DropdownMenu>
-							</Dropdown>
-						</NavbarMenuItem>
-					) : (
-						<NavbarMenuItem key={item.href}>
-							<Link
-								className="w-full py-1 font-bold"
-								href={item.href}
-								size="lg"
-								isExternal={item.isExternal}
-								onClick={() => setIsMenuOpen(false)}
-							>
-								{item.label}
-							</Link>
-						</NavbarMenuItem>
-					),
-				)}
+				{navbarItems.map((item) => (
+					<DynamicNavbarItem
+						key={item.label}
+						item={item}
+						setIsMenuOpen={setIsMenuOpen}
+						dropdownButtonClass="w-full justify-start bg-transparent p-0 font-bold text-medium data-[hover=true]:bg-transparent"
+						linkClass="w-full py-1 font-bold"
+					/>
+				))}
 			</NavbarMenu>
 		</Navbar>
 	);

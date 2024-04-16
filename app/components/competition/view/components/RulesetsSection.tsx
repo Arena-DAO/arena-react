@@ -28,8 +28,9 @@ const RulesetsSection = ({
 			<CardBody className="space-y-2">
 				<p>{parsedData?.description}</p>
 				<ul className="list-inside list-disc">
-					{parsedData?.rules.map((rule) => (
-						<li>{rule}</li>
+					{parsedData?.rules.map((rule, i) => (
+						// biome-ignore lint/suspicious/noArrayIndexKey: Best option
+						<li key={i}>{rule}</li>
 					))}
 				</ul>
 			</CardBody>
