@@ -36,10 +36,15 @@ export default function WalletConnectToggle() {
 						)}
 					</Button>
 				</DropdownTrigger>
-				<DropdownMenu aria-label="Profile Actions">
-					<DropdownItem key="wallet" onClick={chainContext.openView}>
-						Manage Wallet
-					</DropdownItem>
+				<DropdownMenu
+					aria-label="Profile Actions"
+					onAction={(key) => {
+						if (key === "wallet") {
+							chainContext.openView();
+						}
+					}}
+				>
+					<DropdownItem key="wallet">Manage Wallet</DropdownItem>
 					<DropdownItem
 						key="profile"
 						href={`${env.DAO_DAO_URL}/me`}

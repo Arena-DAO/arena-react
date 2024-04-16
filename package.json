@@ -28,7 +28,7 @@
 		"@cosmos-kit/station": "^2.5.10",
 		"@cosmos-kit/vectis": "^2.6.9",
 		"@hookform/resolvers": "^3.3.4",
-		"@interchain-ui/react": "1.22.11",
+		"@interchain-ui/react": "1.22.19",
 		"@internationalized/date": "^3.5.2",
 		"@nextui-org/react": "^2.3.1",
 		"@nextui-org/theme": "^2.2.0",
@@ -63,6 +63,7 @@
 		"http-proxy-middleware": "^3.0.0",
 		"pino-pretty": "^11.0.0",
 		"postcss": "^8.4.38",
+		"postcss-import": "^16.1.0",
 		"shx": "^0.3.4",
 		"tailwindcss": "^3.4.3",
 		"typescript": "^5.4.5"

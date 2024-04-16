@@ -8,7 +8,6 @@ import { wallets as ledgerWallets } from "@cosmos-kit/ledger";
 import { ChainProvider } from "@cosmos-kit/react";
 import { wallets as stationWallets } from "@cosmos-kit/station";
 import { wallets as vectisWallets } from "@cosmos-kit/vectis";
-import "@interchain-ui/react/styles";
 import { NextUIProvider } from "@nextui-org/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { assets, chains } from "chain-registry";
@@ -16,7 +15,6 @@ import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { type PropsWithChildren, useMemo } from "react";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.min.css";
 import { useEnv } from "~/hooks/useEnv";
 import "~/styles/globals.css";
 
