@@ -1,5 +1,6 @@
 "use client";
 
+import { useIframe } from "@cosmos-kit/react";
 import { Button, Link } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { FiExternalLink } from "react-icons/fi";
@@ -11,6 +12,8 @@ const DAO = () => {
 	const [href] = useState(
 		`${env.DAO_DAO_URL}/dao/${env.ARENA_DAO_ADDRESS}/proposals`,
 	);
+	const { iframeRef } = useIframe();
+
 	useEffect(() => {
 		toast.info(
 			<div className="flex justify-between">
@@ -24,6 +27,7 @@ const DAO = () => {
 
 	return (
 		<iframe
+			ref={iframeRef}
 			title="Arena DAO"
 			src={href}
 			className="fixed left-0 w-screen"

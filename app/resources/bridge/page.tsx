@@ -1,5 +1,6 @@
 "use client";
 
+import { useIframe } from "@cosmos-kit/react";
 import { Button, Link } from "@nextui-org/react";
 import { useEffect } from "react";
 import { FiExternalLink } from "react-icons/fi";
@@ -24,9 +25,11 @@ const Bridge = () => {
 			</div>,
 		);
 	}, [env.IBC_FUN]);
+	const { iframeRef } = useIframe();
 
 	return (
 		<iframe
+			ref={iframeRef}
 			title="IBC FUN"
 			src={env.IBC_FUN}
 			className="fixed left-0 w-screen"
