@@ -1,3 +1,5 @@
+"use client";
+
 import TokenAmount from "@/components/TokenAmount";
 import TokenInfo from "@/components/TokenInfo";
 import {

@@ -1,4 +1,5 @@
 "use client";
+
 import MaybeLink from "@/components/MaybeLink";
 import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";

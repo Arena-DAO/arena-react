@@ -200,15 +200,15 @@ export default function CreateCompetitionForm() {
 					/>
 				)}
 			</div>
-			{cosmWasmClient && (
-				<RulesetsSelection
-					category_id={category_id}
-					cosmWasmClient={cosmWasmClient}
-				/>
-			)}
 			<Card>
 				<CardHeader>Rules</CardHeader>
 				<CardBody>
+					{cosmWasmClient && (
+						<RulesetsSelection
+							category_id={category_id}
+							cosmWasmClient={cosmWasmClient}
+						/>
+					)}
 					<Table
 						aria-label="Rules"
 						keyboardDelegate={keyboardDelegateFixSpace}
@@ -218,7 +218,7 @@ export default function CreateCompetitionForm() {
 						<TableHeader>
 							<TableColumn>Rules</TableColumn>
 						</TableHeader>
-						<TableBody emptyContent="No rules given">
+						<TableBody>
 							{rulesFields?.map((rule, i) => (
 								<TableRow key={rule.id}>
 									<TableCell>
@@ -266,24 +266,24 @@ export default function CreateCompetitionForm() {
 				</CardFooter>
 			</Card>
 			<Card>
-				<CardHeader>Teams</CardHeader>
+				<CardHeader>Dues</CardHeader>
 				<CardBody>
 					<Table
-						aria-label="Teams"
+						aria-label="Dues"
 						keyboardDelegate={keyboardDelegateFixSpace}
 						removeWrapper
 						hideHeader
 					>
 						<TableHeader>
-							<TableColumn>Teams</TableColumn>
+							<TableColumn>Dues</TableColumn>
 						</TableHeader>
-						<TableBody emptyContent="No teams provided">
+						<TableBody emptyContent="No dues provided">
 							{duesFields.map((due, index) => (
 								<TableRow key={due.id}>
 									<TableCell>
 										<Card>
 											<CardHeader className="flex justify-between">
-												<div className="mr-4 text-nowrap">Team {index + 1}</div>
+												<div className="mr-4 text-nowrap">Due {index + 1}</div>
 												{cosmWasmClient && (
 													<DueProfile
 														cosmWasmClient={cosmWasmClient}
@@ -303,10 +303,10 @@ export default function CreateCompetitionForm() {
 															isInvalid={!!errors.dues?.[index]?.addr}
 															errorMessage={errors.dues?.[index]?.addr?.message}
 															endContent={
-																<Tooltip content="Delete Team">
+																<Tooltip content="Delete Dues">
 																	<Button
 																		isIconOnly
-																		aria-label="Delete Team"
+																		aria-label="Delete Dues"
 																		variant="faded"
 																		isDisabled={isSubmitting}
 																		onClick={() => duesRemove(index)}
@@ -344,10 +344,10 @@ export default function CreateCompetitionForm() {
 							})
 						}
 						isDisabled={isSubmitting}
-						aria-label="Add team"
+						aria-label="Add Dues"
 						startContent={<FiPlus />}
 					>
-						Add Team
+						Add Dues
 					</Button>
 				</CardFooter>
 			</Card>

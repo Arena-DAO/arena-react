@@ -74,6 +74,7 @@ const RulesetsSelection = ({
 			isHeaderSticky
 			aria-label="Rulesets"
 			baseRef={scrollerRef}
+			removeWrapper
 			bottomContent={
 				hasMore ? (
 					<div className="flex w-full justify-center">
@@ -87,7 +88,7 @@ const RulesetsSelection = ({
 		>
 			<TableHeader>
 				<TableColumn>Rulesets</TableColumn>
-				<TableColumn className="text-right">Actions</TableColumn>
+				<TableColumn className="text-right">Selection</TableColumn>
 			</TableHeader>
 			<TableBody
 				emptyContent="No rulesets available"

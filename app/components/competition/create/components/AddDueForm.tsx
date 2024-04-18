@@ -1,3 +1,5 @@
+"use client";
+
 import TokenInfo from "@/components/TokenInfo";
 import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
