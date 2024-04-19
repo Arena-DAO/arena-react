@@ -5,7 +5,16 @@ import CreateCompetitionForm from "@/components/competition/create/CreateCompeti
 import { toBinary } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Input, Link, Switch, Tooltip } from "@nextui-org/react";
+import {
+	Accordion,
+	AccordionItem,
+	Button,
+	Input,
+	Link,
+	Switch,
+	Textarea,
+	Tooltip,
+} from "@nextui-org/react";
 import { addWeeks } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
@@ -26,6 +35,10 @@ import { useEnv } from "~/hooks/useEnv";
 
 const CreateWagerSchema = CreateCompetitionSchema.extend({
 	isAutomaticHost: z.boolean(),
+	hostDAOName: z.string().min(1, { message: "Host DAO name is required" }),
+	hostDAODescription: z
+		.string()
+		.min(1, { message: "Host DAO description is required" }),
 	host: AddressSchema.optional(),
 }).superRefine((x, ctx) => {
 	if (!x.isAutomaticHost && !x.host) {
@@ -33,6 +46,13 @@ const CreateWagerSchema = CreateCompetitionSchema.extend({
 			path: ["host"],
 			code: z.ZodIssueCode.custom,
 			message: "Host is required when not using an automatic host",
+		});
+	}
+	if (x.isAutomaticHost && !x.membersFromDues && x.members.length < 2) {
+		ctx.addIssue({
+			code: z.ZodIssueCode.custom,
+			message: "At least 2 members are required",
+			path: ["members"],
 		});
 	}
 });
@@ -77,11 +97,13 @@ const CreateWager = () => {
 					},
 				},
 			],
-			competition_dao_name: `Arena Competition DAO${
+			hostDAOName: `Arena Competition DAO${
 				categoryItem ? ` - ${categoryItem.title}` : ""
 			}`,
-			competition_dao_description: "A DAO for handling an Arena Competition.",
+			hostDAODescription: "A DAO for handling an Arena Competition.",
 			isAutomaticHost: true,
+			membersFromDues: true,
+			members: [{ address: "" }],
 		},
 		resolver: zodResolver(CreateWagerSchema),
 	});
@@ -125,8 +147,8 @@ const CreateWager = () => {
 									admin: env.ARENA_DAO_ADDRESS,
 									automatically_add_cw20s: true,
 									automatically_add_cw721s: true,
-									description: values.competition_dao_description,
-									name: values.competition_dao_name,
+									description: values.hostDAODescription,
+									name: values.hostDAOName,
 									proposal_modules_instantiate_info: [
 										{
 											admin: { core_module: {} },
@@ -156,10 +178,10 @@ const CreateWager = () => {
 											group_contract: {
 												new: {
 													cw4_group_code_id: env.CODE_ID_CW4_GROUP,
-													initial_members: values.dues.map((x) => ({
-														addr: x.addr,
-														weight: 1,
-													})),
+													initial_members: (values.membersFromDues
+														? values.dues.map((x) => x.addr)
+														: values.members.map((x) => x.address)
+													).map((addr) => ({ addr, weight: 1 })),
 												},
 											},
 										} as DAOVotingCW4InstantiateMsg),
@@ -247,9 +269,10 @@ const CreateWager = () => {
 							</Button>
 						</Tooltip>
 					)}
-					<div className="flex space-x-2">
+					<div className="flex flex-nowrap space-x-2">
 						<Switch
 							aria-label="Automatic Host"
+							isDisabled={isSubmitting}
 							defaultSelected={
 								formMethods.formState.defaultValues?.isAutomaticHost
 							}
@@ -263,13 +286,52 @@ const CreateWager = () => {
 							</Button>
 						</Tooltip>
 					</div>
+					{watchIsAutomaticHost && (
+						<Accordion variant="shadow">
+							<AccordionItem
+								key="1"
+								aria-label="Accordion 1"
+								title="Host DAO Details"
+							>
+								<div className="space-y-4">
+									<Controller
+										control={control}
+										name="hostDAOName"
+										render={({ field }) => (
+											<Input
+												label="Name"
+												isDisabled={isSubmitting}
+												isInvalid={!!errors.hostDAOName}
+												errorMessage={errors.hostDAOName?.message}
+												{...field}
+											/>
+										)}
+									/>
+									<Controller
+										control={control}
+										name="hostDAODescription"
+										render={({ field }) => (
+											<Textarea
+												label="Description"
+												isDisabled={isSubmitting}
+												isInvalid={!!errors.hostDAODescription}
+												errorMessage={errors.hostDAODescription?.message}
+												{...field}
+											/>
+										)}
+									/>
+								</div>
+							</AccordionItem>
+						</Accordion>
+					)}
 					{!watchIsAutomaticHost && (
-						<>
+						<div className="flex space-x-4">
 							<Controller
 								control={control}
 								name="host"
 								render={({ field }) => (
 									<Input
+										className="max-w-3xl"
 										type="text"
 										label="Host"
 										isDisabled={isSubmitting}
@@ -282,9 +344,11 @@ const CreateWager = () => {
 							{watchHost && cosmWasmClient && (
 								<Profile address={watchHost} cosmWasmClient={cosmWasmClient} />
 							)}
-						</>
+						</div>
 					)}
-					<CreateCompetitionForm />
+					<CreateCompetitionForm
+						isMembersFromDuesVisible={watchIsAutomaticHost}
+					/>
 					<div className="flex">
 						<Button
 							type="submit"

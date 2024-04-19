@@ -72,7 +72,7 @@ const CompetitionModuleSectionItems = ({
 				) : null
 			}
 			classNames={{
-				base: "max-h-[600px] overflow-auto table-auto",
+				base: "max-h-2xl overflow-auto table-auto",
 			}}
 		>
 			<TableHeader>

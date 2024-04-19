@@ -75,6 +75,7 @@ const RulesetsSelection = ({
 			aria-label="Rulesets"
 			baseRef={scrollerRef}
 			removeWrapper
+			isStriped
 			bottomContent={
 				hasMore ? (
 					<div className="flex w-full justify-center">
@@ -83,7 +84,7 @@ const RulesetsSelection = ({
 				) : null
 			}
 			classNames={{
-				base: "max-h-[520px] overflow-auto table-auto",
+				base: "max-h-xl overflow-auto table-auto",
 			}}
 		>
 			<TableHeader>

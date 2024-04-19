@@ -1,4 +1,5 @@
 import { z } from "zod";
+import AddressSchema from "./AddressSchema";
 import DueSchema from "./DueSchema";
 import ExpirationSchema from "./ExpirationSchema";
 import RulesSchema from "./RulesSchema";
@@ -12,12 +13,8 @@ const CreateCompetitionSchema = z.object({
 	rules: RulesSchema,
 	rulesets: RulesetsSchema,
 	dues: z.array(DueSchema),
-	competition_dao_name: z
-		.string()
-		.min(1, { message: "Competition DAO name is required" }),
-	competition_dao_description: z
-		.string()
-		.min(1, { message: "Competition DAO description is required" }),
+	membersFromDues: z.boolean(),
+	members: z.array(z.object({ address: AddressSchema })),
 });
 
 export default CreateCompetitionSchema;

@@ -76,7 +76,7 @@ const InitialDuesModal = ({
 								) : null
 							}
 							classNames={{
-								base: "max-h-[520px] overflow-auto table-auto",
+								base: "max-h-xl overflow-auto table-auto",
 							}}
 						>
 							<TableHeader>

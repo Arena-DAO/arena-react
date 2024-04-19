@@ -72,7 +72,7 @@ const ViewCompetition = ({
 	const category = searchParams?.get("category");
 
 	return (
-		<>
+		<div className="space-y-4">
 			{category && (
 				<Tooltip content="Return to competitions">
 					<Button as={Link} isIconOnly href={`/compete?category=${category}`}>
@@ -243,7 +243,7 @@ const ViewCompetition = ({
 					competitionId={competitionId}
 				/>
 			)}
-		</>
+		</div>
 	);
 };
 
