@@ -52,7 +52,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.7.0",
-		"@chain-registry/types": "^0.25.6",
+		"@chain-registry/types": "^0.25.3",
 		"@types/lodash": "^4.17.0",
 		"@types/node": "^20.12.7",
 		"@types/react": "18.2.79",

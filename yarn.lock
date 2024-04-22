@@ -5564,7 +5564,7 @@ __metadata:
   resolution: "arena-react@workspace:."
   dependencies:
     "@biomejs/biome": "npm:1.7.0"
-    "@chain-registry/types": "npm:^0.25.6"
+    "@chain-registry/types": "npm:^0.25.3"
     "@cosmjs/amino": "npm:^0.32.3"
     "@cosmjs/cosmwasm-stargate": "npm:0.32.3"
     "@cosmjs/encoding": "npm:^0.32.3"
