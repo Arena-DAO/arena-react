@@ -188,7 +188,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.25.3, @chain-registry/types@npm:^0.25.6":
+"@chain-registry/types@npm:^0.25.6":
   version: 0.25.6
   resolution: "@chain-registry/types@npm:0.25.6"
   checksum: 10c0/5ad9305c2362f1e052960e863fbfa3796adcbc1babaed472852d6e416414cebf36fdc56b8060faadc6b763ea39757d48c128ce9e7aa3a1b166d6270d3c7c1f8e
@@ -5564,7 +5564,7 @@ __metadata:
   resolution: "arena-react@workspace:."
   dependencies:
     "@biomejs/biome": "npm:1.7.0"
-    "@chain-registry/types": "npm:^0.25.3"
+    "@chain-registry/types": "npm:^0.25.6"
     "@cosmjs/amino": "npm:^0.32.3"
     "@cosmjs/cosmwasm-stargate": "npm:0.32.3"
     "@cosmjs/encoding": "npm:^0.32.3"
@@ -5590,7 +5590,7 @@ __metadata:
     "@types/react": "npm:18.2.79"
     "@types/react-dom": "npm:^18.2.25"
     autoprefixer: "npm:^10.4.19"
-    chain-registry: "npm:1.41.4"
+    chain-registry: "npm:1.41.8"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^6.1.2"
     date-fns: "npm:^3.6.0"
@@ -6085,12 +6085,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.41.4":
-  version: 1.41.4
-  resolution: "chain-registry@npm:1.41.4"
+"chain-registry@npm:1.41.8":
+  version: 1.41.8
+  resolution: "chain-registry@npm:1.41.8"
   dependencies:
-    "@chain-registry/types": "npm:^0.25.3"
-  checksum: 10c0/1307dd0836810bc4dfbda30177b9dc89bc292cba4f470b38f503aed00544c9d73926f3784c37fec1a4eb79646a354d8a4ea7694fb3720df31d13d1a116c5258c
+    "@chain-registry/types": "npm:^0.25.6"
+  checksum: 10c0/0d42489ecb85fbb16888f5dc9f0d975ca49f71ac2fc427a27cd6f85beec026b862d16169257ed6216bbea702497b446196811e265d7bcae1520235f17c5f4b42
   languageName: node
   linkType: hard
 
