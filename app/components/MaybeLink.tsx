@@ -1,3 +1,5 @@
+"use client";
+
 import { Link } from "@nextui-org/react";
 import { withIpfsSupport } from "~/helpers/IPFSHelpers";
 import { useEnv } from "~/hooks/useEnv";

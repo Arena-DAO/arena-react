@@ -7,7 +7,8 @@ import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { wallets as ledgerWallets } from "@cosmos-kit/ledger";
 import { ChainProvider } from "@cosmos-kit/react";
 import { wallets as stationWallets } from "@cosmos-kit/station";
-import { wallets as vectisWallets } from "@cosmos-kit/vectis";
+import { wallets as cosmostationWallets } from "@cosmos-kit/cosmostation";
+import { wallets as cosmosExtensionMetamaskWallets } from "@cosmos-kit/cosmos-extension-metamask";
 import { NextUIProvider } from "@nextui-org/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { assets, chains } from "chain-registry";
@@ -54,8 +55,9 @@ function InnerProviders({ children }: PropsWithChildren) {
 				...keplrWallets,
 				...leapWallets,
 				...ledgerWallets,
-				...vectisWallets,
+				...cosmostationWallets,
 				...stationWallets,
+				...cosmosExtensionMetamaskWallets,
 			]}
 			signerOptions={signerOptions}
 			walletConnectOptions={{
