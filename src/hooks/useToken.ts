@@ -16,7 +16,7 @@ export const useToken = (
 		["token", denomOrAddress, isNative],
 		async () =>
 			isNative
-				? await getNativeAsset(denomOrAddress, env.JUNO_RPC_URL, assets?.assets)
+				? await getNativeAsset(denomOrAddress, env.RPC_URL, assets?.assets)
 				: await getCw20Asset(
 						cosmWasmClient,
 						denomOrAddress,

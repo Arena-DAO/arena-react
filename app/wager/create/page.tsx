@@ -48,11 +48,14 @@ const CreateWagerSchema = CreateCompetitionSchema.extend({
 			message: "Host is required when not using an automatic host",
 		});
 	}
-	if (x.isAutomaticHost && !x.membersFromDues && x.members.length < 2) {
+	if (
+		x.isAutomaticHost &&
+		(x.membersFromDues ? x.dues.length < 2 : x.members.length < 2)
+	) {
 		ctx.addIssue({
 			code: z.ZodIssueCode.custom,
-			message: "At least 2 members are required",
-			path: ["members"],
+			message: "At least 2 members are required for automatic host",
+			path: [x.membersFromDues ? "dues" : "members"],
 		});
 	}
 });
@@ -103,7 +106,6 @@ const CreateWager = () => {
 			hostDAODescription: "A DAO for handling an Arena Competition.",
 			isAutomaticHost: true,
 			membersFromDues: true,
-			members: [{ address: "" }],
 		},
 		resolver: zodResolver(CreateWagerSchema),
 	});

@@ -223,7 +223,15 @@ export default function CreateCompetitionForm({
 								isDisabled={isSubmitting}
 								defaultSelected={defaultValues?.membersFromDues}
 								isSelected={watchMembersFromDues}
-								onValueChange={(value) => setValue("membersFromDues", value)}
+								onValueChange={(value) => {
+									setValue("membersFromDues", value);
+									if (!value)
+										setValue(
+											"members",
+											getValues("dues").map((x) => ({ address: x.addr })),
+										);
+									else setValue("members", []);
+								}}
 							>
 								Members from Dues
 							</Switch>
@@ -302,6 +310,10 @@ export default function CreateCompetitionForm({
 							))}
 						</TableBody>
 					</Table>
+					<div className="text-danger text-xs">
+						<p>{errors.dues?.message}</p>
+						<p>{errors.dues?.root?.message}</p>
+					</div>
 				</CardBody>
 				<CardFooter>
 					<Button

@@ -31,7 +31,7 @@ export default function Footer() {
 						as={Link}
 						isIconOnly
 						aria-label="Discord"
-						href="https://discord.gg/ECmVAFvuuR"
+						href="https://discord.arenadao.org"
 						isExternal
 					>
 						<BsDiscord />

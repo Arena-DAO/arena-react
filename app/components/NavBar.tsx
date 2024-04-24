@@ -121,11 +121,6 @@ export default function AppNavbar() {
 						"View jailed competitions needing action through the DAO",
 					label: "Jailhouse",
 				},
-				{
-					href: "/dao/fundraise",
-					description: "Participate in fundraise rounds for $ARENA",
-					label: "Fundraise",
-				},
 			],
 		},
 		{
@@ -150,8 +145,7 @@ export default function AppNavbar() {
 				{
 					href: "/resources/bridge",
 					label: "Bridge",
-					description:
-						"Transfer funds from other chains into the Juno ecosystem",
+					description: "Transfer funds from other chains into the ecosystem",
 				},
 			],
 		},

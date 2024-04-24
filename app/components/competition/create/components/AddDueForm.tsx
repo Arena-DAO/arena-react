@@ -193,7 +193,7 @@ const AddDueForm = ({
 					try {
 						const native = await getNativeAsset(
 							values.denomOrAddress,
-							env.JUNO_RPC_URL,
+							env.RPC_URL,
 							assets?.assets,
 						);
 

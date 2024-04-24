@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 
 interface Env {
 	BECH32_PREFIX: string;
-	GAS_PRICE: string;
 	PFPK_URL: string;
 	IPFS_GATEWAY: string;
 	WALLETCONNECT_PROJECT_ID: string;
@@ -10,7 +9,6 @@ interface Env {
 	BECH32_CONTRACT_LENGTH: number;
 	DEFAULT_TEAM_VOTING_DURATION_TIME: number;
 	PAGINATION_LIMIT: number;
-	ARENA_TAX: number;
 	IBC_FUN: string;
 
 	// Variables specific to both .env.development and .env.production
@@ -33,7 +31,7 @@ interface Env {
 	ARENA_LEAGUE_MODULE_ADDRESS: string;
 	DAO_DAO_URL: string;
 	DOCS_URL: string;
-	JUNO_RPC_URL: string;
+	RPC_URL: string;
 	FAUCET_URL?: string;
 }
 
@@ -57,7 +55,6 @@ function getEnv(): Env {
 	return {
 		IBC_FUN: checkEnv(process.env.NEXT_PUBLIC_IBC_FUN),
 		BECH32_PREFIX: checkEnv(process.env.NEXT_PUBLIC_BECH32_PREFIX),
-		GAS_PRICE: checkEnv(process.env.NEXT_PUBLIC_GAS_PRICE),
 		PFPK_URL: checkEnv(process.env.NEXT_PUBLIC_PFPK_URL),
 		IPFS_GATEWAY: checkEnv(process.env.NEXT_PUBLIC_IPFS_GATEWAY),
 		WALLETCONNECT_PROJECT_ID: checkEnv(
@@ -73,7 +70,6 @@ function getEnv(): Env {
 			process.env.NEXT_PUBLIC_DEFAULT_TEAM_VOTING_DURATION_TIME,
 		),
 		PAGINATION_LIMIT: checkEnvNumber(process.env.NEXT_PUBLIC_PAGINATION_LIMIT),
-		ARENA_TAX: checkEnvNumber(process.env.NEXT_PUBLIC_ARENA_TAX),
 		CHAIN: checkEnv(process.env.NEXT_PUBLIC_CHAIN),
 		DEFAULT_NATIVE: checkEnv(process.env.NEXT_PUBLIC_DEFAULT_NATIVE),
 		ENV: checkEnv(process.env.NEXT_PUBLIC_ENV),
@@ -107,7 +103,7 @@ function getEnv(): Env {
 		),
 		DAO_DAO_URL: checkEnv(process.env.NEXT_PUBLIC_DAO_DAO_URL),
 		DOCS_URL: checkEnv(process.env.NEXT_PUBLIC_DOCS_URL),
-		JUNO_RPC_URL: checkEnv(process.env.NEXT_PUBLIC_JUNO_RPC_URL),
+		RPC_URL: checkEnv(process.env.NEXT_PUBLIC_RPC_URL),
 		FAUCET_URL: process.env.NEXT_PUBLIC_FAUCET_URL,
 	};
 }
