@@ -181,7 +181,9 @@ const EvidenceSection = ({
 					</Table>
 				</CardBody>
 				<CardFooter>
-					<Button onClick={onOpen}>Add Evidence</Button>
+					<Button onClick={onOpen} isDisabled={!address}>
+						Add Evidence
+					</Button>
 				</CardFooter>
 			</Card>
 			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl">

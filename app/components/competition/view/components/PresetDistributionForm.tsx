@@ -121,6 +121,12 @@ const PresetDistributionForm = ({
 				<ModalContent>
 					<ModalHeader>Set Preset Distribution</ModalHeader>
 					<ModalBody className="space-y-4">
+						<p>
+							Establish a preset distribution. List the addresses and share
+							percentages of all members, and provide an address for
+							distributing any remaining funds. If no members are provided, then
+							the preset distribution will be cleared out.
+						</p>
 						{data && (
 							<Card>
 								<CardHeader>Current Preset Distribution</CardHeader>

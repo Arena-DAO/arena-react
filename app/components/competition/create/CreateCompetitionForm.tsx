@@ -102,7 +102,7 @@ export default function CreateCompetitionForm({
 				name="name"
 				render={({ field }) => (
 					<Input
-						label="Name"
+						label="Competition Name"
 						isDisabled={isSubmitting}
 						isInvalid={!!errors.name}
 						errorMessage={errors.name?.message}
@@ -115,7 +115,7 @@ export default function CreateCompetitionForm({
 				name="description"
 				render={({ field }) => (
 					<Textarea
-						label="Description"
+						label="Competition Description"
 						isDisabled={isSubmitting}
 						isInvalid={!!errors.description}
 						errorMessage={errors.description?.message}

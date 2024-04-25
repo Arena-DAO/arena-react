@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, CardFooter } from "@nextui-org/react";
+import { Card, CardFooter } from "@nextui-org/react";
 import { Image } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import type { SubCategory } from "~/hooks/useCategories";
@@ -20,13 +20,12 @@ export default function CompetitionCategoryCard({
 			onPress={() => router.push(`/compete?category=${category.url}`)}
 			className="col-span-12 lg:col-span-3 md:col-span-4 sm:col-span-6"
 		>
-			<CardBody className="overflow-visible p-0">
-				<Image
-					alt={category.title}
-					src={category.img}
-					className="w-full object-cover"
-				/>
-			</CardBody>
+			<Image
+				alt={category.title}
+				src={category.img}
+				className="z-0 h-full w-full object-cover"
+				removeWrapper
+			/>
 			<CardFooter>
 				<p className="font-bold text-2xl">{category.title}</p>
 			</CardFooter>

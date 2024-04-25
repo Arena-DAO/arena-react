@@ -49,8 +49,9 @@ const Compete = () => {
 					</BreadcrumbItem>
 				))}
 			</Breadcrumbs>
-			<h1 className="text-center text-5xl">
-				{categoryItem.title} {"children" in categoryItem && "Categories"}
+			<h1 className="pt-4 pb-8 text-center text-5xl">
+				{categoryItem.title}{" "}
+				{"children" in categoryItem ? "Categories" : "Competitions"}
 			</h1>
 			{"children" in categoryItem && (
 				<div className="grid grid-cols-12 gap-4">

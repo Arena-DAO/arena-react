@@ -298,6 +298,7 @@ const CreateWager = () => {
 								title="Host DAO Details"
 							>
 								<div className="space-y-4">
+									<p>Specify the automatically-generated host DAO's details.</p>
 									<Controller
 										control={control}
 										name="hostDAOName"

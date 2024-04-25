@@ -156,7 +156,7 @@ const ProcessForm = ({
 				toast.info(
 					<div className="flex justify-between">
 						<div className="my-auto">
-							Processing must happen through the host
+							Only the host can process the competition
 						</div>
 						{isValidContractAddress(props.host) && (
 							<Button
@@ -223,6 +223,11 @@ const ProcessForm = ({
 								/>
 							</>
 						)}
+						<p>
+							List the addresses and share percentages of all members, and
+							provide an address for receiving any remaining funds. If no
+							members are provided, then funds will be refunded.
+						</p>
 						<Controller
 							control={control}
 							name="distribution.remainder_addr"
