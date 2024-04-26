@@ -195,10 +195,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.28.1":
-  version: 0.28.1
-  resolution: "@chain-registry/types@npm:0.28.1"
-  checksum: 10c0/8d1d3694988807ba6182e5800745e1a8ab25a5521cbbd6ae92b63bf4551b0caa7326bdecb42bb62b99215d10d44437133a4105c7d2bd8cad808c4e6146a9f8c9
+"@chain-registry/types@npm:^0.28.2":
+  version: 0.28.2
+  resolution: "@chain-registry/types@npm:0.28.2"
+  checksum: 10c0/592f349f170d93608718f0df756396092a051c22600377286fb4342ec789d60adbadd2c98ab75d72c13392106662c6dad1cdbbcc2bfb177876904cf9e08e4d09
   languageName: node
   linkType: hard
 
@@ -5147,22 +5147,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.2.25":
-  version: 18.2.25
-  resolution: "@types/react-dom@npm:18.2.25"
+"@types/react-dom@npm:^18.3.0":
+  version: 18.3.0
+  resolution: "@types/react-dom@npm:18.3.0"
   dependencies:
     "@types/react": "npm:*"
-  checksum: 10c0/87604407eca6884c5b4d4657cb511dc5ba28ea1cfa5d0ce1fc2d659a7ad1b64ae85dcda60e3f010641f9a52a6a60dfcaa6be3b0d0de9d624475052a13dae01f4
+  checksum: 10c0/6c90d2ed72c5a0e440d2c75d99287e4b5df3e7b011838cdc03ae5cd518ab52164d86990e73246b9d812eaf02ec351d74e3b4f5bd325bf341e13bf980392fd53b
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:18.2.79":
+"@types/react@npm:*":
   version: 18.2.79
   resolution: "@types/react@npm:18.2.79"
   dependencies:
     "@types/prop-types": "npm:*"
     csstype: "npm:^3.0.2"
   checksum: 10c0/c8a8a005d8830a48cc1ef93c3510c4935a2a03e5557dbecaa8f1038450cbfcb18eb206fa7fba7077d54b8da21faeb25577e897a333392770a7797f625b62c78a
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:18.3.0":
+  version: 18.3.0
+  resolution: "@types/react@npm:18.3.0"
+  dependencies:
+    "@types/prop-types": "npm:*"
+    csstype: "npm:^3.0.2"
+  checksum: 10c0/6405f805700daf096a507a191bc4f8814ebed49120f156926b0a5b7b6f41424214320cea3dbb6df85f476b220f0554ef7e587baa88f59375e64bdbab525f58aa
   languageName: node
   linkType: hard
 
@@ -5573,7 +5583,7 @@ __metadata:
   resolution: "arena-react@workspace:."
   dependencies:
     "@biomejs/biome": "npm:1.7.1"
-    "@chain-registry/types": "npm:^0.28.1"
+    "@chain-registry/types": "npm:^0.28.2"
     "@cosmjs/amino": "npm:^0.32.3"
     "@cosmjs/cosmwasm-stargate": "npm:0.32.3"
     "@cosmjs/encoding": "npm:^0.32.3"
@@ -5596,10 +5606,10 @@ __metadata:
     "@tanstack/react-query": "npm:4.36.1"
     "@types/lodash": "npm:^4.17.0"
     "@types/node": "npm:^20.12.7"
-    "@types/react": "npm:18.2.79"
-    "@types/react-dom": "npm:^18.2.25"
+    "@types/react": "npm:18.3.0"
+    "@types/react-dom": "npm:^18.3.0"
     autoprefixer: "npm:^10.4.19"
-    chain-registry: "npm:1.45.1"
+    chain-registry: "npm:1.45.2"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^7.0.0"
     date-fns: "npm:^3.6.0"
@@ -6094,12 +6104,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.45.1":
-  version: 1.45.1
-  resolution: "chain-registry@npm:1.45.1"
+"chain-registry@npm:1.45.2":
+  version: 1.45.2
+  resolution: "chain-registry@npm:1.45.2"
   dependencies:
-    "@chain-registry/types": "npm:^0.28.1"
-  checksum: 10c0/cd173f53933c905947556d0dc64f931bf20050eabd9ecd84f4358a3a4b25dc3ce1a5ae78ce485aa4872cbd96a180f3c7bedfaea1af6b66c2de357a9d880f0fee
+    "@chain-registry/types": "npm:^0.28.2"
+  checksum: 10c0/648bdd271f78cd982e6cc159a5393167674a9230de2f9000e2c3575567041978e6ff864b70f608c28f24f4938d1aaa0a2c67ea36cc19646891b7a22d6720e1f4
   languageName: node
   linkType: hard
 

@@ -11,7 +11,14 @@ import { ChainProvider } from "@cosmos-kit/react";
 import { wallets as stationWallets } from "@cosmos-kit/station";
 import { NextUIProvider } from "@nextui-org/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { assets, chains } from "chain-registry";
+import {
+	assets as testnetAssets,
+	chain as testnetChain,
+} from "chain-registry/testnet/junotestnet";
+import {
+	assets as mainnetAssets,
+	chain as mainnetChain,
+} from "chain-registry/mainnet/neutron";
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { type PropsWithChildren, useMemo } from "react";
@@ -38,14 +45,13 @@ function InnerProviders({ children }: PropsWithChildren) {
 		},
 	};
 	const chainsMemo = useMemo(
-		() => chains.filter((x) => x.chain_name === env.CHAIN),
-		[env.CHAIN],
+		() => (env.ENV === "development" ? [testnetChain] : [mainnetChain]),
+		[env.ENV],
 	);
-	const assetsMemo = useMemo(() => {
-		const assetsList = assets.filter((x) => x.chain_name === env.CHAIN);
-
-		return assetsList;
-	}, [env.CHAIN]);
+	const assetsMemo = useMemo(
+		() => (env.ENV === "development" ? [testnetAssets] : [mainnetAssets]),
+		[env.ENV],
+	);
 
 	return (
 		<ChainProvider
