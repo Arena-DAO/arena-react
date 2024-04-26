@@ -33,7 +33,7 @@ function HomePage() {
 			</section>
 			<Image
 				as={NextImage}
-				src="/future_of_competition.png"
+				src="/future_of_competition.webp"
 				alt="The future of competition"
 				priority
 				width="800"
