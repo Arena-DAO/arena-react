@@ -15,7 +15,7 @@ import {
 	Textarea,
 	Tooltip,
 } from "@nextui-org/react";
-import { addWeeks } from "date-fns";
+import { addHours } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
@@ -81,7 +81,7 @@ const CreateWager = () => {
 	const formMethods = useForm<CreateWagerFormValues>({
 		defaultValues: {
 			expiration: {
-				at_time: addWeeks(new Date(), 2).toISOString(), // Default to 2 weeks from now
+				at_time: addHours(new Date(), 2).toISOString(), // Default to 2 hours from now
 			},
 			rules: [],
 			dues: [
