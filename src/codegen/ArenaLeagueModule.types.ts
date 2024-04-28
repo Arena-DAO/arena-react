@@ -11,7 +11,6 @@ export interface InstantiateMsg {
   key: string;
 }
 export interface TournamentExt {
-  remainder_addr: string;
   tax_cw20_msg?: Binary | null;
   tax_cw721_msg?: Binary | null;
 }
