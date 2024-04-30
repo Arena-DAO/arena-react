@@ -300,6 +300,7 @@ const ProcessForm = ({
 																		?.percentage?.message
 																}
 																endContent={<BsPercent />}
+																classNames={{ input: "text-right" }}
 																{...field}
 																value={field.value?.toString()}
 																onChange={(e) =>
@@ -307,7 +308,7 @@ const ProcessForm = ({
 																		Number.parseFloat(e.target.value),
 																	)
 																}
-																className="min-w-[120px]"
+																className="min-w-32"
 															/>
 														)}
 													/>

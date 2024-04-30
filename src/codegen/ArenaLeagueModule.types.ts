@@ -91,11 +91,6 @@ export type ModuleInfo = {
     addr: string;
   };
 };
-export type Duration = {
-  height: number;
-} | {
-  time: number;
-};
 export type ExecuteExt = {
   process_match: {
     league_id: Uint128;
@@ -142,7 +137,6 @@ export interface CompetitionInstantiateExt {
   match_draw_points: Uint128;
   match_lose_points: Uint128;
   match_win_points: Uint128;
-  round_duration: Duration;
   teams: string[];
 }
 export interface MatchResult {
@@ -217,7 +211,6 @@ export interface MemberPoints {
   points: Uint128;
 }
 export interface RoundResponse {
-  expiration: Expiration;
   matches: Match[];
   round_number: Uint64;
 }

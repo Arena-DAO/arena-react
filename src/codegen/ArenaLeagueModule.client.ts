@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { Binary, InstantiateMsg, TournamentExt, ExecuteMsg, Decimal, Uint128, Admin, Expiration, Timestamp, Uint64, ModuleInfo, Duration, ExecuteExt, Result, Action, ProposeMessage, DistributionForString, MemberPercentageForString, ModuleInstantiateInfo, CompetitionInstantiateExt, MatchResult, QueryMsg, CompetitionsFilter, CompetitionStatus, QueryExt, MigrateMsg, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForCompetitionExt, CompetitionExt, ArrayOfCompetitionResponseForCompetitionExt, ConfigForTournamentExt, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaLeagueModule.types";
+import { Binary, InstantiateMsg, TournamentExt, ExecuteMsg, Decimal, Uint128, Admin, Expiration, Timestamp, Uint64, ModuleInfo, ExecuteExt, Result, Action, ProposeMessage, DistributionForString, MemberPercentageForString, ModuleInstantiateInfo, CompetitionInstantiateExt, MatchResult, QueryMsg, CompetitionsFilter, CompetitionStatus, QueryExt, MigrateMsg, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForCompetitionExt, CompetitionExt, ArrayOfCompetitionResponseForCompetitionExt, ConfigForTournamentExt, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaLeagueModule.types";
 export interface ArenaLeagueModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForTournamentExt>;

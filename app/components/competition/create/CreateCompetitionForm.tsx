@@ -22,6 +22,7 @@ import {
 	Tooltip,
 } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
+import type { PropsWithChildren } from "react";
 import {
 	type Control,
 	Controller,
@@ -50,12 +51,13 @@ export interface FormComponentProps {
 	control: Control<CreateCompetitionFormValues>;
 }
 
-interface CreateCompetitionFormProps {
+interface CreateCompetitionFormProps extends PropsWithChildren {
 	isMembersFromDuesVisible?: boolean;
 }
 
 export default function CreateCompetitionForm({
 	isMembersFromDuesVisible = true,
+	children,
 }: CreateCompetitionFormProps) {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
@@ -123,7 +125,7 @@ export default function CreateCompetitionForm({
 					/>
 				)}
 			/>
-			<div className="grid grid-cols-12 gap-4">
+			<div className="grid grid-cols-12 gap-2">
 				<Select
 					label="Expiration"
 					className="col-span-12 md:col-span-4 sm:col-span-6"
@@ -473,6 +475,7 @@ export default function CreateCompetitionForm({
 					</Button>
 				</CardFooter>
 			</Card>
+			{children}
 		</div>
 	);
 }

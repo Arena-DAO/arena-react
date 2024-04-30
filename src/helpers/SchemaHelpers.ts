@@ -2,7 +2,20 @@ import { toDate } from "date-fns";
 import type { z } from "zod";
 import type { DistributionForString } from "~/codegen/ArenaCore.types";
 import type { Expiration } from "~/codegen/ArenaWagerModule.types";
-import type { DistributionSchema, ExpirationSchema } from "~/config/schemas";
+import type { Duration } from "~/codegen/DaoDaoCore.types";
+import type {
+	DistributionSchema,
+	DurationSchema,
+	ExpirationSchema,
+} from "~/config/schemas";
+
+const DurationUnitsToSeconds = {
+	seconds: 1,
+	minutes: 60,
+	hours: 3600,
+	days: 86400,
+	weeks: 604800,
+};
 
 export function convertToExpiration(
 	expirationSchema: z.infer<typeof ExpirationSchema>,
@@ -32,5 +45,16 @@ export function convertToDistribution(
 		),
 		// biome-ignore lint/style/noNonNullAssertion: This is handled by the distributionSchema superRefine check
 		remainder_addr: distributionSchema.remainder_addr!,
+	};
+}
+
+export function convertToDuration(
+	durationSchema: z.infer<typeof DurationSchema>,
+): Duration {
+	if (durationSchema.units === "blocks") {
+		return { height: durationSchema.amount };
+	}
+	return {
+		time: DurationUnitsToSeconds[durationSchema.units] * durationSchema.amount,
 	};
 }

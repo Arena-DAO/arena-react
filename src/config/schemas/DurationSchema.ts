@@ -1,13 +1,17 @@
 import { z } from "zod";
-import TimestampSchema from "./TimestampSchema";
 
-const DurationSchema = z.union([
-	z.object({
-		height: z.number().nonnegative(),
-	}),
-	z.object({
-		ime: TimestampSchema,
-	}),
-]);
+export const DurationUnits = [
+	"seconds",
+	"minutes",
+	"hours",
+	"days",
+	"weeks",
+	"blocks",
+] as const;
+
+const DurationSchema = z.object({
+	units: z.enum(DurationUnits),
+	amount: z.number().positive(),
+});
 
 export default DurationSchema;
