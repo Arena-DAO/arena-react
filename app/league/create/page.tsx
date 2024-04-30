@@ -41,7 +41,6 @@ import {
 	AddressSchema,
 	CreateCompetitionSchema,
 	DecimalSchema,
-	DurationSchema,
 } from "~/config/schemas";
 import Uint128Schema from "~/config/schemas/AmountSchema";
 import { keyboardDelegateFixSpace } from "~/helpers/NextUIHelpers";
@@ -66,7 +65,6 @@ const CreateLeagueSchema = CreateCompetitionSchema.extend({
 				});
 			}
 		}),
-	round_duration: DurationSchema,
 	match_draw_points: Uint128Schema,
 	match_lose_points: Uint128Schema,
 	match_win_points: Uint128Schema,
