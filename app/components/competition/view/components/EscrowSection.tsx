@@ -4,7 +4,6 @@ import type { ExecuteInstruction } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import {
 	Button,
-	ButtonGroup,
 	Card,
 	CardBody,
 	CardFooter,
@@ -142,71 +141,71 @@ const EscrowSection = ({
 	}
 	return (
 		<>
-			{data.balance && (
-				<Card>
-					<CardHeader>User Balance</CardHeader>
-					<CardBody>
-						<BalanceDisplay
-							cosmWasmClient={cosmWasmClient}
-							balance={data.balance}
-						/>
-					</CardBody>
-					{!isLocked && (
-						<CardFooter>
-							<Button color="primary" onClick={withdraw}>
-								Withdraw
-							</Button>
-						</CardFooter>
-					)}
-				</Card>
-			)}
-			{data.due && (
-				<Card>
-					<CardHeader>User Due</CardHeader>
-					<CardBody>
-						<BalanceDisplay
-							cosmWasmClient={cosmWasmClient}
-							balance={data.due}
-						/>
-					</CardBody>
-					{!isLocked && (
-						<CardFooter>
-							<Button color="primary" onClick={deposit}>
-								Deposit
-							</Button>
-						</CardFooter>
-					)}
-				</Card>
-			)}
-			{data.total_balance && (
-				<Card>
-					<CardHeader>Total Balance</CardHeader>
-					<CardBody>
-						<BalanceDisplay
-							cosmWasmClient={cosmWasmClient}
-							balance={data.total_balance}
-						/>
-					</CardBody>
-				</Card>
-			)}
-			<div className="overflow-x-auto">
-				<ButtonGroup>
-					{status === "pending" && (
-						<DuesModal
-							escrow={escrow}
-							cosmWasmClient={cosmWasmClient}
-							version={version}
-						/>
-					)}
-					{status !== "pending" && (
-						<InitialDuesModal escrow={escrow} cosmWasmClient={cosmWasmClient} />
-					)}
-					<BalancesModal
+			<div className="grid grid-cols-12 gap-4">
+				{data.balance && (
+					<Card className="col-span-12 lg:col-span-4 md:col-span-6">
+						<CardHeader>User Balance</CardHeader>
+						<CardBody>
+							<BalanceDisplay
+								cosmWasmClient={cosmWasmClient}
+								balance={data.balance}
+							/>
+						</CardBody>
+						{!isLocked && (
+							<CardFooter>
+								<Button color="primary" onClick={withdraw}>
+									Withdraw
+								</Button>
+							</CardFooter>
+						)}
+					</Card>
+				)}
+				{data.due && (
+					<Card className="col-span-12 lg:col-span-4 md:col-span-6">
+						<CardHeader>User Due</CardHeader>
+						<CardBody>
+							<BalanceDisplay
+								cosmWasmClient={cosmWasmClient}
+								balance={data.due}
+							/>
+						</CardBody>
+						{!isLocked && (
+							<CardFooter>
+								<Button color="primary" onClick={deposit}>
+									Deposit
+								</Button>
+							</CardFooter>
+						)}
+					</Card>
+				)}
+				{data.total_balance && (
+					<Card className="col-span-12 lg:col-span-4 md:col-span-6">
+						<CardHeader>Total Balance</CardHeader>
+						<CardBody>
+							<BalanceDisplay
+								cosmWasmClient={cosmWasmClient}
+								balance={data.total_balance}
+							/>
+						</CardBody>
+					</Card>
+				)}
+			</div>
+			<div className="space-x-2 overflow-x-auto">
+				{status === "pending" && (
+					<DuesModal
 						escrow={escrow}
 						cosmWasmClient={cosmWasmClient}
 						version={version}
 					/>
-				</ButtonGroup>
+				)}
+				{status !== "pending" && (
+					<InitialDuesModal escrow={escrow} cosmWasmClient={cosmWasmClient} />
+				)}
+				<BalancesModal
+					escrow={escrow}
+					cosmWasmClient={cosmWasmClient}
+					version={version}
+				/>
 			</div>
 		</>
 	);

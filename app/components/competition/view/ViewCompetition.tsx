@@ -13,8 +13,6 @@ import {
 	DatePicker,
 	Input,
 	Link,
-	Select,
-	SelectItem,
 	Table,
 	TableBody,
 	TableCell,
@@ -25,11 +23,12 @@ import {
 	Tooltip,
 } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { type PropsWithChildren, useEffect, useState } from "react";
 import { BsArrowLeft, BsHourglassBottom, BsYinYang } from "react-icons/bs";
-import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
-import { useArenaWagerModuleCompetitionQuery } from "~/codegen/ArenaWagerModule.react-query";
-import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
+import type {
+	CompetitionResponseForEmpty,
+	CompetitionStatus,
+} from "~/codegen/ArenaWagerModule.types";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { statusColors } from "~/helpers/ArenaHelpers";
 import { formatExpirationTime } from "~/helpers/DateHelpers";
@@ -42,30 +41,25 @@ import ProcessForm from "./components/ProcessForm";
 import ResultSection from "./components/ResultSection";
 import RulesetsSection from "./components/RulesetsSection";
 
-interface ViewCompetitionProps {
-	competitionId: string;
+interface ViewCompetitionProps extends PropsWithChildren {
 	moduleAddr: string;
+	competition: Omit<CompetitionResponseForEmpty, "extension">;
+	hideProcess?: boolean;
 }
 
 const ViewCompetition = ({
 	cosmWasmClient,
-	competitionId,
 	moduleAddr,
+	competition,
+	children,
+	hideProcess = false,
 }: WithClient<ViewCompetitionProps>) => {
 	const { data: env } = useEnv();
 	const { address } = useChain(env.CHAIN);
-	const { data } = useArenaWagerModuleCompetitionQuery({
-		client: new ArenaWagerModuleQueryClient(cosmWasmClient, moduleAddr),
-		args: {
-			competitionId,
-		},
-	});
 	const [status, setStatus] = useState<CompetitionStatus>("pending");
 	useEffect(() => {
-		if (data) {
-			setStatus(data.status);
-		}
-	}, [data]);
+		setStatus(competition.status);
+	}, [competition]);
 
 	const searchParams = useSearchParams();
 
@@ -83,107 +77,92 @@ const ViewCompetition = ({
 			<Card>
 				<CardHeader className="flex justify-between">
 					<h2 className="font-bold text-2xl">Host</h2>
-					{data && (
-						<Badge
-							isOneChar
-							content={<BsHourglassBottom />}
-							color="warning"
-							aria-label="Expired"
-							isInvisible={
-								!(
-									data.is_expired &&
-									(status === "active" || status === "pending")
-								)
-							}
-						>
-							<Chip color={statusColors[status]}>{status}</Chip>
-						</Badge>
-					)}
+					<Badge
+						isOneChar
+						content={<BsHourglassBottom />}
+						color="warning"
+						aria-label="Expired"
+						isInvisible={
+							!(
+								competition.is_expired &&
+								(status === "active" || status === "pending")
+							)
+						}
+					>
+						<Chip color={statusColors[status]}>{status}</Chip>
+					</Badge>
 				</CardHeader>
 				<CardBody>
-					{data?.host && (
-						<div className="flex justify-between">
-							<Profile address={data.host} cosmWasmClient={cosmWasmClient} />
-							{isValidContractAddress(data.host, env.BECH32_PREFIX) && (
-								<Tooltip content="View on DAO DAO">
-									<Button
-										isIconOnly
-										as={Link}
-										href={`${env.DAO_DAO_URL}/dao/${data.host}`}
-										isExternal
-									>
-										<BsYinYang />
-									</Button>
-								</Tooltip>
-							)}
-						</div>
-					)}
+					<div className="flex justify-between">
+						<Profile
+							address={competition.host}
+							cosmWasmClient={cosmWasmClient}
+						/>
+						{isValidContractAddress(competition.host, env.BECH32_PREFIX) && (
+							<Tooltip content="View on DAO DAO">
+								<Button
+									isIconOnly
+									as={Link}
+									href={`${env.DAO_DAO_URL}/dao/${competition.host}`}
+									isExternal
+								>
+									<BsYinYang />
+								</Button>
+							</Tooltip>
+						)}
+					</div>
 				</CardBody>
 			</Card>
-			<Input label="Name" value={data?.name} readOnly />
-			<Textarea label="Description" value={data?.description} readOnly />
-			<div className="grid grid-cols-12 gap-4">
-				{data?.expiration && (
-					<>
-						<Select
-							label="Expiration"
-							className="col-span-12 md:col-span-4 sm:col-span-6"
-							defaultSelectedKeys={[
-								"at_time" in data.expiration
-									? "at_time"
-									: "at_height" in data.expiration
-										? "at_height"
-										: "never",
-							]}
-							isDisabled
-						>
-							<SelectItem value="at_time" key="at_time">
-								At Time
-							</SelectItem>
-							<SelectItem value="at_height" key="at_height">
-								At Height
-							</SelectItem>
-							<SelectItem value="never" key="never">
-								Never
-							</SelectItem>
-						</Select>
-						{"at_height" in data.expiration && (
-							<Input
-								className="col-span-12 lg:col-span-4 sm:col-span-6"
-								label="Height"
-								type="number"
-								value={data.expiration.at_height.toString()}
-								readOnly
-							/>
-						)}
-						{"at_time" in data.expiration && (
-							<DatePicker
-								className="col-span-12 lg:col-span-4 sm:col-span-6"
-								label="Time"
-								value={formatExpirationTime(data.expiration.at_time)}
-								isReadOnly
-							/>
-						)}
-					</>
+			<Input label="Name" value={competition.name} readOnly />
+			<Textarea label="Description" value={competition.description} readOnly />
+			<div className="grid grid-cols-12 gap-2">
+				<Input
+					className="col-span-12 lg:col-span-4 sm:col-span-6"
+					label="Expiration"
+					value={
+						"at_time" in competition.expiration
+							? "At Time"
+							: "at_height" in competition.expiration
+								? "At Height"
+								: "Never"
+					}
+					readOnly
+				/>
+				{"at_height" in competition.expiration && (
+					<Input
+						className="col-span-12 lg:col-span-4 sm:col-span-6"
+						label="Height"
+						type="number"
+						value={competition.expiration.at_height.toString()}
+						readOnly
+					/>
+				)}
+				{"at_time" in competition.expiration && (
+					<DatePicker
+						className="col-span-12 lg:col-span-4 sm:col-span-6"
+						label="Time"
+						value={formatExpirationTime(competition.expiration.at_time)}
+						isReadOnly
+					/>
 				)}
 			</div>
-			{data && (
-				<Card>
+			{(competition.rulesets.length > 0 || competition.rules.length > 0) && (
+				<Card className="min-w-fit max-w-lg">
 					<CardHeader>Rules</CardHeader>
 					<CardBody className="space-y-4">
-						{data.rulesets.map((rulesetId) => (
+						{competition.rulesets.map((rulesetId) => (
 							<RulesetsSection
 								key={rulesetId}
 								rulesetId={rulesetId}
 								cosmWasmClient={cosmWasmClient}
 							/>
 						))}
-						<Table aria-label="Rules" removeWrapper>
+						<Table aria-label="Rules" removeWrapper hideHeader>
 							<TableHeader>
 								<TableColumn>Rule</TableColumn>
 							</TableHeader>
-							<TableBody emptyContent="No rules given...">
-								{data.rules.map((item, i) => (
+							<TableBody>
+								{competition.rules.map((item, i) => (
 									// biome-ignore lint/suspicious/noArrayIndexKey: Best option for now
 									<TableRow key={i}>
 										<TableCell>
@@ -199,39 +178,39 @@ const ViewCompetition = ({
 			{(status === "jailed" || status === "inactive") && (
 				<EvidenceSection
 					moduleAddr={moduleAddr}
-					competitionId={competitionId}
+					competitionId={competition.id}
 					cosmWasmClient={cosmWasmClient}
 					hideIfEmpty={status === "inactive"}
 				/>
 			)}
 			<div className="block space-x-2 overflow-x-auto">
-				{data?.host && status === "active" && (
+				{!hideProcess && status === "active" && (
 					<ProcessForm
 						moduleAddr={moduleAddr}
-						competitionId={competitionId}
-						host={data.host}
+						competitionId={competition.id}
+						host={competition.host}
 					/>
 				)}
-				{data?.is_expired && status !== "inactive" && (
+				{competition.is_expired && status !== "inactive" && (
 					<ProcessForm
 						moduleAddr={moduleAddr}
-						competitionId={competitionId}
+						competitionId={competition.id}
 						setCompetitionStatus={setStatus}
 						is_expired
 					/>
 				)}
-				{status !== "inactive" && data?.escrow && (
+				{status !== "inactive" && competition.escrow && (
 					<PresetDistributionForm
-						escrow={data.escrow}
+						escrow={competition.escrow}
 						cosmWasmClient={cosmWasmClient}
 					/>
 				)}
 			</div>
-			{data?.escrow && (
+			{competition.escrow && (
 				<EscrowSection
 					cosmWasmClient={cosmWasmClient}
 					address={address}
-					escrow={data.escrow}
+					escrow={competition.escrow}
 					setCompetitionStatus={setStatus}
 					status={status}
 				/>
@@ -240,9 +219,10 @@ const ViewCompetition = ({
 				<ResultSection
 					cosmWasmClient={cosmWasmClient}
 					moduleAddr={moduleAddr}
-					competitionId={competitionId}
+					competitionId={competition.id}
 				/>
 			)}
+			{children}
 		</div>
 	);
 };
