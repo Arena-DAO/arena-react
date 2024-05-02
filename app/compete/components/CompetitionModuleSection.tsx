@@ -111,7 +111,7 @@ const CompetitionModuleSectionItems = ({
 								<Chip color={statusColors[item.status]}>{item.status}</Chip>
 							</Badge>
 						</TableCell>
-						<TableCell>{item.description}</TableCell>
+						<TableCell className="min-w-52">{item.description}</TableCell>
 						<TableCell>
 							<Button
 								as={Link}

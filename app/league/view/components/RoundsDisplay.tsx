@@ -9,6 +9,7 @@ import {
 } from "@nextui-org/react";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import type { CompetitionResponseForCompetitionExt } from "~/codegen/ArenaLeagueModule.types";
+import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import type { WithClient } from "~/types/util";
 import RoundDisplay from "./RoundDisplay";
 
@@ -17,6 +18,7 @@ interface RoundsDisplayProps extends CardProps {
 	moduleAddr: string;
 	version: number;
 	setVersion: Dispatch<SetStateAction<number>>;
+	setStatus: Dispatch<SetStateAction<CompetitionStatus>>;
 }
 
 const RoundsDisplay = ({
@@ -25,16 +27,19 @@ const RoundsDisplay = ({
 	league,
 	version,
 	setVersion,
+	setStatus,
 	...props
 }: WithClient<RoundsDisplayProps>) => {
 	const teams = Number(BigInt(league.extension.teams));
 	const total_rounds = teams % 2 === 0 ? teams - 1 : teams;
 	const [currentRound, setCurrentRound] = useState(
-		Math.ceil(
-			Number(BigInt(league.extension.processed_matches)) /
-				Number(BigInt(league.extension.matches)) /
-				total_rounds,
-		) + 1,
+		Math.max(
+			1,
+			Math.ceil(
+				Number(BigInt(league.extension.processed_matches)) /
+					(Number(BigInt(league.extension.matches)) / total_rounds),
+			),
+		),
 	);
 
 	return (
@@ -51,6 +56,7 @@ const RoundsDisplay = ({
 					moduleAddr={moduleAddr}
 					version={version}
 					setVersion={setVersion}
+					setStatus={setStatus}
 				/>
 			</CardBody>
 			<CardFooter>

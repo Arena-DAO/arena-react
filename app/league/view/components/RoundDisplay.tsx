@@ -20,7 +20,11 @@ import {
 	ArenaLeagueModuleQueryClient,
 } from "~/codegen/ArenaLeagueModule.client";
 import { useArenaLeagueModuleQueryExtensionQuery } from "~/codegen/ArenaLeagueModule.react-query";
-import type { Result, RoundResponse } from "~/codegen/ArenaLeagueModule.types";
+import type {
+	CompetitionStatus,
+	Result,
+	RoundResponse,
+} from "~/codegen/ArenaLeagueModule.types";
 import { LeagueResultValues } from "~/helpers/ArenaHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import type { WithClient } from "~/types/util";
@@ -31,6 +35,7 @@ interface RoundDisplayProps {
 	round_number: string;
 	version: number;
 	setVersion: Dispatch<SetStateAction<number>>;
+	setStatus: Dispatch<SetStateAction<CompetitionStatus>>;
 }
 
 const RoundDisplay = ({
@@ -40,6 +45,7 @@ const RoundDisplay = ({
 	round_number,
 	version,
 	setVersion,
+	setStatus,
 }: WithClient<RoundDisplayProps>) => {
 	const { data: env } = useEnv();
 	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
@@ -90,7 +96,7 @@ const RoundDisplay = ({
 				env.ARENA_LEAGUE_MODULE_ADDRESS,
 			);
 
-			await leagueModuleClient.extension({
+			const response = await leagueModuleClient.extension({
 				msg: {
 					process_match: {
 						league_id,
@@ -105,6 +111,17 @@ const RoundDisplay = ({
 
 			toast.success("The results were submitted");
 			setVersion((x) => x + 1);
+
+			if (
+				response.events.find((event) =>
+					event.attributes.find(
+						(attr) =>
+							attr.key === "action" && attr.value === "process_competition",
+					),
+				)
+			) {
+				setStatus("inactive");
+			}
 			// biome-ignore lint/suspicious/noExplicitAny: Try-catch
 		} catch (e: any) {
 			console.error(e);

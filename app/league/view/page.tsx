@@ -18,6 +18,7 @@ import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { ArenaLeagueModuleQueryClient } from "~/codegen/ArenaLeagueModule.client";
 import { useArenaLeagueModuleCompetitionQuery } from "~/codegen/ArenaLeagueModule.react-query";
+import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import { getNumberWithOrdinal } from "~/helpers/UIHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
@@ -30,6 +31,7 @@ const ViewWager = () => {
 	const searchParams = useSearchParams();
 	const competitionId = searchParams?.get("competitionId");
 	const [version, setVersion] = useState(0);
+	const [status, setStatus] = useState<CompetitionStatus>("pending");
 
 	const { data } = useArenaLeagueModuleCompetitionQuery({
 		client: new ArenaLeagueModuleQueryClient(
@@ -43,6 +45,7 @@ const ViewWager = () => {
 		},
 		options: {
 			enabled: !!cosmWasmClient && !!competitionId,
+			onSuccess: (data) => setStatus(data.status),
 		},
 	});
 
@@ -58,6 +61,8 @@ const ViewWager = () => {
 					competition={data}
 					moduleAddr={env.ARENA_LEAGUE_MODULE_ADDRESS}
 					hideProcess
+					status={status}
+					setStatus={setStatus}
 				>
 					<>
 						<Card>
@@ -132,6 +137,7 @@ const ViewWager = () => {
 							className="col-span-2 md:col-span-1"
 							version={version}
 							setVersion={setVersion}
+							setStatus={setStatus}
 						/>
 					</div>
 				</ViewCompetition>

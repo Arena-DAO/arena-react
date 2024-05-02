@@ -364,9 +364,7 @@ const CreateLeague = () => {
 											errorMessage={errors.match_win_points?.message}
 											{...field}
 											value={field.value?.toString()}
-											onChange={(e) =>
-												field.onChange(Number.parseInt(e.target.value))
-											}
+											onChange={(e) => field.onChange(BigInt(e.target.value))}
 										/>
 									)}
 								/>
@@ -383,9 +381,7 @@ const CreateLeague = () => {
 											errorMessage={errors.match_draw_points?.message}
 											{...field}
 											value={field.value?.toString()}
-											onChange={(e) =>
-												field.onChange(Number.parseInt(e.target.value))
-											}
+											onChange={(e) => field.onChange(BigInt(e.target.value))}
 										/>
 									)}
 								/>
@@ -402,9 +398,7 @@ const CreateLeague = () => {
 											errorMessage={errors.match_lose_points?.message}
 											{...field}
 											value={field.value?.toString()}
-											onChange={(e) =>
-												field.onChange(Number.parseInt(e.target.value))
-											}
+											onChange={(e) => field.onChange(BigInt(e.target.value))}
 										/>
 									)}
 								/>

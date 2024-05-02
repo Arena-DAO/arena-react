@@ -2,8 +2,10 @@
 
 import ViewCompetition from "@/components/competition/view/ViewCompetition";
 import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { useArenaWagerModuleCompetitionQuery } from "~/codegen/ArenaWagerModule.react-query";
+import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 
@@ -12,6 +14,7 @@ const ViewWager = () => {
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const searchParams = useSearchParams();
 	const competitionId = searchParams?.get("competitionId");
+	const [status, setStatus] = useState<CompetitionStatus>("pending");
 
 	const { data } = useArenaWagerModuleCompetitionQuery({
 		client: new ArenaWagerModuleQueryClient(
@@ -25,6 +28,7 @@ const ViewWager = () => {
 		},
 		options: {
 			enabled: !!cosmWasmClient && !!competitionId,
+			onSuccess: (data) => setStatus(data.status),
 		},
 	});
 
@@ -39,6 +43,8 @@ const ViewWager = () => {
 					cosmWasmClient={cosmWasmClient}
 					competition={data}
 					moduleAddr={env.ARENA_WAGER_MODULE_ADDRESS}
+					status={status}
+					setStatus={setStatus}
 				/>
 			)}
 		</div>

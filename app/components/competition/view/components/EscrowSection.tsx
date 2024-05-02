@@ -50,10 +50,10 @@ const EscrowSection = ({
 	const [version, setVersion] = useState(0);
 	const [isLocked, setIsLocked] = useState(true);
 	useEffect(() => {
-		if (version > 0) {
+		if (version > 0 || status === "inactive") {
 			refetch();
 		}
-	}, [version, refetch]);
+	}, [version, refetch, status]);
 	useEffect(() => {
 		if (data) {
 			setIsLocked(data.is_locked);
@@ -205,6 +205,7 @@ const EscrowSection = ({
 					escrow={escrow}
 					cosmWasmClient={cosmWasmClient}
 					version={version}
+					status={status}
 				/>
 			</div>
 		</>

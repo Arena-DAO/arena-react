@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import { useAsyncList } from "react-stately";
 import { ArenaEscrowQueryClient } from "~/codegen/ArenaEscrow.client";
 import type { MemberBalanceChecked } from "~/codegen/ArenaEscrow.types";
+import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import { useEnv } from "~/hooks/useEnv";
 import type { WithClient } from "~/types/util";
 import BalanceDisplay from "./BalanceDisplay";
@@ -28,12 +29,14 @@ import BalanceDisplay from "./BalanceDisplay";
 interface BalancesModalProps {
 	escrow: string;
 	version: number;
+	status: CompetitionStatus;
 }
 
 const BalancesModal = ({
 	escrow,
 	version,
 	cosmWasmClient,
+	status,
 }: WithClient<BalancesModalProps>) => {
 	const { data: env } = useEnv();
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -58,10 +61,10 @@ const BalancesModal = ({
 	});
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Stops cycle
 	useEffect(() => {
-		if (version > 0) {
+		if (version > 0 || status === "inactive") {
 			list.reload();
 		}
-	}, [version]);
+	}, [version, status]);
 
 	return (
 		<>

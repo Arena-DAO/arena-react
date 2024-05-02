@@ -23,7 +23,7 @@ import {
 	Tooltip,
 } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
-import { type PropsWithChildren, useEffect, useState } from "react";
+import type { Dispatch, PropsWithChildren, SetStateAction } from "react";
 import { BsArrowLeft, BsHourglassBottom, BsYinYang } from "react-icons/bs";
 import type {
 	CompetitionResponseForEmpty,
@@ -45,6 +45,8 @@ interface ViewCompetitionProps extends PropsWithChildren {
 	moduleAddr: string;
 	competition: Omit<CompetitionResponseForEmpty, "extension">;
 	hideProcess?: boolean;
+	status: CompetitionStatus;
+	setStatus: Dispatch<SetStateAction<CompetitionStatus>>;
 }
 
 const ViewCompetition = ({
@@ -53,13 +55,11 @@ const ViewCompetition = ({
 	competition,
 	children,
 	hideProcess = false,
+	status,
+	setStatus,
 }: WithClient<ViewCompetitionProps>) => {
 	const { data: env } = useEnv();
 	const { address } = useChain(env.CHAIN);
-	const [status, setStatus] = useState<CompetitionStatus>("pending");
-	useEffect(() => {
-		setStatus(competition.status);
-	}, [competition]);
 
 	const searchParams = useSearchParams();
 
@@ -76,7 +76,7 @@ const ViewCompetition = ({
 			)}
 			<Card>
 				<CardHeader className="flex justify-between">
-					<h2 className="font-bold text-2xl">Host</h2>
+					<h2>Host</h2>
 					<Badge
 						isOneChar
 						content={<BsHourglassBottom />}
