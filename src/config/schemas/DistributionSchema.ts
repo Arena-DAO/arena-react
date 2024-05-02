@@ -17,7 +17,11 @@ const DistributionSchema = z
 				});
 			}
 			if (
-				val.member_percentages.reduce((acc, cur) => acc + cur.percentage, 0) !==
+				Math.round(
+					val.member_percentages.reduce((acc, cur) => acc + cur.percentage, 0) *
+						100,
+				) /
+					100 !==
 				1
 			) {
 				ctx.addIssue({

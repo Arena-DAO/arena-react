@@ -57,10 +57,13 @@ const CreateLeagueSchema = CreateCompetitionSchema.extend({
 		.array()
 		.min(1, "Distribution is required")
 		.superRefine((val, ctx) => {
-			if (val.reduce((acc, cur) => acc + cur.percentage, 0) !== 1) {
+			if (
+				Math.round(val.reduce((acc, cur) => acc + cur.percentage, 0) * 100) /
+					100 !==
+				1
+			) {
 				ctx.addIssue({
 					code: ZodIssueCode.custom,
-					path: ["distribution"],
 					message: "Sum of percentages must equal 1",
 				});
 			}

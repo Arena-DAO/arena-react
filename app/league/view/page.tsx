@@ -20,6 +20,7 @@ import { useArenaLeagueModuleCompetitionQuery } from "~/codegen/ArenaLeagueModul
 import { getNumberWithOrdinal } from "~/helpers/UIHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
+import LeaderboardDisplay from "./components/LeaderboardDisplay";
 
 const ViewWager = () => {
 	const { data: env } = useEnv();
@@ -113,6 +114,14 @@ const ViewWager = () => {
 							/>
 						</div>
 					</>
+					<div className="grid grid-cols-2 gap-4">
+						<LeaderboardDisplay
+							cosmWasmClient={cosmWasmClient}
+							moduleAddr={env.ARENA_LEAGUE_MODULE_ADDRESS}
+							league={data}
+							className="col-span-2 md:col-span-1"
+						/>
+					</div>
 				</ViewCompetition>
 			)}
 		</div>
