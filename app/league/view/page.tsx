@@ -15,6 +15,7 @@ import {
 	TableRow,
 } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { ArenaLeagueModuleQueryClient } from "~/codegen/ArenaLeagueModule.client";
 import { useArenaLeagueModuleCompetitionQuery } from "~/codegen/ArenaLeagueModule.react-query";
 import { getNumberWithOrdinal } from "~/helpers/UIHelpers";
@@ -22,7 +23,6 @@ import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import LeaderboardDisplay from "./components/LeaderboardDisplay";
 import RoundsDisplay from "./components/RoundsDisplay";
-import { useState } from "react";
 
 const ViewWager = () => {
 	const { data: env } = useEnv();

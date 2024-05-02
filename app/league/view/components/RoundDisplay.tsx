@@ -3,15 +3,15 @@
 import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
 import {
+	Button,
+	Select,
+	SelectItem,
 	Table,
 	TableBody,
 	TableCell,
 	TableColumn,
 	TableHeader,
 	TableRow,
-	Button,
-	Select,
-	SelectItem,
 } from "@nextui-org/react";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { toast } from "react-toastify";
