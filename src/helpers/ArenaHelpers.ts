@@ -15,3 +15,9 @@ export const statusColors: { [key in CompetitionStatus]: Colors } = {
 	inactive: "default",
 	jailed: "danger",
 };
+
+export const LeagueResultValues = [
+	{ value: "team1", display: "Team 1" },
+	{ value: "team2", display: "Team 2" },
+	{ value: "draw", display: "Draw" },
+] as const;

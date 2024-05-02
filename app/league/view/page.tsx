@@ -21,12 +21,15 @@ import { getNumberWithOrdinal } from "~/helpers/UIHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import LeaderboardDisplay from "./components/LeaderboardDisplay";
+import RoundsDisplay from "./components/RoundsDisplay";
+import { useState } from "react";
 
 const ViewWager = () => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const searchParams = useSearchParams();
 	const competitionId = searchParams?.get("competitionId");
+	const [version, setVersion] = useState(0);
 
 	const { data } = useArenaLeagueModuleCompetitionQuery({
 		client: new ArenaLeagueModuleQueryClient(
@@ -120,6 +123,15 @@ const ViewWager = () => {
 							moduleAddr={env.ARENA_LEAGUE_MODULE_ADDRESS}
 							league={data}
 							className="col-span-2 md:col-span-1"
+							version={version}
+						/>
+						<RoundsDisplay
+							cosmWasmClient={cosmWasmClient}
+							moduleAddr={env.ARENA_LEAGUE_MODULE_ADDRESS}
+							league={data}
+							className="col-span-2 md:col-span-1"
+							version={version}
+							setVersion={setVersion}
 						/>
 					</div>
 				</ViewCompetition>
