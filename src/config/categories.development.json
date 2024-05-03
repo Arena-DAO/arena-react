@@ -61,6 +61,18 @@
 					"title": "The Finals",
 					"img": "/category_images/the-finals.webp",
 					"category_id": 9
+				},
+				{
+					"url": "league-of-legends",
+					"title": "League of Legends",
+					"img": "/category_images/league-of-legends.jpg",
+					"category_id": 16
+				},
+				{
+					"url": "dota-2",
+					"title": "Dota 2",
+					"img": "/category_images/dota-2.jpg",
+					"category_id": 17
 				}
 			]
 		},
