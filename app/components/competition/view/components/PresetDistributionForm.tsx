@@ -71,6 +71,7 @@ const PresetDistributionForm = ({
 		formState: { errors, isSubmitting },
 		handleSubmit,
 		watch,
+		getValues,
 	} = useForm<ProcessFormValues>({
 		defaultValues: {
 			distribution: {
@@ -84,6 +85,7 @@ const PresetDistributionForm = ({
 		name: "distribution.member_percentages",
 	});
 	const percentages = watch("distribution.member_percentages");
+	const remainderAddr = watch("distribution.remainder_addr");
 
 	const onSubmit = async (values: ProcessFormValues) => {
 		try {
@@ -131,10 +133,9 @@ const PresetDistributionForm = ({
 							<Card>
 								<CardHeader>Current Preset Distribution</CardHeader>
 								<CardBody className="space-y-4">
-									<Input
-										label="Remainder Address"
-										value={data.remainder_addr}
-										readOnly
+									<Profile
+										address={data.remainder_addr}
+										cosmWasmClient={cosmWasmClient}
 									/>
 									<Table aria-label="Distribution" removeWrapper>
 										<TableHeader>
@@ -165,20 +166,31 @@ const PresetDistributionForm = ({
 								</CardBody>
 							</Card>
 						)}
-						<Controller
-							control={control}
-							name="distribution.remainder_addr"
-							render={({ field }) => (
-								<Input
-									label="Remainder Address"
-									autoFocus
-									isDisabled={isSubmitting}
-									isInvalid={!!errors.distribution?.remainder_addr}
-									errorMessage={errors.distribution?.remainder_addr?.message}
-									{...field}
+						<div className="block">
+							<Controller
+								control={control}
+								name="distribution.remainder_addr"
+								render={({ field }) => (
+									<Input
+										className="max-w-3xl"
+										label="Remainder Address"
+										autoFocus
+										isDisabled={isSubmitting}
+										isInvalid={!!errors.distribution?.remainder_addr}
+										errorMessage={errors.distribution?.remainder_addr?.message}
+										{...field}
+									/>
+								)}
+							/>
+							{remainderAddr && (
+								<Profile
+									className="mt-2"
+									address={remainderAddr}
+									cosmWasmClient={cosmWasmClient}
+									hideIfInvalid
 								/>
 							)}
-						/>
+						</div>
 						<Card>
 							<CardBody>
 								<Table
@@ -211,12 +223,22 @@ const PresetDistributionForm = ({
 																		?.addr?.message
 																}
 																{...field}
-																className="min-w-[350px]"
+																className="min-w-80"
 															/>
 														)}
 													/>
+													{cosmWasmClient && (
+														<Profile
+															className="mt-2"
+															address={getValues(
+																`distribution.member_percentages.${i}.addr`,
+															)}
+															cosmWasmClient={cosmWasmClient}
+															hideIfInvalid
+														/>
+													)}
 												</TableCell>
-												<TableCell>
+												<TableCell className="align-top">
 													<Controller
 														control={control}
 														name={`distribution.member_percentages.${i}.percentage`}
@@ -245,12 +267,12 @@ const PresetDistributionForm = ({
 																		Number.parseFloat(e.target.value),
 																	)
 																}
-																className="min-w-32"
+																className="min-w-32 max-w-40"
 															/>
 														)}
 													/>
 												</TableCell>
-												<TableCell>
+												<TableCell className="align-top">
 													<Button
 														isIconOnly
 														aria-label="Delete Recipient"

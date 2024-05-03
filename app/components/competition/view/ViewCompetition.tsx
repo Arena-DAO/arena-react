@@ -13,12 +13,6 @@ import {
 	DatePicker,
 	Input,
 	Link,
-	Table,
-	TableBody,
-	TableCell,
-	TableColumn,
-	TableHeader,
-	TableRow,
 	Textarea,
 	Tooltip,
 } from "@nextui-org/react";
@@ -157,21 +151,14 @@ const ViewCompetition = ({
 								cosmWasmClient={cosmWasmClient}
 							/>
 						))}
-						<Table aria-label="Rules" removeWrapper hideHeader>
-							<TableHeader>
-								<TableColumn>Rule</TableColumn>
-							</TableHeader>
-							<TableBody>
-								{competition.rules.map((item, i) => (
-									// biome-ignore lint/suspicious/noArrayIndexKey: Best option for now
-									<TableRow key={i}>
-										<TableCell>
-											<MaybeLink content={item} />
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
+						<ul className="list-inside list-disc">
+							{competition.rules.map((item, i) => (
+								// biome-ignore lint/suspicious/noArrayIndexKey: Best option for now
+								<li key={i}>
+									<MaybeLink content={item} />
+								</li>
+							))}
+						</ul>
 					</CardBody>
 				</Card>
 			)}

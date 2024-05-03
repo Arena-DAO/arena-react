@@ -1,5 +1,6 @@
 "use client";
 
+import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -36,6 +37,7 @@ import { DistributionSchema } from "~/config/schemas";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { keyboardDelegateFixSpace } from "~/helpers/NextUIHelpers";
 import { convertToDistribution } from "~/helpers/SchemaHelpers";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 
 type ProcessFormProps = {
@@ -82,12 +84,14 @@ const ProcessForm = ({
 	type ProcessFormValues = z.infer<typeof ProcessFormSchema>;
 
 	const { data: env } = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
 	const {
 		control,
 		formState: { errors, isSubmitting },
 		watch,
 		handleSubmit,
+		getValues,
 	} = useForm<ProcessFormValues>({
 		resolver: zodResolver(ProcessFormSchema),
 		defaultValues: {
@@ -104,6 +108,7 @@ const ProcessForm = ({
 		name: "distribution.member_percentages",
 	});
 	const percentages = watch("distribution.member_percentages");
+	const remainderAddr = watch("distribution.remainder_addr");
 
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -228,20 +233,31 @@ const ProcessForm = ({
 							provide an address for receiving any remaining funds. If no
 							members are provided, then funds will be refunded.
 						</p>
-						<Controller
-							control={control}
-							name="distribution.remainder_addr"
-							render={({ field }) => (
-								<Input
-									label="Remainder Address"
-									autoFocus
-									isDisabled={isSubmitting}
-									isInvalid={!!errors.distribution?.remainder_addr}
-									errorMessage={errors.distribution?.remainder_addr?.message}
-									{...field}
+						<div className="block">
+							<Controller
+								control={control}
+								name="distribution.remainder_addr"
+								render={({ field }) => (
+									<Input
+										className="max-w-3xl"
+										label="Remainder Address"
+										autoFocus
+										isDisabled={isSubmitting}
+										isInvalid={!!errors.distribution?.remainder_addr}
+										errorMessage={errors.distribution?.remainder_addr?.message}
+										{...field}
+									/>
+								)}
+							/>
+							{remainderAddr && cosmWasmClient && (
+								<Profile
+									className="mt-2"
+									address={remainderAddr}
+									cosmWasmClient={cosmWasmClient}
+									hideIfInvalid
 								/>
 							)}
-						/>
+						</div>
 						<Card>
 							<CardBody>
 								<Table
@@ -256,7 +272,7 @@ const ProcessForm = ({
 									</TableHeader>
 									<TableBody emptyContent="No distribution (draw)">
 										{fields?.map((memberPercentage, i) => (
-											<TableRow key={memberPercentage.id}>
+											<TableRow key={memberPercentage.id} className="align-top">
 												<TableCell>
 													<Controller
 														control={control}
@@ -274,12 +290,22 @@ const ProcessForm = ({
 																		?.addr?.message
 																}
 																{...field}
-																className="min-w-[350px]"
+																className="min-w-80"
 															/>
 														)}
 													/>
+													{cosmWasmClient && (
+														<Profile
+															className="mt-2"
+															address={getValues(
+																`distribution.member_percentages.${i}.addr`,
+															)}
+															cosmWasmClient={cosmWasmClient}
+															hideIfInvalid
+														/>
+													)}
 												</TableCell>
-												<TableCell>
+												<TableCell className="align-top">
 													<Controller
 														control={control}
 														name={`distribution.member_percentages.${i}.percentage`}
@@ -308,12 +334,12 @@ const ProcessForm = ({
 																		Number.parseFloat(e.target.value),
 																	)
 																}
-																className="min-w-32"
+																className="min-w-32 max-w-40"
 															/>
 														)}
 													/>
 												</TableCell>
-												<TableCell>
+												<TableCell className="align-top">
 													<Button
 														isIconOnly
 														aria-label="Delete Recipient"
