@@ -10,10 +10,16 @@ const Layout = ({ children }: PropsWithChildren) => {
 			<head>
 				<title>The Arena 🏆</title>
 				<meta charSet="UTF-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<meta
 					name="description"
-					content="A hub for competitive communities. 
-					Dive into our framework for secure competitions including wagers, leagues, & tournaments. Play games for money."
+					content="The hub for competitive communities. 
+					🏆 Wagers • Leagues • Tournaments 🏆
+					Step into The Arena for trustless, peer-to-peer gaming."
+				/>
+				<meta
+					name="keywords"
+					content="wagers, leagues, tournaments, dao, arena dao, arena, gaming"
 				/>
 				<link rel="icon" href="/favicon.ico" />
 				<link
@@ -33,8 +39,13 @@ const Layout = ({ children }: PropsWithChildren) => {
 					sizes="16x16"
 					href="/favicon-16x16.png"
 				/>
+				<meta property="og:image" content="/logo.png" />
+				<meta property="og:image:type" content="image/png" />
+				<meta property="og:image:width" content="1081" />
+				<meta property="og:image:height" content="1081" />
 				<link rel="manifest" href="/site.webmanifest" />
 				<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+				<meta name="theme-color" content="#FF8000" />
 			</head>
 			<body className="min-h-screen font-roboto">
 				<Providers>

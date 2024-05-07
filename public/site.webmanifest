@@ -1,7 +1,18 @@
 {
 	"name": "The Arena 🏆",
 	"short_name": "The Arena",
+	"description": "The hub for competitive communities. 🏆 Wagers • Leagues • Tournaments 🏆 Step into The Arena for trustless, peer-to-peer gaming.",
 	"icons": [
+		{
+			"src": "/images/logo.png",
+			"sizes": "1081x1081",
+			"type": "image/png"
+		},
+		{
+			"src": "/favicon.ico",
+			"sizes": "48x48 72x72 96x96 128x128 256x256",
+			"type": "image/x-icon"
+		},
 		{
 			"src": "/android-chrome-192x192.png",
 			"sizes": "192x192",
@@ -11,10 +22,15 @@
 			"src": "/android-chrome-512x512.png",
 			"sizes": "512x512",
 			"type": "image/png"
+		},
+		{
+			"src": "/images/apple-touch-icon.png",
+			"sizes": "180x180",
+			"type": "image/png"
 		}
 	],
-	"theme_color": "#FF6600",
-	"background_color": "#FDF5E6",
+	"theme_color": "#FF8000",
+	"background_color": "#1A1A1A",
 	"display": "standalone",
 	"lang": "en",
 	"categories": ["dao", "gaming", "social", "wagers", "leagues", "tournaments"]
