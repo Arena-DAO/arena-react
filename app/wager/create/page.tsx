@@ -156,7 +156,7 @@ const CreateWager = () => {
 											admin: { core_module: {} },
 											code_id: env.CODE_ID_DAO_PROPOSAL_SINGLE,
 											label: "DAO Proposal Single",
-											funds: env.ENV === "production" ? [] : undefined,
+											funds: [],
 											msg: toBinary({
 												allow_revoting: false,
 												close_proposal_on_execution_failure: true,
@@ -177,7 +177,7 @@ const CreateWager = () => {
 										admin: { core_module: {} },
 										code_id: env.CODE_ID_DAO_VOTING_CW4,
 										label: "DAO Voting CW4",
-										funds: env.ENV === "production" ? [] : undefined,
+										funds: [],
 										msg: toBinary({
 											group_contract: {
 												new: {

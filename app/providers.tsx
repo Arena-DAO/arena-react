@@ -18,7 +18,7 @@ import {
 import {
 	assets as testnetAssets,
 	chain as testnetChain,
-} from "chain-registry/testnet/junotestnet";
+} from "chain-registry/testnet/neutrontestnet";
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { type PropsWithChildren, useMemo } from "react";

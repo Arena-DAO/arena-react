@@ -79,6 +79,7 @@ const DynamicNavbarItem = ({
 							description={dropdownItem.description}
 							href={dropdownItem.href}
 							onPress={() => setIsMenuOpen(false)}
+							target={dropdownItem.isExternal ? "_blank" : undefined}
 						>
 							{dropdownItem.label}
 						</DropdownItem>
@@ -131,9 +132,11 @@ export default function AppNavbar() {
 				...(env.ENV === "development"
 					? [
 							{
-								href: "/resources/faucet",
+								// biome-ignore lint/style/noNonNullAssertion: dev env has this populated
+								href: env.FAUCET_URL!,
 								label: "Faucet",
 								description: "Get testnet gas to explore The Arena",
+								isExternal: true,
 							},
 						]
 					: []),
