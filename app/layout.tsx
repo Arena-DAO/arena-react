@@ -47,11 +47,11 @@ const Layout = ({ children }: PropsWithChildren) => {
 				<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
 				<meta name="theme-color" content="#FF8000" />
 			</head>
-			<body className="min-h-screen font-roboto">
+			<body className="font-roboto">
 				<Providers>
 					<AppNavbar />
 					<div
-						className="container mx-auto max-h-fit min-h-full"
+						className="min-h-full"
 						style={{ paddingTop: "4rem", paddingBottom: "4rem" }}
 					>
 						<ErrorBoundary>{children}</ErrorBoundary>
