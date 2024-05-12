@@ -109,7 +109,7 @@ export default function AppNavbar() {
 		{
 			label: "DAO",
 			isDropdown: true,
-			ariaLabel: "DAO Menu Items",
+			ariaLabel: "DAO Menu",
 			dropdownItems: [
 				{
 					href: "/dao/dao",
