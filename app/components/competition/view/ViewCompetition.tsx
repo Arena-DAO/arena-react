@@ -94,11 +94,13 @@ const ViewCompetition = ({
 							cosmWasmClient={cosmWasmClient}
 						/>
 						{isValidContractAddress(competition.host, env.BECH32_PREFIX) && (
-							<Tooltip content="View on DAO DAO">
+							<Tooltip content="View through DAO DAO">
 								<Button
 									isIconOnly
 									as={Link}
-									href={`${env.DAO_DAO_URL}/dao/${competition.host}`}
+									href={`${env.DAO_DAO_URL}/dao/${
+										competition.host
+									}/apps?url=${encodeURIComponent(window.location.href)}`}
 									isExternal
 								>
 									<BsYinYang />

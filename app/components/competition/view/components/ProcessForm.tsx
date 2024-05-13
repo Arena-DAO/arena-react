@@ -9,7 +9,6 @@ import {
 	CardBody,
 	CardFooter,
 	Input,
-	Link,
 	Modal,
 	ModalBody,
 	ModalContent,
@@ -28,13 +27,12 @@ import {
 import type { Dispatch, SetStateAction } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { BsPercent } from "react-icons/bs";
-import { FiExternalLink, FiPlus, FiTrash } from "react-icons/fi";
+import { FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { ZodIssueCode, z } from "zod";
 import { ArenaWagerModuleClient } from "~/codegen/ArenaWagerModule.client";
 import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import { DistributionSchema } from "~/config/schemas";
-import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { keyboardDelegateFixSpace } from "~/helpers/NextUIHelpers";
 import { convertToDistribution } from "~/helpers/SchemaHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
@@ -158,26 +156,7 @@ const ProcessForm = ({
 			if (address === props.host) {
 				onOpen();
 			} else {
-				toast.info(
-					<div className="flex justify-between">
-						<div className="my-auto">
-							Only the host can process the competition
-						</div>
-						{isValidContractAddress(props.host) && (
-							<Button
-								as={Link}
-								href={`${env.DAO_DAO_URL}/dao/${
-									props.host
-								}/apps?url=${encodeURIComponent(window.location.href)}`}
-								isExternal
-								isIconOnly
-								aria-label="Handle on DAO DAO"
-							>
-								<FiExternalLink />
-							</Button>
-						)}
-					</div>,
-				);
+				toast.info("Only the host can process the competition");
 			}
 		}
 	};

@@ -4,7 +4,6 @@ import Profile from "@/components/Profile";
 import {
 	Card,
 	CardBody,
-	CardHeader,
 	type CardProps,
 	Table,
 	TableBody,
@@ -53,7 +52,6 @@ const LeaderboardDisplay = ({
 
 	return (
 		<Card {...props}>
-			<CardHeader>Leaderboard</CardHeader>
 			<CardBody className="space-y-4">
 				<div className="flex justify-between">
 					<div>

@@ -4,7 +4,6 @@ import {
 	Card,
 	CardBody,
 	CardFooter,
-	CardHeader,
 	type CardProps,
 } from "@nextui-org/react";
 import { type Dispatch, type SetStateAction, useState } from "react";
@@ -44,7 +43,6 @@ const RoundsDisplay = ({
 
 	return (
 		<Card {...props}>
-			<CardHeader>Rounds</CardHeader>
 			<CardBody className="space-y-4">
 				<p>
 					Round: {currentRound}/{total_rounds}
