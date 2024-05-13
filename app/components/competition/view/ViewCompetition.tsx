@@ -8,6 +8,7 @@ import {
 	Button,
 	Card,
 	CardBody,
+	CardFooter,
 	CardHeader,
 	Chip,
 	DatePicker,
@@ -106,6 +107,12 @@ const ViewCompetition = ({
 						)}
 					</div>
 				</CardBody>
+				<CardFooter>
+					<p className="text-warning text-xs">
+						Please remind your players to track their gameplay to help resolve
+						any disputes quickly and fairly.
+					</p>
+				</CardFooter>
 			</Card>
 			<Input label="Name" value={competition.name} readOnly />
 			<Textarea label="Description" value={competition.description} readOnly />
