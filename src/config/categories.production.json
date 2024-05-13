@@ -73,6 +73,18 @@
 					"title": "Dota 2",
 					"img": "/category_images/dota-2.jpg",
 					"category_id": 17
+				},
+				{
+					"url": "nba-2k",
+					"title": "NBA 2K",
+					"img": "/category_images/nba-2k.webp",
+					"category_id": 18
+				},
+				{
+					"url": "madden",
+					"title": "Madden 24",
+					"img": "/category_images/madden-24.jpg",
+					"category_id": 19
 				}
 			]
 		},
