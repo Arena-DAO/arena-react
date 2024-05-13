@@ -102,21 +102,21 @@ const ViewWager = () => {
 							<Input
 								className="col-span-12 md:col-span-4"
 								type="number"
-								label="Match Win Points"
+								label="Points Per Win"
 								readOnly
 								value={data.extension.match_win_points}
 							/>
 							<Input
 								className="col-span-12 md:col-span-4"
 								type="number"
-								label="Match Draw Points"
+								label="Points Per Draw"
 								readOnly
 								value={data.extension.match_draw_points}
 							/>
 							<Input
 								className="col-span-12 md:col-span-4"
 								type="number"
-								label="Match Lose Points"
+								label="Points Per Loss"
 								readOnly
 								value={data.extension.match_lose_points}
 							/>

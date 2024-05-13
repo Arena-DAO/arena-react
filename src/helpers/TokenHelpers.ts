@@ -44,6 +44,7 @@ export function getTokenConversion(
 }
 
 export function getDisplayToken(coin: Coin, asset: Asset): Coin {
+	if (asset.display === "") return coin;
 	return getTokenConversion(coin, asset.display, asset);
 }
 
@@ -152,8 +153,8 @@ export async function getNativeAsset(
 		denom_units: metadata.denomUnits,
 		base: metadata.base,
 		name: metadata.name,
-		display: metadata.display,
-		symbol: metadata.symbol,
+		display: metadata.display || metadata.base,
+		symbol: metadata.symbol || metadata.base,
 		logo_URIs: {
 			// Assuming uri holds an image
 			svg: metadata.uri,

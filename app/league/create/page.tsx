@@ -358,7 +358,7 @@ const CreateLeague = () => {
 										<Input
 											className="col-span-12 md:col-span-4"
 											type="number"
-											label="Match Win Points"
+											label="Points Per Win"
 											isDisabled={isSubmitting}
 											isInvalid={!!errors.match_win_points}
 											errorMessage={errors.match_win_points?.message}
@@ -375,7 +375,7 @@ const CreateLeague = () => {
 										<Input
 											className="col-span-12 md:col-span-4"
 											type="number"
-											label="Match Draw Points"
+											label="Points Per Draw"
 											isDisabled={isSubmitting}
 											isInvalid={!!errors.match_draw_points}
 											errorMessage={errors.match_draw_points?.message}
@@ -392,7 +392,7 @@ const CreateLeague = () => {
 										<Input
 											className="col-span-12 md:col-span-4"
 											type="number"
-											label="Match Lose Points"
+											label="Points Per Loss"
 											isDisabled={isSubmitting}
 											isInvalid={!!errors.match_lose_points}
 											errorMessage={errors.match_lose_points?.message}
