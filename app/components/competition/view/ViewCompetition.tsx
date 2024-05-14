@@ -163,7 +163,7 @@ const ViewCompetition = ({
 						<ul className="list-inside list-disc">
 							{competition.rules.map((item, i) => (
 								// biome-ignore lint/suspicious/noArrayIndexKey: Best option for now
-								<li key={i}>
+								<li key={i} className="break-all">
 									<MaybeLink content={item} />
 								</li>
 							))}

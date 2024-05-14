@@ -133,7 +133,7 @@ const RoundDisplay = ({
 
 	return (
 		<>
-			<Table aria-label="Leaderboard">
+			<Table aria-label="Leaderboard" removeWrapper>
 				<TableHeader>
 					<TableColumn>Team 1</TableColumn>
 					<TableColumn>Team 2</TableColumn>
