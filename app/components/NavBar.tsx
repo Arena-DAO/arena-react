@@ -13,6 +13,12 @@ import {
 	NavbarMenu,
 	NavbarMenuToggle,
 } from "@nextui-org/react";
+import clsx from 'clsx'
+import { Popover, PopoverButton, PopoverPanel, Transition } from '@headlessui/react'
+import dynamic from "next/dynamic";
+const ColorModeSwitch = dynamic(() => import("./ColorModeSwitch"), {
+	ssr: false,
+});
 import { Image } from "@nextui-org/react";
 import NextImage from "next/image";
 import { type Dispatch, type SetStateAction, useState } from "react";
@@ -152,13 +158,38 @@ export default function AppNavbar() {
 				},
 			],
 		},
+		{
+			label: "Socials",
+			isDropdown: true,
+			ariaLabel: "Additional Resources",
+			dropdownItems: [
+				{
+					href: "https://x.com/ArenaDAO",
+					label: "Twitter",
+					isExternal: !0,
+					description: "Learn more about how the Arena DAO works",
+				},
+				{
+					href: "https://discord.arenadao.org/",
+					label: "Discord",
+					isExternal: !0,
+					description: "Transfer funds from other chains into the ecosystem",
+				},
+				{
+					href: "https://github.com/Arena-DAO",
+					label: "Github",
+					isExternal: !0,
+					description: "Transfer funds from other chains into the ecosystem",
+				},
+			],
+		}
 	];
 
 	return (
 		<Navbar
 			onMenuOpenChange={setIsMenuOpen}
 			isMenuOpen={isMenuOpen}
-			className="fixed"
+			className="fixed max-w-[1920px]"
 		>
 			<NavbarContent>
 				<NavbarMenuToggle
@@ -181,18 +212,120 @@ export default function AppNavbar() {
 			</NavbarContent>
 
 			<NavbarContent className="hidden gap-4 md:flex" justify="center">
-				{navbarItems.map((item) => (
-					<DynamicNavbarItem
-						key={item.label}
-						item={item}
-						setIsMenuOpen={setIsMenuOpen}
-						dropdownButtonClass="bg-transparent p-0 font-bold text-medium data-[hover=true]:bg-transparent"
-						linkClass="font-bold"
-					/>
-				))}
-			</NavbarContent>
-
-			<NavbarContent as="div" justify="end">
+				<a className="text-sm/6 font-semibold text-white focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white flex items-center gap-2 focus:text-[#FF8000]" href="/compete">
+					Compete
+				</a>
+				<Popover>
+					{({ open }) => (
+						<>
+							<PopoverButton className="text-sm/6 font-semibold text-white focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white flex items-center gap-2 focus:text-[#FF8000]">
+								DAO
+            					<BsChevronDown className={clsx('size-3', open && 'rotate-180')} />
+							</PopoverButton>
+							<Transition
+								enter="transition ease-out duration-200"
+								enterFrom="opacity-0 translate-y-1"
+								enterTo="opacity-100 translate-y-0"
+								leave="transition ease-in duration-150"
+								leaveFrom="opacity-100 translate-y-0"
+								leaveTo="opacity-0 translate-y-1"
+							>
+								<PopoverPanel
+								anchor="bottom"
+								className="divide-y divide-white/5 mt-5 backdrop-blur-lg backdrop-saturate-150 bg-background/70 rounded-xl text-sm/6 [--anchor-gap:var(--spacing-5)]"
+								>
+								<div className="p-3">
+									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/dao/dao">
+										<p className="font-semibold text-white">DAO</p>
+										<p className="text-white/50">View the Arena DAO on DAO DAO</p>
+									</a>
+									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/dao/jailhouse">
+										<p className="font-semibold text-white">Jailhouse</p>
+										<p className="text-white/50">View jailed competitions needing action through the DAO</p>
+									</a>
+								</div>
+								</PopoverPanel>
+							</Transition>
+						</>
+					)}
+				</Popover>
+				<Popover>
+					{({ open }) => (
+						<>
+							<PopoverButton className="text-sm/6 font-semibold text-white focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white flex items-center gap-2 focus:text-[#FF8000]">
+								Resources
+            					<BsChevronDown className={clsx('size-3', open && 'rotate-180')} />
+							</PopoverButton>
+							<Transition
+								enter="transition ease-out duration-200"
+								enterFrom="opacity-0 translate-y-1"
+								enterTo="opacity-100 translate-y-0"
+								leave="transition ease-in duration-150"
+								leaveFrom="opacity-100 translate-y-0"
+								leaveTo="opacity-0 translate-y-1"
+							>
+								<PopoverPanel
+								anchor="bottom"
+								className="divide-y divide-white/5 mt-5 backdrop-blur-lg backdrop-saturate-150 bg-background/70 rounded-xl text-sm/6 [--anchor-gap:var(--spacing-5)]"
+								>
+								<div className="p-3">
+									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="https://discord.com/channels/986573321023942708/1041694375702446170" target="_blank">
+										<p className="font-semibold text-white">Faucet</p>
+										<p className="text-white/50">Get testnet gas to explore The Arena</p>
+									</a>
+									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/resources/docs">
+										<p className="font-semibold text-white">Docs</p>
+										<p className="text-white/50">Learn more about how the Arena DAO works</p>
+									</a>
+									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/resources/bridge">
+										<p className="font-semibold text-white">Bridge</p>
+										<p className="text-white/50">Transfer funds from other chains into the ecosystem</p>
+									</a>
+								</div>
+								</PopoverPanel>
+							</Transition>
+						</>
+					)}
+				</Popover>
+				<Popover>
+					{({ open }) => (
+						<>
+							<PopoverButton className="text-sm/6 font-semibold text-white focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white flex items-center gap-2 focus:text-[#FF8000]">
+								Socials
+            					<BsChevronDown className={clsx('size-3', open && 'rotate-180')} />
+							</PopoverButton>
+							<Transition
+								enter="transition ease-out duration-200"
+								enterFrom="opacity-0 translate-y-1"
+								enterTo="opacity-100 translate-y-0"
+								leave="transition ease-in duration-150"
+								leaveFrom="opacity-100 translate-y-0"
+								leaveTo="opacity-0 translate-y-1"
+							>
+								<PopoverPanel
+								anchor="bottom"
+								className="divide-y divide-white/5 mt-5 backdrop-blur-lg backdrop-saturate-150 bg-background/70 rounded-xl text-sm/6 [--anchor-gap:var(--spacing-5)]"
+								>
+								<div className="p-3">
+									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/dao/dao">
+										<p className="font-semibold text-white">Twitter</p>
+										<p className="text-white/50">Keep updated on our twitter posts</p>
+									</a>
+									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/dao/jailhouse">
+										<p className="font-semibold text-white">Discord</p>
+										<p className="text-white/50">Join our group and become a gladiator</p>
+									</a>
+									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/dao/jailhouse">
+										<p className="font-semibold text-white">Github</p>
+										<p className="text-white/50">Contribute to the DAO as a developer</p>
+									</a>
+								</div>
+								</PopoverPanel>
+							</Transition>
+						</>
+					)}
+				</Popover>
+				<ColorModeSwitch />
 				<WalletConnectToggle />
 			</NavbarContent>
 

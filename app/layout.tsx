@@ -56,7 +56,7 @@ const Layout = ({ children }: PropsWithChildren) => {
 					>
 						<ErrorBoundary>{children}</ErrorBoundary>
 					</div>
-					<Footer />
+					{/*<Footer />*/}
 				</Providers>
 			</body>
 		</html>

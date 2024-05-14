@@ -28,6 +28,7 @@
 		"@cosmos-kit/ledger": "^2.8.0",
 		"@cosmos-kit/react": "2.12.0",
 		"@cosmos-kit/station": "^2.7.0",
+		"@headlessui/react": "^2.0.3",
 		"@hookform/resolvers": "^3.3.4",
 		"@interchain-ui/react": "1.23.11",
 		"@internationalized/date": "^3.5.3",
