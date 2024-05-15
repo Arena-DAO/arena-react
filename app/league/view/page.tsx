@@ -4,15 +4,18 @@ import ViewCompetition from "@/components/competition/view/ViewCompetition";
 import {
 	Card,
 	CardBody,
+	CardFooter,
 	CardHeader,
 	Input,
 	Progress,
+	Tab,
 	Table,
 	TableBody,
 	TableCell,
 	TableColumn,
 	TableHeader,
 	TableRow,
+	Tabs,
 } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -64,82 +67,84 @@ const ViewWager = () => {
 					status={status}
 					setStatus={setStatus}
 				>
-					<>
-						<Card>
-							<CardHeader>Final Distribution</CardHeader>
-							<CardBody className="space-y-4">
-								<p>
-									How the league's funds will be distributed after all matches
-									are processed.
-								</p>
-								<Table aria-label="Distribution" removeWrapper>
-									<TableHeader>
-										<TableColumn>Place</TableColumn>
-										<TableColumn>Percentage</TableColumn>
-									</TableHeader>
-									<TableBody>
-										{data.extension.distribution.map((percentage, i) => (
-											// biome-ignore lint/suspicious/noArrayIndexKey: Best choice
-											<TableRow key={i}>
-												<TableCell>
-													{getNumberWithOrdinal(i + 1)} place
-												</TableCell>
-												<TableCell>
-													<Progress
-														aria-label="Percentage"
-														value={Number.parseFloat(percentage) * 100}
-														color="primary"
-														showValueLabel
-													/>
-												</TableCell>
-											</TableRow>
-										))}
-									</TableBody>
-								</Table>
-							</CardBody>
-						</Card>
-						<div className="grid grid-cols-12 gap-4">
-							<Input
-								className="col-span-12 md:col-span-4"
-								type="number"
-								label="Match Win Points"
-								readOnly
-								value={data.extension.match_win_points}
+					<Tabs aria-label="League Info" color="primary">
+						<Tab key="leaderboard" title="Leaderboard">
+							<LeaderboardDisplay
+								cosmWasmClient={cosmWasmClient}
+								moduleAddr={env.ARENA_LEAGUE_MODULE_ADDRESS}
+								league={data}
+								version={version}
 							/>
-							<Input
-								className="col-span-12 md:col-span-4"
-								type="number"
-								label="Match Draw Points"
-								readOnly
-								value={data.extension.match_draw_points}
+						</Tab>
+						<Tab key="basic" title="Configuration">
+							<Card>
+								<CardHeader>Final Distribution</CardHeader>
+								<CardBody className="space-y-4">
+									<p>
+										How the league's funds will be distributed after all matches
+										are processed.
+									</p>
+									<Table aria-label="Distribution" removeWrapper>
+										<TableHeader>
+											<TableColumn>Place</TableColumn>
+											<TableColumn>Percentage</TableColumn>
+										</TableHeader>
+										<TableBody>
+											{data.extension.distribution.map((percentage, i) => (
+												// biome-ignore lint/suspicious/noArrayIndexKey: Best choice
+												<TableRow key={i}>
+													<TableCell>
+														{getNumberWithOrdinal(i + 1)} place
+													</TableCell>
+													<TableCell>
+														<Progress
+															aria-label="Percentage"
+															value={Number.parseFloat(percentage) * 100}
+															color="primary"
+															showValueLabel
+														/>
+													</TableCell>
+												</TableRow>
+											))}
+										</TableBody>
+									</Table>
+								</CardBody>
+								<CardFooter className="gap-4">
+									<Input
+										className="col-span-12 md:col-span-4"
+										type="number"
+										label="Points Per Win"
+										readOnly
+										value={data.extension.match_win_points}
+									/>
+									<Input
+										className="col-span-12 md:col-span-4"
+										type="number"
+										label="Points Per Draw"
+										readOnly
+										value={data.extension.match_draw_points}
+									/>
+									<Input
+										className="col-span-12 md:col-span-4"
+										type="number"
+										label="Points Per Loss"
+										readOnly
+										value={data.extension.match_lose_points}
+									/>
+								</CardFooter>
+							</Card>
+						</Tab>
+						<Tab key="rounds" title="Rounds">
+							<RoundsDisplay
+								cosmWasmClient={cosmWasmClient}
+								moduleAddr={env.ARENA_LEAGUE_MODULE_ADDRESS}
+								league={data}
+								version={version}
+								setVersion={setVersion}
+								setStatus={setStatus}
 							/>
-							<Input
-								className="col-span-12 md:col-span-4"
-								type="number"
-								label="Match Lose Points"
-								readOnly
-								value={data.extension.match_lose_points}
-							/>
-						</div>
-					</>
-					<div className="grid grid-cols-2 gap-4">
-						<LeaderboardDisplay
-							cosmWasmClient={cosmWasmClient}
-							moduleAddr={env.ARENA_LEAGUE_MODULE_ADDRESS}
-							league={data}
-							className="col-span-2 md:col-span-1"
-							version={version}
-						/>
-						<RoundsDisplay
-							cosmWasmClient={cosmWasmClient}
-							moduleAddr={env.ARENA_LEAGUE_MODULE_ADDRESS}
-							league={data}
-							className="col-span-2 md:col-span-1"
-							version={version}
-							setVersion={setVersion}
-							setStatus={setStatus}
-						/>
-					</div>
+						</Tab>
+					</Tabs>
 				</ViewCompetition>
 			)}
 		</div>

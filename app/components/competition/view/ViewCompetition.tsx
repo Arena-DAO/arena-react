@@ -8,6 +8,7 @@ import {
 	Button,
 	Card,
 	CardBody,
+	CardFooter,
 	CardHeader,
 	Chip,
 	DatePicker,
@@ -93,11 +94,13 @@ const ViewCompetition = ({
 							cosmWasmClient={cosmWasmClient}
 						/>
 						{isValidContractAddress(competition.host, env.BECH32_PREFIX) && (
-							<Tooltip content="View on DAO DAO">
+							<Tooltip content="View through DAO DAO">
 								<Button
 									isIconOnly
 									as={Link}
-									href={`${env.DAO_DAO_URL}/dao/${competition.host}`}
+									href={`${env.DAO_DAO_URL}/dao/${
+										competition.host
+									}/apps?url=${encodeURIComponent(window.location.href)}`}
 									isExternal
 								>
 									<BsYinYang />
@@ -106,6 +109,12 @@ const ViewCompetition = ({
 						)}
 					</div>
 				</CardBody>
+				<CardFooter>
+					<p className="text-warning text-xs">
+						Please remind your players to track their gameplay to help resolve
+						any disputes quickly and fairly.
+					</p>
+				</CardFooter>
 			</Card>
 			<Input label="Name" value={competition.name} readOnly />
 			<Textarea label="Description" value={competition.description} readOnly />
@@ -154,7 +163,7 @@ const ViewCompetition = ({
 						<ul className="list-inside list-disc">
 							{competition.rules.map((item, i) => (
 								// biome-ignore lint/suspicious/noArrayIndexKey: Best option for now
-								<li key={i}>
+								<li key={i} className="break-all">
 									<MaybeLink content={item} />
 								</li>
 							))}

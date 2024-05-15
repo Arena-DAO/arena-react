@@ -118,9 +118,10 @@ export default function AppNavbar() {
 			ariaLabel: "DAO Menu",
 			dropdownItems: [
 				{
-					href: "/dao/dao",
+					href: `${env.DAO_DAO_URL}/dao/${env.ARENA_DAO_ADDRESS}`,
 					label: "DAO",
 					description: "View the Arena DAO on DAO DAO",
+					isExternal: true,
 				},
 				{
 					href: "/dao/jailhouse",
@@ -147,14 +148,16 @@ export default function AppNavbar() {
 						]
 					: []),
 				{
-					href: "/resources/docs",
+					href: env.DOCS_URL,
 					label: "Docs",
 					description: "Learn more about how the Arena DAO works",
+					isExternal: true,
 				},
 				{
-					href: "/resources/bridge",
+					href: env.IBC_FUN,
 					label: "Bridge",
 					description: "Transfer funds from other chains into the ecosystem",
+					isExternal: true,
 				},
 			],
 		},

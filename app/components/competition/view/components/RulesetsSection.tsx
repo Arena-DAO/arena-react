@@ -30,7 +30,9 @@ const RulesetsSection = ({
 				<ul className="list-inside list-disc">
 					{parsedData?.rules.map((rule, i) => (
 						// biome-ignore lint/suspicious/noArrayIndexKey: Best option
-						<li key={i}>{rule}</li>
+						<li key={i} className="break-all">
+							{rule}
+						</li>
 					))}
 				</ul>
 			</CardBody>

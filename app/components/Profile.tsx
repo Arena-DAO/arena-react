@@ -2,12 +2,18 @@
 
 import {
 	Avatar,
+	Button,
+	Link,
 	Skeleton,
 	Tooltip,
 	User,
 	type UserProps,
 } from "@nextui-org/react";
-import { isValidBech32Address } from "~/helpers/AddressHelpers";
+import { BsYinYang } from "react-icons/bs";
+import {
+	isValidBech32Address,
+	isValidContractAddress,
+} from "~/helpers/AddressHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import { useProfileData } from "~/hooks/useProfile";
 import type { WithClient } from "~/types/util";
@@ -45,7 +51,22 @@ const Profile = ({
 	return (
 		<Skeleton isLoaded={!isLoading}>
 			<Tooltip
-				content={<CopyAddressButton address={data?.address ?? ""} />}
+				content={
+					<div className="flex gap-4">
+						<CopyAddressButton address={data?.address ?? ""} />
+						{data?.address &&
+							isValidContractAddress(data.address, env.BECH32_PREFIX) && (
+								<Button
+									as={Link}
+									href={`${env.DAO_DAO_URL}/dao/${data.address}`}
+									isExternal
+									startContent={<BsYinYang />}
+								>
+									View on DAO DAO
+								</Button>
+							)}
+					</div>
+				}
 				closeDelay={1000}
 			>
 				<User
