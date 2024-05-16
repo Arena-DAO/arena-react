@@ -28,11 +28,8 @@
 		"@cosmos-kit/ledger": "^2.8.0",
 		"@cosmos-kit/react": "2.12.0",
 		"@cosmos-kit/station": "^2.7.0",
-<<<<<<< HEAD
 		"@headlessui/react": "^2.0.3",
-=======
 		"@dao-dao/cosmiframe": "^0.1.0",
->>>>>>> a7bb0ca9ed0834970b66390f397815430f659b03
 		"@hookform/resolvers": "^3.3.4",
 		"@interchain-ui/react": "1.23.11",
 		"@internationalized/date": "^3.5.3",

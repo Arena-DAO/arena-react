@@ -185,27 +185,27 @@ function HomePage() {
 				height="400"
 				className="trophy_cursor mx-auto"
 			/>
-			<section className="mt-8 w-full flex gap-[10%] flex-row mx-auto max-w-[1280px] items-center">
-				<div className="w-1/2">
+			<section className="mt-8 w-full flex gap-[10%] flex-col-reverse md:flex-row mx-auto max-w-[1280px] items-center">
+				<div className="mx-5 text-center md:w-1/2 md:mx-auto md:text-left">
 					<h1 className='text-primary title'>About ArenaDAO</h1>
 					<p>
 						At ArenaDAO, we are on a mission to revolutionize the gaming industry by combining the immersive experience of GameFi with the power of Neuron. We believe that gaming should be more than just a pastime; it should be an opportunity for players to explore, compete, and thrive in a world that embraces the principles of decentralization and ownership.
 						<br/><br/>By leveraging Neuron's capabilities, we offer a seamless integration of smart contracts, decentralized finance (DeFi), and non-fungible tokens (NFTs). This integration gives players unprecedented control over their in-game assets and experiences. As a crypto holder, you can immerse yourself in our enchanting virtual realm, where every decision you make has real and tangible consequences.
 					</p>
 				</div>
-				<div className="w-1/2">
+				<div className="mx-5 md:w-1/2 md:mx-auto">
 					<img src="/landing/about.png"/>
 				</div>
 			</section>
-			<section className="mt-8 w-full flex gap-[10%] flex-row-reverse mx-auto max-w-[1280px] items-center">
-				<div className="w-1/2">
+			<section className="mt-8 w-full flex gap-[10%] flex-col-reverse md:flex-row-reverse mx-auto max-w-[1280px] items-center">
+				<div className="mx-5 text-center md:w-1/2 md:mx-auto md:text-left">
 					<h1 className='text-primary title'>Join Us and Embrace the Life of a Gladiator</h1>
 					<p>
 						Engage in thrilling battles that will test your skills, strategy, and courage. Whether you prefer one-on-one combat or large-scale multiplayer clashes, our platform offers a diverse range of challenging arenas where you can prove your worth. Embark on epic quests that will take you through treacherous dungeons, enchanted forests, and ancient ruins, each offering unique rewards and uncovering captivating storylines.
 						<br/><br/>Join our vibrant community of fellow warriors, crypto enthusiasts, and game aficionados. Connect with like-minded individuals, form alliances, and engage in friendly competition. As you progress in your journey, you'll have the opportunity to acquire rare and valuable NFTs, trade them with other players, and even earn rewards through our innovative gameplay mechanics. The more you immerse yourself in the ArenaDAO world, the more you'll discover the boundless possibilities and the thrilling rewards that await you.
 					</p>
 				</div>
-				<div className="w-1/2">
+				<div className="mx-5 md:w-1/2 md:mx-auto">
 					<img src="/landing/join.png"/>
 				</div>
 			</section>
