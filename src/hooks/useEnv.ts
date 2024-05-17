@@ -25,6 +25,7 @@ interface Env {
 	CODE_ID_ARENA_CORE: number;
 	CODE_ID_ESCROW: number;
 	CODE_ID_WAGER_MODULE: number;
+	ABC_ADDRESS: string;
 	ARENA_DAO_ADDRESS: string;
 	ARENA_CORE_ADDRESS: string;
 	ARENA_WAGER_MODULE_ADDRESS: string;
@@ -93,6 +94,7 @@ function getEnv(): Env {
 		CODE_ID_WAGER_MODULE: checkEnvNumber(
 			process.env.NEXT_PUBLIC_CODE_ID_WAGER_MODULE,
 		),
+		ABC_ADDRESS: checkEnv(process.env.NEXT_PUBLIC_ABC_ADDRESS),
 		ARENA_DAO_ADDRESS: checkEnv(process.env.NEXT_PUBLIC_ARENA_DAO_ADDRESS),
 		ARENA_CORE_ADDRESS: checkEnv(process.env.NEXT_PUBLIC_ARENA_CORE_ADDRESS),
 		ARENA_WAGER_MODULE_ADDRESS: checkEnv(

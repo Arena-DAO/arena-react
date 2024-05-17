@@ -193,10 +193,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.29.0":
-  version: 0.29.0
-  resolution: "@chain-registry/types@npm:0.29.0"
-  checksum: 10c0/47e5a12d738dbe3a2303261fba28b31d8926cb5bf46d8364e4c156a69acdf0db985eb774b4205065a9aaac6cdd2495b586aa94d9f53fb23eb45b5c536ce015ed
+"@chain-registry/types@npm:^0.29.1":
+  version: 0.29.1
+  resolution: "@chain-registry/types@npm:0.29.1"
+  checksum: 10c0/0f58f00b6030263e30f2a2b6aa01de1859a64b555f75d4189c38c8d6bb984b8dd7cea9d7aa794154fec277d867c2b4fa55b7410782036cd4d460d6d005bd4294
   languageName: node
   linkType: hard
 
@@ -5152,12 +5152,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.12.11":
-  version: 20.12.11
-  resolution: "@types/node@npm:20.12.11"
+"@types/node@npm:^20.12.12":
+  version: 20.12.12
+  resolution: "@types/node@npm:20.12.12"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 10c0/efaa7b08c50ba6e6982ac7d531ba08d5935539ba76e954807df1ff9382a319ead7e003ccaca5ad7cf33ecf53f212507f7c1f2794bd2ff52df6365fef21f6e1fb
+  checksum: 10c0/f374b763c744e8f16e4f38cf6e2c0eef31781ec9228c9e43a6f267880fea420fab0a238b59f10a7cb3444e49547c5e3785787e371fc242307310995b21988812
   languageName: node
   linkType: hard
 
@@ -5604,7 +5604,7 @@ __metadata:
   resolution: "arena-react@workspace:."
   dependencies:
     "@biomejs/biome": "npm:1.7.3"
-    "@chain-registry/types": "npm:^0.29.0"
+    "@chain-registry/types": "npm:^0.29.1"
     "@cosmjs/amino": "npm:^0.32.3"
     "@cosmjs/cosmwasm-stargate": "npm:0.32.3"
     "@cosmjs/encoding": "npm:^0.32.3"
@@ -5627,15 +5627,15 @@ __metadata:
     "@nextui-org/use-infinite-scroll": "npm:^2.1.3"
     "@tanstack/react-query": "npm:4.36.1"
     "@types/lodash": "npm:^4.17.1"
-    "@types/node": "npm:^20.12.11"
+    "@types/node": "npm:^20.12.12"
     "@types/react": "npm:18.3.2"
     "@types/react-dom": "npm:^18.3.0"
     autoprefixer: "npm:^10.4.19"
-    chain-registry: "npm:1.47.5"
+    chain-registry: "npm:1.47.7"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^7.0.1"
     date-fns: "npm:^3.6.0"
-    framer-motion: "npm:^11.1.9"
+    framer-motion: "npm:^11.2.0"
     http-proxy-middleware: "npm:^3.0.0"
     lodash: "npm:^4.17.21"
     next: "npm:14.2.3"
@@ -6126,12 +6126,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.47.5":
-  version: 1.47.5
-  resolution: "chain-registry@npm:1.47.5"
+"chain-registry@npm:1.47.7":
+  version: 1.47.7
+  resolution: "chain-registry@npm:1.47.7"
   dependencies:
     "@chain-registry/types": "npm:^0.28.13"
-  checksum: 10c0/bee0321708f6b11248de67c6c6af3ed95ce1c17e9df2c81cd50738f893401b727374c0088328d6e0d1e729b88ea5e1b4e14afc9567ac362cb55d2b692c1b3594
+  checksum: 10c0/16146af46458948a27c12c90e38666dfd19fba53b7f13ae4c39be4de1552b494e3645ba50041e437824e20fff126749f456febb3d73d1f9904d0a0aa64ec1593
   languageName: node
   linkType: hard
 
@@ -7172,9 +7172,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^11.1.9":
-  version: 11.1.9
-  resolution: "framer-motion@npm:11.1.9"
+"framer-motion@npm:^11.2.0":
+  version: 11.2.0
+  resolution: "framer-motion@npm:11.2.0"
   dependencies:
     tslib: "npm:^2.4.0"
   peerDependencies:
@@ -7188,7 +7188,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/c1bbadb5f5c324de0473f3fb2c3d0180fc5239335f49b536dc827dff27c87d749af402d1c1fbe7081fbc15b816e32fadf66e24970476f98b2934464f8df9bdb0
+  checksum: 10c0/c9d3d321872c1cd97b0efcb506989346ead4b41f187e73ea3040b75eedc3cca426cbbe4398572864d5b2481165b2b85363ad17258fdcfa24cb5b55a37b3f8695
   languageName: node
   linkType: hard
 
