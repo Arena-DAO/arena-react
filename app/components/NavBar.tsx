@@ -25,6 +25,7 @@ import { type Dispatch, type SetStateAction, useState } from "react";
 import { BsChevronDown } from "react-icons/bs";
 import { useEnv } from "~/hooks/useEnv";
 import WalletConnectToggle from "./WalletConnectToggle";
+import { useRouter } from "next/navigation";
 
 interface MenuItem {
 	href?: string;
@@ -200,7 +201,7 @@ export default function AppNavbar() {
 					className="md:hidden"
 				/>
 				<NavbarBrand>
-					<Link href="/" onClick={() => setIsMenuOpen(false)}>
+					<a className="flex flex-row justify-center items-center" href="/" onClick={() => setIsMenuOpen(false)}>
 						<Image
 							as={NextImage}
 							src="/logo.svg"
@@ -209,8 +210,8 @@ export default function AppNavbar() {
 							height="30"
 							removeWrapper
 						/>
-						<p className="ml-2 font-bold text-inherit">Arena DAO</p>
-					</Link>
+						<p className="ml-2 font-bold text-inherit title text-[#FF8000]">Arena DAO</p>
+					</a>
 				</NavbarBrand>
 			</NavbarContent>
 

@@ -18,6 +18,7 @@ import { useEnv } from "~/hooks/useEnv";
 import { useProfileData } from "~/hooks/useProfile";
 import type { WithClient } from "~/types/util";
 import { CopyAddressButton } from "./CopyAddressButton";
+import { useRouter } from "next/navigation";
 
 export interface ProfileProps extends Omit<UserProps, "name"> {
 	address: string;
@@ -32,6 +33,7 @@ const Profile = ({
 	justAvatar = false,
 	...props
 }: WithClient<ProfileProps>) => {
+	const router = useRouter();
 	const { data: env } = useEnv();
 	const isValid = isValidBech32Address(address, env.BECH32_PREFIX);
 	const { data, isLoading } = useProfileData(address, cosmWasmClient, isValid);
@@ -58,6 +60,7 @@ const Profile = ({
 							isValidContractAddress(data.address, env.BECH32_PREFIX) && (
 								<Button
 									as={Link}
+									onClick={()=>{router.push(`${env.DAO_DAO_URL}/dao/${data.address}`)}}
 									href={`${env.DAO_DAO_URL}/dao/${data.address}`}
 									isExternal
 									startContent={<BsYinYang />}

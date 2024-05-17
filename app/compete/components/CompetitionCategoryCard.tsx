@@ -17,7 +17,7 @@ export default function CompetitionCategoryCard({
 	return (
 		<Card
 			isPressable
-			onPress={() => router.push(`/compete?category=${category.url}`)}
+			onClick={() => router.push(`/compete?category=${category.url}`)}
 			className="col-span-12 lg:col-span-3 md:col-span-4 sm:col-span-6"
 		>
 			<Image

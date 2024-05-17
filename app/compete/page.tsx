@@ -66,7 +66,7 @@ const Compete = () => {
 				</div>
 			)}
 			{"category_id" in categoryItem && (
-				<div className="overflow-x-auto">
+				<div>
 					<Tabs aria-label="Competition Modules" disabledKeys={["tournaments"]}>
 						<Tab key="wagers" title="Wagers">
 							<CompetitionModuleSection

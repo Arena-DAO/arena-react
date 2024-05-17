@@ -18,7 +18,7 @@ import { Image } from "@nextui-org/react";
 export default function Footer() {
 	return (
 		<>
-			<div className="pt-5 pb-5 px-10 flex flex-col justify-center items-center md:flex-row" style={{justifyContent:"space-between", height:"max-content"}}>
+			{/*<div className="pt-5 pb-5 px-10 flex flex-col justify-center items-center md:flex-row" style={{justifyContent:"space-between", height:"max-content"}}>
 				<div>
 					<Link href="/">
 						<Image
@@ -38,7 +38,7 @@ export default function Footer() {
 					<a style={{fontSize:"120%"}} className="hover:color-[#FF8000]" href="/resources/docs">Docs</a>
 					<a style={{fontSize:"120%"}} className="hover:color-[#FF8000]" href="/resources/bridge">Bridge</a>
 				</div>
-			</div>
+			</div>*/}
 			<div className="flex flex-col-reverse px-10 justify-between items-center pb-5 md:flex-row">
 				<div className="text-center md:text-left w-full md:w-1/2">
 					"Just look at the gladiators, either debased men or foreigners, and consider the blows they endure!" - Cicero

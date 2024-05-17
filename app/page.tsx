@@ -8,6 +8,7 @@ import { useState } from "react"
 import { Height } from "cosmjs-types/ibc/core/client/v1/client";
 import dynamic from "next/dynamic";
 import GameInfo from "./components/GameInfo";
+import { useRouter } from "next/navigation";
 const Carousel = dynamic(() => import("react-spring-3d-carousel"), {
   ssr: false,
 });
@@ -63,6 +64,7 @@ function Arrow(props: {
   }
 
 function HomePage() {
+	const router = useRouter();
 	const [currentSlide, setCurrentSlide] = useState(0)
 	const [loaded, setLoaded] = useState(false)
 	const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>(
@@ -175,7 +177,7 @@ function HomePage() {
 				<div className="space-x-4 flex flex-col my-auto justify-center pb-10 md:flex-row gap-2">
 					<Button
 						size="lg"
-						href="/compete"
+						onClick={()=>router.push(`/compete}`)}
 						color="primary"
 						variant="solid"
 					>
@@ -183,7 +185,7 @@ function HomePage() {
 					</Button>
 					<Button
 						size="lg"
-						href="/resources/docs"
+						onClick={()=>router.push(`/resources/docs}`)}
 						color="primary"
 						variant="ghost"
 						className="mx-0"

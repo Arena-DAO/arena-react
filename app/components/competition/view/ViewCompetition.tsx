@@ -35,6 +35,7 @@ import PresetDistributionForm from "./components/PresetDistributionForm";
 import ProcessForm from "./components/ProcessForm";
 import ResultSection from "./components/ResultSection";
 import RulesetsSection from "./components/RulesetsSection";
+import { useRouter } from "next/navigation";
 
 interface ViewCompetitionProps extends PropsWithChildren {
 	moduleAddr: string;
@@ -53,6 +54,7 @@ const ViewCompetition = ({
 	status,
 	setStatus,
 }: WithClient<ViewCompetitionProps>) => {
+	const router = useRouter();
 	const { data: env } = useEnv();
 	const { address } = useChain(env.CHAIN);
 
@@ -61,10 +63,10 @@ const ViewCompetition = ({
 	const category = searchParams?.get("category");
 
 	return (
-		<div className="space-y-4 max-w-[1280px] px-10">
+		<div className="space-y-4 max-w-[1280px] px-10 mx-auto justify-center">
 			{category && (
 				<Tooltip content="Return to competitions">
-					<Button as={Link} isIconOnly href={`/compete?category=${category}`}>
+					<Button as={Link} isIconOnly onClick={()=>{router.push(`/compete?category=${category}`)}}>
 						<BsArrowLeft />
 					</Button>
 				</Tooltip>

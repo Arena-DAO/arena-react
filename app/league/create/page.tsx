@@ -224,8 +224,8 @@ const CreateLeague = () => {
 					{category && (
 						<Tooltip content="Return to competitions">
 							<Button
-								as={Link}
 								isIconOnly
+								onClick={()=>{router.push(`/compete?category=${category}`)}}
 								href={`/compete?category=${category}`}
 							>
 								<BsArrowLeft />
