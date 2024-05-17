@@ -310,15 +310,15 @@ export default function AppNavbar() {
 								className="divide-y divide-white/5 mt-5 backdrop-blur-lg backdrop-saturate-150 bg-background/70 rounded-xl text-sm/6 [--anchor-gap:var(--spacing-5)]"
 								>
 								<div className="p-3">
-									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/dao/dao">
+									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="https://x.com/ArenaDAO">
 										<p className="font-semibold">Twitter</p>
 										<p className="opacity-75">Keep updated on our twitter posts</p>
 									</a>
-									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/dao/jailhouse">
+									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="https://discord.arenadao.org/">
 										<p className="font-semibold">Discord</p>
 										<p className="opacity-75">Join our group and become a gladiator</p>
 									</a>
-									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/dao/jailhouse">
+									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="https://github.com/Arena-DAO">
 										<p className="font-semibold">Github</p>
 										<p className="opacity-75">Contribute to the DAO as a developer</p>
 									</a>
