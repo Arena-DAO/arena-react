@@ -187,6 +187,16 @@ const ViewCompetition = ({
 						host={competition.host}
 					/>
 				)}
+				{competition.is_expired &&
+					status !== "inactive" &&
+					status !== "pending" && (
+					<ProcessForm
+						moduleAddr={moduleAddr}
+						competitionId={competition.id}
+						setCompetitionStatus={setStatus}
+						is_expired
+					/>
+				)}
 				{competition.is_expired && status !== "inactive" && (
 					<ProcessForm
 						moduleAddr={moduleAddr}
