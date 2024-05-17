@@ -80,6 +80,29 @@ const CompetitionModuleSectionItems = ({
 				<TableColumn>Description</TableColumn>
 				<TableColumn>Actions</TableColumn>
 			</TableHeader>
+			{/*<TableBody
+				emptyContent="No jailed competitions yet"
+				items={list.items}
+				isLoading={list.isLoading}
+				loadingContent={<Spinner color="white" />}
+			>
+				{(item: CompetitionResponseForEmpty) => (
+					<TableRow key={item.id}>
+						<TableCell>{item.name}</TableCell>
+						<TableCell>{item.description}</TableCell>
+						<TableCell>
+							<Button
+								as={Link}
+								href={`/${path}/view?category=${
+									categoryMap.get(item.category_id ?? "")?.url
+								}&competitionId=${item.id}`}
+							>
+								View
+							</Button>
+						</TableCell>
+					</TableRow>
+				)}
+			</TableBody>*/}
 			<TableBody
 				emptyContent="No jailed competitions yet"
 				items={list.items}

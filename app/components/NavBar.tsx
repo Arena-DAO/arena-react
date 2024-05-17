@@ -215,13 +215,13 @@ export default function AppNavbar() {
 			</NavbarContent>
 
 			<NavbarContent className="hidden gap-4 md:flex" justify="center">
-				<a className="text-sm/6 font-semibold text-white focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white flex items-center gap-2 focus:text-[#FF8000]" href="/compete">
+				<a className="text-sm/6 font-semibold focus:outline-none data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000] data-[focus]:outline-1 data-[focus]:outline-white flex items-center gap-2 hover:text-[#FF8000]" href="/compete">
 					Compete
 				</a>
-				<Popover>
+				<Popover className="z-50">
 					{({ open }) => (
 						<>
-							<PopoverButton className="text-sm/6 font-semibold text-white focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white flex items-center gap-2 focus:text-[#FF8000]">
+							<PopoverButton className="text-sm/6 font-semibold focus:outline-none data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000] data-[focus]:outline-1 data-[focus]:outline-white flex items-center gap-2 hover:text-[#FF8000]">
 								DAO
             					<BsChevronDown className={clsx('size-3', open && 'rotate-180')} />
 							</PopoverButton>
@@ -239,12 +239,12 @@ export default function AppNavbar() {
 								>
 								<div className="p-3">
 									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/dao/dao">
-										<p className="font-semibold text-white">DAO</p>
-										<p className="text-white/50">View the Arena DAO on DAO DAO</p>
+										<p className="font-semibold">DAO</p>
+										<p className="opacity-75">View the Arena DAO on DAO DAO</p>
 									</a>
 									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/dao/jailhouse">
-										<p className="font-semibold text-white">Jailhouse</p>
-										<p className="text-white/50">View jailed competitions needing action through the DAO</p>
+										<p className="font-semibold">Jailhouse</p>
+										<p className="opacity-75">View jailed competitions needing action through the DAO</p>
 									</a>
 								</div>
 								</PopoverPanel>
@@ -255,7 +255,7 @@ export default function AppNavbar() {
 				<Popover>
 					{({ open }) => (
 						<>
-							<PopoverButton className="text-sm/6 font-semibold text-white focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white flex items-center gap-2 focus:text-[#FF8000]">
+							<PopoverButton className="text-sm/6 font-semibold focus:outline-none data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000] data-[focus]:outline-1 data-[focus]:outline-white flex items-center gap-2 hover:text-[#FF8000]">
 								Resources
             					<BsChevronDown className={clsx('size-3', open && 'rotate-180')} />
 							</PopoverButton>
@@ -273,16 +273,16 @@ export default function AppNavbar() {
 								>
 								<div className="p-3">
 									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="https://discord.com/channels/986573321023942708/1041694375702446170" target="_blank">
-										<p className="font-semibold text-white">Faucet</p>
-										<p className="text-white/50">Get testnet gas to explore The Arena</p>
+										<p className="font-semibold">Faucet</p>
+										<p className="opacity-75">Get testnet gas to explore The Arena</p>
 									</a>
 									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/resources/docs">
-										<p className="font-semibold text-white">Docs</p>
-										<p className="text-white/50">Learn more about how the Arena DAO works</p>
+										<p className="font-semibold">Docs</p>
+										<p className="opacity-75">Learn more about how the Arena DAO works</p>
 									</a>
 									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/resources/bridge">
-										<p className="font-semibold text-white">Bridge</p>
-										<p className="text-white/50">Transfer funds from other chains into the ecosystem</p>
+										<p className="font-semibold">Bridge</p>
+										<p className="opacity-75">Transfer funds from other chains into the ecosystem</p>
 									</a>
 								</div>
 								</PopoverPanel>
@@ -293,7 +293,7 @@ export default function AppNavbar() {
 				<Popover>
 					{({ open }) => (
 						<>
-							<PopoverButton className="text-sm/6 font-semibold text-white focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white flex items-center gap-2 focus:text-[#FF8000]">
+							<PopoverButton className="text-sm/6 font-semibold focus:outline-none data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000] data-[focus]:outline-1 data-[focus]:outline-white flex items-center gap-2 hover:text-[#FF8000]">
 								Socials
             					<BsChevronDown className={clsx('size-3', open && 'rotate-180')} />
 							</PopoverButton>
@@ -311,16 +311,16 @@ export default function AppNavbar() {
 								>
 								<div className="p-3">
 									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/dao/dao">
-										<p className="font-semibold text-white">Twitter</p>
-										<p className="text-white/50">Keep updated on our twitter posts</p>
+										<p className="font-semibold">Twitter</p>
+										<p className="opacity-75">Keep updated on our twitter posts</p>
 									</a>
 									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/dao/jailhouse">
-										<p className="font-semibold text-white">Discord</p>
-										<p className="text-white/50">Join our group and become a gladiator</p>
+										<p className="font-semibold">Discord</p>
+										<p className="opacity-75">Join our group and become a gladiator</p>
 									</a>
 									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/dao/jailhouse">
-										<p className="font-semibold text-white">Github</p>
-										<p className="text-white/50">Contribute to the DAO as a developer</p>
+										<p className="font-semibold">Github</p>
+										<p className="opacity-75">Contribute to the DAO as a developer</p>
 									</a>
 								</div>
 								</PopoverPanel>

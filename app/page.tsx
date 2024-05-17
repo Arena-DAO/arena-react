@@ -6,26 +6,31 @@ import { useKeenSlider } from "keen-slider/react"
 import "keen-slider/keen-slider.min.css"
 import { useState } from "react"
 import { Height } from "cosmjs-types/ibc/core/client/v1/client";
+import dynamic from "next/dynamic";
+import GameInfo from "./components/GameInfo";
+const Carousel = dynamic(() => import("react-spring-3d-carousel"), {
+  ssr: false,
+});
 
 const items = [
 	{
 		id:1,
-		title:"ArenaDAO - Immersing GameFi experience on Neuron",
+		title:"ArenaDAO - Immersing GameFi experience on Neutron",
 		description:"Jump into the world of web3 games, enjoy the life as a crypto holder inside our wonderful world."
 	},
 	{
 		id:2,
-		title:"ArenaDAO - Immersing GameFi experience on Neuron",
+		title:"ArenaDAO - Immersing GameFi experience on Neutron",
 		description:"Jump into the world of web3 games, enjoy the life as a crypto holder inside our wonderful world."
 	},
 	{
 		id:3,
-		title:"ArenaDAO - Immersing GameFi experience on Neuron",
+		title:"ArenaDAO - Immersing GameFi experience on Neutron",
 		description:"Jump into the world of web3 games, enjoy the life as a crypto holder inside our wonderful world."
 	},
 	{
 		id:4,
-		title:"ArenaDAO - Immersing GameFi experience on Neuron",
+		title:"ArenaDAO - Immersing GameFi experience on Neutron",
 		description:"Jump into the world of web3 games, enjoy the life as a crypto holder inside our wonderful world."
 	}
 ]
@@ -96,15 +101,27 @@ function HomePage() {
 	  )	
 	return (
 		<>
-			<div ref={sliderRef} className="keen-slider relative flex">
+			<div ref={sliderRef} className="keen-slider relative flex min-h-[50vh] md:min-h-[100vh]">
 				{items.map((item) => (
-					<div key={item.id} className="keen-slider__slide relative" style={{height:"calc(100% - 128px)"}}>
-						<img src={`/landing/${item.id}.jpg`} className="opacity-50" alt={`Image ${item.id}`} />
-						<div className='absolute top-[20%] left-[5%]'>
-							<div className="text-[400%] font-bold text-primary max-w-[70%] title" style={{fontFamily:"gladiator_font"}}>{item.title}</div>
-							<div className="font-semibold text-[150%] max-w-[40%]">{item.description}</div>
+					<>
+					<div
+						key={item.id}
+						className="keen-slider__slide relative flex"
+					>
+						<div
+						className="absolute inset-0 bg-cover bg-center bg-no-repeat z-[-1]"
+						style={{
+							backgroundImage: `url('/landing/${item.id}.jpg')`,
+							opacity: 0.5, // Set the opacity value (0 to 1)
+						}}
+						/>
+{/*						<img src={`/landing/${item.id}.jpg`} className="opacity-50 min-h-screen" alt={`Image ${item.id}`} />*/}
+						<div className='absolute top-[30%] mx-10 my-auto md:top-[20%] md:left-[5%] opacity-100'>
+							<div className="text-[180%] sm:text-[250%] md:text-[400%] text-center text-primary md:max-w-[70%] md:text-left title" style={{fontFamily:"gladiator_font"}}>{item.title}</div>
+							<div className="text-center text-[100%] sm:text-[120%] md:text-[150%] md:max-w-[40%] md:text-left">{item.description}</div>
 						</div>
 					</div>	
+					</>
 				))}
 				
 				{loaded && instanceRef.current && (
@@ -150,15 +167,14 @@ function HomePage() {
 
 			
 			{/* Hero Section */}
-			<section className="mt-8 w-full text-center">
-				<h1 className="mb-6 font-bold text-6xl">
+			<section className="mt-8 px-10 w-full text-center">
+				<h1 className="mb-6 text-4xl md:text-6xl" style={{fontFamily:"Avara"}}>
 					Welcome to <span className="text-primary">The Arena</span>
 				</h1>
 				<p className="mb-8 text-xl">A hub for competitive communities</p>
-				<div className="space-x-4">
+				<div className="space-x-4 flex flex-col my-auto justify-center pb-10 md:flex-row gap-2">
 					<Button
 						size="lg"
-						as={Link}
 						href="/compete"
 						color="primary"
 						variant="solid"
@@ -167,10 +183,11 @@ function HomePage() {
 					</Button>
 					<Button
 						size="lg"
-						as={Link}
 						href="/resources/docs"
 						color="primary"
 						variant="ghost"
+						className="mx-0"
+						style={{marginLeft:"0"}}
 					>
 						Learn More
 					</Button>
@@ -183,31 +200,37 @@ function HomePage() {
 				priority
 				width="800"
 				height="400"
-				className="trophy_cursor mx-auto"
+				className="trophy_cursor mx-auto z-1"
 			/>
-			<section className="mt-8 w-full flex gap-[10%] flex-col-reverse md:flex-row mx-auto max-w-[1280px] items-center">
-				<div className="mx-5 text-center md:w-1/2 md:mx-auto md:text-left">
-					<h1 className='text-primary title'>About ArenaDAO</h1>
+			{/* About Section */}
+			<section className="mt-8 px-10 w-full flex gap-[10%] flex-col-reverse md:flex-row mx-auto max-w-[1280px] items-center">
+				<div className="text-center md:w-1/2 md:mx-auto md:text-left">
+					<h1 className='text-primary title text-[250%]'>About ArenaDAO</h1>
 					<p>
-						At ArenaDAO, we are on a mission to revolutionize the gaming industry by combining the immersive experience of GameFi with the power of Neuron. We believe that gaming should be more than just a pastime; it should be an opportunity for players to explore, compete, and thrive in a world that embraces the principles of decentralization and ownership.
-						<br/><br/>By leveraging Neuron's capabilities, we offer a seamless integration of smart contracts, decentralized finance (DeFi), and non-fungible tokens (NFTs). This integration gives players unprecedented control over their in-game assets and experiences. As a crypto holder, you can immerse yourself in our enchanting virtual realm, where every decision you make has real and tangible consequences.
+						At ArenaDAO, we're revolutionizing gaming by merging the captivating world of GameFi with Neutron's power. Our mission is to create an immersive, decentralized experience that empowers players to explore, compete, and thrive through ownership.
+						<br></br><br></br>
+						By integrating smart contracts, DeFi, and NFTs, we give players unprecedented control over their in-game assets and experiences. As a crypto holder, you can immerse yourself in our enchanting virtual realm, where your every decision holds real consequences.
 					</p>
 				</div>
-				<div className="mx-5 md:w-1/2 md:mx-auto">
+				<div className="w-[80%] md:w-1/2 md:mx-auto">
 					<img src="/landing/about.png"/>
 				</div>
 			</section>
-			<section className="mt-8 w-full flex gap-[10%] flex-col-reverse md:flex-row-reverse mx-auto max-w-[1280px] items-center">
-				<div className="mx-5 text-center md:w-1/2 md:mx-auto md:text-left">
-					<h1 className='text-primary title'>Join Us and Embrace the Life of a Gladiator</h1>
+			{/* Join Us Section */}
+			<section className="mt-8 px-10 w-full flex gap-[10%] flex-col-reverse md:flex-row-reverse mx-auto max-w-[1280px] items-center">
+				<div className="text-center md:w-1/2 md:mx-auto md:text-left">
+					<h1 className='text-primary title text-[250%]'>Join Us and Embrace the Life of a Gladiator</h1>
 					<p>
-						Engage in thrilling battles that will test your skills, strategy, and courage. Whether you prefer one-on-one combat or large-scale multiplayer clashes, our platform offers a diverse range of challenging arenas where you can prove your worth. Embark on epic quests that will take you through treacherous dungeons, enchanted forests, and ancient ruins, each offering unique rewards and uncovering captivating storylines.
-						<br/><br/>Join our vibrant community of fellow warriors, crypto enthusiasts, and game aficionados. Connect with like-minded individuals, form alliances, and engage in friendly competition. As you progress in your journey, you'll have the opportunity to acquire rare and valuable NFTs, trade them with other players, and even earn rewards through our innovative gameplay mechanics. The more you immerse yourself in the ArenaDAO world, the more you'll discover the boundless possibilities and the thrilling rewards that await you.
+						Engage in thrilling battles and epic quests in our diverse arenas, where you can prove your worth and earn rewards.
+						<br></br><br></br>Join our vibrant community of warriors, crypto enthusiasts, and game aficionados to form alliances, compete, and acquire rare NFTs. <br></br><br></br>Immerse yourself in the boundless possibilities of the ArenaDAO world.
 					</p>
 				</div>
-				<div className="mx-5 md:w-1/2 md:mx-auto">
+				<div className="w-[80%] md:mx-auto md:w-1/2">
 					<img src="/landing/join.png"/>
 				</div>
+			</section>
+			<section>
+				<GameInfo/>
 			</section>
 		</>
 	);

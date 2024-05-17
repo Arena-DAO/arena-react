@@ -6,7 +6,27 @@
 
 @font-face {
   font-family: gladiator_font;
-  src: url(GLADIATOR.otf);
+  src: url(War-heroes.otf);
+}
+
+@font-face {
+  font-family: Avara;
+  src: url(avara.woff2) format("woff2");
+  font-display: swap;
+  font-weight: 400;
+  font-style: bold
+}
+
+@font-face {
+  font-family: Avara-bold;
+  src: url(avara_bold.woff2) format("woff2");
+  font-display: swap;
+  font-weight: 700;
+  font-style: bold
+}
+
+body{
+  font-family: Avara !important;
 }
 
 .trophy_cursor {
