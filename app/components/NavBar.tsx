@@ -329,21 +329,125 @@ export default function AppNavbar() {
 						</>
 					)}
 				</Popover>
-				<ColorModeSwitch />
-				<WalletConnectToggle />
 			</NavbarContent>
 
 			<NavbarMenu>
-				{navbarItems.map((item) => (
-					<DynamicNavbarItem
-						key={item.label}
-						item={item}
-						setIsMenuOpen={setIsMenuOpen}
-						dropdownButtonClass="w-full justify-start bg-transparent p-0 font-bold text-medium data-[hover=true]:bg-transparent"
-						linkClass="w-full py-1 font-bold"
-					/>
-				))}
+				<a className="text-xl font-semibold focus:outline-none data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000] data-[focus]:outline-1 data-[focus]:outline-white flex items-center gap-2 hover:text-[#FF8000]" href="/compete">
+					Compete
+				</a>
+				<Popover className="z-50">
+					{({ open }) => (
+						<>
+							<PopoverButton className="text-xl font-semibold focus:outline-none data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000] data-[focus]:outline-1 data-[focus]:outline-white flex items-center gap-2 hover:text-[#FF8000]">
+								DAO
+            					<BsChevronDown className={clsx('size-3', open && 'rotate-180')} />
+							</PopoverButton>
+							<Transition
+								enter="transition ease-out duration-200"
+								enterFrom="opacity-0 translate-y-1"
+								enterTo="opacity-100 translate-y-0"
+								leave="transition ease-in duration-150"
+								leaveFrom="opacity-100 translate-y-0"
+								leaveTo="opacity-0 translate-y-1"
+							>
+								<PopoverPanel
+								anchor="bottom"
+								className="divide-y divide-white/5 backdrop-blur-lg backdrop-saturate-150 bg-background/70 rounded-xl text-sm [--anchor-gap:var(--spacing-5)] z-50"
+								>
+								<div className="p-3">
+									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/dao/dao">
+										<p className="font-semibold">DAO</p>
+										<p className="opacity-75">View the Arena DAO on DAO DAO</p>
+									</a>
+									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/dao/jailhouse">
+										<p className="font-semibold">Jailhouse</p>
+										<p className="opacity-75">View jailed competitions needing action through the DAO</p>
+									</a>
+								</div>
+								</PopoverPanel>
+							</Transition>
+						</>
+					)}
+				</Popover>
+				<Popover>
+					{({ open }) => (
+						<>
+							<PopoverButton className="text-xl font-semibold focus:outline-none data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000] data-[focus]:outline-1 data-[focus]:outline-white flex items-center gap-2 hover:text-[#FF8000]">
+								Resources
+            					<BsChevronDown className={clsx('size-3', open && 'rotate-180')} />
+							</PopoverButton>
+							<Transition
+								enter="transition ease-out duration-200"
+								enterFrom="opacity-0 translate-y-1"
+								enterTo="opacity-100 translate-y-0"
+								leave="transition ease-in duration-150"
+								leaveFrom="opacity-100 translate-y-0"
+								leaveTo="opacity-0 translate-y-1"
+							>
+								<PopoverPanel
+								anchor="bottom"
+								className="divide-y divide-white/5 backdrop-blur-lg backdrop-saturate-150 bg-background/70 rounded-xl text-sm [--anchor-gap:var(--spacing-5)] z-50"
+								>
+								<div className="p-3">
+									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="https://discord.com/channels/986573321023942708/1041694375702446170" target="_blank">
+										<p className="font-semibold">Faucet</p>
+										<p className="opacity-75">Get testnet gas to explore The Arena</p>
+									</a>
+									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/resources/docs">
+										<p className="font-semibold">Docs</p>
+										<p className="opacity-75">Learn more about how the Arena DAO works</p>
+									</a>
+									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="/resources/bridge">
+										<p className="font-semibold">Bridge</p>
+										<p className="opacity-75">Transfer funds from other chains into the ecosystem</p>
+									</a>
+								</div>
+								</PopoverPanel>
+							</Transition>
+						</>
+					)}
+				</Popover>
+				<Popover>
+					{({ open }) => (
+						<>
+							<PopoverButton className="text-xl font-semibold focus:outline-none data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000] data-[focus]:outline-1 data-[focus]:outline-white flex items-center gap-2 hover:text-[#FF8000]">
+								Socials
+            					<BsChevronDown className={clsx('size-3', open && 'rotate-180')} />
+							</PopoverButton>
+							<Transition
+								enter="transition ease-out duration-200"
+								enterFrom="opacity-0 translate-y-1"
+								enterTo="opacity-100 translate-y-0"
+								leave="transition ease-in duration-150"
+								leaveFrom="opacity-100 translate-y-0"
+								leaveTo="opacity-0 translate-y-1"
+							>
+								<PopoverPanel
+								anchor="bottom"
+								className="divide-y divide-white/5 backdrop-blur-lg backdrop-saturate-150 bg-background/70 rounded-xl text-sm [--anchor-gap:var(--spacing-5)] z-50"
+								>
+								<div className="p-3">
+									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="https://x.com/ArenaDAO">
+										<p className="font-semibold">Twitter</p>
+										<p className="opacity-75">Keep updated on our twitter posts</p>
+									</a>
+									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="https://discord.arenadao.org/">
+										<p className="font-semibold">Discord</p>
+										<p className="opacity-75">Join our group and become a gladiator</p>
+									</a>
+									<a className="block rounded-lg py-2 px-3 transition hover:bg-[#FF8000]" href="https://github.com/Arena-DAO">
+										<p className="font-semibold">Github</p>
+										<p className="opacity-75">Contribute to the DAO as a developer</p>
+									</a>
+								</div>
+								</PopoverPanel>
+							</Transition>
+						</>
+					)}
+				</Popover>
 			</NavbarMenu>
+			<ColorModeSwitch />
+			<WalletConnectToggle />
 		</Navbar>
 	);
 }
