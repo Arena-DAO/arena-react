@@ -68,7 +68,11 @@ const ViewWager = () => {
 					setStatus={setStatus}
 				>
 					<Tabs aria-label="League Info" color="primary">
-						<Tab key="leaderboard" title="Leaderboard" className="text-xs md:text-lg">
+						<Tab
+							key="leaderboard"
+							title="Leaderboard"
+							className="text-xs md:text-lg"
+						>
 							<LeaderboardDisplay
 								cosmWasmClient={cosmWasmClient}
 								moduleAddr={env.ARENA_LEAGUE_MODULE_ADDRESS}
@@ -76,7 +80,11 @@ const ViewWager = () => {
 								version={version}
 							/>
 						</Tab>
-						<Tab key="basic" title="Configuration" className="text-xs md:text-lg">
+						<Tab
+							key="basic"
+							title="Configuration"
+							className="text-xs md:text-lg"
+						>
 							<Card>
 								<CardHeader>Final Distribution</CardHeader>
 								<CardBody className="space-y-4">

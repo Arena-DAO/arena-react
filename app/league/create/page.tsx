@@ -12,7 +12,6 @@ import {
 	CardFooter,
 	CardHeader,
 	Input,
-	Link,
 	Progress,
 	Table,
 	TableBody,
@@ -225,7 +224,9 @@ const CreateLeague = () => {
 						<Tooltip content="Return to competitions">
 							<Button
 								isIconOnly
-								onClick={()=>{router.push(`/compete?category=${category}`)}}
+								onClick={() => {
+									router.push(`/compete?category=${category}`);
+								}}
 								href={`/compete?category=${category}`}
 							>
 								<BsArrowLeft />

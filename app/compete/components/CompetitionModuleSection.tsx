@@ -13,8 +13,8 @@ import {
 	TableHeader,
 	TableRow,
 } from "@nextui-org/react";
-import { useRouter } from 'next/navigation';
 import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { BsHourglassBottom, BsPlus } from "react-icons/bs";
 import { useAsyncList } from "react-stately";
@@ -117,7 +117,11 @@ const CompetitionModuleSectionItems = ({
 						<TableCell>
 							<Button
 								as={Link}
-								onClick={()=>router.push(`/${path}/view?category=${category.url}&competitionId=${item.id}`)}
+								onClick={() =>
+									router.push(
+										`/${path}/view?category=${category.url}&competitionId=${item.id}`,
+									)
+								}
 							>
 								View
 							</Button>
@@ -136,12 +140,12 @@ const CompetitionModuleSection = (props: CompetitionModuleSectionProps) => {
 	return (
 		<div className="space-y-4">
 			<div className="block text-right">
-			<Button
-			startContent={<BsPlus />}
-			onClick={()=>router.push(`/create?category=${props.category.url}`)}
-			>
-			Create
-			</Button>
+				<Button
+					startContent={<BsPlus />}
+					onClick={() => router.push(`/create?category=${props.category.url}`)}
+				>
+					Create
+				</Button>
 			</div>
 			{cosmWasmClient && (
 				<CompetitionModuleSectionItems

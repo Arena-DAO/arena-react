@@ -9,6 +9,7 @@ import {
 	User,
 	type UserProps,
 } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 import { BsYinYang } from "react-icons/bs";
 import {
 	isValidBech32Address,
@@ -18,7 +19,6 @@ import { useEnv } from "~/hooks/useEnv";
 import { useProfileData } from "~/hooks/useProfile";
 import type { WithClient } from "~/types/util";
 import { CopyAddressButton } from "./CopyAddressButton";
-import { useRouter } from "next/navigation";
 
 export interface ProfileProps extends Omit<UserProps, "name"> {
 	address: string;
@@ -60,7 +60,9 @@ const Profile = ({
 							isValidContractAddress(data.address, env.BECH32_PREFIX) && (
 								<Button
 									as={Link}
-									onClick={()=>{router.push(`${env.DAO_DAO_URL}/dao/${data.address}`)}}
+									onClick={() => {
+										router.push(`${env.DAO_DAO_URL}/dao/${data.address}`);
+									}}
 									href={`${env.DAO_DAO_URL}/dao/${data.address}`}
 									isExternal
 									startContent={<BsYinYang />}

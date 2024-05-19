@@ -18,6 +18,7 @@ import {
 	Tooltip,
 } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import type { Dispatch, PropsWithChildren, SetStateAction } from "react";
 import { BsArrowLeft, BsHourglassBottom, BsYinYang } from "react-icons/bs";
 import type {
@@ -35,7 +36,6 @@ import PresetDistributionForm from "./components/PresetDistributionForm";
 import ProcessForm from "./components/ProcessForm";
 import ResultSection from "./components/ResultSection";
 import RulesetsSection from "./components/RulesetsSection";
-import { useRouter } from "next/navigation";
 
 interface ViewCompetitionProps extends PropsWithChildren {
 	moduleAddr: string;
@@ -63,16 +63,22 @@ const ViewCompetition = ({
 	const category = searchParams?.get("category");
 
 	return (
-		<div className="space-y-4 max-w-[1280px] px-10 mx-auto justify-center">
+		<div className="mx-auto max-w-[1280px] justify-center space-y-4 px-10">
 			{category && (
 				<Tooltip content="Return to competitions">
-					<Button as={Link} isIconOnly onClick={()=>{router.push(`/compete?category=${category}`)}}>
+					<Button
+						as={Link}
+						isIconOnly
+						onClick={() => {
+							router.push(`/compete?category=${category}`);
+						}}
+					>
 						<BsArrowLeft />
 					</Button>
 				</Tooltip>
 			)}
 			<Card>
-				<CardHeader className="flex justify-between">
+				<CardHeader className="z-1·flex·justify-between">
 					<h2>Host</h2>
 					<Badge
 						isOneChar
@@ -192,13 +198,13 @@ const ViewCompetition = ({
 				{competition.is_expired &&
 					status !== "inactive" &&
 					status !== "pending" && (
-					<ProcessForm
-						moduleAddr={moduleAddr}
-						competitionId={competition.id}
-						setCompetitionStatus={setStatus}
-						is_expired
-					/>
-				)}
+						<ProcessForm
+							moduleAddr={moduleAddr}
+							competitionId={competition.id}
+							setCompetitionStatus={setStatus}
+							is_expired
+						/>
+					)}
 				{competition.is_expired && status !== "inactive" && (
 					<ProcessForm
 						moduleAddr={moduleAddr}

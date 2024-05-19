@@ -41,7 +41,7 @@ const Compete = () => {
 		return <h1 className="text-3xl">Category {category} not found</h1>;
 	}
 	return (
-		<div className="space-y-4 px-10 max-w-[1280px] mx-auto">
+		<div className="mx-auto max-w-[1280px] space-y-4 px-10">
 			<Breadcrumbs>
 				{breadcrumbItems.map((item) => (
 					<BreadcrumbItem key={item.url} href={`/compete?category=${item.url}`}>

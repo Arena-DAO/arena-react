@@ -1,19 +1,11 @@
 "use client";
 
-import {
-	Button,
-	ButtonGroup,
-	Link,
-	Navbar,
-	NavbarContent,
-} from "@nextui-org/react";
+import { Button, ButtonGroup, Link } from "@nextui-org/react";
 import dynamic from "next/dynamic";
 import { BsDiscord, BsGithub, BsTwitterX } from "react-icons/bs";
 const ColorModeSwitch = dynamic(() => import("./ColorModeSwitch"), {
 	ssr: false,
 });
-import NextImage from "next/image";
-import { Image } from "@nextui-org/react";
 
 export default function Footer() {
 	return (
@@ -39,9 +31,10 @@ export default function Footer() {
 					<a style={{fontSize:"120%"}} className="hover:color-[#FF8000]" href="/resources/bridge">Bridge</a>
 				</div>
 			</div>*/}
-			<div className="flex flex-col-reverse px-10 justify-between items-center pb-5 md:flex-row">
-				<div className="text-center md:text-left w-full md:w-1/2">
-					"Just look at the gladiators, either debased men or foreigners, and consider the blows they endure!" - Cicero
+			<div className="flex flex-col-reverse items-center justify-between px-10 pb-5 md:flex-row">
+				<div className="w-full text-center md:w-1/2 md:text-left">
+					"Just look at the gladiators, either debased men or foreigners, and
+					consider the blows they endure!" - Cicero
 				</div>
 				<div>
 					<ButtonGroup variant="light">
@@ -75,7 +68,7 @@ export default function Footer() {
 					</ButtonGroup>
 				</div>
 			</div>
-			<div className="text-center py-5 border-white border-t-1">
+			<div className="border-white border-t-1 py-5 text-center">
 				Copyright © 2024 Arena DAO, All rights reserved
 			</div>
 		</>
