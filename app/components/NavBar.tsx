@@ -1,20 +1,19 @@
 "use client";
 
 import {
-	Popover,
-	PopoverButton,
-	PopoverPanel,
-	Transition,
-} from "@headlessui/react";
-import {
+	Button,
+	Dropdown,
+	DropdownItem,
+	DropdownMenu,
+	DropdownTrigger,
+	Link,
 	Navbar,
 	NavbarBrand,
 	NavbarContent,
+	NavbarItem,
 	NavbarMenu,
 	NavbarMenuToggle,
-	Link,
 } from "@nextui-org/react";
-import clsx from "clsx";
 import dynamic from "next/dynamic";
 const ColorModeSwitch = dynamic(() => import("./ColorModeSwitch"), {
 	ssr: false,
@@ -22,22 +21,29 @@ const ColorModeSwitch = dynamic(() => import("./ColorModeSwitch"), {
 import { Image } from "@nextui-org/react";
 import NextImage from "next/image";
 import { useState } from "react";
-import { BsChevronDown } from "react-icons/bs";
+import {
+	BsAlarm,
+	BsBook,
+	BsChevronDown,
+	BsCurrencyBitcoin,
+	BsCurrencyExchange,
+	BsDiscord,
+	BsGithub,
+	BsTwitterX,
+	BsYinYang,
+} from "react-icons/bs";
 import { useEnv } from "~/hooks/useEnv";
 import WalletConnectToggle from "./WalletConnectToggle";
-import { useRouter, usePathname } from "next/navigation";
 
 export default function AppNavbar() {
 	const { data: env } = useEnv();
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
-	const router = useRouter();
-	const path = usePathname();
 
 	return (
 		<Navbar
 			onMenuOpenChange={setIsMenuOpen}
 			isMenuOpen={isMenuOpen}
-			className="fixed max-w-[1920px]"
+			className="fixed"
 		>
 			<NavbarContent>
 				<NavbarMenuToggle
@@ -46,8 +52,9 @@ export default function AppNavbar() {
 				/>
 				<NavbarBrand>
 					<Link
-						className="flex flex-row items-center justify-center cursor-pointer"
-						onClick={() => {setIsMenuOpen(false),router.push("/")}}
+						className="flex cursor-pointer flex-row items-center justify-center"
+						onPress={() => setIsMenuOpen(false)}
+						href="/"
 					>
 						<Image
 							as={NextImage}
@@ -57,355 +64,306 @@ export default function AppNavbar() {
 							height="30"
 							removeWrapper
 						/>
-						<p className="title ml-2 font-bold text-inherit text-primary">
-							Arena DAO
-						</p>
+						<p className="title ml-2 font-bold">Arena DAO</p>
 					</Link>
 				</NavbarBrand>
 			</NavbarContent>
 
 			<NavbarContent className="hidden gap-4 md:flex" justify="center">
-				<Link
-					className={`flex items-center gap-2 font-semibold text-sm/6 focus:outline-none data-[active]:text-primary data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer ${path === '/compete' ? 'text-primary' : 'text-background-foreground'}`}
-					onClick={()=>{router.push("/compete")}}
-				>
-					Compete
-				</Link>
-				<Popover className="z-50">
-					{({ open }) => (
-						<>
-							<PopoverButton className="z-50 flex items-center gap-2 font-semibold text-sm/6 data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000]  focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white">
+				<NavbarItem>
+					<Link
+						className="flex cursor-pointer items-center font-semibold text-sm/6"
+						href="/compete"
+						onPress={() => setIsMenuOpen(false)}
+					>
+						Compete
+					</Link>
+				</NavbarItem>
+
+				<Dropdown>
+					<NavbarItem>
+						<DropdownTrigger>
+							<Button
+								variant="light"
+								className="flex items-center font-semibold text-primary text-sm/6"
+								endContent={<BsChevronDown className="size-3" />}
+							>
 								DAO
-								<BsChevronDown
-									className={clsx("size-3", open && "rotate-180")}
-								/>
-							</PopoverButton>
-							<Transition
-								enter="transition ease-out duration-200"
-								enterFrom="opacity-0 translate-y-1"
-								enterTo="opacity-100 translate-y-0"
-								leave="transition ease-in duration-150"
-								leaveFrom="opacity-100 translate-y-0"
-								leaveTo="opacity-0 translate-y-1"
+							</Button>
+						</DropdownTrigger>
+					</NavbarItem>
+					<DropdownMenu
+						aria-label="DAO Menu"
+						itemClasses={{ title: "text-primary font-semibold" }}
+					>
+						<DropdownItem
+							key="dao"
+							description="View the Arena DAO on DAO DAO"
+							href={`${env.DAO_DAO_URL}/dao/${env.ARENA_DAO_ADDRESS}`}
+							onPress={() => setIsMenuOpen(false)}
+							startContent={<BsYinYang />}
+							target="_blank"
+						>
+							DAO
+						</DropdownItem>
+						<DropdownItem
+							key="jailhouse"
+							href="/dao/jailhouse"
+							onPress={() => setIsMenuOpen(false)}
+							description="View jailed competitions needing action through the DAO"
+							startContent={<BsAlarm />}
+						>
+							Jailhouse
+						</DropdownItem>
+					</DropdownMenu>
+				</Dropdown>
+
+				<Dropdown>
+					<NavbarItem>
+						<DropdownTrigger>
+							<Button
+								variant="light"
+								className="flex items-center font-semibold text-primary text-sm/6"
+								endContent={<BsChevronDown className="size-3" />}
 							>
-								<PopoverPanel
-									anchor="bottom"
-									className="z-50 mt-5 divide-y divide-white/5 rounded-xl bg-background/70 text-sm/6 backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)]"
-								>
-									<div className="p-3">
-										<Link
-											className="block rounded-lg px-3 py-2 transition text-background-foreground hover:bg-primary"
-											href={`${env.DAO_DAO_URL}/dao/${env.ARENA_DAO_ADDRESS}`}
-											isExternal
-										>
-											<p className="font-semibold">DAO</p>
-											<p className="opacity-75">
-												View the Arena DAO on DAO DAO
-											</p>
-										</Link>
-										<Link
-											className="block rounded-lg px-3 py-2 transition text-background-foreground hover:bg-primary cursor-pointer"
-											onClick={()=>{router.push("/dao/jailhouse")}}
-										>
-											<p className="font-semibold">Jailhouse</p>
-											<p className="opacity-75">
-												View jailed competitions needing action through the DAO
-											</p>
-										</Link>
-									</div>
-								</PopoverPanel>
-							</Transition>
-						</>
-					)}
-				</Popover>
-				<Popover>
-					{({ open }) => (
-						<>
-							<PopoverButton className="flex items-center gap-2 font-semibold text-sm/6 data-[active]:text-primary data-[hover]:text-primary hover:text-primary focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white">
 								Resources
-								<BsChevronDown
-									className={clsx("size-3", open && "rotate-180")}
-								/>
-							</PopoverButton>
-							<Transition
-								enter="transition ease-out duration-200"
-								enterFrom="opacity-0 translate-y-1"
-								enterTo="opacity-100 translate-y-0"
-								leave="transition ease-in duration-150"
-								leaveFrom="opacity-100 translate-y-0"
-								leaveTo="opacity-0 translate-y-1"
+							</Button>
+						</DropdownTrigger>
+					</NavbarItem>
+					<DropdownMenu
+						aria-label="Resources Menu"
+						itemClasses={{ title: "text-primary font-semibold" }}
+					>
+						<DropdownItem
+							key="faucet"
+							hidden={!env.FAUCET_URL}
+							href={env.FAUCET_URL}
+							onPress={() => setIsMenuOpen(false)}
+							description="Get testnet gas to explore The Arena"
+							startContent={<BsCurrencyBitcoin />}
+							target="_blank"
+						>
+							Faucet
+						</DropdownItem>
+						<DropdownItem
+							key="docs"
+							description="Learn more about how the Arena DAO works"
+							href={env.DOCS_URL}
+							onPress={() => setIsMenuOpen(false)}
+							startContent={<BsBook />}
+							target="_blank"
+						>
+							Docs
+						</DropdownItem>
+						<DropdownItem
+							key="bridge"
+							href={env.IBC_FUN}
+							onPress={() => setIsMenuOpen(false)}
+							description="Transfer funds from other chains into the ecosystem"
+							startContent={<BsCurrencyExchange />}
+							target="_blank"
+						>
+							Bridge
+						</DropdownItem>
+					</DropdownMenu>
+				</Dropdown>
+
+				<Dropdown>
+					<NavbarItem>
+						<DropdownTrigger>
+							<Button
+								variant="light"
+								className="flex items-center font-semibold text-primary text-sm/6"
+								endContent={<BsChevronDown className="size-3" />}
 							>
-								<PopoverPanel
-									anchor="bottom"
-									className="z-50 mt-5 divide-y divide-white/5 rounded-xl bg-background/70 text-sm/6 backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)]"
-								>
-									<div className="p-3">
-										{env.FAUCET_URL && (
-											<Link
-												className="block rounded-lg px-3 py-2 transition text-background-foreground hover:bg-primary"
-												href={env.FAUCET_URL}
-												isExternal
-											>
-												<p className="font-semibold">Faucet</p>
-												<p className="opacity-75">
-													Get testnet gas to explore The Arena
-												</p>
-											</Link>
-										)}
-										<Link
-											className="block rounded-lg px-3 py-2 transition text-background-foreground hover:bg-primary"
-											href={env.DOCS_URL}
-											isExternal
-										>
-											<p className="font-semibold">Docs</p>
-											<p className="opacity-75">
-												Learn more about how the Arena DAO works
-											</p>
-										</Link>
-										<Link
-											className="block rounded-lg px-3 py-2 transition text-background-foreground hover:bg-primary"
-											href={env.IBC_FUN}
-											isExternal
-										>
-											<p className="font-semibold">Bridge</p>
-											<p className="opacity-75">
-												Transfer funds from other chains into the ecosystem
-											</p>
-										</Link>
-									</div>
-								</PopoverPanel>
-							</Transition>
-						</>
-					)}
-				</Popover>
-				<Popover>
-					{({ open }) => (
-						<>
-							<PopoverButton className="flex items-center gap-2 font-semibold text-sm/6 data-[active]:text-primary data-[hover]:text-primary hover:text-primary focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white">
 								Socials
-								<BsChevronDown
-									className={clsx("size-3", open && "rotate-180")}
-								/>
-							</PopoverButton>
-							<Transition
-								enter="transition ease-out duration-200"
-								enterFrom="opacity-0 translate-y-1"
-								enterTo="opacity-100 translate-y-0"
-								leave="transition ease-in duration-150"
-								leaveFrom="opacity-100 translate-y-0"
-								leaveTo="opacity-0 translate-y-1"
-							>
-								<PopoverPanel
-									anchor="bottom"
-									className="z-50 mt-5 divide-y divide-white/5 rounded-xl bg-background/70 text-sm/6 backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)]"
-								>
-									<div className="p-3">
-										<Link
-											className="block rounded-lg px-3 py-2 transition text-background-foreground hover:bg-primary"
-											href="https://x.com/ArenaDAO"
-											isExternal
-										>
-											<p className="font-semibold">Twitter</p>
-											<p className="opacity-75">
-												Stay up to date with our announcements
-											</p>
-										</Link>
-										<Link
-											className="block rounded-lg px-3 py-2 transition text-background-foreground hover:bg-primary"
-											href="https://discord.arenadao.org/"
-											isExternal
-										>
-											<p className="font-semibold">Discord</p>
-											<p className="opacity-75">Connect with the community</p>
-										</Link>
-										<Link
-											className="block rounded-lg px-3 py-2 transition text-background-foreground hover:bg-primary"
-											href="https://github.com/Arena-DAO"
-											isExternal
-										>
-											<p className="font-semibold">GitHub</p>
-											<p className="opacity-75">
-												View or contribute to our codebase
-											</p>
-										</Link>
-									</div>
-								</PopoverPanel>
-							</Transition>
-						</>
-					)}
-				</Popover>
+							</Button>
+						</DropdownTrigger>
+					</NavbarItem>
+					<DropdownMenu
+						aria-label="Socials Menu"
+						itemClasses={{ title: "text-primary font-semibold" }}
+					>
+						<DropdownItem
+							key="twitter"
+							href="https://x.com/ArenaDAO"
+							onPress={() => setIsMenuOpen(false)}
+							description="Stay up to date with our announcements"
+							startContent={<BsTwitterX />}
+							target="_blank"
+						>
+							Twitter
+						</DropdownItem>
+						<DropdownItem
+							key="discord"
+							href="https://discord.arenadao.org/"
+							onPress={() => setIsMenuOpen(false)}
+							description="Connect with the community"
+							startContent={<BsDiscord />}
+							target="_blank"
+						>
+							Discord
+						</DropdownItem>
+						<DropdownItem
+							key="github"
+							href="https://github.com/Arena-DAO"
+							onPress={() => setIsMenuOpen(false)}
+							description="View or contribute to our codebase"
+							startContent={<BsGithub />}
+							target="_blank"
+						>
+							GitHub
+						</DropdownItem>
+					</DropdownMenu>
+				</Dropdown>
 			</NavbarContent>
 
 			<NavbarMenu>
-				<Link
-					className={`flex items-center gap-2 font-semibold text-xl focus:outline-none data-[active]:text-primary data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer ${path === '/compete' ? 'text-primary' : 'text-background-foreground'}`}
-					onClick={()=>{router.push("/compete")}}
-				>
-					Compete
-				</Link>
-				<Popover className="z-50">
-					{({ open }) => (
-						<>
-							<PopoverButton className="flex items-center gap-2 font-semibold text-xl data-[active]:text-primary data-[hover]:text-primary hover:text-primary focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white">
+				<NavbarItem>
+					<Link
+						className="ml-4 flex cursor-pointer items-center py-1 font-semibold text-xl"
+						href="/compete"
+					>
+						Compete
+					</Link>
+				</NavbarItem>
+
+				<Dropdown>
+					<NavbarItem>
+						<DropdownTrigger className="text-left">
+							<Button
+								variant="light"
+								className="flex items-center font-semibold text-primary text-xl"
+								endContent={<BsChevronDown className="size-3" />}
+							>
 								DAO
-								<BsChevronDown
-									className={clsx("size-3", open && "rotate-180")}
-								/>
-							</PopoverButton>
-							<Transition
-								enter="transition ease-out duration-200"
-								enterFrom="opacity-0 translate-y-1"
-								enterTo="opacity-100 translate-y-0"
-								leave="transition ease-in duration-150"
-								leaveFrom="opacity-100 translate-y-0"
-								leaveTo="opacity-0 translate-y-1"
+							</Button>
+						</DropdownTrigger>
+					</NavbarItem>
+					<DropdownMenu
+						aria-label="DAO Menu"
+						itemClasses={{ title: "text-primary font-semibold" }}
+					>
+						<DropdownItem
+							key="dao"
+							href={`${env.DAO_DAO_URL}/dao/${env.ARENA_DAO_ADDRESS}`}
+							onPress={() => setIsMenuOpen(false)}
+							description="View the Arena DAO on DAO DAO"
+							startContent={<BsYinYang />}
+							target="_blank"
+						>
+							DAO
+						</DropdownItem>
+						<DropdownItem
+							key="jailhouse"
+							href="/dao/jailhouse"
+							onPress={() => setIsMenuOpen(false)}
+							description="View jailed competitions needing action through the DAO"
+							startContent={<BsAlarm />}
+						>
+							Jailhouse
+						</DropdownItem>
+					</DropdownMenu>
+				</Dropdown>
+
+				<Dropdown>
+					<NavbarItem>
+						<DropdownTrigger>
+							<Button
+								variant="light"
+								className="flex items-center font-semibold text-primary text-xl"
+								endContent={<BsChevronDown className="size-3" />}
 							>
-								<PopoverPanel
-									anchor="bottom"
-									className="z-50 divide-y divide-white/5 rounded-xl bg-background/70 text-sm backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)]"
-								>
-									<div className="p-3">
-										<Link
-											className="block rounded-lg px-3 py-2 transition text-background-foreground hover:bg-primary text-background-foreground"
-											href={`${env.DAO_DAO_URL}/dao/${env.ARENA_DAO_ADDRESS}`}
-											isExternal
-										>
-											<p className="font-semibold">DAO</p>
-											<p className="opacity-75">
-												View the Arena DAO on DAO DAO
-											</p>
-										</Link>
-										<Link
-											className="block rounded-lg px-3 py-2 transition text-background-foreground hover:bg-primary text-background-foreground"
-											href="/dao/jailhouse"
-										>
-											<p className="font-semibold">Jailhouse</p>
-											<p className="opacity-75">
-												View jailed competitions needing action through the DAO
-											</p>
-										</Link>
-									</div>
-								</PopoverPanel>
-							</Transition>
-						</>
-					)}
-				</Popover>
-				<Popover>
-					{({ open }) => (
-						<>
-							<PopoverButton className="flex items-center gap-2 text-background-foreground font-semibold text-xl data-[active]:text-primary data-[hover]:text-primary hover:text-primary focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white">
 								Resources
-								<BsChevronDown
-									className={clsx("size-3", open && "rotate-180")}
-								/>
-							</PopoverButton>
-							<Transition
-								enter="transition ease-out duration-200"
-								enterFrom="opacity-0 translate-y-1"
-								enterTo="opacity-100 translate-y-0"
-								leave="transition ease-in duration-150"
-								leaveFrom="opacity-100 translate-y-0"
-								leaveTo="opacity-0 translate-y-1"
+							</Button>
+						</DropdownTrigger>
+					</NavbarItem>
+					<DropdownMenu
+						aria-label="Resources Menu"
+						itemClasses={{ title: "text-primary font-semibold" }}
+					>
+						<DropdownItem
+							key="faucet"
+							hidden={!env.FAUCET_URL}
+							href={env.FAUCET_URL}
+							onPress={() => setIsMenuOpen(false)}
+							description="Get testnet gas to explore The Arena"
+							startContent={<BsCurrencyBitcoin />}
+							target="_blank"
+						>
+							Faucet
+						</DropdownItem>
+						<DropdownItem
+							key="docs"
+							href={env.DOCS_URL}
+							onPress={() => setIsMenuOpen(false)}
+							description="Learn more about how the Arena DAO works"
+							startContent={<BsBook />}
+							target="_blank"
+						>
+							Docs
+						</DropdownItem>
+						<DropdownItem
+							key="bridge"
+							href={env.IBC_FUN}
+							onPress={() => setIsMenuOpen(false)}
+							description="Transfer funds from other chains into the ecosystem"
+							startContent={<BsCurrencyExchange />}
+							target="_blank"
+						>
+							Bridge
+						</DropdownItem>
+					</DropdownMenu>
+				</Dropdown>
+
+				<Dropdown>
+					<NavbarItem>
+						<DropdownTrigger>
+							<Button
+								variant="light"
+								className="flex items-center font-semibold text-primary text-xl"
+								endContent={<BsChevronDown className="size-3" />}
 							>
-								<PopoverPanel
-									anchor="bottom"
-									className="z-50 divide-y divide-white/5 rounded-xl text-background-foreground bg-background/70 text-sm backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)]"
-								>
-									<div className="p-3">
-										{env.FAUCET_URL && (
-											<Link
-												className="block rounded-lg px-3 py-2 transition text-background-foreground hover:bg-primary"
-												href={env.FAUCET_URL}
-												isExternal
-											>
-												<p className="font-semibold">Faucet</p>
-												<p className="opacity-75">
-													Get testnet gas to explore The Arena
-												</p>
-											</Link>
-										)}
-										<Link
-											className="block rounded-lg px-3 py-2 transition text-background-foreground hover:bg-primary"
-											href={env.DOCS_URL}
-											isExternal
-										>
-											<p className="font-semibold">Docs</p>
-											<p className="opacity-75">
-												Learn more about how the Arena DAO works
-											</p>
-										</Link>
-										<Link
-											className="block rounded-lg px-3 py-2 transition text-background-foreground hover:bg-primary"
-											href={env.IBC_FUN}
-											isExternal
-										>
-											<p className="font-semibold">Bridge</p>
-											<p className="opacity-75">
-												Transfer funds from other chains into the ecosystem
-											</p>
-										</Link>
-									</div>
-								</PopoverPanel>
-							</Transition>
-						</>
-					)}
-				</Popover>
-				<Popover>
-					{({ open }) => (
-						<>
-							<PopoverButton className="flex items-center gap-2 font-semibold text-xl data-[active]:text-primary data-[hover]:text-primary hover:text-primary focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white">
 								Socials
-								<BsChevronDown
-									className={clsx("size-3", open && "rotate-180")}
-								/>
-							</PopoverButton>
-							<Transition
-								enter="transition ease-out duration-200"
-								enterFrom="opacity-0 translate-y-1"
-								enterTo="opacity-100 translate-y-0"
-								leave="transition ease-in duration-150"
-								leaveFrom="opacity-100 translate-y-0"
-								leaveTo="opacity-0 translate-y-1"
-							>
-								<PopoverPanel
-									anchor="bottom"
-									className="z-50 divide-y divide-white/5 rounded-xl bg-background/70 text-sm backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)]"
-								>
-									<div className="p-3">
-										<Link
-											className="block rounded-lg px-3 py-2 transition text-background-foreground hover:bg-primary"
-											href="https://x.com/ArenaDAO"
-											isExternal
-										>
-											<p className="font-semibold">Twitter</p>
-											<p className="opacity-75">
-												Stay up to date with our announcements
-											</p>
-										</Link>
-										<Link
-											className="block rounded-lg px-3 py-2 transition text-background-foreground hover:bg-primary"
-											href="https://discord.arenadao.org/"
-											isExternal
-										>
-											<p className="font-semibold">Discord</p>
-											<p className="opacity-75">Connect with the community</p>
-										</Link>
-										<Link
-											className="block rounded-lg px-3 py-2 transition text-background-foreground hover:bg-primary"
-											href="https://github.com/Arena-DAO"
-											isExternal
-										>
-											<p className="font-semibold">GitHub</p>
-											<p className="opacity-75">
-												View or contribute to our codebase
-											</p>
-										</Link>
-									</div>
-								</PopoverPanel>
-							</Transition>
-						</>
-					)}
-				</Popover>
+							</Button>
+						</DropdownTrigger>
+					</NavbarItem>
+					<DropdownMenu
+						aria-label="Socials Menu"
+						itemClasses={{ title: "text-primary font-semibold" }}
+					>
+						<DropdownItem
+							key="twitter"
+							description="Stay up to date with our announcements"
+							href="https://x.com/ArenaDAO"
+							onPress={() => setIsMenuOpen(false)}
+							startContent={<BsTwitterX />}
+							target="_blank"
+						>
+							Twitter
+						</DropdownItem>
+						<DropdownItem
+							key="discord"
+							description="Connect with the community"
+							href="https://discord.arenadao.org/"
+							onPress={() => setIsMenuOpen(false)}
+							startContent={<BsDiscord />}
+							target="_blank"
+						>
+							Discord
+						</DropdownItem>
+						<DropdownItem
+							key="github"
+							href="https://github.com/Arena-DAO"
+							description="View or contribute to our codebase"
+							onPress={() => setIsMenuOpen(false)}
+							startContent={<BsGithub />}
+							target="_blank"
+						>
+							GitHub
+						</DropdownItem>
+					</DropdownMenu>
+				</Dropdown>
 			</NavbarMenu>
 			<ColorModeSwitch />
 			<WalletConnectToggle />
