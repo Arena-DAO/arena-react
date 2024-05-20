@@ -9,7 +9,7 @@ const Jailhouse = () => {
 
 	return (
 		<div className="mx-auto max-w-[1280px] space-y-4 px-10">
-			<h1 className="text-center text-5xl title">Jailhouse</h1>
+			<h1 className="title text-center text-5xl">Jailhouse</h1>
 			<Tabs aria-label="Competition Modules" disabledKeys={["tournaments"]}>
 				<Tab key="wagers" title="Wagers">
 					<CompetitionModuleSection

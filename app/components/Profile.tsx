@@ -60,9 +60,6 @@ const Profile = ({
 							isValidContractAddress(data.address, env.BECH32_PREFIX) && (
 								<Button
 									as={Link}
-									onClick={() => {
-										router.push(`${env.DAO_DAO_URL}/dao/${data.address}`);
-									}}
 									href={`${env.DAO_DAO_URL}/dao/${data.address}`}
 									isExternal
 									startContent={<BsYinYang />}

@@ -6,10 +6,9 @@ import { BsDiscord, BsGithub, BsTwitterX } from "react-icons/bs";
 export default function Footer() {
 	return (
 		<>
-			<div className="flex flex-col-reverse items-center justify-between px-10 pb-5 md:flex-row">
-				<div className="w-full text-center md:w-1/2 md:text-left">
-					"Just look at the gladiators, either debased men or foreigners, and
-					consider the blows they endure!" - Cicero
+			<div className="flex flex-col-reverse items-center justify-between px-10 md:flex-row">
+				<div className="w-full text-center text-small md:w-1/2 md:text-left">
+					"Audendo virtus crescit, tardando timor." - Publilius Syrus
 				</div>
 				<div>
 					<ButtonGroup variant="light">
@@ -43,7 +42,7 @@ export default function Footer() {
 					</ButtonGroup>
 				</div>
 			</div>
-			<div className="border-white border-t-1 py-5 text-center">
+			<div className="pb-5 text-center text-xs italic">
 				Copyright © 2024 Arena DAO, All rights reserved
 			</div>
 		</>

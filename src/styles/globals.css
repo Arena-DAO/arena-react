@@ -5,28 +5,8 @@
 @import "tailwindcss/utilities";
 
 @font-face {
-  font-family: gladiator_font;
-  src: url(War-heroes.otf);
-}
-
-@font-face {
-  font-family: Avara;
-  src: url(avara.woff2) format("woff2");
-  font-display: swap;
-  font-weight: 400;
-  font-style: bold
-}
-
-@font-face {
-  font-family: Avara-bold;
-  src: url(avara_bold.woff2) format("woff2");
-  font-display: swap;
-  font-weight: 700;
-  font-style: bold
-}
-
-body{
-  font-family: Avara !important;
+  font-family: cinzel;
+  src: url(Cinzel-VariableFont_wght.ttf);
 }
 
 .trophy_cursor {
@@ -35,18 +15,22 @@ body{
     auto;
 }
 
+body{
+  font-size: large;
+}
+
 header{
   max-width:1920px !important;
 }
 
-.title{
-  font-family:gladiator_font;
+h1, h2, h3, h4, h5, .title {
+  font-family:cinzel;
+  font-weight: bolder;
 }
 
 h1 {
   margin-top:1rem;
   font-size: xx-large;
-  font-weight: bolder;
 }
 
 form {

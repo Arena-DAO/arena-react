@@ -12,6 +12,7 @@ import {
 	CardFooter,
 	CardHeader,
 	Input,
+	Link,
 	Progress,
 	Table,
 	TableBody,
@@ -219,21 +220,19 @@ const CreateLeague = () => {
 		<FormProvider {...formMethods}>
 			<form onSubmit={handleSubmit(async (data) => await onSubmit(data))}>
 				<div className="space-y-4">
-					<h1 className="text-center text-5xl title">Create a League</h1>
+					<h1 className="title text-center text-5xl">Create a League</h1>
 					{category && (
 						<Tooltip content="Return to competitions">
 							<Button
 								isIconOnly
-								onClick={() => {
-									router.push(`/compete?category=${category}`);
-								}}
+								as={Link}
 								href={`/compete?category=${category}`}
 							>
 								<BsArrowLeft />
 							</Button>
 						</Tooltip>
 					)}
-					<div className="flex space-x-4">
+					<div className="flex gap-4">
 						<Controller
 							control={control}
 							name="host"

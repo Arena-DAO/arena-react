@@ -66,13 +66,7 @@ const ViewCompetition = ({
 		<div className="mx-auto max-w-[1280px] justify-center space-y-4 px-10">
 			{category && (
 				<Tooltip content="Return to competitions">
-					<Button
-						as={Link}
-						isIconOnly
-						onClick={() => {
-							router.push(`/compete?category=${category}`);
-						}}
-					>
+					<Button as={Link} isIconOnly href={`/compete?category=${category}`}>
 						<BsArrowLeft />
 					</Button>
 				</Tooltip>

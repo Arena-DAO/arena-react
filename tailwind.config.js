@@ -1,5 +1,4 @@
 import { nextui } from "@nextui-org/react";
-import defaultTheme from "tailwindcss/defaultTheme";
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -8,20 +7,11 @@ module.exports = {
 		"./src/**/*.{js,ts,jsx,tsx,mdx,mjs}",
 		"./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx,mjs}",
 	],
-	theme: {
-		extend: {
-			fontFamily: {
-				roboto: ["Inter var", ...defaultTheme.fontFamily.sans],
-			},
-		},
-	},
 	darkMode: "class",
 	plugins: [
 		nextui({
 			layout: {
 				fontSize: {
-					tiny: "1rem",
-					small: "1.2rem",
 					medium: "1.4rem",
 					large: " 1.6rem",
 				},
