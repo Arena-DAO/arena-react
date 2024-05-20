@@ -115,84 +115,6 @@ export default function AppNavbar() {
 	const { data: env } = useEnv();
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-	const navbarItems: MenuItem[] = [
-		{ href: "/compete", label: "Compete" },
-		{
-			label: "DAO",
-			isDropdown: true,
-			ariaLabel: "DAO Menu",
-			dropdownItems: [
-				{
-					href: `${env.DAO_DAO_URL}/dao/${env.ARENA_DAO_ADDRESS}`,
-					label: "DAO",
-					description: "View the Arena DAO on DAO DAO",
-					isExternal: true,
-				},
-				{
-					href: "/dao/jailhouse",
-					description:
-						"View jailed competitions needing action through the DAO",
-					label: "Jailhouse",
-				},
-			],
-		},
-		{
-			label: "Resources",
-			isDropdown: true,
-			ariaLabel: "Additional Resources",
-			dropdownItems: [
-				...(env.ENV === "development"
-					? [
-							{
-								// biome-ignore lint/style/noNonNullAssertion: dev env has this populated
-								href: env.FAUCET_URL!,
-								label: "Faucet",
-								description: "Get testnet gas to explore The Arena",
-								isExternal: true,
-							},
-						]
-					: []),
-				{
-					href: env.DOCS_URL,
-					label: "Docs",
-					description: "Learn more about how the Arena DAO works",
-					isExternal: true,
-				},
-				{
-					href: env.IBC_FUN,
-					label: "Bridge",
-					description: "Transfer funds from other chains into the ecosystem",
-					isExternal: true,
-				},
-			],
-		},
-		{
-			label: "Socials",
-			isDropdown: true,
-			ariaLabel: "Additional Resources",
-			dropdownItems: [
-				{
-					href: "https://x.com/ArenaDAO",
-					label: "Twitter",
-					isExternal: !0,
-					description: "Learn more about how the Arena DAO works",
-				},
-				{
-					href: "https://discord.arenadao.org/",
-					label: "Discord",
-					isExternal: !0,
-					description: "Transfer funds from other chains into the ecosystem",
-				},
-				{
-					href: "https://github.com/Arena-DAO",
-					label: "Github",
-					isExternal: !0,
-					description: "Transfer funds from other chains into the ecosystem",
-				},
-			],
-		},
-	];
-
 	return (
 		<Navbar
 			onMenuOpenChange={setIsMenuOpen}
@@ -218,7 +140,7 @@ export default function AppNavbar() {
 							height="30"
 							removeWrapper
 						/>
-						<p className="title ml-2 font-bold text-[#FF8000] text-inherit">
+						<p className="title ml-2 font-bold text-inherit text-primary">
 							Arena DAO
 						</p>
 					</a>
@@ -227,7 +149,7 @@ export default function AppNavbar() {
 
 			<NavbarContent className="hidden gap-4 md:flex" justify="center">
 				<a
-					className="flex items-center gap-2 font-semibold text-sm/6 data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000] hover:text-[#FF8000] focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white"
+					className="flex items-center gap-2 font-semibold text-sm/6 data-[active]:text-primary data-[hover]:text-primary hover:text-primary focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white"
 					href="/compete"
 				>
 					Compete
@@ -255,7 +177,7 @@ export default function AppNavbar() {
 								>
 									<div className="p-3">
 										<a
-											className="block rounded-lg px-3 py-2 transition hover:bg-[#FF8000]"
+											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="/dao/dao"
 										>
 											<p className="font-semibold">DAO</p>
@@ -264,7 +186,7 @@ export default function AppNavbar() {
 											</p>
 										</a>
 										<a
-											className="block rounded-lg px-3 py-2 transition hover:bg-[#FF8000]"
+											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="/dao/jailhouse"
 										>
 											<p className="font-semibold">Jailhouse</p>
@@ -281,7 +203,7 @@ export default function AppNavbar() {
 				<Popover>
 					{({ open }) => (
 						<>
-							<PopoverButton className="flex items-center gap-2 font-semibold text-sm/6 data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000] hover:text-[#FF8000] focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white">
+							<PopoverButton className="flex items-center gap-2 font-semibold text-sm/6 data-[active]:text-primary data-[hover]:text-primary hover:text-primary focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white">
 								Resources
 								<BsChevronDown
 									className={clsx("size-3", open && "rotate-180")}
@@ -300,19 +222,21 @@ export default function AppNavbar() {
 									className="mt-5 divide-y divide-white/5 rounded-xl bg-background/70 text-sm/6 backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)] z-50"
 								>
 									<div className="p-3">
+										{env.ENV === "development" && (
+											<a
+												className="block rounded-lg px-3 py-2 transition hover:bg-primary"
+												href="https://discord.com/channels/986573321023942708/1041694375702446170"
+												target="_blank"
+												rel="noreferrer"
+											>
+												<p className="font-semibold">Faucet</p>
+												<p className="opacity-75">
+													Get testnet gas to explore The Arena
+												</p>
+											</a>
+										)}
 										<a
-											className="block rounded-lg px-3 py-2 transition hover:bg-[#FF8000]"
-											href="https://discord.com/channels/986573321023942708/1041694375702446170"
-											target="_blank"
-											rel="noreferrer"
-										>
-											<p className="font-semibold">Faucet</p>
-											<p className="opacity-75">
-												Get testnet gas to explore The Arena
-											</p>
-										</a>
-										<a
-											className="block rounded-lg px-3 py-2 transition hover:bg-[#FF8000]"
+											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="/resources/docs"
 										>
 											<p className="font-semibold">Docs</p>
@@ -321,7 +245,7 @@ export default function AppNavbar() {
 											</p>
 										</a>
 										<a
-											className="block rounded-lg px-3 py-2 transition hover:bg-[#FF8000]"
+											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="/resources/bridge"
 										>
 											<p className="font-semibold">Bridge</p>
@@ -338,7 +262,7 @@ export default function AppNavbar() {
 				<Popover>
 					{({ open }) => (
 						<>
-							<PopoverButton className="flex items-center gap-2 font-semibold text-sm/6 data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000] hover:text-[#FF8000] focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white">
+							<PopoverButton className="flex items-center gap-2 font-semibold text-sm/6 data-[active]:text-primary data-[hover]:text-primary hover:text-primary focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white">
 								Socials
 								<BsChevronDown
 									className={clsx("size-3", open && "rotate-180")}
@@ -358,7 +282,7 @@ export default function AppNavbar() {
 								>
 									<div className="p-3">
 										<a
-											className="block rounded-lg px-3 py-2 transition hover:bg-[#FF8000]"
+											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="https://x.com/ArenaDAO"
 										>
 											<p className="font-semibold">Twitter</p>
@@ -367,7 +291,7 @@ export default function AppNavbar() {
 											</p>
 										</a>
 										<a
-											className="block rounded-lg px-3 py-2 transition hover:bg-[#FF8000]"
+											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="https://discord.arenadao.org/"
 										>
 											<p className="font-semibold">Discord</p>
@@ -376,7 +300,7 @@ export default function AppNavbar() {
 											</p>
 										</a>
 										<a
-											className="block rounded-lg px-3 py-2 transition hover:bg-[#FF8000]"
+											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="https://github.com/Arena-DAO"
 										>
 											<p className="font-semibold">Github</p>
@@ -394,7 +318,7 @@ export default function AppNavbar() {
 
 			<NavbarMenu>
 				<a
-					className="flex items-center gap-2 font-semibold text-xl data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000] hover:text-[#FF8000] focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white"
+					className="flex items-center gap-2 font-semibold text-xl data-[active]:text-primary data-[hover]:text-primary hover:text-primary focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white"
 					href="/compete"
 				>
 					Compete
@@ -402,7 +326,7 @@ export default function AppNavbar() {
 				<Popover className="z-50">
 					{({ open }) => (
 						<>
-							<PopoverButton className="flex items-center gap-2 font-semibold text-xl data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000] hover:text-[#FF8000] focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white">
+							<PopoverButton className="flex items-center gap-2 font-semibold text-xl data-[active]:text-primary data-[hover]:text-primary hover:text-primary focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white">
 								DAO
 								<BsChevronDown
 									className={clsx("size-3", open && "rotate-180")}
@@ -422,7 +346,7 @@ export default function AppNavbar() {
 								>
 									<div className="p-3">
 										<a
-											className="block rounded-lg px-3 py-2 transition hover:bg-[#FF8000]"
+											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="/dao/dao"
 										>
 											<p className="font-semibold">DAO</p>
@@ -431,7 +355,7 @@ export default function AppNavbar() {
 											</p>
 										</a>
 										<a
-											className="block rounded-lg px-3 py-2 transition hover:bg-[#FF8000]"
+											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="/dao/jailhouse"
 										>
 											<p className="font-semibold">Jailhouse</p>
@@ -448,7 +372,7 @@ export default function AppNavbar() {
 				<Popover>
 					{({ open }) => (
 						<>
-							<PopoverButton className="flex items-center gap-2 font-semibold text-xl data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000] hover:text-[#FF8000] focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white">
+							<PopoverButton className="flex items-center gap-2 font-semibold text-xl data-[active]:text-primary data-[hover]:text-primary hover:text-primary focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white">
 								Resources
 								<BsChevronDown
 									className={clsx("size-3", open && "rotate-180")}
@@ -468,7 +392,7 @@ export default function AppNavbar() {
 								>
 									<div className="p-3">
 										<a
-											className="block rounded-lg px-3 py-2 transition hover:bg-[#FF8000]"
+											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="https://discord.com/channels/986573321023942708/1041694375702446170"
 											target="_blank"
 											rel="noreferrer"
@@ -479,7 +403,7 @@ export default function AppNavbar() {
 											</p>
 										</a>
 										<a
-											className="block rounded-lg px-3 py-2 transition hover:bg-[#FF8000]"
+											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="/resources/docs"
 										>
 											<p className="font-semibold">Docs</p>
@@ -488,7 +412,7 @@ export default function AppNavbar() {
 											</p>
 										</a>
 										<a
-											className="block rounded-lg px-3 py-2 transition hover:bg-[#FF8000]"
+											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="/resources/bridge"
 										>
 											<p className="font-semibold">Bridge</p>
@@ -505,7 +429,7 @@ export default function AppNavbar() {
 				<Popover>
 					{({ open }) => (
 						<>
-							<PopoverButton className="flex items-center gap-2 font-semibold text-xl data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000] hover:text-[#FF8000] focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white">
+							<PopoverButton className="flex items-center gap-2 font-semibold text-xl data-[active]:text-primary data-[hover]:text-primary hover:text-primary focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white">
 								Socials
 								<BsChevronDown
 									className={clsx("size-3", open && "rotate-180")}
@@ -525,7 +449,7 @@ export default function AppNavbar() {
 								>
 									<div className="p-3">
 										<a
-											className="block rounded-lg px-3 py-2 transition hover:bg-[#FF8000]"
+											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="https://x.com/ArenaDAO"
 										>
 											<p className="font-semibold">Twitter</p>
@@ -534,7 +458,7 @@ export default function AppNavbar() {
 											</p>
 										</a>
 										<a
-											className="block rounded-lg px-3 py-2 transition hover:bg-[#FF8000]"
+											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="https://discord.arenadao.org/"
 										>
 											<p className="font-semibold">Discord</p>
@@ -543,7 +467,7 @@ export default function AppNavbar() {
 											</p>
 										</a>
 										<a
-											className="block rounded-lg px-3 py-2 transition hover:bg-[#FF8000]"
+											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="https://github.com/Arena-DAO"
 										>
 											<p className="font-semibold">Github</p>
