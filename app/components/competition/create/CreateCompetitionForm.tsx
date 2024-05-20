@@ -216,10 +216,10 @@ export default function CreateCompetitionForm({
 				)}
 			</div>
 			<Card>
-				<CardHeader className="flex justify-between space-x-4">
+				<CardHeader className="flex justify-between gap-4">
 					<div>Dues</div>
 					{isMembersFromDuesVisible && (
-						<div className="flex flex-nowrap space-x-2">
+						<div className="flex flex-nowrap gap-2">
 							<Switch
 								aria-label="Members from Dues"
 								isDisabled={isSubmitting}
@@ -260,7 +260,7 @@ export default function CreateCompetitionForm({
 								<TableRow key={due.id}>
 									<TableCell>
 										<Card>
-											<CardHeader className="flex justify-between space-x-4">
+											<CardHeader className="flex justify-between gap-4">
 												<div className="text-nowrap">Due {i + 1}</div>
 												{cosmWasmClient && (
 													<DueProfile
@@ -337,62 +337,46 @@ export default function CreateCompetitionForm({
 				<Card>
 					<CardHeader>Members</CardHeader>
 					<CardBody>
-						<Table
-							aria-label="Members"
-							keyboardDelegate={keyboardDelegateFixSpace}
-							hideHeader
-							removeWrapper
-						>
-							<TableHeader>
-								<TableColumn>Member</TableColumn>
-							</TableHeader>
-							<TableBody>
-								{membersFields?.map((rule, i) => (
-									<TableRow key={rule.id}>
-										<TableCell>
-											<div className="flex space-x-4">
-												<Controller
-													control={control}
-													name={`members.${i}.address`}
-													render={({ field }) => (
-														<Input
-															className="max-w-3xl"
-															label={`Member ${i + 1}`}
+						<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+							{membersFields?.map((rule, i) => (
+								<div key={rule.id} className="flex flex-col gap-4">
+									<Controller
+										control={control}
+										name={`members.${i}.address`}
+										render={({ field }) => (
+											<Input
+												className="w-full"
+												label={`Member ${i + 1}`}
+												isDisabled={isSubmitting}
+												isInvalid={!!errors.members?.[i]?.address}
+												errorMessage={errors.members?.[i]?.address?.message}
+												endContent={
+													<Tooltip content="Delete member">
+														<Button
+															isIconOnly
 															isDisabled={isSubmitting}
-															isInvalid={!!errors.members?.[i]?.address}
-															errorMessage={
-																errors.members?.[i]?.address?.message
-															}
-															endContent={
-																<Tooltip content="Delete member">
-																	<Button
-																		isIconOnly
-																		isDisabled={isSubmitting}
-																		aria-label="Delete member"
-																		variant="faded"
-																		onClick={() => membersRemove(i)}
-																	>
-																		<FiTrash />
-																	</Button>
-																</Tooltip>
-															}
-															{...field}
-														/>
-													)}
-												/>
-												{cosmWasmClient && (
-													<MemberProfile
-														cosmWasmClient={cosmWasmClient}
-														index={i}
-														control={control}
-													/>
-												)}
-											</div>
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
+															aria-label="Delete member"
+															variant="faded"
+															onClick={() => membersRemove(i)}
+														>
+															<FiTrash />
+														</Button>
+													</Tooltip>
+												}
+												{...field}
+											/>
+										)}
+									/>
+									{cosmWasmClient && (
+										<MemberProfile
+											cosmWasmClient={cosmWasmClient}
+											index={i}
+											control={control}
+										/>
+									)}
+								</div>
+							))}
+						</div>
 						<div className="text-danger text-xs">
 							<p>{errors.members?.message}</p>
 							<p>{errors.members?.root?.message}</p>

@@ -273,7 +273,7 @@ const CreateWager = () => {
 							</Button>
 						</Tooltip>
 					)}
-					<div className="flex flex-nowrap space-x-2">
+					<div className="flex flex-nowrap gap-2">
 						<Switch
 							aria-label="Automatic Host"
 							isDisabled={isSubmitting}
@@ -330,7 +330,7 @@ const CreateWager = () => {
 						</Accordion>
 					)}
 					{!watchIsAutomaticHost && (
-						<div className="flex space-x-4">
+						<div className="flex gap-4">
 							<Controller
 								control={control}
 								name="host"

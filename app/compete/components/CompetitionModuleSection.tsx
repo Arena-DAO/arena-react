@@ -142,7 +142,9 @@ const CompetitionModuleSection = (props: CompetitionModuleSectionProps) => {
 			<div className="block text-right">
 				<Button
 					startContent={<BsPlus />}
-					onClick={() => router.push(`/create?category=${props.category.url}`)}
+					onClick={() =>
+						router.push(`/${props.path}/create?category=${props.category.url}`)
+					}
 				>
 					Create
 				</Button>

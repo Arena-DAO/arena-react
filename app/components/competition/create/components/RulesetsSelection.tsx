@@ -100,7 +100,7 @@ const RulesetsSelection = ({
 				{(item: Ruleset) => (
 					<TableRow key={item.id}>
 						<TableCell>{item.description}</TableCell>
-						<TableCell className="space-x-4 text-right">
+						<TableCell className="gap-4 text-right">
 							<Popover placement="left">
 								<PopoverTrigger>
 									<Button>View</Button>

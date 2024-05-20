@@ -47,7 +47,7 @@ const Layout = ({ children }: PropsWithChildren) => {
 				<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
 				<meta name="theme-color" content="#FF8000" />
 			</head>
-			<body className="font-roboto">
+			<body>
 				<Providers>
 					<AppNavbar />
 					<div

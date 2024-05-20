@@ -233,7 +233,7 @@ const CreateLeague = () => {
 							</Button>
 						</Tooltip>
 					)}
-					<div className="flex space-x-4">
+					<div className="flex gap-4">
 						<Controller
 							control={control}
 							name="host"
