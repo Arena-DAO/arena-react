@@ -17,7 +17,7 @@ export default function CompetitionCategoryCard({
 	return (
 		<Card
 			isPressable
-			onClick={() => router.push(`/compete?category=${category.url}`)}
+			onPress={() => router.push(`/compete?category=${category.url}`)}
 			className="col-span-12 lg:col-span-3 md:col-span-4 sm:col-span-6"
 		>
 			<Image
@@ -27,7 +27,7 @@ export default function CompetitionCategoryCard({
 				removeWrapper
 			/>
 			<CardFooter>
-				<p className="font-bold text-2xl">{category.title}</p>
+				<h2 className="font-bold text-2xl">{category.title}</h2>
 			</CardFooter>
 		</Card>
 	);

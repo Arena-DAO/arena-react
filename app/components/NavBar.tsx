@@ -7,17 +7,12 @@ import {
 	Transition,
 } from "@headlessui/react";
 import {
-	Button,
-	Dropdown,
-	DropdownItem,
-	DropdownMenu,
-	DropdownTrigger,
-	Link,
 	Navbar,
 	NavbarBrand,
 	NavbarContent,
 	NavbarMenu,
 	NavbarMenuToggle,
+	Link,
 } from "@nextui-org/react";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
@@ -26,90 +21,10 @@ const ColorModeSwitch = dynamic(() => import("./ColorModeSwitch"), {
 });
 import { Image } from "@nextui-org/react";
 import NextImage from "next/image";
-import { type Dispatch, type SetStateAction, useState } from "react";
+import { useState } from "react";
 import { BsChevronDown } from "react-icons/bs";
 import { useEnv } from "~/hooks/useEnv";
 import WalletConnectToggle from "./WalletConnectToggle";
-
-interface MenuItem {
-	href?: string;
-	label: string;
-	isExternal?: boolean;
-	isDropdown?: boolean;
-	ariaLabel?: string;
-	dropdownItems?: MenuDropdownItem[];
-}
-
-interface MenuDropdownItem {
-	href?: string;
-	label: string;
-	description?: string;
-	isExternal?: boolean;
-}
-
-interface DynamicNavbarItem {
-	item: MenuItem;
-	setIsMenuOpen: Dispatch<SetStateAction<boolean>>;
-	dropdownButtonClass: string;
-	linkClass: string;
-}
-
-const DynamicNavbarItem = ({
-	item,
-	setIsMenuOpen,
-	dropdownButtonClass,
-	linkClass,
-}: DynamicNavbarItem) => {
-	if (item.isDropdown)
-		return (
-			<Dropdown>
-				<DropdownTrigger>
-					<Button
-						disableRipple
-						className={dropdownButtonClass}
-						color="primary"
-						endContent={<BsChevronDown />}
-						size="lg"
-						variant="light"
-					>
-						{item.label}
-					</Button>
-				</DropdownTrigger>
-				<DropdownMenu
-					aria-label={item.ariaLabel}
-					itemClasses={{
-						base: "gap-4",
-						title: "text-primary font-semibold",
-					}}
-					items={item.dropdownItems}
-				>
-					{(dropdownItem) => (
-						<DropdownItem
-							as={Link}
-							key={dropdownItem.label}
-							description={dropdownItem.description}
-							href={dropdownItem.href}
-							onPress={() => setIsMenuOpen(false)}
-							target={dropdownItem.isExternal ? "_blank" : undefined}
-						>
-							{dropdownItem.label}
-						</DropdownItem>
-					)}
-				</DropdownMenu>
-			</Dropdown>
-		);
-	return (
-		<Link
-			className={linkClass}
-			href={item.href}
-			size="lg"
-			isExternal={item.isExternal}
-			onClick={() => setIsMenuOpen(false)}
-		>
-			{item.label}
-		</Link>
-	);
-};
 
 export default function AppNavbar() {
 	const { data: env } = useEnv();
@@ -127,7 +42,7 @@ export default function AppNavbar() {
 					className="md:hidden"
 				/>
 				<NavbarBrand>
-					<a
+					<Link
 						className="flex flex-row items-center justify-center"
 						href="/"
 						onClick={() => setIsMenuOpen(false)}
@@ -143,21 +58,21 @@ export default function AppNavbar() {
 						<p className="title ml-2 font-bold text-inherit text-primary">
 							Arena DAO
 						</p>
-					</a>
+					</Link>
 				</NavbarBrand>
 			</NavbarContent>
 
 			<NavbarContent className="hidden gap-4 md:flex" justify="center">
-				<a
+				<Link
 					className="flex items-center gap-2 font-semibold text-sm/6 data-[active]:text-primary data-[hover]:text-primary hover:text-primary focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white"
 					href="/compete"
 				>
 					Compete
-				</a>
+				</Link>
 				<Popover className="z-50">
 					{({ open }) => (
 						<>
-							<PopoverButton className="flex items-center gap-2 font-semibold text-sm/6 data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000] hover:text-[#FF8000] focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white z-50">
+							<PopoverButton className="z-50 flex items-center gap-2 font-semibold text-sm/6 data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000] hover:text-[#FF8000] focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white">
 								DAO
 								<BsChevronDown
 									className={clsx("size-3", open && "rotate-180")}
@@ -173,19 +88,20 @@ export default function AppNavbar() {
 							>
 								<PopoverPanel
 									anchor="bottom"
-									className="mt-5 z-50 divide-y divide-white/5 rounded-xl bg-background/70 text-sm/6 backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)]"
+									className="z-50 mt-5 divide-y divide-white/5 rounded-xl bg-background/70 text-sm/6 backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)]"
 								>
 									<div className="p-3">
-										<a
+										<Link
 											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
-											href="/dao/dao"
+											href={`${env.DAO_DAO_URL}/dao/${env.ARENA_DAO_ADDRESS}`}
+											isExternal
 										>
 											<p className="font-semibold">DAO</p>
 											<p className="opacity-75">
 												View the Arena DAO on DAO DAO
 											</p>
-										</a>
-										<a
+										</Link>
+										<Link
 											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="/dao/jailhouse"
 										>
@@ -193,7 +109,7 @@ export default function AppNavbar() {
 											<p className="opacity-75">
 												View jailed competitions needing action through the DAO
 											</p>
-										</a>
+										</Link>
 									</div>
 								</PopoverPanel>
 							</Transition>
@@ -219,40 +135,41 @@ export default function AppNavbar() {
 							>
 								<PopoverPanel
 									anchor="bottom"
-									className="mt-5 divide-y divide-white/5 rounded-xl bg-background/70 text-sm/6 backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)] z-50"
+									className="z-50 mt-5 divide-y divide-white/5 rounded-xl bg-background/70 text-sm/6 backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)]"
 								>
 									<div className="p-3">
-										{env.ENV === "development" && (
-											<a
+										{env.FAUCET_URL && (
+											<Link
 												className="block rounded-lg px-3 py-2 transition hover:bg-primary"
-												href="https://discord.com/channels/986573321023942708/1041694375702446170"
-												target="_blank"
-												rel="noreferrer"
+												href={env.FAUCET_URL}
+												isExternal
 											>
 												<p className="font-semibold">Faucet</p>
 												<p className="opacity-75">
 													Get testnet gas to explore The Arena
 												</p>
-											</a>
+											</Link>
 										)}
-										<a
+										<Link
 											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
-											href="/resources/docs"
+											href={env.DOCS_URL}
+											isExternal
 										>
 											<p className="font-semibold">Docs</p>
 											<p className="opacity-75">
 												Learn more about how the Arena DAO works
 											</p>
-										</a>
-										<a
+										</Link>
+										<Link
 											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
-											href="/resources/bridge"
+											href={env.IBC_FUN}
+											isExternal
 										>
 											<p className="font-semibold">Bridge</p>
 											<p className="opacity-75">
 												Transfer funds from other chains into the ecosystem
 											</p>
-										</a>
+										</Link>
 									</div>
 								</PopoverPanel>
 							</Transition>
@@ -278,36 +195,37 @@ export default function AppNavbar() {
 							>
 								<PopoverPanel
 									anchor="bottom"
-									className="mt-5 divide-y divide-white/5 rounded-xl bg-background/70 text-sm/6 backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)] z-50"
+									className="z-50 mt-5 divide-y divide-white/5 rounded-xl bg-background/70 text-sm/6 backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)]"
 								>
 									<div className="p-3">
-										<a
+										<Link
 											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="https://x.com/ArenaDAO"
+											isExternal
 										>
 											<p className="font-semibold">Twitter</p>
 											<p className="opacity-75">
-												Keep updated on our twitter posts
+												Stay up to date with our announcements
 											</p>
-										</a>
-										<a
+										</Link>
+										<Link
 											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="https://discord.arenadao.org/"
+											isExternal
 										>
 											<p className="font-semibold">Discord</p>
-											<p className="opacity-75">
-												Join our group and become a gladiator
-											</p>
-										</a>
-										<a
+											<p className="opacity-75">Connect with the community</p>
+										</Link>
+										<Link
 											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="https://github.com/Arena-DAO"
+											isExternal
 										>
-											<p className="font-semibold">Github</p>
+											<p className="font-semibold">GitHub</p>
 											<p className="opacity-75">
-												Contribute to the DAO as a developer
+												View or contribute to our codebase
 											</p>
-										</a>
+										</Link>
 									</div>
 								</PopoverPanel>
 							</Transition>
@@ -317,12 +235,12 @@ export default function AppNavbar() {
 			</NavbarContent>
 
 			<NavbarMenu>
-				<a
+				<Link
 					className="flex items-center gap-2 font-semibold text-xl data-[active]:text-primary data-[hover]:text-primary hover:text-primary focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white"
 					href="/compete"
 				>
 					Compete
-				</a>
+				</Link>
 				<Popover className="z-50">
 					{({ open }) => (
 						<>
@@ -345,16 +263,17 @@ export default function AppNavbar() {
 									className="z-50 divide-y divide-white/5 rounded-xl bg-background/70 text-sm backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)]"
 								>
 									<div className="p-3">
-										<a
+										<Link
 											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
-											href="/dao/dao"
+											href={`${env.DAO_DAO_URL}/dao/${env.ARENA_DAO_ADDRESS}`}
+											isExternal
 										>
 											<p className="font-semibold">DAO</p>
 											<p className="opacity-75">
 												View the Arena DAO on DAO DAO
 											</p>
-										</a>
-										<a
+										</Link>
+										<Link
 											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="/dao/jailhouse"
 										>
@@ -362,7 +281,7 @@ export default function AppNavbar() {
 											<p className="opacity-75">
 												View jailed competitions needing action through the DAO
 											</p>
-										</a>
+										</Link>
 									</div>
 								</PopoverPanel>
 							</Transition>
@@ -391,35 +310,38 @@ export default function AppNavbar() {
 									className="z-50 divide-y divide-white/5 rounded-xl bg-background/70 text-sm backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)]"
 								>
 									<div className="p-3">
-										<a
+										{env.FAUCET_URL && (
+											<Link
+												className="block rounded-lg px-3 py-2 transition hover:bg-primary"
+												href={env.FAUCET_URL}
+												isExternal
+											>
+												<p className="font-semibold">Faucet</p>
+												<p className="opacity-75">
+													Get testnet gas to explore The Arena
+												</p>
+											</Link>
+										)}
+										<Link
 											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
-											href="https://discord.com/channels/986573321023942708/1041694375702446170"
-											target="_blank"
-											rel="noreferrer"
-										>
-											<p className="font-semibold">Faucet</p>
-											<p className="opacity-75">
-												Get testnet gas to explore The Arena
-											</p>
-										</a>
-										<a
-											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
-											href="/resources/docs"
+											href={env.DOCS_URL}
+											isExternal
 										>
 											<p className="font-semibold">Docs</p>
 											<p className="opacity-75">
 												Learn more about how the Arena DAO works
 											</p>
-										</a>
-										<a
+										</Link>
+										<Link
 											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
-											href="/resources/bridge"
+											href={env.IBC_FUN}
+											isExternal
 										>
 											<p className="font-semibold">Bridge</p>
 											<p className="opacity-75">
 												Transfer funds from other chains into the ecosystem
 											</p>
-										</a>
+										</Link>
 									</div>
 								</PopoverPanel>
 							</Transition>
@@ -448,33 +370,34 @@ export default function AppNavbar() {
 									className="z-50 divide-y divide-white/5 rounded-xl bg-background/70 text-sm backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)]"
 								>
 									<div className="p-3">
-										<a
+										<Link
 											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="https://x.com/ArenaDAO"
+											isExternal
 										>
 											<p className="font-semibold">Twitter</p>
 											<p className="opacity-75">
-												Keep updated on our twitter posts
+												Stay up to date with our announcements
 											</p>
-										</a>
-										<a
+										</Link>
+										<Link
 											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="https://discord.arenadao.org/"
+											isExternal
 										>
 											<p className="font-semibold">Discord</p>
-											<p className="opacity-75">
-												Join our group and become a gladiator
-											</p>
-										</a>
-										<a
+											<p className="opacity-75">Connect with the community</p>
+										</Link>
+										<Link
 											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
 											href="https://github.com/Arena-DAO"
+											isExternal
 										>
-											<p className="font-semibold">Github</p>
+											<p className="font-semibold">GitHub</p>
 											<p className="opacity-75">
-												Contribute to the DAO as a developer
+												View or contribute to our codebase
 											</p>
-										</a>
+										</Link>
 									</div>
 								</PopoverPanel>
 							</Transition>

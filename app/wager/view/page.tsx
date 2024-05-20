@@ -33,11 +33,13 @@ const ViewWager = () => {
 	});
 
 	if (!competitionId) {
-		return <h1 className="text-center text-5xl title">Wager id not provided...</h1>;
+		return (
+			<h1 className="title text-center text-5xl">Wager id not provided...</h1>
+		);
 	}
 	return (
 		<div className="space-y-4">
-			<h1 className="text-center text-5xl title">View Wager</h1>
+			<h1 className="title text-center text-5xl">View Wager</h1>
 			{data && cosmWasmClient && (
 				<ViewCompetition
 					cosmWasmClient={cosmWasmClient}

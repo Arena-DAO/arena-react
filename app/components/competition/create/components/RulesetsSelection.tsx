@@ -76,6 +76,7 @@ const RulesetsSelection = ({
 			baseRef={scrollerRef}
 			removeWrapper
 			isStriped
+			hideHeader={list?.items.length === 0}
 			bottomContent={
 				hasMore ? (
 					<div className="flex w-full justify-center">
@@ -92,7 +93,6 @@ const RulesetsSelection = ({
 				<TableColumn className="text-right">Selection</TableColumn>
 			</TableHeader>
 			<TableBody
-				emptyContent="No rulesets available"
 				items={list.items}
 				isLoading={list.isLoading}
 				loadingContent={<Spinner color="white" />}

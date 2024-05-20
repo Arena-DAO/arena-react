@@ -8,7 +8,7 @@ export default function Footer() {
 		<>
 			<div className="flex flex-col-reverse items-center justify-between px-10 md:flex-row">
 				<div className="w-full text-center text-small md:w-1/2 md:text-left">
-					"Veni, vidi, vici" - Julius Caesar
+					"Audendo virtus crescit, tardando timor." - Publilius Syrus
 				</div>
 				<div>
 					<ButtonGroup variant="light">

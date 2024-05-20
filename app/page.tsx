@@ -1,36 +1,8 @@
 "use client";
 
-import {} from "@nextui-org/react";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 import { useState } from "react";
-
-const items = [
-	{
-		id: 1,
-		title: "Arena DAO - Immersing GameFi experience on Neutron",
-		description:
-			"Jump into the world of web3 games, enjoy the life as a crypto holder inside our wonderful world.",
-	},
-	{
-		id: 2,
-		title: "Arena DAO - Immersing GameFi experience on Neutron",
-		description:
-			"Jump into the world of web3 games, enjoy the life as a crypto holder inside our wonderful world.",
-	},
-	{
-		id: 3,
-		title: "Arena DAO - Immersing GameFi experience on Neutron",
-		description:
-			"Jump into the world of web3 games, enjoy the life as a crypto holder inside our wonderful world.",
-	},
-	{
-		id: 4,
-		title: "Arena DAO - Immersing GameFi experience on Neutron",
-		description:
-			"Jump into the world of web3 games, enjoy the life as a crypto holder inside our wonderful world.",
-	},
-];
 
 function Arrow(props: {
 	disabled: boolean;
@@ -113,41 +85,25 @@ function HomePage() {
 				ref={sliderRef}
 				className="keen-slider relative flex min-h-[50vh] md:min-h-[100vh]"
 			>
-				{items.map((item) => (
-					<div key={item.id} className="keen-slider__slide relative flex">
+				{[1, 2, 3, 4].map((id) => (
+					<div key={id} className="keen-slider__slide relative flex">
 						<div
 							className="absolute inset-0 z-[-1] bg-center bg-cover bg-no-repeat"
 							style={{
-								backgroundImage: `url('/landing/${item.id}.jpg')`,
+								backgroundImage: `url('/landing/${id}.jpg')`,
 								opacity: 0.5, // Set the opacity value (0 to 1)
 							}}
 						/>
-<<<<<<< HEAD
-						<div className="absolute top-[30%] mx-10 my-auto opacity-100 md:top-[20%] md:left-[5%]">
-							<div
-								className="title text-center text-[180%] text-primary md:max-w-[70%] md:text-left md:text-[400%] sm:text-[250%]"
-								style={{ fontFamily: "gladiator_font" }}
-							>
-								{item.title}
-							</div>
-							<div className="text-center text-[100%] md:max-w-[40%] md:text-left md:text-[150%] sm:text-[120%]">
-								{item.description}
-							</div>
-						</div>
-=======
->>>>>>> f31eb325d0faebab26def88945777aabea4d3185
 					</div>
 				))}
-				{/*						<img src={`/landing/${item.id}.jpg`} className="opacity-50 min-h-screen" alt={`Image ${item.id}`} />*/}
 				<div className="absolute top-[30%] mx-10 my-auto opacity-100 md:top-[20%] md:left-[5%]">
-					<div
-						className="title text-center text-[180%] text-primary md:max-w-[70%] md:text-left md:text-[400%] sm:text-[250%]"
-						style={{ fontFamily: "gladiator_font" }}
-					>
-						ArenaDAO - Immersing GameFi experience on Neutron
+					<div className="title text-center text-[180%] leading-none md:max-w-[70%] md:text-left md:text-[400%] sm:text-[250%]">
+						Welcome to{" "}
+						<span className="whitespace-nowrap text-primary">The Arena</span>
 					</div>
 					<div className="text-center text-[100%] md:max-w-[40%] md:text-left md:text-[150%] sm:text-[120%]">
-						Jump into the world of web3 games, enjoy the life as a crypto holder inside our wonderful world.
+						Jump into the world of web3 games, enjoy the life as a crypto holder
+						inside our wonderful world.
 					</div>
 				</div>
 
