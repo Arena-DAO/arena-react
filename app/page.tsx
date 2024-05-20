@@ -122,6 +122,7 @@ function HomePage() {
 								opacity: 0.5, // Set the opacity value (0 to 1)
 							}}
 						/>
+<<<<<<< HEAD
 						<div className="absolute top-[30%] mx-10 my-auto opacity-100 md:top-[20%] md:left-[5%]">
 							<div
 								className="title text-center text-[180%] text-primary md:max-w-[70%] md:text-left md:text-[400%] sm:text-[250%]"
@@ -133,8 +134,22 @@ function HomePage() {
 								{item.description}
 							</div>
 						</div>
+=======
+>>>>>>> f31eb325d0faebab26def88945777aabea4d3185
 					</div>
 				))}
+				{/*						<img src={`/landing/${item.id}.jpg`} className="opacity-50 min-h-screen" alt={`Image ${item.id}`} />*/}
+				<div className="absolute top-[30%] mx-10 my-auto opacity-100 md:top-[20%] md:left-[5%]">
+					<div
+						className="title text-center text-[180%] text-primary md:max-w-[70%] md:text-left md:text-[400%] sm:text-[250%]"
+						style={{ fontFamily: "gladiator_font" }}
+					>
+						ArenaDAO - Immersing GameFi experience on Neutron
+					</div>
+					<div className="text-center text-[100%] md:max-w-[40%] md:text-left md:text-[150%] sm:text-[120%]">
+						Jump into the world of web3 games, enjoy the life as a crypto holder inside our wonderful world.
+					</div>
+				</div>
 
 				{loaded && instanceRef.current && (
 					<>

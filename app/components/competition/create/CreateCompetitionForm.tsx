@@ -219,7 +219,7 @@ export default function CreateCompetitionForm({
 				<CardHeader className="flex justify-between gap-4">
 					<div>Dues</div>
 					{isMembersFromDuesVisible && (
-						<div className="flex flex-nowrap gap-2">
+						<div className="z-1 flex flex-nowrap gap-2">
 							<Switch
 								aria-label="Members from Dues"
 								isDisabled={isSubmitting}

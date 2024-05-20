@@ -261,7 +261,7 @@ const CreateWager = () => {
 		<FormProvider {...formMethods}>
 			<form onSubmit={handleSubmit(async (data) => await onSubmit(data))}>
 				<div className="space-y-4">
-					<h1 className="text-center text-5xl">Create a Wager</h1>
+					<h1 className="text-center text-5xl title">Create a Wager</h1>
 					{category && (
 						<Tooltip content="Return to competitions">
 							<Button
