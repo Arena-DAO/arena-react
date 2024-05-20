@@ -78,7 +78,7 @@ const ViewCompetition = ({
 				</Tooltip>
 			)}
 			<Card>
-				<CardHeader className="z-1·flex·justify-between">
+				<CardHeader className="z-1 flex justify-between">
 					<h2>Host</h2>
 					<Badge
 						isOneChar
@@ -187,7 +187,7 @@ const ViewCompetition = ({
 					hideIfEmpty={status === "inactive"}
 				/>
 			)}
-			<div className="block space-x-2 overflow-x-auto">
+			<div className="block gap-2 overflow-x-auto">
 				{!hideProcess && status === "active" && (
 					<ProcessForm
 						moduleAddr={moduleAddr}

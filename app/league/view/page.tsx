@@ -117,7 +117,7 @@ const ViewWager = () => {
 										</TableBody>
 									</Table>
 								</CardBody>
-								<CardFooter className="gap-4">
+								<CardFooter className="grid grid-cols-12 gap-4">
 									<Input
 										className="col-span-12 md:col-span-4"
 										type="number"

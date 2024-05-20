@@ -1,56 +1,58 @@
-import React from "react";
+import React, { type SVGProps } from "react";
 import {
 	ResponsiveContainer,
 	StackedCarousel,
 } from "react-stacked-center-carousel";
 
-function Arrow(props: {
-	disabled: boolean;
-	left?: boolean;
-	onClick: (e: React.MouseEvent<SVGSVGElement>) => void;
-}) {
-	const disabled = props.disabled ? " arrow--disabled" : "";
+interface GameItem {
+	cover: string;
+	title: string;
+}
+
+function Arrow(
+	props: {
+		left?: boolean;
+		onClick: (e: React.MouseEvent<SVGSVGElement>) => void;
+		style?: React.CSSProperties;
+		disabled?: boolean;
+	} & SVGProps<SVGSVGElement>,
+) {
+	const disabled = props.disabled === true ? " arrow--disabled" : "";
 	return (
-		<>
-			<svg
-				onClick={(e: React.MouseEvent<SVGSVGElement>) => {
-					e.stopPropagation();
-					props.onClick?.(e);
-				}}
-				onKeyUp={(e: React.KeyboardEvent<SVGSVGElement>) => {
-					if (e.key === "Enter" || e.key === " ") {
-						props.onClick?.(e);
-					}
-				}}
-				onKeyDown={(e: React.KeyboardEvent<SVGSVGElement>) => {
-					if (e.key === "Enter" || e.key === " ") {
-						e.preventDefault();
-					}
-				}}
-				onKeyPress={(e: React.KeyboardEvent<SVGSVGElement>) => {
-					if (e.key === "Enter" || e.key === " ") {
-						props.onClick?.(e);
-					}
-				}}
-				className={`arrow ${
-					props.left ? "arrow--left" : "arrow--right"
-				} ${disabled}`}
-				xmlns="http://www.w3.org/2000/svg"
-				viewBox="0 0 24 24"
-				aria-label={props.left ? "Previous slide" : "Next slide"}
-			>
-				<title>{props.left ? "Previous slide" : "Next slide"}</title>
-				{props.left && (
-					<path d="M16.67 0l2.83 2.829-9.339 9.175 9.339 9.167-2.83 2.829-12.17-11.996z" />
-				)}
-				{!props.left && (
-					<path d="M5 3l3.057-3 11.943 12-11.943 12-3.057-3 9-9z" />
-				)}
-			</svg>
-		</>
+		<svg
+			onClick={(e: React.MouseEvent<SVGSVGElement>) => {
+				e.stopPropagation();
+				props.onClick?.(e);
+			}}
+			onKeyUp={(e: React.KeyboardEvent<SVGSVGElement>) => {
+				if (e.key === "Enter" || e.key === " ") {
+					props.onClick?.(e as unknown as React.MouseEvent<SVGSVGElement>);
+				}
+			}}
+			onKeyDown={(e: React.KeyboardEvent<SVGSVGElement>) => {
+				if (e.key === "Enter" || e.key === " ") {
+					e.preventDefault();
+				}
+			}}
+			// biome-ignore lint/nursery/useSortedClasses: simplest option
+			className={`${disabled} arrow ${
+				props.left ? "arrow--left" : "arrow--right"
+			}`}
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 24 24"
+			aria-label={props.left ? "Previous slide" : "Next slide"}
+		>
+			<title>{props.left ? "Previous slide" : "Next slide"}</title>
+			{props.left && (
+				<path d="M16.67 0l2.83 2.829-9.339 9.175 9.339 9.167-2.83 2.829-12.17-11.996z" />
+			)}
+			{!props.left && (
+				<path d="M5 3l3.057-3 11.943 12-11.943 12-3.057-3 9-9z" />
+			)}
+		</svg>
 	);
 }
-export const data = [
+export const data: GameItem[] = [
 	{
 		cover: "/category_images/call-of-duty.webp",
 		title: "Call Of Duty",
@@ -89,14 +91,14 @@ export const data = [
 	},
 ];
 
-export default function GameInfo(props) {
-	const ref = React.useRef();
+export default function GameInfo() {
+	const ref = React.useRef<StackedCarousel>();
 	return (
 		<div
 			style={{ width: "100%", position: "relative" }}
 			className="mx-auto max-w-[1280px] px-10"
 		>
-			<div className="title mt-8 mb-4 text-center text-6xl text-[#FF8000]">
+			<div className="title mt-8 mb-4 text-center text-6xl text-primary">
 				Our Games
 			</div>
 			<ResponsiveContainer
@@ -127,7 +129,6 @@ export default function GameInfo(props) {
 				<Arrow
 					style={{ position: "absolute", top: "40%", left: 10, zIndex: 100 }}
 					left
-					size="small"
 					color="primary"
 					onClick={() => {
 						ref.current?.goBack();
@@ -136,10 +137,9 @@ export default function GameInfo(props) {
 
 				<Arrow
 					style={{ position: "absolute", top: "40%", right: 10, zIndex: 100 }}
-					size="small"
 					color="primary"
 					onClick={() => {
-						ref.current?.goNext(6);
+						ref.current?.goNext();
 					}}
 				/>
 			</>
@@ -150,29 +150,34 @@ export default function GameInfo(props) {
 // Very import to memoize your Slide component otherwise there might be performance issue
 // At minimum your should do a simple React.memo(SlideComponent)
 // If you want the absolute best performance then pass in a custom comparator function like below
-export const Card = React.memo((props) => {
-	const { data, dataIndex } = props;
-	const { cover } = data[dataIndex];
-	return (
-		<div
-			style={{
-				width: "100%",
-				height: 500,
-				userSelect: "none",
-			}}
-			className="my-slide-component"
-		>
-			<img
+export const Card = React.memo(
+	({ data, dataIndex }: { data: GameItem[]; dataIndex: number }) => {
+		const item = data[dataIndex];
+
+		if (!item) return null;
+
+		const { cover } = item;
+		return (
+			<div
 				style={{
-					height: "100%",
 					width: "100%",
-					objectFit: "cover",
-					borderRadius: 0,
+					height: 500,
+					userSelect: "none",
 				}}
-				alt="cover"
-				draggable={false}
-				src={cover}
-			/>
-		</div>
-	);
-});
+				className="my-slide-component"
+			>
+				<img
+					style={{
+						height: "100%",
+						width: "100%",
+						objectFit: "cover",
+						borderRadius: 0,
+					}}
+					alt="cover"
+					draggable={false}
+					src={cover}
+				/>
+			</div>
+		);
+	},
+);

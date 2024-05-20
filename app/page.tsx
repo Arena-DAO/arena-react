@@ -4,12 +4,8 @@ import { Button, Image } from "@nextui-org/react";
 import { useKeenSlider } from "keen-slider/react";
 import NextImage from "next/image";
 import "keen-slider/keen-slider.min.css";
-import dynamic from "next/dynamic";
 import { useState } from "react";
 import GameInfo from "./components/GameInfo";
-const Carousel = dynamic(() => import("react-spring-3d-carousel"), {
-	ssr: false,
-});
 
 const items = [
 	{
@@ -45,42 +41,41 @@ function Arrow(props: {
 }) {
 	const disabled = props.disabled ? " arrow--disabled" : "";
 	return (
-		<>
-			<svg
-				onClick={(e: React.MouseEvent<SVGSVGElement>) => {
-					e.stopPropagation();
-					props.onClick?.(e);
-				}}
-				onKeyUp={(e: React.KeyboardEvent<SVGSVGElement>) => {
-					if (e.key === "Enter" || e.key === " ") {
-						props.onClick?.(e);
-					}
-				}}
-				onKeyDown={(e: React.KeyboardEvent<SVGSVGElement>) => {
-					if (e.key === "Enter" || e.key === " ") {
-						e.preventDefault();
-					}
-				}}
-				onKeyPress={(e: React.KeyboardEvent<SVGSVGElement>) => {
-					if (e.key === "Enter" || e.key === " ") {
-						props.onClick?.(e);
-					}
-				}}
-				className={`${
-					props.left ? "arrow arrow--left" : "arrow arrow--right"
-				} ${disabled}`}
-				xmlns="http://www.w3.org/2000/svg"
-				viewBox="0 0 24 24"
-			>
-				<title>{props.left ? "Previous slide" : "Next slide"}</title>
-				{props.left && (
-					<path d="M16.67 0l2.83 2.829-9.339 9.175 9.339 9.167-2.83 2.829-12.17-11.996z" />
-				)}
-				{!props.left && (
-					<path d="M5 3l3.057-3 11.943 12-11.943 12-3.057-3 9-9z" />
-				)}
-			</svg>
-		</>
+		<svg
+			onClick={(e: React.MouseEvent<SVGSVGElement>) => {
+				e.stopPropagation();
+				props.onClick?.(e);
+			}}
+			onKeyUp={(e: React.KeyboardEvent<SVGSVGElement>) => {
+				if (e.key === "Enter" || e.key === " ") {
+					props.onClick?.(e as unknown as React.MouseEvent<SVGSVGElement>);
+				}
+			}}
+			onKeyDown={(e: React.KeyboardEvent<SVGSVGElement>) => {
+				if (e.key === "Enter" || e.key === " ") {
+					e.preventDefault();
+				}
+			}}
+			onKeyPress={(e: React.KeyboardEvent<SVGSVGElement>) => {
+				if (e.key === "Enter" || e.key === " ") {
+					props.onClick?.(e as unknown as React.MouseEvent<SVGSVGElement>);
+				}
+			}}
+			className={`${
+				props.left ? "arrow arrow--left" : "arrow arrow--right"
+				// biome-ignore lint/nursery/useSortedClasses: Simplest option
+			} ${disabled}`}
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 24 24"
+		>
+			<title>{props.left ? "Previous slide" : "Next slide"}</title>
+			{props.left && (
+				<path d="M16.67 0l2.83 2.829-9.339 9.175 9.339 9.167-2.83 2.829-12.17-11.996z" />
+			)}
+			{!props.left && (
+				<path d="M5 3l3.057-3 11.943 12-11.943 12-3.057-3 9-9z" />
+			)}
+		</svg>
 	);
 }
 
@@ -154,16 +149,18 @@ function HomePage() {
 					<>
 						<Arrow
 							left
-							onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-								e.stopPropagation() || instanceRef.current?.prev()
-							}
+							onClick={(e: React.MouseEvent<SVGSVGElement>) => {
+								e.stopPropagation();
+								instanceRef.current?.prev();
+							}}
 							disabled={currentSlide === 0}
 						/>
 
 						<Arrow
-							onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-								e.stopPropagation() || instanceRef.current?.next()
-							}
+							onClick={(e: React.MouseEvent<SVGSVGElement>) => {
+								e.stopPropagation();
+								instanceRef.current?.next();
+							}}
 							disabled={
 								currentSlide ===
 								instanceRef.current.track.details.slides.length - 1
