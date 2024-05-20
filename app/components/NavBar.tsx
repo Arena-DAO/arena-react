@@ -235,7 +235,7 @@ export default function AppNavbar() {
 				<Popover className="z-50">
 					{({ open }) => (
 						<>
-							<PopoverButton className="flex items-center gap-2 font-semibold text-sm/6 data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000] hover:text-[#FF8000] focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white">
+							<PopoverButton className="flex items-center gap-2 font-semibold text-sm/6 data-[active]:text-[#FF8000] data-[hover]:text-[#FF8000] hover:text-[#FF8000] focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white z-50">
 								DAO
 								<BsChevronDown
 									className={clsx("size-3", open && "rotate-180")}
@@ -251,7 +251,7 @@ export default function AppNavbar() {
 							>
 								<PopoverPanel
 									anchor="bottom"
-									className="mt-5 divide-y divide-white/5 rounded-xl bg-background/70 text-sm/6 backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)]"
+									className="mt-5 z-50 divide-y divide-white/5 rounded-xl bg-background/70 text-sm/6 backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)]"
 								>
 									<div className="p-3">
 										<a
@@ -297,7 +297,7 @@ export default function AppNavbar() {
 							>
 								<PopoverPanel
 									anchor="bottom"
-									className="mt-5 divide-y divide-white/5 rounded-xl bg-background/70 text-sm/6 backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)]"
+									className="mt-5 divide-y divide-white/5 rounded-xl bg-background/70 text-sm/6 backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)] z-50"
 								>
 									<div className="p-3">
 										<a
@@ -354,7 +354,7 @@ export default function AppNavbar() {
 							>
 								<PopoverPanel
 									anchor="bottom"
-									className="mt-5 divide-y divide-white/5 rounded-xl bg-background/70 text-sm/6 backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)]"
+									className="mt-5 divide-y divide-white/5 rounded-xl bg-background/70 text-sm/6 backdrop-blur-lg backdrop-saturate-150 [--anchor-gap:var(--spacing-5)] z-50"
 								>
 									<div className="p-3">
 										<a
