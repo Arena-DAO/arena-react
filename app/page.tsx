@@ -141,7 +141,8 @@ function HomePage() {
 						ArenaDAO - Immersing GameFi experience on Neutron
 					</div>
 					<div className="text-center text-[100%] md:max-w-[40%] md:text-left md:text-[150%] sm:text-[120%]">
-						Jump into the world of web3 games, enjoy the life as a crypto holder inside our wonderful world.
+						Jump into the world of web3 games, enjoy the life as a crypto holder
+						inside our wonderful world.
 					</div>
 				</div>
 

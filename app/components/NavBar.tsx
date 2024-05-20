@@ -30,6 +30,7 @@ import { type Dispatch, type SetStateAction, useState } from "react";
 import { BsChevronDown } from "react-icons/bs";
 import { useEnv } from "~/hooks/useEnv";
 import WalletConnectToggle from "./WalletConnectToggle";
+import { useRouter } from "next/navigation";
 
 interface MenuItem {
 	href?: string;
@@ -114,6 +115,7 @@ const DynamicNavbarItem = ({
 export default function AppNavbar() {
 	const { data: env } = useEnv();
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
+	const router = useRouter();
 
 	return (
 		<Navbar
@@ -149,8 +151,8 @@ export default function AppNavbar() {
 
 			<NavbarContent className="hidden gap-4 md:flex" justify="center">
 				<a
-					className="flex items-center gap-2 font-semibold text-sm/6 data-[active]:text-primary data-[hover]:text-primary hover:text-primary focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white"
-					href="/compete"
+					className="flex items-center gap-2 font-semibold text-sm/6 data-[active]:text-primary data-[hover]:text-primary hover:text-primary focus:outline-none data-[focus]:outline-1 data-[focus]:outline-white cursor-pointer"
+					onClick={()=>{router.push("/compete")}}
 				>
 					Compete
 				</a>
@@ -178,7 +180,7 @@ export default function AppNavbar() {
 									<div className="p-3">
 										<a
 											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
-											href="/dao/dao"
+											onClick={()=>{router.push("/dao/dao")}}
 										>
 											<p className="font-semibold">DAO</p>
 											<p className="opacity-75">
@@ -187,7 +189,7 @@ export default function AppNavbar() {
 										</a>
 										<a
 											className="block rounded-lg px-3 py-2 transition hover:bg-primary"
-											href="/dao/jailhouse"
+											onClick={()=>{router.push("/dao/jailhouse")}}
 										>
 											<p className="font-semibold">Jailhouse</p>
 											<p className="opacity-75">
