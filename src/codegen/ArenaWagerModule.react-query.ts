@@ -5,7 +5,7 @@
 */
 
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import { InstantiateMsg, Empty, ExecuteMsg, Decimal, Uint128, Binary, Admin, Expiration, Timestamp, Uint64, ModuleInfo, Action, ProposeMessage, DistributionForString, MemberPercentageForString, ModuleInstantiateInfo, EmptyWrapper, QueryMsg, CompetitionsFilter, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, ArrayOfCompetitionResponseForEmpty, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, EmptyWrapper, QueryMsg, CompetitionsFilter, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, FeeInformationForAddr, ArrayOfCompetitionResponseForEmpty, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaWagerModule.types";
 import { ArenaWagerModuleQueryClient } from "./ArenaWagerModule.client";
 export interface ArenaWagerModuleReactQuery<TResponse, TData = TResponse> {
   client: ArenaWagerModuleQueryClient;

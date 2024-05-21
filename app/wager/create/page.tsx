@@ -22,13 +22,15 @@ import { Controller, FormProvider, useForm } from "react-hook-form";
 import { BsArrowLeft, BsInfoCircle } from "react-icons/bs";
 import { toast } from "react-toastify";
 import { z } from "zod";
-import type { InstantiateMsg as ArenaEscrowInstantiateMsg } from "~/codegen/ArenaEscrow.types";
 import { ArenaWagerModuleClient } from "~/codegen/ArenaWagerModule.client";
 import type { InstantiateMsg as DaoDaoCoreInstantiateMsg } from "~/codegen/DaoDaoCore.types";
 import type { InstantiateMsg as DAOProposalSingleInstantiateMsg } from "~/codegen/DaoProposalSingle.types";
 import type { InstantiateMsg as DAOVotingCW4InstantiateMsg } from "~/codegen/DaoVotingCw4.types";
 import { AddressSchema, CreateCompetitionSchema } from "~/config/schemas";
-import { convertToExpiration } from "~/helpers/SchemaHelpers";
+import {
+	convertToEscrowInstantiate,
+	convertToExpiration,
+} from "~/helpers/SchemaHelpers";
 import { useCategoryMap } from "~/hooks/useCategories";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
@@ -206,28 +208,11 @@ const CreateWager = () => {
 				rulesets: values.rulesets.map((x) => x.ruleset_id.toString()),
 				instantiateExtension: {},
 				host: host,
-				escrow: {
-					code_id: env.CODE_ID_ESCROW,
-					label: "Arena Escrow",
-					msg: toBinary({
-						dues: values.dues.map(({ addr, balance }) => {
-							return {
-								addr,
-								balance: {
-									native: balance.native.map(({ denom, amount }) => ({
-										denom,
-										amount: amount.toString(),
-									})),
-									cw20: balance.cw20.map(({ address, amount }) => ({
-										address,
-										amount: amount.toString(),
-									})),
-									cw721: balance.cw721,
-								},
-							};
-						}),
-					} as ArenaEscrowInstantiateMsg),
-				},
+				escrow: convertToEscrowInstantiate(
+					env.CODE_ID_ESCROW,
+					values.dues,
+					values.additionalLayeredFees,
+				),
 			};
 
 			const result = await wagerModuleClient.createCompetition(msg);
@@ -260,7 +245,7 @@ const CreateWager = () => {
 	return (
 		<FormProvider {...formMethods}>
 			<form onSubmit={handleSubmit(async (data) => await onSubmit(data))}>
-				<div className="space-y-4">
+				<div className="mx-auto w-full max-w-screen-xl justify-center space-y-4 px-10">
 					<h1 className="title text-center text-5xl">Create a Wager</h1>
 					{category && (
 						<Tooltip content="Return to competitions">
@@ -280,7 +265,12 @@ const CreateWager = () => {
 							defaultSelected={
 								formMethods.formState.defaultValues?.isAutomaticHost
 							}
-							onValueChange={(value) => setValue("isAutomaticHost", value)}
+							onValueChange={(value) => {
+								setValue("isAutomaticHost", value);
+								if (!value) {
+									setValue("members", []);
+								}
+							}}
 						>
 							Use Automatic Host
 						</Switch>

@@ -6,10 +6,10 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { Binary, InstantiateMsg, TournamentExt, ExecuteMsg, Decimal, Uint128, Admin, Expiration, Timestamp, Uint64, ModuleInfo, ExecuteExt, Result, Action, ProposeMessage, DistributionForString, MemberPercentageForString, ModuleInstantiateInfo, CompetitionInstantiateExt, MatchResult, QueryMsg, CompetitionsFilter, CompetitionStatus, QueryExt, MigrateMsg, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForCompetitionExt, CompetitionExt, ArrayOfCompetitionResponseForCompetitionExt, ConfigForTournamentExt, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaLeagueModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, ExecuteExt, Result, Int128, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, CompetitionInstantiateExt, MatchResult, PointAdjustment, QueryMsg, CompetitionsFilter, CompetitionStatus, QueryExt, MigrateMsg, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForCompetitionExt, CompetitionExt, FeeInformationForAddr, ArrayOfCompetitionResponseForCompetitionExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaLeagueModule.types";
 export interface ArenaLeagueModuleReadOnlyInterface {
   contractAddress: string;
-  config: () => Promise<ConfigForTournamentExt>;
+  config: () => Promise<ConfigForEmpty>;
   dAO: () => Promise<String>;
   competitionCount: () => Promise<Uint128>;
   competition: ({
@@ -65,7 +65,7 @@ export class ArenaLeagueModuleQueryClient implements ArenaLeagueModuleReadOnlyIn
     this.ownership = this.ownership.bind(this);
   }
 
-  config = async (): Promise<ConfigForTournamentExt> => {
+  config = async (): Promise<ConfigForEmpty> => {
     return this.client.queryContractSmart(this.contractAddress, {
       config: {}
     });
@@ -192,7 +192,7 @@ export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInt
   }: {
     categoryId?: Uint128;
     description: string;
-    escrow?: ModuleInstantiateInfo;
+    escrow?: EscrowInstantiateInfo;
     expiration: Expiration;
     host: ModuleInfo;
     instantiateExtension: CompetitionInstantiateExt;
@@ -209,14 +209,10 @@ export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInt
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   processCompetition: ({
     competitionId,
-    distribution,
-    taxCw20Msg,
-    taxCw721Msg
+    distribution
   }: {
     competitionId: Uint128;
     distribution?: DistributionForString;
-    taxCw20Msg?: Binary;
-    taxCw721Msg?: Binary;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   extension: ({
     msg
@@ -312,7 +308,7 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
   }: {
     categoryId?: Uint128;
     description: string;
-    escrow?: ModuleInstantiateInfo;
+    escrow?: EscrowInstantiateInfo;
     expiration: Expiration;
     host: ModuleInfo;
     instantiateExtension: CompetitionInstantiateExt;
@@ -350,21 +346,15 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
   };
   processCompetition = async ({
     competitionId,
-    distribution,
-    taxCw20Msg,
-    taxCw721Msg
+    distribution
   }: {
     competitionId: Uint128;
     distribution?: DistributionForString;
-    taxCw20Msg?: Binary;
-    taxCw721Msg?: Binary;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       process_competition: {
         competition_id: competitionId,
-        distribution,
-        tax_cw20_msg: taxCw20Msg,
-        tax_cw721_msg: taxCw721Msg
+        distribution
       }
     }, fee, memo, _funds);
   };

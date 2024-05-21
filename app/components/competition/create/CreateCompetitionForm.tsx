@@ -1,7 +1,10 @@
 "use client";
 
+import Profile from "@/components/Profile";
 import { parseAbsoluteToLocal } from "@internationalized/date";
 import {
+	Accordion,
+	AccordionItem,
 	Button,
 	Card,
 	CardBody,
@@ -30,7 +33,7 @@ import {
 	useFieldArray,
 	useFormContext,
 } from "react-hook-form";
-import { BsInfoCircle } from "react-icons/bs";
+import { BsInfoCircle, BsPercent } from "react-icons/bs";
 import { FiPlus, FiTrash } from "react-icons/fi";
 import type { z } from "zod";
 import type { CreateCompetitionSchema } from "~/config/schemas";
@@ -89,6 +92,11 @@ export default function CreateCompetitionForm({
 		append: membersAppend,
 		remove: membersRemove,
 	} = useFieldArray({ name: "members", control });
+	const {
+		fields: additionalLayeredFeesFields,
+		append: additionalLayeredFeesAppend,
+		remove: additionalLayeredFeesRemove,
+	} = useFieldArray({ name: "additionalLayeredFees", control });
 
 	const category = searchParams?.get("category") ?? "";
 	const categoryItem = categories.get(category);
@@ -219,7 +227,7 @@ export default function CreateCompetitionForm({
 				<CardHeader className="flex justify-between gap-4">
 					<div>Dues</div>
 					{isMembersFromDuesVisible && (
-						<div className="z-1 flex flex-nowrap gap-2">
+						<div className="flex flex-nowrap gap-2">
 							<Switch
 								aria-label="Members from Dues"
 								isDisabled={isSubmitting}
@@ -459,6 +467,112 @@ export default function CreateCompetitionForm({
 					</Button>
 				</CardFooter>
 			</Card>
+			<Accordion variant="splitted">
+				<AccordionItem
+					key="1"
+					aria-label="Additional Layered Fees"
+					title="Additional Layered Fees"
+					subtitle="Set additional fees to be automatically sent when a competition is processed"
+					isCompact
+					className="gap-4 overflow-x-auto"
+				>
+					<Table
+						aria-label="Distribution"
+						keyboardDelegate={keyboardDelegateFixSpace}
+						removeWrapper
+					>
+						<TableHeader>
+							<TableColumn>Recipient</TableColumn>
+							<TableColumn>Percentage</TableColumn>
+							<TableColumn>Action</TableColumn>
+						</TableHeader>
+						<TableBody emptyContent="No additional fees">
+							{additionalLayeredFeesFields?.map((x, i) => (
+								<TableRow key={x.id}>
+									<TableCell>
+										<Controller
+											control={control}
+											name={`additionalLayeredFees.${i}.addr`}
+											render={({ field }) => (
+												<Input
+													label={`Recipient ${i + 1}`}
+													isDisabled={isSubmitting}
+													isInvalid={!!errors.additionalLayeredFees?.[i]?.addr}
+													errorMessage={
+														errors.additionalLayeredFees?.[i]?.addr?.message
+													}
+													{...field}
+													className="min-w-80"
+												/>
+											)}
+										/>
+										{cosmWasmClient && (
+											<Profile
+												className="mt-2"
+												address={getValues(`additionalLayeredFees.${i}.addr`)}
+												cosmWasmClient={cosmWasmClient}
+												hideIfInvalid
+											/>
+										)}
+									</TableCell>
+									<TableCell className="align-top">
+										<Controller
+											control={control}
+											name={`additionalLayeredFees.${i}.percentage`}
+											render={({ field }) => (
+												<Input
+													type="number"
+													min="0"
+													max="100"
+													step="1"
+													label="Percentage"
+													isDisabled={isSubmitting}
+													isInvalid={
+														!!errors.additionalLayeredFees?.[i]?.percentage
+													}
+													errorMessage={
+														errors.additionalLayeredFees?.[i]?.percentage
+															?.message
+													}
+													endContent={<BsPercent />}
+													classNames={{ input: "text-right" }}
+													{...field}
+													value={field.value?.toString()}
+													onChange={(e) =>
+														field.onChange(Number.parseFloat(e.target.value))
+													}
+													className="min-w-32 max-w-40"
+												/>
+											)}
+										/>
+									</TableCell>
+									<TableCell className="align-top">
+										<Button
+											isIconOnly
+											aria-label="Delete Fee"
+											variant="faded"
+											onClick={() => additionalLayeredFeesRemove(i)}
+											isDisabled={isSubmitting}
+										>
+											<FiTrash />
+										</Button>
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+					<Button
+						onClick={() =>
+							additionalLayeredFeesAppend({ addr: "", percentage: 0 })
+						}
+						aria-label="Add Fee"
+						startContent={<FiPlus />}
+						isDisabled={isSubmitting}
+					>
+						Add Fee
+					</Button>
+				</AccordionItem>
+			</Accordion>
 			{children}
 		</div>
 	);

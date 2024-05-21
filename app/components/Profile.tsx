@@ -9,7 +9,6 @@ import {
 	User,
 	type UserProps,
 } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
 import { BsYinYang } from "react-icons/bs";
 import {
 	isValidBech32Address,
@@ -33,7 +32,6 @@ const Profile = ({
 	justAvatar = false,
 	...props
 }: WithClient<ProfileProps>) => {
-	const router = useRouter();
 	const { data: env } = useEnv();
 	const isValid = isValidBech32Address(address, env.BECH32_PREFIX);
 	const { data, isLoading } = useProfileData(address, cosmWasmClient, isValid);

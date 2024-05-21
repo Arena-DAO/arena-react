@@ -2,6 +2,7 @@ import { z } from "zod";
 import AddressSchema from "./AddressSchema";
 import DueSchema from "./DueSchema";
 import ExpirationSchema from "./ExpirationSchema";
+import MemberPercentageSchema from "./MemberPercentageSchema";
 import RulesSchema from "./RulesSchema";
 import RulesetsSchema from "./RulesetsSchema";
 
@@ -15,6 +16,7 @@ const CreateCompetitionSchema = z.object({
 	dues: z.array(DueSchema),
 	membersFromDues: z.boolean(),
 	members: z.array(z.object({ address: AddressSchema })),
+	additionalLayeredFees: z.array(MemberPercentageSchema).optional(),
 });
 
 export default CreateCompetitionSchema;

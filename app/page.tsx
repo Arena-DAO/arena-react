@@ -104,7 +104,7 @@ function HomePage() {
 						Welcome to{" "}
 						<span className="whitespace-nowrap text-primary">The Arena</span>
 					</div>
-					<div className="text-center text-[100%] md:max-w-[40%] md:text-left md:text-[150%] sm:text-[120%]">
+					<div className="text-center text-[100%] md:text-left md:text-[150%] sm:text-[120%]">
 						The next iteration of competition infrastructure
 					</div>
 					<div className="mt-2 flex justify-center gap-4 md:justify-normal">
@@ -166,7 +166,7 @@ function HomePage() {
 					</div>
 				)}
 			</div>
-			<section className="mx-auto mt-8 flex w-full max-w-[1280px] flex-col-reverse items-center gap-[10%] px-10 md:flex-row-reverse">
+			<section className="mx-auto mt-8 flex w-full max-w-screen-xl flex-col-reverse items-center gap-[10%] px-10 md:flex-row-reverse">
 				<div className="text-center md:mx-auto md:w-1/2 md:text-left">
 					<h1 className="title text-[250%] text-primary">
 						Empowering Management at All Levels
@@ -194,7 +194,7 @@ function HomePage() {
 					<img src="/landing/join.png" alt="join" />
 				</div>
 			</section>
-			<section className="mx-auto mt-8 flex w-full max-w-[1280px] flex-col-reverse items-center gap-[10%] px-10 md:flex-row">
+			<section className="mx-auto mt-8 flex w-full max-w-screen-xl flex-col-reverse items-center gap-[10%] px-10 md:flex-row">
 				<div className="text-center md:mx-auto md:w-1/2 md:text-left">
 					<h1 className="title text-[250%] text-primary">
 						Decentralized Competition Infrastructure

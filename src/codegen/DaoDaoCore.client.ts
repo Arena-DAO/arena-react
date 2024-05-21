@@ -311,6 +311,7 @@ export interface DaoDaoCoreInterface extends DaoDaoCoreReadOnlyInterface {
   }: {
     duration: Duration;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  unpause: (fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   receive: ({
     amount,
     msg,
@@ -400,6 +401,7 @@ export class DaoDaoCoreClient extends DaoDaoCoreQueryClient implements DaoDaoCor
     this.executeAdminMsgs = this.executeAdminMsgs.bind(this);
     this.executeProposalHook = this.executeProposalHook.bind(this);
     this.pause = this.pause.bind(this);
+    this.unpause = this.unpause.bind(this);
     this.receive = this.receive.bind(this);
     this.receiveNft = this.receiveNft.bind(this);
     this.removeItem = this.removeItem.bind(this);
@@ -446,6 +448,11 @@ export class DaoDaoCoreClient extends DaoDaoCoreQueryClient implements DaoDaoCor
       pause: {
         duration
       }
+    }, fee, memo, _funds);
+  };
+  unpause = async (fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      unpause: {}
     }, fee, memo, _funds);
   };
   receive = async ({

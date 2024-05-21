@@ -5,7 +5,7 @@
 */
 
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import { Uint128, InstantiateMsg, MemberBalanceUnchecked, BalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, DistributionForString, MemberPercentageForString, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, TaxInformationForString, QueryMsg, MigrateMsg, NullableBalanceVerified, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceChecked, MemberBalanceChecked, NullableDistributionForString, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
+import { Uint128, InstantiateMsg, MemberBalanceUnchecked, BalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, DistributionForString, MemberPercentageForString, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, FeeInformationForString, QueryMsg, MigrateMsg, NullableBalanceVerified, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceChecked, MemberBalanceChecked, NullableDistributionForString, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
 import { ArenaEscrowQueryClient } from "./ArenaEscrow.client";
 export interface ArenaEscrowReactQuery<TResponse, TData = TResponse> {
   client: ArenaEscrowQueryClient;

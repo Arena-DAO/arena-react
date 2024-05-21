@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Decimal, Uint128, Binary, Admin, Expiration, Timestamp, Uint64, ModuleInfo, Action, ProposeMessage, DistributionForString, MemberPercentageForString, ModuleInstantiateInfo, EmptyWrapper, QueryMsg, CompetitionsFilter, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, ArrayOfCompetitionResponseForEmpty, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, EmptyWrapper, QueryMsg, CompetitionsFilter, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, FeeInformationForAddr, ArrayOfCompetitionResponseForEmpty, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaWagerModule.types";
 export interface ArenaWagerModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForEmpty>;
@@ -192,7 +192,7 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
   }: {
     categoryId?: Uint128;
     description: string;
-    escrow?: ModuleInstantiateInfo;
+    escrow?: EscrowInstantiateInfo;
     expiration: Expiration;
     host: ModuleInfo;
     instantiateExtension: EmptyWrapper;
@@ -209,14 +209,10 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   processCompetition: ({
     competitionId,
-    distribution,
-    taxCw20Msg,
-    taxCw721Msg
+    distribution
   }: {
     competitionId: Uint128;
     distribution?: DistributionForString;
-    taxCw20Msg?: Binary;
-    taxCw721Msg?: Binary;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   extension: ({
     msg
@@ -312,7 +308,7 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
   }: {
     categoryId?: Uint128;
     description: string;
-    escrow?: ModuleInstantiateInfo;
+    escrow?: EscrowInstantiateInfo;
     expiration: Expiration;
     host: ModuleInfo;
     instantiateExtension: EmptyWrapper;
@@ -350,21 +346,15 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
   };
   processCompetition = async ({
     competitionId,
-    distribution,
-    taxCw20Msg,
-    taxCw721Msg
+    distribution
   }: {
     competitionId: Uint128;
     distribution?: DistributionForString;
-    taxCw20Msg?: Binary;
-    taxCw721Msg?: Binary;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       process_competition: {
         competition_id: competitionId,
-        distribution,
-        tax_cw20_msg: taxCw20Msg,
-        tax_cw721_msg: taxCw721Msg
+        distribution
       }
     }, fee, memo, _funds);
   };

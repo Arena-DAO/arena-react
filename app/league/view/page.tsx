@@ -58,7 +58,7 @@ const ViewWager = () => {
 		);
 	}
 	return (
-		<div className="space-y-4">
+		<div className="mx-auto w-full max-w-screen-xl justify-center space-y-4 px-10">
 			<h1 className="title text-center text-5xl">View League</h1>
 			{data && cosmWasmClient && (
 				<ViewCompetition

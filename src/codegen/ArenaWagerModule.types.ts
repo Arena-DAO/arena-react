@@ -35,7 +35,7 @@ export type ExecuteMsg = {
   create_competition: {
     category_id?: Uint128 | null;
     description: string;
-    escrow?: ModuleInstantiateInfo | null;
+    escrow?: EscrowInstantiateInfo | null;
     expiration: Expiration;
     host: ModuleInfo;
     instantiate_extension: EmptyWrapper;
@@ -52,8 +52,6 @@ export type ExecuteMsg = {
   process_competition: {
     competition_id: Uint128;
     distribution?: DistributionForString | null;
-    tax_cw20_msg?: Binary | null;
-    tax_cw721_msg?: Binary | null;
   };
 } | {
   extension: {
@@ -62,16 +60,9 @@ export type ExecuteMsg = {
 } | {
   update_ownership: Action;
 };
+export type Binary = string;
 export type Decimal = string;
 export type Uint128 = string;
-export type Binary = string;
-export type Admin = {
-  address: {
-    addr: string;
-  };
-} | {
-  core_module: {};
-};
 export type Expiration = {
   at_height: number;
 } | {
@@ -90,6 +81,13 @@ export type ModuleInfo = {
     addr: string;
   };
 };
+export type Admin = {
+  address: {
+    addr: string;
+  };
+} | {
+  core_module: {};
+};
 export type Action = {
   transfer_ownership: {
     expiry?: Expiration | null;
@@ -97,12 +95,17 @@ export type Action = {
   };
 } | "accept_ownership" | "renounce_ownership";
 export interface ProposeMessage {
+  additional_layered_fees?: FeeInformationForString | null;
+  competition_id: Uint128;
   description: string;
   distribution?: DistributionForString | null;
-  id: Uint128;
-  tax_cw20_msg?: Binary | null;
-  tax_cw721_msg?: Binary | null;
   title: string;
+}
+export interface FeeInformationForString {
+  cw20_msg?: Binary | null;
+  cw721_msg?: Binary | null;
+  receiver: string;
+  tax: Decimal;
 }
 export interface DistributionForString {
   member_percentages: MemberPercentageForString[];
@@ -111,6 +114,12 @@ export interface DistributionForString {
 export interface MemberPercentageForString {
   addr: string;
   percentage: Decimal;
+}
+export interface EscrowInstantiateInfo {
+  additional_layered_fees?: FeeInformationForString[] | null;
+  code_id: number;
+  label: string;
+  msg: Binary;
 }
 export interface ModuleInstantiateInfo {
   admin?: Admin | null;
@@ -175,6 +184,7 @@ export interface CompetitionResponseForEmpty {
   escrow?: Addr | null;
   expiration: Expiration;
   extension: Empty;
+  fees?: FeeInformationForAddr[] | null;
   host: Addr;
   id: Uint128;
   is_expired: boolean;
@@ -183,6 +193,12 @@ export interface CompetitionResponseForEmpty {
   rulesets: Uint128[];
   start_height: number;
   status: CompetitionStatus;
+}
+export interface FeeInformationForAddr {
+  cw20_msg?: Binary | null;
+  cw721_msg?: Binary | null;
+  receiver: Addr;
+  tax: Decimal;
 }
 export type ArrayOfCompetitionResponseForEmpty = CompetitionResponseForEmpty[];
 export interface ConfigForEmpty {

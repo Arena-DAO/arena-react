@@ -54,6 +54,8 @@ export type ExecuteMsg = {
     duration: Duration;
   };
 } | {
+  unpause: {};
+} | {
   receive: Cw20ReceiveMsg;
 } | {
   receive_nft: Cw721ReceiveMsg;

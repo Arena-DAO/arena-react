@@ -2,7 +2,6 @@
 
 import Profile from "@/components/Profile";
 import CreateCompetitionForm from "@/components/competition/create/CreateCompetitionForm";
-import { toBinary } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -35,7 +34,6 @@ import { BsArrowLeft, BsPercent } from "react-icons/bs";
 import { FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { ZodIssueCode, z } from "zod";
-import type { InstantiateMsg as ArenaEscrowInstantiateMsg } from "~/codegen/ArenaEscrow.types";
 import { ArenaLeagueModuleClient } from "~/codegen/ArenaLeagueModule.client";
 import {
 	AddressSchema,
@@ -44,7 +42,10 @@ import {
 } from "~/config/schemas";
 import Uint128Schema from "~/config/schemas/AmountSchema";
 import { keyboardDelegateFixSpace } from "~/helpers/NextUIHelpers";
-import { convertToExpiration } from "~/helpers/SchemaHelpers";
+import {
+	convertToEscrowInstantiate,
+	convertToExpiration,
+} from "~/helpers/SchemaHelpers";
 import { getNumberWithOrdinal } from "~/helpers/UIHelpers";
 import { useCategoryMap } from "~/hooks/useCategories";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
@@ -165,28 +166,11 @@ const CreateLeague = () => {
 						: values.members.map((x) => x.address),
 				},
 				host: { existing: { addr: values.host } },
-				escrow: {
-					code_id: env.CODE_ID_ESCROW,
-					label: "Arena Escrow",
-					msg: toBinary({
-						dues: values.dues.map(({ addr, balance }) => {
-							return {
-								addr,
-								balance: {
-									native: balance.native.map(({ denom, amount }) => ({
-										denom,
-										amount: amount.toString(),
-									})),
-									cw20: balance.cw20.map(({ address, amount }) => ({
-										address,
-										amount: amount.toString(),
-									})),
-									cw721: balance.cw721,
-								},
-							};
-						}),
-					} as ArenaEscrowInstantiateMsg),
-				},
+				escrow: convertToEscrowInstantiate(
+					env.CODE_ID_ESCROW,
+					values.dues,
+					values.additionalLayeredFees,
+				),
 			};
 
 			const result = await leagueModuleClient.createCompetition(msg);
@@ -219,7 +203,7 @@ const CreateLeague = () => {
 	return (
 		<FormProvider {...formMethods}>
 			<form onSubmit={handleSubmit(async (data) => await onSubmit(data))}>
-				<div className="space-y-4">
+				<div className="mx-auto w-full max-w-screen-xl justify-center space-y-4 px-10">
 					<h1 className="title text-center text-5xl">Create a League</h1>
 					{category && (
 						<Tooltip content="Return to competitions">
