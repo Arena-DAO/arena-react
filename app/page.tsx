@@ -2,7 +2,9 @@
 
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
+import { Button, Link } from "@nextui-org/react";
 import { useState } from "react";
+import { useEnv } from "~/hooks/useEnv";
 
 function Arrow(props: {
 	disabled: boolean;
@@ -45,6 +47,7 @@ function Arrow(props: {
 }
 
 function HomePage() {
+	const { data: env } = useEnv();
 	const [currentSlide, setCurrentSlide] = useState(0);
 	const [loaded, setLoaded] = useState(false);
 	const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>(
@@ -102,8 +105,21 @@ function HomePage() {
 						<span className="whitespace-nowrap text-primary">The Arena</span>
 					</div>
 					<div className="text-center text-[100%] md:max-w-[40%] md:text-left md:text-[150%] sm:text-[120%]">
-						Jump into the world of web3 games, enjoy the life as a crypto holder
-						inside our wonderful world.
+						The next iteration of competition infrastructure
+					</div>
+					<div className="mt-2 flex justify-center gap-4 md:justify-normal">
+						<Button as={Link} href="/compete" color="primary" variant="shadow">
+							Get Started
+						</Button>
+						<Button
+							as={Link}
+							href={env.DOCS_URL}
+							color="primary"
+							isExternal
+							variant="shadow"
+						>
+							Learn More
+						</Button>
 					</div>
 				</div>
 
@@ -150,48 +166,59 @@ function HomePage() {
 					</div>
 				)}
 			</div>
-			{/* About Section */}
-			<section className="mx-auto mt-8 flex w-full max-w-[1280px] flex-col-reverse items-center gap-[10%] px-10 md:flex-row">
-				<div className="text-center md:mx-auto md:w-1/2 md:text-left">
-					<h1 className="title text-[250%] text-primary">About Arena DAO</h1>
-					<p>
-						At Arena DAO, we're revolutionizing gaming by merging the
-						captivating world of GameFi with Neutron's power. Our mission is to
-						create an immersive, decentralized experience that empowers players
-						to explore, compete, and thrive through ownership.
-						<br />
-						<br />
-						By integrating smart contracts, DeFi, and NFTs, we give players
-						unprecedented control over their in-game assets and experiences. As
-						a crypto holder, you can immerse yourself in our enchanting virtual
-						realm, where your every decision holds real consequences.
-					</p>
-				</div>
-				<div className="w-[80%] md:mx-auto md:w-1/2">
-					<img src="/landing/about.png" alt="about" />
-				</div>
-			</section>
-			{/* Join Us Section */}
 			<section className="mx-auto mt-8 flex w-full max-w-[1280px] flex-col-reverse items-center gap-[10%] px-10 md:flex-row-reverse">
 				<div className="text-center md:mx-auto md:w-1/2 md:text-left">
 					<h1 className="title text-[250%] text-primary">
-						Join Us and Embrace the Life of a Gladiator
+						Empowering Management at All Levels
 					</h1>
 					<p>
-						Engage in thrilling battles and epic quests in our diverse arenas,
-						where you can prove your worth and earn rewards.
+						The Arena DAO revolutionizes team management and organizational
+						transparency within competitive communities by providing competition
+						infrastructure built around the best DAO tooling available: DAO DAO.
 						<br />
 						<br />
-						Join our vibrant community of warriors, crypto enthusiasts, and game
-						aficionados to form alliances, compete, and acquire rare NFTs.{" "}
+						Users can leverage DAO DAO to create their own teams in a fully
+						customizable and interactive way. Our platform allows teams to
+						become more than just a group chat; they can set up unique
+						governance structures, grow a treasury together, and compete with
+						complete representation.
 						<br />
 						<br />
-						Immerse yourself in the boundless possibilities of the ArenaDAO
-						world.
+						Our platform enables teams to configure preset reward distributions,
+						automating and ensuring fair payouts directly to team members'
+						accounts. This automation eliminates manual calculation, hassles,
+						and delays, providing peace of mind for both managers and players.
 					</p>
 				</div>
 				<div className="w-[80%] md:mx-auto md:w-1/2">
 					<img src="/landing/join.png" alt="join" />
+				</div>
+			</section>
+			<section className="mx-auto mt-8 flex w-full max-w-[1280px] flex-col-reverse items-center gap-[10%] px-10 md:flex-row">
+				<div className="text-center md:mx-auto md:w-1/2 md:text-left">
+					<h1 className="title text-[250%] text-primary">
+						Decentralized Competition Infrastructure
+					</h1>
+					<p>
+						The Arena DAO provides the best competitive platform by reducing the
+						reliance on trust and centralized credit systems. Utilizing
+						blockchain technology, the Arena DAO guarantees secure transactions,
+						with funds always under the user's control unless in an active
+						escrow.
+						<br /> <br />
+						This not only enhances security but also lowers costs, leveraging
+						Neutron's minimal gas fees to provide a seamless and efficient
+						experience for competitors.
+						<br />
+						<br />
+						By embracing open-source principles, the Arena DAO fosters an
+						ecosystem of continuous innovation, allowing users to craft custom
+						rules and unique competition formats, ultimately driving a dynamic,
+						inclusive, and forward-thinking competitive environment.
+					</p>
+				</div>
+				<div className="w-[80%] md:mx-auto md:w-1/2">
+					<img src="/landing/about.png" alt="about" />
 				</div>
 			</section>
 		</>

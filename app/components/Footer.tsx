@@ -7,7 +7,10 @@ export default function Footer() {
 	return (
 		<>
 			<div className="flex flex-col-reverse items-center justify-between px-10 md:flex-row">
-				<div className="w-full text-center text-small md:w-1/2 md:text-left">
+				<div
+					className="w-full text-center text-small md:w-1/2 md:text-left"
+					translate="no"
+				>
 					"Audendo virtus crescit, tardando timor." - Publilius Syrus
 				</div>
 				<div>
