@@ -261,7 +261,7 @@ const CreateWager = () => {
 		<FormProvider {...formMethods}>
 			<form onSubmit={handleSubmit(async (data) => await onSubmit(data))}>
 				<div className="space-y-4">
-					<h1 className="text-center text-5xl">Create a Wager</h1>
+					<h1 className="title text-center text-5xl">Create a Wager</h1>
 					{category && (
 						<Tooltip content="Return to competitions">
 							<Button
@@ -273,7 +273,7 @@ const CreateWager = () => {
 							</Button>
 						</Tooltip>
 					)}
-					<div className="flex flex-nowrap space-x-2">
+					<div className="flex flex-nowrap gap-2">
 						<Switch
 							aria-label="Automatic Host"
 							isDisabled={isSubmitting}
@@ -330,7 +330,7 @@ const CreateWager = () => {
 						</Accordion>
 					)}
 					{!watchIsAutomaticHost && (
-						<div className="flex space-x-4">
+						<div className="flex gap-4">
 							<Controller
 								control={control}
 								name="host"

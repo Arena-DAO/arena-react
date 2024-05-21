@@ -190,7 +190,7 @@ const EscrowSection = ({
 					</Card>
 				)}
 			</div>
-			<div className="space-x-2 overflow-x-auto">
+			<div className="flex flex-col justify-center gap-2 overflow-x-auto md:flex-row md:justify-start">
 				{status === "pending" && (
 					<DuesModal
 						escrow={escrow}

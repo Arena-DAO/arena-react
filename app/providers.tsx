@@ -9,7 +9,7 @@ import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { wallets as ledgerWallets } from "@cosmos-kit/ledger";
 import { ChainProvider } from "@cosmos-kit/react";
 import { wallets as stationWallets } from "@cosmos-kit/station";
-import { NextUIProvider } from "@nextui-org/react";
+import { NextUIProvider } from "@nextui-org/system";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
 	assets as mainnetAssets,

@@ -76,6 +76,7 @@ const RulesetsSelection = ({
 			baseRef={scrollerRef}
 			removeWrapper
 			isStriped
+			hideHeader={list?.items.length === 0}
 			bottomContent={
 				hasMore ? (
 					<div className="flex w-full justify-center">
@@ -92,7 +93,6 @@ const RulesetsSelection = ({
 				<TableColumn className="text-right">Selection</TableColumn>
 			</TableHeader>
 			<TableBody
-				emptyContent="No rulesets available"
 				items={list.items}
 				isLoading={list.isLoading}
 				loadingContent={<Spinner color="white" />}
@@ -100,7 +100,7 @@ const RulesetsSelection = ({
 				{(item: Ruleset) => (
 					<TableRow key={item.id}>
 						<TableCell>{item.description}</TableCell>
-						<TableCell className="space-x-4 text-right">
+						<TableCell className="gap-4 text-right">
 							<Popover placement="left">
 								<PopoverTrigger>
 									<Button>View</Button>

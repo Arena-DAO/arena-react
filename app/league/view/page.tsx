@@ -53,11 +53,13 @@ const ViewWager = () => {
 	});
 
 	if (!competitionId) {
-		return <h1 className="text-center text-5xl">League id not provided...</h1>;
+		return (
+			<h1 className="title text-center text-5xl">League id not provided...</h1>
+		);
 	}
 	return (
 		<div className="space-y-4">
-			<h1 className="text-center text-5xl">View League</h1>
+			<h1 className="title text-center text-5xl">View League</h1>
 			{data && cosmWasmClient && (
 				<ViewCompetition
 					cosmWasmClient={cosmWasmClient}
@@ -68,7 +70,11 @@ const ViewWager = () => {
 					setStatus={setStatus}
 				>
 					<Tabs aria-label="League Info" color="primary">
-						<Tab key="leaderboard" title="Leaderboard">
+						<Tab
+							key="leaderboard"
+							title="Leaderboard"
+							className="text-xs md:text-lg"
+						>
 							<LeaderboardDisplay
 								cosmWasmClient={cosmWasmClient}
 								moduleAddr={env.ARENA_LEAGUE_MODULE_ADDRESS}
@@ -76,7 +82,11 @@ const ViewWager = () => {
 								version={version}
 							/>
 						</Tab>
-						<Tab key="basic" title="Configuration">
+						<Tab
+							key="basic"
+							title="Configuration"
+							className="text-xs md:text-lg"
+						>
 							<Card>
 								<CardHeader>Final Distribution</CardHeader>
 								<CardBody className="space-y-4">
@@ -109,7 +119,7 @@ const ViewWager = () => {
 										</TableBody>
 									</Table>
 								</CardBody>
-								<CardFooter className="gap-4">
+								<CardFooter className="grid grid-cols-12 gap-4">
 									<Input
 										className="col-span-12 md:col-span-4"
 										type="number"
@@ -134,7 +144,7 @@ const ViewWager = () => {
 								</CardFooter>
 							</Card>
 						</Tab>
-						<Tab key="rounds" title="Rounds">
+						<Tab key="rounds" title="Rounds" className="text-xs md:text-lg">
 							<RoundsDisplay
 								cosmWasmClient={cosmWasmClient}
 								moduleAddr={env.ARENA_LEAGUE_MODULE_ADDRESS}

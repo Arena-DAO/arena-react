@@ -18,6 +18,7 @@ import {
 	Tooltip,
 } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import type { Dispatch, PropsWithChildren, SetStateAction } from "react";
 import { BsArrowLeft, BsHourglassBottom, BsYinYang } from "react-icons/bs";
 import type {
@@ -53,6 +54,7 @@ const ViewCompetition = ({
 	status,
 	setStatus,
 }: WithClient<ViewCompetitionProps>) => {
+	const router = useRouter();
 	const { data: env } = useEnv();
 	const { address } = useChain(env.CHAIN);
 
@@ -61,7 +63,7 @@ const ViewCompetition = ({
 	const category = searchParams?.get("category");
 
 	return (
-		<div className="space-y-4">
+		<div className="mx-auto max-w-[1280px] justify-center space-y-4 px-10">
 			{category && (
 				<Tooltip content="Return to competitions">
 					<Button as={Link} isIconOnly href={`/compete?category=${category}`}>
@@ -70,7 +72,7 @@ const ViewCompetition = ({
 				</Tooltip>
 			)}
 			<Card>
-				<CardHeader className="flex justify-between">
+				<CardHeader className="z-1 flex justify-between">
 					<h2>Host</h2>
 					<Badge
 						isOneChar
@@ -179,7 +181,7 @@ const ViewCompetition = ({
 					hideIfEmpty={status === "inactive"}
 				/>
 			)}
-			<div className="block space-x-2 overflow-x-auto">
+			<div className="block gap-2 overflow-x-auto">
 				{!hideProcess && status === "active" && (
 					<ProcessForm
 						moduleAddr={moduleAddr}
@@ -197,6 +199,14 @@ const ViewCompetition = ({
 							is_expired
 						/>
 					)}
+				{competition.is_expired && status !== "inactive" && (
+					<ProcessForm
+						moduleAddr={moduleAddr}
+						competitionId={competition.id}
+						setCompetitionStatus={setStatus}
+						is_expired
+					/>
+				)}
 				{status !== "inactive" && competition.escrow && (
 					<PresetDistributionForm
 						escrow={competition.escrow}

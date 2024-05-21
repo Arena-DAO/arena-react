@@ -41,7 +41,7 @@ const Compete = () => {
 		return <h1 className="text-3xl">Category {category} not found</h1>;
 	}
 	return (
-		<div className="space-y-4">
+		<div className="mx-auto max-w-[1280px] space-y-4 px-10">
 			<Breadcrumbs>
 				{breadcrumbItems.map((item) => (
 					<BreadcrumbItem key={item.url} href={`/compete?category=${item.url}`}>
@@ -66,7 +66,7 @@ const Compete = () => {
 				</div>
 			)}
 			{"category_id" in categoryItem && (
-				<div className="overflow-x-auto">
+				<div>
 					<Tabs aria-label="Competition Modules" disabledKeys={["tournaments"]}>
 						<Tab key="wagers" title="Wagers">
 							<CompetitionModuleSection
