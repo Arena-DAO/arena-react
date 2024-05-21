@@ -181,7 +181,7 @@ const ViewCompetition = ({
 					hideIfEmpty={status === "inactive"}
 				/>
 			)}
-			<div className="block gap-2 overflow-x-auto">
+			<div className="flex gap-2 overflow-x-auto">
 				{!hideProcess && status === "active" && (
 					<ProcessForm
 						moduleAddr={moduleAddr}
