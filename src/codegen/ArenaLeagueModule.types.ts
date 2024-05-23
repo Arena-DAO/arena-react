@@ -4,15 +4,13 @@
 * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
 */
 
-export type Binary = string;
 export interface InstantiateMsg {
   description: string;
-  extension: TournamentExt;
+  extension: Empty;
   key: string;
 }
-export interface TournamentExt {
-  tax_cw20_msg?: Binary | null;
-  tax_cw721_msg?: Binary | null;
+export interface Empty {
+  [k: string]: unknown;
 }
 export type ExecuteMsg = {
   jail_competition: {
@@ -37,7 +35,7 @@ export type ExecuteMsg = {
   create_competition: {
     category_id?: Uint128 | null;
     description: string;
-    escrow?: ModuleInstantiateInfo | null;
+    escrow?: EscrowInstantiateInfo | null;
     expiration: Expiration;
     host: ModuleInfo;
     instantiate_extension: CompetitionInstantiateExt;
@@ -54,8 +52,6 @@ export type ExecuteMsg = {
   process_competition: {
     competition_id: Uint128;
     distribution?: DistributionForString | null;
-    tax_cw20_msg?: Binary | null;
-    tax_cw721_msg?: Binary | null;
   };
 } | {
   extension: {
@@ -64,15 +60,9 @@ export type ExecuteMsg = {
 } | {
   update_ownership: Action;
 };
+export type Binary = string;
 export type Decimal = string;
 export type Uint128 = string;
-export type Admin = {
-  address: {
-    addr: string;
-  };
-} | {
-  core_module: {};
-};
 export type Expiration = {
   at_height: number;
 } | {
@@ -91,6 +81,13 @@ export type ModuleInfo = {
     addr: string;
   };
 };
+export type Admin = {
+  address: {
+    addr: string;
+  };
+} | {
+  core_module: {};
+};
 export type ExecuteExt = {
   process_match: {
     league_id: Uint128;
@@ -102,8 +99,15 @@ export type ExecuteExt = {
     distribution: Decimal[];
     league_id: Uint128;
   };
+} | {
+  add_point_adjustments: {
+    addr: string;
+    league_id: Uint128;
+    point_adjustments: PointAdjustment[];
+  };
 };
 export type Result = "team1" | "team2" | "draw";
+export type Int128 = string;
 export type Action = {
   transfer_ownership: {
     expiry?: Expiration | null;
@@ -111,12 +115,17 @@ export type Action = {
   };
 } | "accept_ownership" | "renounce_ownership";
 export interface ProposeMessage {
+  additional_layered_fees?: FeeInformationForString | null;
+  competition_id: Uint128;
   description: string;
   distribution?: DistributionForString | null;
-  id: Uint128;
-  tax_cw20_msg?: Binary | null;
-  tax_cw721_msg?: Binary | null;
   title: string;
+}
+export interface FeeInformationForString {
+  cw20_msg?: Binary | null;
+  cw721_msg?: Binary | null;
+  receiver: string;
+  tax: Decimal;
 }
 export interface DistributionForString {
   member_percentages: MemberPercentageForString[];
@@ -126,6 +135,12 @@ export interface MemberPercentageForString {
   addr: string;
   percentage: Decimal;
 }
+export interface EscrowInstantiateInfo {
+  additional_layered_fees?: FeeInformationForString[] | null;
+  code_id: number;
+  label: string;
+  msg: Binary;
+}
 export interface ModuleInstantiateInfo {
   admin?: Admin | null;
   code_id: number;
@@ -134,14 +149,18 @@ export interface ModuleInstantiateInfo {
 }
 export interface CompetitionInstantiateExt {
   distribution: Decimal[];
-  match_draw_points: Uint128;
-  match_lose_points: Uint128;
-  match_win_points: Uint128;
+  match_draw_points: Uint64;
+  match_lose_points: Uint64;
+  match_win_points: Uint64;
   teams: string[];
 }
 export interface MatchResult {
   match_number: Uint128;
   result?: Result | null;
+}
+export interface PointAdjustment {
+  amount: Int128;
+  description: string;
 }
 export type QueryMsg = {
   config: {};
@@ -196,6 +215,17 @@ export type QueryExt = {
     league_id: Uint128;
     round_number: Uint64;
   };
+} | {
+  point_adjustments: {
+    league_id: Uint128;
+    limit?: number | null;
+    start_after?: string | null;
+  };
+} | {
+  dump_state: {
+    league_id: Uint128;
+    round_number: Uint64;
+  };
 };
 export type MigrateMsg = {
   from_compatible: {};
@@ -208,7 +238,7 @@ export interface SudoMsg {
 export interface MemberPoints {
   matches_played: Uint64;
   member: Addr;
-  points: Uint128;
+  points: Int128;
 }
 export interface RoundResponse {
   matches: Match[];
@@ -227,6 +257,7 @@ export interface CompetitionResponseForCompetitionExt {
   escrow?: Addr | null;
   expiration: Expiration;
   extension: CompetitionExt;
+  fees?: FeeInformationForAddr[] | null;
   host: Addr;
   id: Uint128;
   is_expired: boolean;
@@ -238,18 +269,24 @@ export interface CompetitionResponseForCompetitionExt {
 }
 export interface CompetitionExt {
   distribution: Decimal[];
-  match_draw_points: Uint128;
-  match_lose_points: Uint128;
-  match_win_points: Uint128;
+  match_draw_points: Uint64;
+  match_lose_points: Uint64;
+  match_win_points: Uint64;
   matches: Uint128;
   processed_matches: Uint128;
   rounds: Uint64;
   teams: Uint64;
 }
+export interface FeeInformationForAddr {
+  cw20_msg?: Binary | null;
+  cw721_msg?: Binary | null;
+  receiver: Addr;
+  tax: Decimal;
+}
 export type ArrayOfCompetitionResponseForCompetitionExt = CompetitionResponseForCompetitionExt[];
-export interface ConfigForTournamentExt {
+export interface ConfigForEmpty {
   description: string;
-  extension: TournamentExt;
+  extension: Empty;
   key: string;
 }
 export type String = string;

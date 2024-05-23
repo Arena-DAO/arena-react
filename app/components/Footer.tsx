@@ -1,55 +1,53 @@
 "use client";
 
-import {
-	Button,
-	ButtonGroup,
-	Link,
-	Navbar,
-	NavbarContent,
-} from "@nextui-org/react";
-import dynamic from "next/dynamic";
+import { Button, ButtonGroup, Link } from "@nextui-org/react";
 import { BsDiscord, BsGithub, BsTwitterX } from "react-icons/bs";
-const ColorModeSwitch = dynamic(() => import("./ColorModeSwitch"), {
-	ssr: false,
-});
 
 export default function Footer() {
 	return (
-		<Navbar as="footer" className="fixed top-auto bottom-0 left-0">
-			<NavbarContent>
-				<ButtonGroup variant="light">
-					<Button
-						as={Link}
-						isIconOnly
-						aria-label="Twitter"
-						href="https://x.com/ArenaDAO"
-						isExternal
-					>
-						<BsTwitterX />
-					</Button>
-					<Button
-						as={Link}
-						isIconOnly
-						aria-label="Discord"
-						href="https://discord.arenadao.org"
-						isExternal
-					>
-						<BsDiscord />
-					</Button>
-					<Button
-						as={Link}
-						isIconOnly
-						aria-label="GitHub"
-						href="https://github.com/Arena-DAO"
-						isExternal
-					>
-						<BsGithub />
-					</Button>
-				</ButtonGroup>
-			</NavbarContent>
-			<NavbarContent as="div" justify="end">
-				<ColorModeSwitch />
-			</NavbarContent>
-		</Navbar>
+		<>
+			<div className="flex flex-col-reverse items-center justify-between px-10 md:flex-row">
+				<div
+					className="w-full text-center text-small md:w-1/2 md:text-left"
+					translate="no"
+				>
+					"Audendo virtus crescit, tardando timor." - Publilius Syrus
+				</div>
+				<div>
+					<ButtonGroup variant="light">
+						<Button
+							as={Link}
+							isIconOnly
+							aria-label="Twitter"
+							href="https://x.com/ArenaDAO"
+							isExternal
+						>
+							<BsTwitterX />
+						</Button>
+						<Button
+							as={Link}
+							isIconOnly
+							aria-label="Discord"
+							href="https://discord.arenadao.org"
+							isExternal
+						>
+							<BsDiscord />
+						</Button>
+						<Button
+							as={Link}
+							isIconOnly
+							aria-label="GitHub"
+							href="https://github.com/Arena-DAO"
+							isExternal
+						>
+							<BsGithub />
+						</Button>
+					</ButtonGroup>
+				</div>
+			</div>
+			<div className="pb-5 text-center text-xs italic">
+				Copyright © 2024 Arena DAO, All rights reserved
+			</div>
+		</>
 	);
 }

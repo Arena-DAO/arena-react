@@ -7,59 +7,59 @@
 import * as _0 from "./DaoDaoCore.types";
 import * as _1 from "./DaoDaoCore.client";
 import * as _2 from "./DaoDaoCore.react-query";
-import * as _3 from "./ArenaWagerModule.types";
-import * as _4 from "./ArenaWagerModule.client";
-import * as _5 from "./ArenaWagerModule.react-query";
-import * as _6 from "./ArenaLeagueModule.types";
-import * as _7 from "./ArenaLeagueModule.client";
-import * as _8 from "./ArenaLeagueModule.react-query";
-import * as _9 from "./ArenaEscrow.types";
-import * as _10 from "./ArenaEscrow.client";
-import * as _11 from "./ArenaEscrow.react-query";
-import * as _12 from "./ArenaCore.types";
-import * as _13 from "./ArenaCore.client";
-import * as _14 from "./ArenaCore.react-query";
-import * as _15 from "./Cw20Base.types";
-import * as _16 from "./Cw20Base.client";
-import * as _17 from "./Cw20Base.react-query";
-import * as _18 from "./Cw721Base.types";
-import * as _19 from "./Cw721Base.client";
-import * as _20 from "./Cw721Base.react-query";
+import * as _3 from "./Cw721Base.types";
+import * as _4 from "./Cw721Base.client";
+import * as _5 from "./Cw721Base.react-query";
+import * as _6 from "./ArenaWagerModule.types";
+import * as _7 from "./ArenaWagerModule.client";
+import * as _8 from "./ArenaWagerModule.react-query";
+import * as _9 from "./ArenaLeagueModule.types";
+import * as _10 from "./ArenaLeagueModule.client";
+import * as _11 from "./ArenaLeagueModule.react-query";
+import * as _12 from "./ArenaEscrow.types";
+import * as _13 from "./ArenaEscrow.client";
+import * as _14 from "./ArenaEscrow.react-query";
+import * as _15 from "./ArenaCore.types";
+import * as _16 from "./ArenaCore.client";
+import * as _17 from "./ArenaCore.react-query";
+import * as _18 from "./Cw20Base.types";
+import * as _19 from "./Cw20Base.client";
+import * as _20 from "./Cw20Base.react-query";
 import * as _21 from "./DaoVotingCw4.types";
 import * as _22 from "./DaoVotingCw4.client";
 import * as _23 from "./DaoVotingCw4.react-query";
-import * as _24 from "./DaoProposalSingle.types";
-import * as _25 from "./DaoProposalSingle.client";
-import * as _26 from "./DaoProposalSingle.react-query";
-import * as _27 from "./CwAbc.types";
-import * as _28 from "./CwAbc.client";
-import * as _29 from "./CwAbc.react-query";
+import * as _24 from "./CwAbc.types";
+import * as _25 from "./CwAbc.client";
+import * as _26 from "./CwAbc.react-query";
+import * as _27 from "./DaoProposalSingle.types";
+import * as _28 from "./DaoProposalSingle.client";
+import * as _29 from "./DaoProposalSingle.react-query";
 export namespace contracts {
   export const DaoDaoCore = { ..._0,
     ..._1,
     ..._2
   };
-  export const ArenaWagerModule = { ..._3,
+  export const Cw721Base = { ..._3,
     ..._4,
     ..._5
   };
-  export const ArenaLeagueModule = { ..._6,
+  export const ArenaWagerModule = { ..._6,
     ..._7,
     ..._8
   };
-  export const ArenaEscrow = { ..._9,
+  export const ArenaLeagueModule = { ..._9,
     ..._10,
     ..._11
   };
-  export const ArenaCore = { ..._12,
+  export const ArenaEscrow = { ..._12,
     ..._13,
     ..._14
   };
-  export const Cw20Base = { ..._15,
+  export const ArenaCore = { ..._15,
     ..._16,
     ..._17
   };
-  export const Cw721Base = { ..._18,
+  export const Cw20Base = { ..._18,
     ..._19,
     ..._20
   };
@@ -67,11 +67,11 @@ export namespace contracts {
     ..._22,
     ..._23
   };
-  export const DaoProposalSingle = { ..._24,
+  export const CwAbc = { ..._24,
     ..._25,
     ..._26
   };
-  export const CwAbc = { ..._27,
+  export const DaoProposalSingle = { ..._27,
     ..._28,
     ..._29
   };

@@ -91,9 +91,9 @@ export interface Cw721ReceiveMsg {
 }
 export interface CompetitionEscrowDistributeMsg {
   distribution?: DistributionForString | null;
-  tax_info?: TaxInformationForString | null;
+  layered_fees?: FeeInformationForString[] | null;
 }
-export interface TaxInformationForString {
+export interface FeeInformationForString {
   cw20_msg?: Binary | null;
   cw721_msg?: Binary | null;
   receiver: string;

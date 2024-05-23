@@ -27,7 +27,7 @@ export default function CompetitionCategoryCard({
 				removeWrapper
 			/>
 			<CardFooter>
-				<p className="font-bold text-2xl">{category.title}</p>
+				<h2 className="font-bold text-2xl">{category.title}</h2>
 			</CardFooter>
 		</Card>
 	);

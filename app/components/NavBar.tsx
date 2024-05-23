@@ -10,152 +10,34 @@ import {
 	Navbar,
 	NavbarBrand,
 	NavbarContent,
+	NavbarItem,
 	NavbarMenu,
 	NavbarMenuToggle,
 } from "@nextui-org/react";
+import dynamic from "next/dynamic";
+const ColorModeSwitch = dynamic(() => import("./ColorModeSwitch"), {
+	ssr: false,
+});
 import { Image } from "@nextui-org/react";
 import NextImage from "next/image";
-import { type Dispatch, type SetStateAction, useState } from "react";
-import { BsChevronDown } from "react-icons/bs";
+import { useState } from "react";
+import {
+	BsAlarm,
+	BsBook,
+	BsChevronDown,
+	BsCurrencyBitcoin,
+	BsCurrencyExchange,
+	BsDiscord,
+	BsGithub,
+	BsTwitterX,
+	BsYinYang,
+} from "react-icons/bs";
 import { useEnv } from "~/hooks/useEnv";
 import WalletConnectToggle from "./WalletConnectToggle";
-
-interface MenuItem {
-	href?: string;
-	label: string;
-	isExternal?: boolean;
-	isDropdown?: boolean;
-	ariaLabel?: string;
-	dropdownItems?: MenuDropdownItem[];
-}
-
-interface MenuDropdownItem {
-	href?: string;
-	label: string;
-	description?: string;
-	isExternal?: boolean;
-}
-
-interface DynamicNavbarItem {
-	item: MenuItem;
-	setIsMenuOpen: Dispatch<SetStateAction<boolean>>;
-	dropdownButtonClass: string;
-	linkClass: string;
-}
-
-const DynamicNavbarItem = ({
-	item,
-	setIsMenuOpen,
-	dropdownButtonClass,
-	linkClass,
-}: DynamicNavbarItem) => {
-	if (item.isDropdown)
-		return (
-			<Dropdown>
-				<DropdownTrigger>
-					<Button
-						disableRipple
-						className={dropdownButtonClass}
-						color="primary"
-						endContent={<BsChevronDown />}
-						size="lg"
-						variant="light"
-					>
-						{item.label}
-					</Button>
-				</DropdownTrigger>
-				<DropdownMenu
-					aria-label={item.ariaLabel}
-					itemClasses={{
-						base: "gap-4",
-						title: "text-primary font-semibold",
-					}}
-					items={item.dropdownItems}
-				>
-					{(dropdownItem) => (
-						<DropdownItem
-							as={Link}
-							key={dropdownItem.label}
-							description={dropdownItem.description}
-							href={dropdownItem.href}
-							onPress={() => setIsMenuOpen(false)}
-							target={dropdownItem.isExternal ? "_blank" : undefined}
-						>
-							{dropdownItem.label}
-						</DropdownItem>
-					)}
-				</DropdownMenu>
-			</Dropdown>
-		);
-	return (
-		<Link
-			className={linkClass}
-			href={item.href}
-			size="lg"
-			isExternal={item.isExternal}
-			onClick={() => setIsMenuOpen(false)}
-		>
-			{item.label}
-		</Link>
-	);
-};
 
 export default function AppNavbar() {
 	const { data: env } = useEnv();
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-	const navbarItems: MenuItem[] = [
-		{ href: "/compete", label: "Compete" },
-		{
-			label: "DAO",
-			isDropdown: true,
-			ariaLabel: "DAO Menu Items",
-			dropdownItems: [
-				{
-					href: `${env.DAO_DAO_URL}/dao/${env.ARENA_DAO_ADDRESS}`,
-					label: "DAO",
-					description: "View the Arena DAO on DAO DAO",
-					isExternal: true,
-				},
-				{
-					href: "/dao/jailhouse",
-					description:
-						"View jailed competitions needing action through the DAO",
-					label: "Jailhouse",
-				},
-			],
-		},
-		{
-			label: "Resources",
-			isDropdown: true,
-			ariaLabel: "Additional Resources",
-			dropdownItems: [
-				...(env.ENV === "development"
-					? [
-							{
-								// biome-ignore lint/style/noNonNullAssertion: dev env has this populated
-								href: env.FAUCET_URL!,
-								label: "Faucet",
-								description: "Get testnet gas to explore The Arena",
-								isExternal: true,
-							},
-						]
-					: []),
-				{
-					href: env.DOCS_URL,
-					label: "Docs",
-					description: "Learn more about how the Arena DAO works",
-					isExternal: true,
-				},
-				{
-					href: env.IBC_FUN,
-					label: "Bridge",
-					description: "Transfer funds from other chains into the ecosystem",
-					isExternal: true,
-				},
-			],
-		},
-	];
 
 	return (
 		<Navbar
@@ -169,7 +51,11 @@ export default function AppNavbar() {
 					className="md:hidden"
 				/>
 				<NavbarBrand>
-					<Link href="/" onClick={() => setIsMenuOpen(false)}>
+					<Link
+						className="flex cursor-pointer flex-row items-center justify-center"
+						onPress={() => setIsMenuOpen(false)}
+						href="/"
+					>
 						<Image
 							as={NextImage}
 							src="/logo.svg"
@@ -178,38 +64,309 @@ export default function AppNavbar() {
 							height="30"
 							removeWrapper
 						/>
-						<p className="ml-2 font-bold text-inherit">Arena DAO</p>
+						<p className="title ml-2 font-bold">Arena DAO</p>
 					</Link>
 				</NavbarBrand>
 			</NavbarContent>
 
 			<NavbarContent className="hidden gap-4 md:flex" justify="center">
-				{navbarItems.map((item) => (
-					<DynamicNavbarItem
-						key={item.label}
-						item={item}
-						setIsMenuOpen={setIsMenuOpen}
-						dropdownButtonClass="bg-transparent p-0 font-bold text-medium data-[hover=true]:bg-transparent"
-						linkClass="font-bold"
-					/>
-				))}
-			</NavbarContent>
+				<NavbarItem>
+					<Link
+						className="flex cursor-pointer items-center font-semibold text-sm/6"
+						href="/compete"
+						onPress={() => setIsMenuOpen(false)}
+					>
+						Compete
+					</Link>
+				</NavbarItem>
 
-			<NavbarContent as="div" justify="end">
-				<WalletConnectToggle />
+				<Dropdown>
+					<NavbarItem>
+						<DropdownTrigger>
+							<Button
+								variant="light"
+								className="flex items-center font-semibold text-primary text-sm/6"
+								endContent={<BsChevronDown className="size-3" />}
+							>
+								DAO
+							</Button>
+						</DropdownTrigger>
+					</NavbarItem>
+					<DropdownMenu
+						aria-label="DAO Menu"
+						itemClasses={{ title: "text-primary font-semibold" }}
+					>
+						<DropdownItem
+							key="dao"
+							description="View the Arena DAO on DAO DAO"
+							href={`${env.DAO_DAO_URL}/dao/${env.ARENA_DAO_ADDRESS}`}
+							onPress={() => setIsMenuOpen(false)}
+							startContent={<BsYinYang />}
+							target="_blank"
+						>
+							DAO
+						</DropdownItem>
+						<DropdownItem
+							key="jailhouse"
+							href="/dao/jailhouse"
+							onPress={() => setIsMenuOpen(false)}
+							description="View jailed competitions needing action through the DAO"
+							startContent={<BsAlarm />}
+						>
+							Jailhouse
+						</DropdownItem>
+					</DropdownMenu>
+				</Dropdown>
+
+				<Dropdown>
+					<NavbarItem>
+						<DropdownTrigger>
+							<Button
+								variant="light"
+								className="flex items-center font-semibold text-primary text-sm/6"
+								endContent={<BsChevronDown className="size-3" />}
+							>
+								Resources
+							</Button>
+						</DropdownTrigger>
+					</NavbarItem>
+					<DropdownMenu
+						aria-label="Resources Menu"
+						itemClasses={{ title: "text-primary font-semibold" }}
+					>
+						<DropdownItem
+							key="faucet"
+							hidden={!env.FAUCET_URL}
+							href={env.FAUCET_URL}
+							onPress={() => setIsMenuOpen(false)}
+							description="Get testnet gas to explore The Arena"
+							startContent={<BsCurrencyBitcoin />}
+							target="_blank"
+						>
+							Faucet
+						</DropdownItem>
+						<DropdownItem
+							key="docs"
+							description="Learn more about how the Arena DAO works"
+							href={env.DOCS_URL}
+							onPress={() => setIsMenuOpen(false)}
+							startContent={<BsBook />}
+							target="_blank"
+						>
+							Docs
+						</DropdownItem>
+						<DropdownItem
+							key="bridge"
+							href={env.IBC_FUN}
+							onPress={() => setIsMenuOpen(false)}
+							description="Transfer funds from other chains into the ecosystem"
+							startContent={<BsCurrencyExchange />}
+							target="_blank"
+						>
+							Bridge
+						</DropdownItem>
+					</DropdownMenu>
+				</Dropdown>
+
+				<Dropdown>
+					<NavbarItem>
+						<DropdownTrigger>
+							<Button
+								variant="light"
+								className="flex items-center font-semibold text-primary text-sm/6"
+								endContent={<BsChevronDown className="size-3" />}
+							>
+								Socials
+							</Button>
+						</DropdownTrigger>
+					</NavbarItem>
+					<DropdownMenu
+						aria-label="Socials Menu"
+						itemClasses={{ title: "text-primary font-semibold" }}
+					>
+						<DropdownItem
+							key="twitter"
+							href="https://x.com/ArenaDAO"
+							onPress={() => setIsMenuOpen(false)}
+							description="Stay up to date with our announcements"
+							startContent={<BsTwitterX />}
+							target="_blank"
+						>
+							Twitter
+						</DropdownItem>
+						<DropdownItem
+							key="discord"
+							href="https://discord.arenadao.org/"
+							onPress={() => setIsMenuOpen(false)}
+							description="Connect with the community"
+							startContent={<BsDiscord />}
+							target="_blank"
+						>
+							Discord
+						</DropdownItem>
+						<DropdownItem
+							key="github"
+							href="https://github.com/Arena-DAO"
+							onPress={() => setIsMenuOpen(false)}
+							description="View or contribute to our codebase"
+							startContent={<BsGithub />}
+							target="_blank"
+						>
+							GitHub
+						</DropdownItem>
+					</DropdownMenu>
+				</Dropdown>
 			</NavbarContent>
 
 			<NavbarMenu>
-				{navbarItems.map((item) => (
-					<DynamicNavbarItem
-						key={item.label}
-						item={item}
-						setIsMenuOpen={setIsMenuOpen}
-						dropdownButtonClass="w-full justify-start bg-transparent p-0 font-bold text-medium data-[hover=true]:bg-transparent"
-						linkClass="w-full py-1 font-bold"
-					/>
-				))}
+				<NavbarItem>
+					<Link
+						className="ml-4 flex cursor-pointer items-center py-1 font-semibold text-xl"
+						href="/compete"
+					>
+						Compete
+					</Link>
+				</NavbarItem>
+
+				<Dropdown>
+					<NavbarItem>
+						<DropdownTrigger className="text-left">
+							<Button
+								variant="light"
+								className="flex items-center font-semibold text-primary text-xl"
+								endContent={<BsChevronDown className="size-3" />}
+							>
+								DAO
+							</Button>
+						</DropdownTrigger>
+					</NavbarItem>
+					<DropdownMenu
+						aria-label="DAO Menu"
+						itemClasses={{ title: "text-primary font-semibold" }}
+					>
+						<DropdownItem
+							key="dao"
+							href={`${env.DAO_DAO_URL}/dao/${env.ARENA_DAO_ADDRESS}`}
+							onPress={() => setIsMenuOpen(false)}
+							description="View the Arena DAO on DAO DAO"
+							startContent={<BsYinYang />}
+							target="_blank"
+						>
+							DAO
+						</DropdownItem>
+						<DropdownItem
+							key="jailhouse"
+							href="/dao/jailhouse"
+							onPress={() => setIsMenuOpen(false)}
+							description="View jailed competitions needing action through the DAO"
+							startContent={<BsAlarm />}
+						>
+							Jailhouse
+						</DropdownItem>
+					</DropdownMenu>
+				</Dropdown>
+
+				<Dropdown>
+					<NavbarItem>
+						<DropdownTrigger>
+							<Button
+								variant="light"
+								className="flex items-center font-semibold text-primary text-xl"
+								endContent={<BsChevronDown className="size-3" />}
+							>
+								Resources
+							</Button>
+						</DropdownTrigger>
+					</NavbarItem>
+					<DropdownMenu
+						aria-label="Resources Menu"
+						itemClasses={{ title: "text-primary font-semibold" }}
+					>
+						<DropdownItem
+							key="faucet"
+							hidden={!env.FAUCET_URL}
+							href={env.FAUCET_URL}
+							onPress={() => setIsMenuOpen(false)}
+							description="Get testnet gas to explore The Arena"
+							startContent={<BsCurrencyBitcoin />}
+							target="_blank"
+						>
+							Faucet
+						</DropdownItem>
+						<DropdownItem
+							key="docs"
+							href={env.DOCS_URL}
+							onPress={() => setIsMenuOpen(false)}
+							description="Learn more about how the Arena DAO works"
+							startContent={<BsBook />}
+							target="_blank"
+						>
+							Docs
+						</DropdownItem>
+						<DropdownItem
+							key="bridge"
+							href={env.IBC_FUN}
+							onPress={() => setIsMenuOpen(false)}
+							description="Transfer funds from other chains into the ecosystem"
+							startContent={<BsCurrencyExchange />}
+							target="_blank"
+						>
+							Bridge
+						</DropdownItem>
+					</DropdownMenu>
+				</Dropdown>
+
+				<Dropdown>
+					<NavbarItem>
+						<DropdownTrigger>
+							<Button
+								variant="light"
+								className="flex items-center font-semibold text-primary text-xl"
+								endContent={<BsChevronDown className="size-3" />}
+							>
+								Socials
+							</Button>
+						</DropdownTrigger>
+					</NavbarItem>
+					<DropdownMenu
+						aria-label="Socials Menu"
+						itemClasses={{ title: "text-primary font-semibold" }}
+					>
+						<DropdownItem
+							key="twitter"
+							description="Stay up to date with our announcements"
+							href="https://x.com/ArenaDAO"
+							onPress={() => setIsMenuOpen(false)}
+							startContent={<BsTwitterX />}
+							target="_blank"
+						>
+							Twitter
+						</DropdownItem>
+						<DropdownItem
+							key="discord"
+							description="Connect with the community"
+							href="https://discord.arenadao.org/"
+							onPress={() => setIsMenuOpen(false)}
+							startContent={<BsDiscord />}
+							target="_blank"
+						>
+							Discord
+						</DropdownItem>
+						<DropdownItem
+							key="github"
+							href="https://github.com/Arena-DAO"
+							description="View or contribute to our codebase"
+							onPress={() => setIsMenuOpen(false)}
+							startContent={<BsGithub />}
+							target="_blank"
+						>
+							GitHub
+						</DropdownItem>
+					</DropdownMenu>
+				</Dropdown>
 			</NavbarMenu>
+			<ColorModeSwitch />
+			<WalletConnectToggle />
 		</Navbar>
 	);
 }

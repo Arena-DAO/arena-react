@@ -5,7 +5,7 @@
 */
 
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import { Binary, InstantiateMsg, TournamentExt, ExecuteMsg, Decimal, Uint128, Admin, Expiration, Timestamp, Uint64, ModuleInfo, ExecuteExt, Result, Action, ProposeMessage, DistributionForString, MemberPercentageForString, ModuleInstantiateInfo, CompetitionInstantiateExt, MatchResult, QueryMsg, CompetitionsFilter, CompetitionStatus, QueryExt, MigrateMsg, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForCompetitionExt, CompetitionExt, ArrayOfCompetitionResponseForCompetitionExt, ConfigForTournamentExt, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaLeagueModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, ExecuteExt, Result, Int128, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, CompetitionInstantiateExt, MatchResult, PointAdjustment, QueryMsg, CompetitionsFilter, CompetitionStatus, QueryExt, MigrateMsg, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForCompetitionExt, CompetitionExt, FeeInformationForAddr, ArrayOfCompetitionResponseForCompetitionExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaLeagueModule.types";
 import { ArenaLeagueModuleQueryClient } from "./ArenaLeagueModule.client";
 export interface ArenaLeagueModuleReactQuery<TResponse, TData = TResponse> {
   client: ArenaLeagueModuleQueryClient;
@@ -112,10 +112,10 @@ export function useArenaLeagueModuleDAOQuery<TData = String>({
 }: ArenaLeagueModuleDAOQuery<TData>) {
   return useQuery<String, Error, TData>(["arenaLeagueModuleDAO", client.contractAddress], () => client.dAO(), options);
 }
-export interface ArenaLeagueModuleConfigQuery<TData> extends ArenaLeagueModuleReactQuery<ConfigForTournamentExt, TData> {}
-export function useArenaLeagueModuleConfigQuery<TData = ConfigForTournamentExt>({
+export interface ArenaLeagueModuleConfigQuery<TData> extends ArenaLeagueModuleReactQuery<ConfigForEmpty, TData> {}
+export function useArenaLeagueModuleConfigQuery<TData = ConfigForEmpty>({
   client,
   options
 }: ArenaLeagueModuleConfigQuery<TData>) {
-  return useQuery<ConfigForTournamentExt, Error, TData>(["arenaLeagueModuleConfig", client.contractAddress], () => client.config(), options);
+  return useQuery<ConfigForEmpty, Error, TData>(["arenaLeagueModuleConfig", client.contractAddress], () => client.config(), options);
 }

@@ -42,6 +42,7 @@ export interface InstantiateExt {
   competition_modules_instantiate_info: ModuleInstantiateInfo[];
   rulesets: NewRuleset[];
   tax: Decimal;
+  tax_configuration: TaxConfiguration;
 }
 export interface NewCompetitionCategory {
   name: string;
@@ -56,6 +57,10 @@ export interface NewRuleset {
   category_id?: Uint128 | null;
   description: string;
   rules: string[];
+}
+export interface TaxConfiguration {
+  cw20_msg?: Binary | null;
+  cw721_msg?: Binary | null;
 }
 export type ExecuteMsg = {
   propose: {
@@ -120,12 +125,17 @@ export type EditCompetitionCategory = {
 };
 export type Status = "open" | "rejected" | "passed" | "executed" | "closed" | "execution_failed";
 export interface ProposeMessage {
+  additional_layered_fees?: FeeInformationForString | null;
+  competition_id: Uint128;
   description: string;
   distribution?: DistributionForString | null;
-  id: Uint128;
-  tax_cw20_msg?: Binary | null;
-  tax_cw721_msg?: Binary | null;
   title: string;
+}
+export interface FeeInformationForString {
+  cw20_msg?: Binary | null;
+  cw721_msg?: Binary | null;
+  receiver: string;
+  tax: Decimal;
 }
 export interface DistributionForString {
   member_percentages: MemberPercentageForString[];
@@ -194,6 +204,10 @@ export type QueryExt = {
   };
 } | {
   dump_state: {};
+} | {
+  tax_config: {
+    height: number;
+  };
 };
 export type CompetitionModuleQuery = {
   key: [string, number | null];

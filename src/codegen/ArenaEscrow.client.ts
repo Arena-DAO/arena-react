@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { Uint128, InstantiateMsg, MemberBalanceUnchecked, BalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, DistributionForString, MemberPercentageForString, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, TaxInformationForString, QueryMsg, MigrateMsg, NullableBalanceVerified, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceChecked, MemberBalanceChecked, NullableDistributionForString, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
+import { Uint128, InstantiateMsg, MemberBalanceUnchecked, BalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, DistributionForString, MemberPercentageForString, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, FeeInformationForString, QueryMsg, MigrateMsg, NullableBalanceVerified, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceChecked, MemberBalanceChecked, NullableDistributionForString, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
 export interface ArenaEscrowReadOnlyInterface {
   contractAddress: string;
   balances: ({
@@ -235,10 +235,10 @@ export interface ArenaEscrowInterface extends ArenaEscrowReadOnlyInterface {
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   distribute: ({
     distribution,
-    taxInfo
+    layeredFees
   }: {
     distribution?: DistributionForString;
-    taxInfo?: TaxInformationForString;
+    layeredFees?: FeeInformationForString[];
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   lock: ({
     value
@@ -333,15 +333,15 @@ export class ArenaEscrowClient extends ArenaEscrowQueryClient implements ArenaEs
   };
   distribute = async ({
     distribution,
-    taxInfo
+    layeredFees
   }: {
     distribution?: DistributionForString;
-    taxInfo?: TaxInformationForString;
+    layeredFees?: FeeInformationForString[];
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       distribute: {
         distribution,
-        tax_info: taxInfo
+        layered_fees: layeredFees
       }
     }, fee, memo, _funds);
   };

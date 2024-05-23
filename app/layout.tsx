@@ -13,13 +13,12 @@ const Layout = ({ children }: PropsWithChildren) => {
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<meta
 					name="description"
-					content="The hub for competitive communities. 
-					🏆 Wagers • Leagues • Tournaments 🏆
-					Step into The Arena for trustless, peer-to-peer gaming."
+					content="The next iteration of competition infrastructure 
+					🏆 Wagers • Leagues • Tournaments 🏆"
 				/>
 				<meta
 					name="keywords"
-					content="wagers, leagues, tournaments, dao, arena dao, arena, gaming"
+					content="wagers, leagues, tournaments, dao, arena dao, arena, gaming, esports, neutron, competitive gaming, decentralized competition, open-source"
 				/>
 				<link rel="icon" href="/favicon.ico" />
 				<link
@@ -47,16 +46,16 @@ const Layout = ({ children }: PropsWithChildren) => {
 				<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
 				<meta name="theme-color" content="#FF8000" />
 			</head>
-			<body className="min-h-screen font-roboto">
+			<body className="font-roboto">
 				<Providers>
 					<AppNavbar />
 					<div
-						className="container mx-auto max-h-fit min-h-full"
+						className="min-h-full"
 						style={{ paddingTop: "4rem", paddingBottom: "4rem" }}
 					>
 						<ErrorBoundary>{children}</ErrorBoundary>
 					</div>
-					<Footer />
+					{<Footer />}
 				</Providers>
 			</body>
 		</html>

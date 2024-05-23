@@ -4,6 +4,8 @@ import MaybeLink from "@/components/MaybeLink";
 import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
 import {
+	Accordion,
+	AccordionItem,
 	Badge,
 	Button,
 	Card,
@@ -14,6 +16,13 @@ import {
 	DatePicker,
 	Input,
 	Link,
+	Progress,
+	Table,
+	TableBody,
+	TableCell,
+	TableColumn,
+	TableHeader,
+	TableRow,
 	Textarea,
 	Tooltip,
 } from "@nextui-org/react";
@@ -27,6 +36,7 @@ import type {
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { statusColors } from "~/helpers/ArenaHelpers";
 import { formatExpirationTime } from "~/helpers/DateHelpers";
+import { keyboardDelegateFixSpace } from "~/helpers/NextUIHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import type { WithClient } from "~/types/util";
 import EscrowSection from "./components/EscrowSection";
@@ -179,7 +189,7 @@ const ViewCompetition = ({
 					hideIfEmpty={status === "inactive"}
 				/>
 			)}
-			<div className="block space-x-2 overflow-x-auto">
+			<div className="flex gap-2 overflow-x-auto">
 				{!hideProcess && status === "active" && (
 					<ProcessForm
 						moduleAddr={moduleAddr}
@@ -197,6 +207,14 @@ const ViewCompetition = ({
 							is_expired
 						/>
 					)}
+				{competition.is_expired && status !== "inactive" && (
+					<ProcessForm
+						moduleAddr={moduleAddr}
+						competitionId={competition.id}
+						setCompetitionStatus={setStatus}
+						is_expired
+					/>
+				)}
 				{status !== "inactive" && competition.escrow && (
 					<PresetDistributionForm
 						escrow={competition.escrow}
@@ -219,6 +237,50 @@ const ViewCompetition = ({
 					moduleAddr={moduleAddr}
 					competitionId={competition.id}
 				/>
+			)}
+			{competition.fees && (
+				<Accordion variant="splitted">
+					<AccordionItem
+						key="1"
+						aria-label="Additional Layered Fees"
+						title="Additional Layered Fees"
+						subtitle="Set additional fees to be automatically sent when a competition is processed"
+						isCompact
+						className="gap-4 overflow-x-auto"
+					>
+						<Table
+							aria-label="Distribution"
+							keyboardDelegate={keyboardDelegateFixSpace}
+							removeWrapper
+						>
+							<TableHeader>
+								<TableColumn>Recipient</TableColumn>
+								<TableColumn>Percentage</TableColumn>
+							</TableHeader>
+							<TableBody emptyContent="No additional fees">
+								{competition.fees.map((x, i) => (
+									// biome-ignore lint/suspicious/noArrayIndexKey: best option
+									<TableRow key={i}>
+										<TableCell>
+											<Profile
+												cosmWasmClient={cosmWasmClient}
+												address={x.receiver}
+											/>
+										</TableCell>
+										<TableCell>
+											<Progress
+												aria-label="Percentage"
+												value={Number.parseFloat(x.tax) * 100}
+												color="primary"
+												showValueLabel
+											/>
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					</AccordionItem>
+				</Accordion>
 			)}
 			{children}
 		</div>
