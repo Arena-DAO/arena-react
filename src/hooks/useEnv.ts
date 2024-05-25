@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-interface Env {
+export interface Env {
 	BECH32_PREFIX: string;
 	PFPK_URL: string;
 	IPFS_GATEWAY: string;
