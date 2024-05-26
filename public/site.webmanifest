@@ -14,14 +14,14 @@
 			"type": "image/png"
 		},
 		{
-			"src": "/logo.png",
-			"sizes": "256x256",
-			"type": "image/png"
-		},
-		{
 			"src": "/favicon.ico",
 			"sizes": "any",
 			"type": "image/x-icon"
+		},
+		{
+			"src": "/logo.svg",
+			"sizes": "any",
+			"type": "image/svg+xml"
 		}
 	],
 	"theme_color": "#FF8000",

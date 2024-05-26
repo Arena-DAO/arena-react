@@ -145,7 +145,7 @@ export default function AppNavbar() {
 					>
 						<Image
 							as={NextImage}
-							src="/logo.png"
+							src="/logo.svg"
 							alt="logo"
 							width="32"
 							height="32"
