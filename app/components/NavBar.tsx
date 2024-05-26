@@ -145,10 +145,10 @@ export default function AppNavbar() {
 					>
 						<Image
 							as={NextImage}
-							src="/logo.svg"
+							src="/logo.png"
 							alt="logo"
-							width="30"
-							height="30"
+							width="32"
+							height="32"
 							removeWrapper
 						/>
 						<p className="title ml-2 font-bold">Arena DAO</p>

@@ -1,18 +1,8 @@
 {
 	"name": "The Arena 🏆",
 	"short_name": "The Arena",
-	"description": "The hub for competitive communities. 🏆 Wagers • Leagues • Tournaments 🏆 Step into The Arena for trustless, peer-to-peer gaming.",
+	"description": "The next iteration of competition infrastructure.",
 	"icons": [
-		{
-			"src": "/images/logo.png",
-			"sizes": "1081x1081",
-			"type": "image/png"
-		},
-		{
-			"src": "/favicon.ico",
-			"sizes": "48x48 72x72 96x96 128x128 256x256",
-			"type": "image/x-icon"
-		},
 		{
 			"src": "/android-chrome-192x192.png",
 			"sizes": "192x192",
@@ -24,9 +14,14 @@
 			"type": "image/png"
 		},
 		{
-			"src": "/images/apple-touch-icon.png",
-			"sizes": "180x180",
+			"src": "/logo.png",
+			"sizes": "256x256",
 			"type": "image/png"
+		},
+		{
+			"src": "/favicon.ico",
+			"sizes": "any",
+			"type": "image/x-icon"
 		}
 	],
 	"theme_color": "#FF8000",
