@@ -48,37 +48,37 @@ const Profile = ({
 		);
 	}
 
+	if (isLoading) return <Skeleton />;
+
 	return (
-		<Skeleton isLoaded={!isLoading}>
-			<Tooltip
-				content={
-					<div className="flex gap-4">
-						<CopyAddressButton address={data?.address ?? ""} />
-						{data?.address &&
-							isValidContractAddress(data.address, env.BECH32_PREFIX) && (
-								<Button
-									as={Link}
-									href={`${env.DAO_DAO_URL}/dao/${data.address}`}
-									isExternal
-									startContent={<BsYinYang />}
-								>
-									View on DAO DAO
-								</Button>
-							)}
-					</div>
-				}
-				closeDelay={1000}
-			>
-				<User
-					{...props}
-					name={data?.name ?? data?.address}
-					avatarProps={{
-						src: data?.imageUrl,
-						showFallback: true,
-					}}
-				/>
-			</Tooltip>
-		</Skeleton>
+		<Tooltip
+			content={
+				<div className="flex gap-4">
+					<CopyAddressButton address={data?.address ?? ""} />
+					{data?.address &&
+						isValidContractAddress(data.address, env.BECH32_PREFIX) && (
+							<Button
+								as={Link}
+								href={`${env.DAO_DAO_URL}/dao/${data.address}`}
+								isExternal
+								startContent={<BsYinYang />}
+							>
+								View on DAO DAO
+							</Button>
+						)}
+				</div>
+			}
+			closeDelay={1000}
+		>
+			<User
+				{...props}
+				name={data?.name ?? data?.address}
+				avatarProps={{
+					src: data?.imageUrl,
+					showFallback: true,
+				}}
+			/>
+		</Tooltip>
 	);
 };
 
