@@ -13,6 +13,9 @@ import {
 	Input,
 	Link,
 	Progress,
+	Select,
+	SelectItem,
+	Switch,
 	Table,
 	TableBody,
 	TableCell,
@@ -34,13 +37,12 @@ import { BsArrowLeft, BsPercent } from "react-icons/bs";
 import { FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { ZodIssueCode, z } from "zod";
-import { ArenaLeagueModuleClient } from "~/codegen/ArenaLeagueModule.client";
+import { ArenaTournamentModuleClient } from "~/codegen/ArenaTournamentModule.client";
 import {
 	AddressSchema,
 	CreateCompetitionSchema,
 	DecimalSchema,
 } from "~/config/schemas";
-import Uint128Schema from "~/config/schemas/AmountSchema";
 import {
 	convertToEscrowInstantiate,
 	convertToExpiration,
@@ -50,7 +52,16 @@ import { useCategoryMap } from "~/hooks/useCategories";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 
-const CreateLeagueSchema = CreateCompetitionSchema.extend({
+const EliminationTypeSchema = z.union([
+	z.literal("double_elimination"),
+	z.object({
+		single_elimination: z.object({
+			play_third_place_match: z.boolean(),
+		}),
+	}),
+]);
+
+const CreateTournamentSchema = CreateCompetitionSchema.extend({
 	host: AddressSchema,
 	distribution: z
 		.object({ percentage: DecimalSchema })
@@ -68,13 +79,11 @@ const CreateLeagueSchema = CreateCompetitionSchema.extend({
 				});
 			}
 		}),
-	match_draw_points: Uint128Schema,
-	match_lose_points: Uint128Schema,
-	match_win_points: Uint128Schema,
+	elimination_type: EliminationTypeSchema,
 });
-type CreateLeagueFormValues = z.infer<typeof CreateLeagueSchema>;
+type CreateTournamentFormValues = z.infer<typeof CreateTournamentSchema>;
 
-const CreateLeague = () => {
+const CreateTournament = () => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { getSigningCosmWasmClient, address, isWalletConnected } = useChain(
@@ -91,7 +100,7 @@ const CreateLeague = () => {
 			? categoryItem.category_id
 			: undefined
 		: undefined;
-	const formMethods = useForm<CreateLeagueFormValues>({
+	const formMethods = useForm<CreateTournamentFormValues>({
 		defaultValues: {
 			expiration: {
 				at_time: addMonths(new Date(), 1).toISOString(), // Default to a month from now
@@ -109,17 +118,19 @@ const CreateLeague = () => {
 			membersFromDues: false,
 			members: [{ address: "" }],
 			distribution: [{ percentage: 100 }],
-			match_win_points: BigInt("3"),
-			match_draw_points: BigInt("1"),
-			match_lose_points: BigInt("0"),
+			elimination_type: {
+				single_elimination: { play_third_place_match: true },
+			},
 		},
-		resolver: zodResolver(CreateLeagueSchema),
+		resolver: zodResolver(CreateTournamentSchema),
 	});
 	const {
 		handleSubmit,
-		formState: { isSubmitting, errors },
+		formState: { isSubmitting, errors, defaultValues },
 		control,
 		watch,
+		setValue,
+		getValues,
 	} = formMethods;
 
 	const { fields, append, remove } = useFieldArray({
@@ -129,23 +140,27 @@ const CreateLeague = () => {
 
 	const watchHost = watch("host");
 	const percentages = watch("distribution");
+	const watchEliminationType = watch("elimination_type");
+	const watchPlaysThirdPlaceMatch = watch(
+		"elimination_type.single_elimination.play_third_place_match",
+	);
 
 	useEffect(() => {
-		const value = formMethods.getValues("dues.0.addr");
+		const value = getValues("dues.0.addr");
 		if (value === undefined && address) {
-			formMethods.setValue("dues.0.addr", address);
+			setValue("dues.0.addr", address);
 		}
-	}, [address, formMethods.getValues, formMethods.setValue]);
+	}, [address, getValues, setValue]);
 
-	const onSubmit = async (values: CreateLeagueFormValues) => {
+	const onSubmit = async (values: CreateTournamentFormValues) => {
 		try {
 			const cosmWasmClient = await getSigningCosmWasmClient();
 			if (!address) throw "Could not get user address";
 
-			const leagueModuleClient = new ArenaLeagueModuleClient(
+			const TournamentModuleClient = new ArenaTournamentModuleClient(
 				cosmWasmClient,
 				address,
-				env.ARENA_LEAGUE_MODULE_ADDRESS,
+				env.ARENA_TOURNAMENT_MODULE_ADDRESS,
 			);
 
 			const msg = {
@@ -157,12 +172,10 @@ const CreateLeague = () => {
 				rulesets: values.rulesets.map((x) => x.ruleset_id.toString()),
 				instantiateExtension: {
 					distribution: values.distribution.map((x) => x.percentage.toString()),
-					match_win_points: values.match_win_points.toString(),
-					match_lose_points: values.match_lose_points.toString(),
-					match_draw_points: values.match_draw_points.toString(),
 					teams: values.membersFromDues
 						? values.dues.map((x) => x.addr)
 						: values.members.map((x) => x.address),
+					elimination_type: values.elimination_type,
 				},
 				host: { existing: { addr: values.host } },
 				escrow: convertToEscrowInstantiate(
@@ -172,9 +185,9 @@ const CreateLeague = () => {
 				),
 			};
 
-			const result = await leagueModuleClient.createCompetition(msg);
+			const result = await TournamentModuleClient.createCompetition(msg);
 
-			toast.success("The league was created");
+			toast.success("The tournament was created");
 
 			let competitionId: string | undefined = undefined;
 			for (const event of result.events) {
@@ -189,7 +202,7 @@ const CreateLeague = () => {
 
 			if (competitionId)
 				router.push(
-					`/league/view?category=${category}&competitionId=${competitionId}`,
+					`/tournament/view?category=${category}&competitionId=${competitionId}`,
 				);
 
 			// biome-ignore lint/suspicious/noExplicitAny: try-catch
@@ -203,7 +216,7 @@ const CreateLeague = () => {
 		<FormProvider {...formMethods}>
 			<form onSubmit={handleSubmit(async (data) => await onSubmit(data))}>
 				<div className="mx-auto w-full max-w-screen-xl justify-center space-y-4 px-10">
-					<h1 className="title text-center text-5xl">Create a League</h1>
+					<h1 className="title text-center text-5xl">Create a Tournament</h1>
 					{category && (
 						<Tooltip content="Return to competitions">
 							<Button
@@ -237,12 +250,60 @@ const CreateLeague = () => {
 					</div>
 					<CreateCompetitionForm isMembersFromDuesVisible>
 						<>
+							<Select
+								label="Elimination Type"
+								isDisabled={isSubmitting}
+								defaultSelectedKeys={["single_elimination"]}
+								onChange={(e) => {
+									switch (e.target.value) {
+										case "single_elimination":
+											setValue("elimination_type", {
+												single_elimination: { play_third_place_match: true },
+											});
+											break;
+										case "double_elimination":
+											setValue("elimination_type", "double_elimination");
+											break;
+									}
+								}}
+							>
+								<SelectItem value="single_elimination" key="single_elimination">
+									Single Elimination
+								</SelectItem>
+								<SelectItem value="double_elimination" key="double_elimination">
+									Double Elimination
+								</SelectItem>
+							</Select>
+							{typeof watchEliminationType === "object" &&
+								"single_elimination" in watchEliminationType && (
+									<Switch
+										aria-label="Play 3rd place match"
+										isDisabled={isSubmitting}
+										defaultSelected={
+											defaultValues &&
+											typeof defaultValues.elimination_type === "object" &&
+											"single_elimination" in defaultValues.elimination_type
+												? defaultValues?.elimination_type?.single_elimination
+														?.play_third_place_match ?? false
+												: false
+										}
+										isSelected={watchPlaysThirdPlaceMatch}
+										onValueChange={(value) =>
+											setValue(
+												"elimination_type.single_elimination.play_third_place_match",
+												value,
+											)
+										}
+									>
+										Play 3rd Place Match
+									</Switch>
+								)}
 							<Card>
 								<CardHeader>Final Distribution</CardHeader>
 								<CardBody className="space-y-4">
 									<p>
-										Define how the league's funds will be distributed after all
-										matches are processed.
+										Define how the tournament's funds will be distributed after
+										all matches are processed.
 									</p>
 									<Table aria-label="Distribution" removeWrapper>
 										<TableHeader>
@@ -329,59 +390,6 @@ const CreateLeague = () => {
 									</Button>
 								</CardFooter>
 							</Card>
-							<div className="grid grid-cols-12 gap-4">
-								<Controller
-									control={control}
-									name="match_win_points"
-									render={({ field }) => (
-										<Input
-											className="col-span-12 md:col-span-4"
-											type="number"
-											label="Points Per Win"
-											isDisabled={isSubmitting}
-											isInvalid={!!errors.match_win_points}
-											errorMessage={errors.match_win_points?.message}
-											{...field}
-											value={field.value?.toString()}
-											onChange={(e) => field.onChange(BigInt(e.target.value))}
-										/>
-									)}
-								/>
-								<Controller
-									control={control}
-									name="match_draw_points"
-									render={({ field }) => (
-										<Input
-											className="col-span-12 md:col-span-4"
-											type="number"
-											label="Points Per Draw"
-											isDisabled={isSubmitting}
-											isInvalid={!!errors.match_draw_points}
-											errorMessage={errors.match_draw_points?.message}
-											{...field}
-											value={field.value?.toString()}
-											onChange={(e) => field.onChange(BigInt(e.target.value))}
-										/>
-									)}
-								/>
-								<Controller
-									control={control}
-									name="match_lose_points"
-									render={({ field }) => (
-										<Input
-											className="col-span-12 md:col-span-4"
-											type="number"
-											label="Points Per Loss"
-											isDisabled={isSubmitting}
-											isInvalid={!!errors.match_lose_points}
-											errorMessage={errors.match_lose_points?.message}
-											{...field}
-											value={field.value?.toString()}
-											onChange={(e) => field.onChange(BigInt(e.target.value))}
-										/>
-									)}
-								/>
-							</div>
 						</>
 					</CreateCompetitionForm>
 					<div className="flex">
@@ -400,4 +408,4 @@ const CreateLeague = () => {
 	);
 };
 
-export default CreateLeague;
+export default CreateTournament;

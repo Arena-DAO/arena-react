@@ -67,7 +67,7 @@ const Compete = () => {
 			)}
 			{"category_id" in categoryItem && (
 				<div>
-					<Tabs aria-label="Competition Modules" disabledKeys={["tournaments"]}>
+					<Tabs aria-label="Competition Modules">
 						<Tab key="wagers" title="Wagers">
 							<CompetitionModuleSection
 								category={categoryItem}
@@ -82,7 +82,13 @@ const Compete = () => {
 								module_addr={env.ARENA_LEAGUE_MODULE_ADDRESS}
 							/>
 						</Tab>
-						<Tab key="tournaments" title="Tournaments" />
+						<Tab key="tournaments" title="Tournaments">
+							<CompetitionModuleSection
+								category={categoryItem}
+								path="tournament"
+								module_addr={env.ARENA_TOURNAMENT_MODULE_ADDRESS}
+							/>
+						</Tab>
 					</Tabs>
 				</div>
 			)}

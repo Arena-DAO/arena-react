@@ -36,7 +36,6 @@ import type {
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { statusColors } from "~/helpers/ArenaHelpers";
 import { formatExpirationTime } from "~/helpers/DateHelpers";
-import { keyboardDelegateFixSpace } from "~/helpers/NextUIHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import type { WithClient } from "~/types/util";
 import EscrowSection from "./components/EscrowSection";
@@ -248,11 +247,7 @@ const ViewCompetition = ({
 						isCompact
 						className="gap-4 overflow-x-auto"
 					>
-						<Table
-							aria-label="Distribution"
-							keyboardDelegate={keyboardDelegateFixSpace}
-							removeWrapper
-						>
+						<Table aria-label="Distribution" removeWrapper>
 							<TableHeader>
 								<TableColumn>Recipient</TableColumn>
 								<TableColumn>Percentage</TableColumn>

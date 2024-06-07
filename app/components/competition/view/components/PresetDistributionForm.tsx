@@ -35,7 +35,6 @@ import {
 } from "~/codegen/ArenaEscrow.client";
 import { useArenaEscrowDistributionQuery } from "~/codegen/ArenaEscrow.react-query";
 import { DistributionSchema } from "~/config/schemas";
-import { keyboardDelegateFixSpace } from "~/helpers/NextUIHelpers";
 import { convertToDistribution } from "~/helpers/SchemaHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import type { WithClient } from "~/types/util";
@@ -193,11 +192,7 @@ const PresetDistributionForm = ({
 						</div>
 						<Card>
 							<CardBody>
-								<Table
-									aria-label="Distribution"
-									keyboardDelegate={keyboardDelegateFixSpace}
-									removeWrapper
-								>
+								<Table aria-label="Distribution" removeWrapper>
 									<TableHeader>
 										<TableColumn>Member</TableColumn>
 										<TableColumn>Percentage</TableColumn>

@@ -33,7 +33,6 @@ import { ZodIssueCode, z } from "zod";
 import { ArenaWagerModuleClient } from "~/codegen/ArenaWagerModule.client";
 import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import { DistributionSchema } from "~/config/schemas";
-import { keyboardDelegateFixSpace } from "~/helpers/NextUIHelpers";
 import { convertToDistribution } from "~/helpers/SchemaHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
@@ -126,7 +125,7 @@ const ProcessForm = ({
 			if ("is_expired" in props) {
 				await competitionClient.jailCompetition({
 					proposeMessage: {
-						id: competitionId,
+						competition_id: competitionId,
 						distribution,
 						title: values.title,
 						description: values.description,
@@ -239,11 +238,7 @@ const ProcessForm = ({
 						</div>
 						<Card>
 							<CardBody>
-								<Table
-									aria-label="Distribution"
-									keyboardDelegate={keyboardDelegateFixSpace}
-									removeWrapper
-								>
+								<Table aria-label="Distribution" removeWrapper>
 									<TableHeader>
 										<TableColumn>Member</TableColumn>
 										<TableColumn>Percentage</TableColumn>

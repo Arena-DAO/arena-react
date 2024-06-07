@@ -6,8 +6,8 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, ExecuteExt, Result, Int128, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, LeagueInstantiateExt, MatchResult, PointAdjustment, QueryMsg, CompetitionsFilter, CompetitionStatus, LeagueQueryExt, MigrateMsg, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForLeagueExt, LeagueExt, FeeInformationForAddr, ArrayOfCompetitionResponseForLeagueExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaLeagueModule.types";
-export interface ArenaLeagueModuleReadOnlyInterface {
+import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, EliminationType, ExecuteExt, MatchResult, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, TournamentInstantiateExt, MatchResultMsg, QueryMsg, CompetitionsFilter, CompetitionStatus, QueryExt, MigrateMsg, Null, Addr, CompetitionResponseForTournamentExt, TournamentExt, FeeInformationForAddr, ArrayOfCompetitionResponseForTournamentExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaTournamentModule.types";
+export interface ArenaTournamentModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForEmpty>;
   dAO: () => Promise<String>;
@@ -16,7 +16,7 @@ export interface ArenaLeagueModuleReadOnlyInterface {
     competitionId
   }: {
     competitionId: Uint128;
-  }) => Promise<CompetitionResponseForLeagueExt>;
+  }) => Promise<CompetitionResponseForTournamentExt>;
   competitions: ({
     filter,
     limit,
@@ -25,7 +25,7 @@ export interface ArenaLeagueModuleReadOnlyInterface {
     filter?: CompetitionsFilter;
     limit?: number;
     startAfter?: Uint128;
-  }) => Promise<ArrayOfCompetitionResponseForLeagueExt>;
+  }) => Promise<ArrayOfCompetitionResponseForTournamentExt>;
   evidence: ({
     competitionId,
     limit,
@@ -43,11 +43,11 @@ export interface ArenaLeagueModuleReadOnlyInterface {
   queryExtension: ({
     msg
   }: {
-    msg: LeagueQueryExt;
+    msg: QueryExt;
   }) => Promise<Binary>;
   ownership: () => Promise<OwnershipForString>;
 }
-export class ArenaLeagueModuleQueryClient implements ArenaLeagueModuleReadOnlyInterface {
+export class ArenaTournamentModuleQueryClient implements ArenaTournamentModuleReadOnlyInterface {
   client: CosmWasmClient;
   contractAddress: string;
 
@@ -84,7 +84,7 @@ export class ArenaLeagueModuleQueryClient implements ArenaLeagueModuleReadOnlyIn
     competitionId
   }: {
     competitionId: Uint128;
-  }): Promise<CompetitionResponseForLeagueExt> => {
+  }): Promise<CompetitionResponseForTournamentExt> => {
     return this.client.queryContractSmart(this.contractAddress, {
       competition: {
         competition_id: competitionId
@@ -99,7 +99,7 @@ export class ArenaLeagueModuleQueryClient implements ArenaLeagueModuleReadOnlyIn
     filter?: CompetitionsFilter;
     limit?: number;
     startAfter?: Uint128;
-  }): Promise<ArrayOfCompetitionResponseForLeagueExt> => {
+  }): Promise<ArrayOfCompetitionResponseForTournamentExt> => {
     return this.client.queryContractSmart(this.contractAddress, {
       competitions: {
         filter,
@@ -139,7 +139,7 @@ export class ArenaLeagueModuleQueryClient implements ArenaLeagueModuleReadOnlyIn
   queryExtension = async ({
     msg
   }: {
-    msg: LeagueQueryExt;
+    msg: QueryExt;
   }): Promise<Binary> => {
     return this.client.queryContractSmart(this.contractAddress, {
       query_extension: {
@@ -153,7 +153,7 @@ export class ArenaLeagueModuleQueryClient implements ArenaLeagueModuleReadOnlyIn
     });
   };
 }
-export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInterface {
+export interface ArenaTournamentModuleInterface extends ArenaTournamentModuleReadOnlyInterface {
   contractAddress: string;
   sender: string;
   jailCompetition: ({
@@ -195,7 +195,7 @@ export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInt
     escrow?: EscrowInstantiateInfo;
     expiration: Expiration;
     host: ModuleInfo;
-    instantiateExtension: LeagueInstantiateExt;
+    instantiateExtension: TournamentInstantiateExt;
     name: string;
     rules: string[];
     rulesets: Uint128[];
@@ -221,7 +221,7 @@ export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInt
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   updateOwnership: (action: Action, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
 }
-export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implements ArenaLeagueModuleInterface {
+export class ArenaTournamentModuleClient extends ArenaTournamentModuleQueryClient implements ArenaTournamentModuleInterface {
   client: SigningCosmWasmClient;
   sender: string;
   contractAddress: string;
@@ -311,7 +311,7 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
     escrow?: EscrowInstantiateInfo;
     expiration: Expiration;
     host: ModuleInfo;
-    instantiateExtension: LeagueInstantiateExt;
+    instantiateExtension: TournamentInstantiateExt;
     name: string;
     rules: string[];
     rulesets: Uint128[];

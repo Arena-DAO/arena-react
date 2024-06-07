@@ -37,7 +37,6 @@ import { BsInfoCircle, BsPercent } from "react-icons/bs";
 import { FiPlus, FiTrash } from "react-icons/fi";
 import type { z } from "zod";
 import type { CreateCompetitionSchema } from "~/config/schemas";
-import { keyboardDelegateFixSpace } from "~/helpers/NextUIHelpers";
 import { useCategoryMap } from "~/hooks/useCategories";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
@@ -254,12 +253,7 @@ export default function CreateCompetitionForm({
 					)}
 				</CardHeader>
 				<CardBody>
-					<Table
-						aria-label="Dues"
-						keyboardDelegate={keyboardDelegateFixSpace}
-						removeWrapper
-						hideHeader
-					>
+					<Table aria-label="Dues" removeWrapper hideHeader>
 						<TableHeader>
 							<TableColumn>Dues</TableColumn>
 						</TableHeader>
@@ -411,12 +405,7 @@ export default function CreateCompetitionForm({
 							cosmWasmClient={cosmWasmClient}
 						/>
 					)}
-					<Table
-						aria-label="Rules"
-						keyboardDelegate={keyboardDelegateFixSpace}
-						hideHeader
-						removeWrapper
-					>
+					<Table aria-label="Rules" hideHeader removeWrapper>
 						<TableHeader>
 							<TableColumn>Rules</TableColumn>
 						</TableHeader>
@@ -476,11 +465,7 @@ export default function CreateCompetitionForm({
 					isCompact
 					className="gap-4 overflow-x-auto"
 				>
-					<Table
-						aria-label="Distribution"
-						keyboardDelegate={keyboardDelegateFixSpace}
-						removeWrapper
-					>
+					<Table aria-label="Distribution" removeWrapper>
 						<TableHeader>
 							<TableColumn>Recipient</TableColumn>
 							<TableColumn>Percentage</TableColumn>
