@@ -205,8 +205,20 @@ export type QueryExt = {
 export type MigrateMsg = {
   from_compatible: {};
 };
-export type Null = null;
 export type Addr = string;
+export interface SudoMsg {
+  matches: Match[];
+}
+export interface Match {
+  is_losers_bracket?: boolean | null;
+  match_number: Uint128;
+  next_match_loser?: Uint128 | null;
+  next_match_winner?: Uint128 | null;
+  result?: MatchResult | null;
+  team_1?: Addr | null;
+  team_2?: Addr | null;
+}
+export type Null = null;
 export interface CompetitionResponseForTournamentExt {
   category_id?: Uint128 | null;
   description: string;

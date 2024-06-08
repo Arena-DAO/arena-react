@@ -39,13 +39,9 @@ const CompetitionModuleSectionItems = ({
 }: WithClient<CompetitionModuleSectionProps>) => {
 	const { data: env } = useEnv();
 	const [hasMore, setHasMore] = useState(false);
+	const client = new ArenaWagerModuleQueryClient(cosmWasmClient, module_addr);
 	const list = useAsyncList<CompetitionResponseForEmpty, string | undefined>({
 		async load({ cursor }) {
-			const client = new ArenaWagerModuleQueryClient(
-				cosmWasmClient,
-				module_addr,
-			);
-
 			const data = await client.competitions({
 				startAfter: cursor,
 				filter: { category: { id: category.category_id?.toString() } },

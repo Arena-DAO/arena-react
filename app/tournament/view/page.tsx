@@ -4,8 +4,11 @@ import ViewCompetition from "@/components/competition/view/ViewCompetition";
 import {
 	Card,
 	CardBody,
+	CardFooter,
 	CardHeader,
+	Input,
 	Progress,
+	Switch,
 	Tab,
 	Table,
 	TableBody,
@@ -17,19 +20,20 @@ import {
 } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { ReactFlowProvider } from "reactflow";
 import { ArenaTournamentModuleQueryClient } from "~/codegen/ArenaTournamentModule.client";
 import { useArenaTournamentModuleCompetitionQuery } from "~/codegen/ArenaTournamentModule.react-query";
 import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import { getNumberWithOrdinal } from "~/helpers/UIHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
+import Bracket from "./components/Bracket";
 
 const ViewWager = () => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const searchParams = useSearchParams();
 	const competitionId = searchParams?.get("competitionId");
-	const [version, setVersion] = useState(0);
 	const [status, setStatus] = useState<CompetitionStatus>("pending");
 
 	const { data } = useArenaTournamentModuleCompetitionQuery({
@@ -69,7 +73,14 @@ const ViewWager = () => {
 				>
 					<Tabs aria-label="Tournament Info" color="primary">
 						<Tab key="bracket" title="Bracket" className="text-xs md:text-lg">
-							<div />
+							<div className="h-96 w-full">
+								<ReactFlowProvider>
+									<Bracket
+										tournament_id={competitionId}
+										cosmWasmClient={cosmWasmClient}
+									/>
+								</ReactFlowProvider>
+							</div>
 						</Tab>
 						<Tab
 							key="basic"
@@ -80,7 +91,7 @@ const ViewWager = () => {
 								<CardHeader>Final Distribution</CardHeader>
 								<CardBody className="space-y-4">
 									<p>
-										How the Tournament's funds will be distributed after all
+										How the tournament's funds will be distributed after all
 										matches are processed.
 									</p>
 									<Table aria-label="Distribution" removeWrapper>
@@ -108,6 +119,30 @@ const ViewWager = () => {
 										</TableBody>
 									</Table>
 								</CardBody>
+								<CardFooter>
+									<Input
+										label="Elimination Type"
+										value={
+											data.extension.elimination_type === "double_elimination"
+												? "Double Elimination"
+												: "Single Elimination"
+										}
+										readOnly
+									/>
+									{typeof data.extension.elimination_type === "object" &&
+										"single_elimination" in data.extension.elimination_type && (
+											<Switch
+												aria-label="Play 3rd place match"
+												isDisabled
+												isSelected={
+													data.extension.elimination_type.single_elimination
+														.play_third_place_match
+												}
+											>
+												Play 3rd Place Match
+											</Switch>
+										)}
+								</CardFooter>
 							</Card>
 						</Tab>
 					</Tabs>

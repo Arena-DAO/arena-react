@@ -28,6 +28,7 @@
 		"@cosmos-kit/ledger": "^2.10.0",
 		"@cosmos-kit/react": "2.15.0",
 		"@cosmos-kit/station": "^2.9.0",
+		"@dagrejs/dagre": "^1.1.2",
 		"@hookform/resolvers": "^3.6.0",
 		"@interchain-ui/react": "1.23.13",
 		"@internationalized/date": "^3.5.4",
@@ -49,6 +50,7 @@
 		"react-stately": "^3.31.1",
 		"react-toastify": "^10.0.5",
 		"react-use-clipboard": "^1.0.9",
+		"reactflow": "^11.11.3",
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {

@@ -31,12 +31,12 @@ import * as _23 from "./Cw721Base.react-query";
 import * as _24 from "./DaoVotingCw4.types";
 import * as _25 from "./DaoVotingCw4.client";
 import * as _26 from "./DaoVotingCw4.react-query";
-import * as _27 from "./CwAbc.types";
-import * as _28 from "./CwAbc.client";
-import * as _29 from "./CwAbc.react-query";
-import * as _30 from "./DaoProposalSingle.types";
-import * as _31 from "./DaoProposalSingle.client";
-import * as _32 from "./DaoProposalSingle.react-query";
+import * as _27 from "./DaoProposalSingle.types";
+import * as _28 from "./DaoProposalSingle.client";
+import * as _29 from "./DaoProposalSingle.react-query";
+import * as _30 from "./CwAbc.types";
+import * as _31 from "./CwAbc.client";
+import * as _32 from "./CwAbc.react-query";
 export namespace contracts {
   export const DaoDaoCore = { ..._0,
     ..._1,
@@ -74,11 +74,11 @@ export namespace contracts {
     ..._25,
     ..._26
   };
-  export const CwAbc = { ..._27,
+  export const DaoProposalSingle = { ..._27,
     ..._28,
     ..._29
   };
-  export const DaoProposalSingle = { ..._30,
+  export const CwAbc = { ..._30,
     ..._31,
     ..._32
   };
