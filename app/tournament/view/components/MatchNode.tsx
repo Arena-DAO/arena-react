@@ -1,5 +1,6 @@
 import Profile from "@/components/Profile";
 import { Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
+import clsx from "clsx";
 import { memo } from "react";
 import { Handle, type NodeProps, Position } from "reactflow";
 import type { Match } from "~/codegen/ArenaTournamentModule.types";
@@ -18,7 +19,15 @@ const MatchNode = memo(
 		return (
 			<>
 				<Handle type="target" position={targetPosition ?? Position.Left} />
-				<Card className="min-w-72">
+				<Card
+					className={clsx(
+						"min-w-72",
+						data.team_1 &&
+							data.team_2 &&
+							!data.result &&
+							"border-4 border-success",
+					)}
+				>
 					<CardHeader>Match {data.match_number}</CardHeader>
 					<CardBody className="gap-4 text-center align-middle">
 						{data.team_1 ? (
