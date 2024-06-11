@@ -3,51 +3,64 @@ import { useCallback, useEffect, useState } from "react";
 import ReactFlow, {
 	Background,
 	Controls,
-	MiniMap,
 	useNodesState,
 	useEdgesState,
-	useReactFlow,
 	type Edge,
 	Panel,
 	type Node,
+	Position,
 } from "reactflow";
 import { ArenaTournamentModuleQueryClient } from "~/codegen/ArenaTournamentModule.client";
 import type { Match } from "~/codegen/ArenaTournamentModule.types";
 import { useEnv } from "~/hooks/useEnv";
 import type { WithClient } from "~/types/util";
 import "reactflow/dist/style.css";
-import Dagre from "@dagrejs/dagre";
-import { Button } from "@nextui-org/react";
+import dagre from "@dagrejs/dagre";
+import { Button, ButtonGroup } from "@nextui-org/react";
+import MatchNode from "./MatchNode";
 
 interface BracketProps {
 	tournament_id: string;
 }
 
-const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
+const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
+
+const nodeTypes = {
+	matchNode: MatchNode,
+};
 
 const getLayoutedElements = (
 	nodes: Node[],
 	edges: Edge[],
 	options: { direction: string },
 ) => {
-	g.setGraph({ rankdir: options.direction });
+	const isHorizontal = options.direction === "LR";
+	dagreGraph.setGraph({ rankdir: options.direction });
 
-	for (const edge of edges) {
-		g.setEdge(edge.source, edge.target);
-	}
 	for (const node of nodes) {
-		g.setNode(node.id, node as string | Dagre.Label);
+		dagreGraph.setNode(node.id, {
+			width: 350,
+			height: 200,
+		});
+	}
+	for (const edge of edges) {
+		dagreGraph.setEdge(edge.source, edge.target, {
+			weight: edge.id.startsWith("win") ? 10 : 1,
+		});
 	}
 
-	Dagre.layout(g);
+	dagre.layout(dagreGraph, { ranker: "longest-path" });
 
 	return {
 		nodes: nodes.map((node) => {
-			const position = g.node(node.id);
+			const position = dagreGraph.node(node.id);
 			// We are shifting the dagre node position (anchor=center center) to the top left
 			// so it matches the React Flow node anchor point (top left).
 			const x = position.x - (node.width ?? 0) / 2;
 			const y = position.y - (node.height ?? 0) / 2;
+
+			node.targetPosition = isHorizontal ? Position.Left : Position.Top;
+			node.sourcePosition = isHorizontal ? Position.Right : Position.Bottom;
 
 			return { ...node, position: { x, y } };
 		}),
@@ -56,22 +69,23 @@ const getLayoutedElements = (
 };
 
 function convertMatchesToNodesEdges(matches: Match[]) {
-	const nodes = matches.map((match) => ({
+	const nodes: Node[] = matches.map((match) => ({
 		id: match.match_number.toString(),
-		data: {
-			label: `Match #${match.match_number}: ${match.team_1?.toString()} vs ${match.team_2?.toString()}`,
-		},
+		data: match,
+		type: "matchNode",
 		position: { x: 0, y: 0 },
 	}));
 
-	const edges = matches.flatMap((match) => {
+	const edges: Edge[] = matches.flatMap((match) => {
 		const edges = [];
 		if (match.next_match_winner) {
 			edges.push({
 				id: `win-${match.match_number}-${match.next_match_winner}`,
 				source: match.match_number.toString(),
 				target: match.next_match_winner.toString(),
-				animated: true,
+				type: "smoothstep",
+				sourceHandle: "winner",
+				style: { stroke: match.is_losers_bracket ? "#FF0000" : undefined },
 			});
 		}
 		if (match.next_match_loser) {
@@ -79,8 +93,9 @@ function convertMatchesToNodesEdges(matches: Match[]) {
 				id: `lose-${match.match_number}-${match.next_match_loser}`,
 				source: match.match_number.toString(),
 				target: match.next_match_loser.toString(),
-				animated: true,
-				style: { stroke: "#ff6666" }, // Styling for losing paths
+				type: "smoothstep",
+				sourceHandle: "loser",
+				style: { stroke: "#FF8000" }, // Styling for losing paths
 			});
 		}
 		return edges;
@@ -98,17 +113,24 @@ function Bracket({ tournament_id, cosmWasmClient }: WithClient<BracketProps>) {
 	const [hasMore, setHasMore] = useState(false);
 	const [nodes, setNodes, onNodesChange] = useNodesState([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-	const { fitView } = useReactFlow();
 
-	const { items, loadMore, loadingState } = useAsyncList<
-		Match,
-		string | undefined
-	>({
+	const { loadMore, loadingState } = useAsyncList<Match, string | undefined>({
 		async load({ cursor }) {
 			const data = (await client.queryExtension({
 				msg: { bracket: { tournament_id, start_after: cursor } },
 			})) as unknown as Match[];
 			setHasMore(data.length === env.PAGINATION_LIMIT);
+
+			// connect nodes
+			const { nodes: newNodes, edges: newEdges } =
+				convertMatchesToNodesEdges(data);
+			const { nodes: layoutedNodes, edges: layoutedEdges } =
+				getLayoutedElements([...nodes, ...newNodes], [...edges, ...newEdges], {
+					direction: "LR",
+				});
+			setNodes([...layoutedNodes]);
+			setEdges([...layoutedEdges]);
+
 			return {
 				items: data,
 				cursor: data[data.length - 1]?.match_number,
@@ -122,28 +144,15 @@ function Bracket({ tournament_id, cosmWasmClient }: WithClient<BracketProps>) {
 		}
 	}, [hasMore, loadingState, loadMore]);
 
-	useEffect(() => {
-		const { nodes: newNodes, edges: newEdges } =
-			convertMatchesToNodesEdges(items);
-		const layouted = getLayoutedElements(newNodes, newEdges, {
-			direction: "TB",
-		});
-		setNodes(layouted.nodes);
-		setEdges(layouted.edges);
-	}, [items, setEdges, setNodes]);
-
 	const onLayout = useCallback(
 		(direction: string) => {
-			const layouted = getLayoutedElements(nodes, edges, { direction });
+			const { nodes: layoutedNodes, edges: layoutedEdges } =
+				getLayoutedElements(nodes, edges, { direction });
 
-			setNodes([...layouted.nodes]);
-			setEdges([...layouted.edges]);
-
-			window.requestAnimationFrame(() => {
-				fitView();
-			});
+			setNodes([...layoutedNodes]);
+			setEdges([...layoutedEdges]);
 		},
-		[nodes, edges, fitView, setNodes, setEdges],
+		[nodes, edges, setEdges, setNodes],
 	);
 
 	return (
@@ -152,14 +161,18 @@ function Bracket({ tournament_id, cosmWasmClient }: WithClient<BracketProps>) {
 			edges={edges}
 			onNodesChange={onNodesChange}
 			onEdgesChange={onEdgesChange}
+			nodeTypes={nodeTypes}
 			fitView
+			minZoom={0.1}
 		>
-			<Background />
-			<MiniMap />
+			<Background size={2} />
 			<Controls />
 			<Panel position="top-right">
-				<Button onClick={() => onLayout("TB")}>Vertical layout</Button>
-				<Button onClick={() => onLayout("LR")}>Horizontal layout</Button>
+				<ButtonGroup>
+					<Button onClick={() => onLayout("TB")}>Vertical Layout</Button>
+					<Button onClick={() => onLayout("LR")}>Horizontal Layout</Button>
+					<Button>Submit</Button>
+				</ButtonGroup>
 			</Panel>
 		</ReactFlow>
 	);

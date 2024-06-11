@@ -73,7 +73,7 @@ const ViewWager = () => {
 				>
 					<Tabs aria-label="Tournament Info" color="primary">
 						<Tab key="bracket" title="Bracket" className="text-xs md:text-lg">
-							<div className="h-96 w-full">
+							<div className="h-[85vh] w-full">
 								<ReactFlowProvider>
 									<Bracket
 										tournament_id={competitionId}
@@ -119,9 +119,10 @@ const ViewWager = () => {
 										</TableBody>
 									</Table>
 								</CardBody>
-								<CardFooter>
+								<CardFooter className="grid grid-cols-12 gap-4">
 									<Input
 										label="Elimination Type"
+										className="col-span-12 md:col-span-8"
 										value={
 											data.extension.elimination_type === "double_elimination"
 												? "Double Elimination"
@@ -132,6 +133,7 @@ const ViewWager = () => {
 									{typeof data.extension.elimination_type === "object" &&
 										"single_elimination" in data.extension.elimination_type && (
 											<Switch
+												className="col-span-12 md:col-span-4"
 												aria-label="Play 3rd place match"
 												isDisabled
 												isSelected={
