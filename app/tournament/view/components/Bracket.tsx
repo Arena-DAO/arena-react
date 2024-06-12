@@ -10,13 +10,23 @@ import ReactFlow, {
 	type Node,
 	Position,
 } from "reactflow";
-import { ArenaTournamentModuleQueryClient } from "~/codegen/ArenaTournamentModule.client";
-import type { Match } from "~/codegen/ArenaTournamentModule.types";
+import {
+	ArenaTournamentModuleClient,
+	ArenaTournamentModuleQueryClient,
+} from "~/codegen/ArenaTournamentModule.client";
+import type {
+	Match,
+	MatchResult,
+	MatchResultMsg,
+} from "~/codegen/ArenaTournamentModule.types";
 import { useEnv } from "~/hooks/useEnv";
 import type { WithClient } from "~/types/util";
 import "reactflow/dist/style.css";
+import { useChain } from "@cosmos-kit/react";
 import dagre from "@dagrejs/dagre";
 import { Button, ButtonGroup } from "@nextui-org/react";
+import { toast } from "react-toastify";
+import { create } from "zustand";
 import MatchNode from "./MatchNode";
 
 interface BracketProps {
@@ -29,6 +39,35 @@ const nodeTypes = {
 	matchNode: MatchNode,
 };
 
+interface MatchResultsState {
+	matchResults: Map<string, MatchResult>;
+	add: (matchResult: MatchResultMsg) => void;
+	remove: (matchNumber: string) => void;
+	get: (matchNumber: string) => MatchResult | undefined;
+}
+
+export const useMatchResultsStore = create<MatchResultsState>()((set, get) => ({
+	matchResults: new Map(),
+	add: (matchResult) =>
+		set((state) => {
+			return {
+				matchResults: new Map(state.matchResults).set(
+					matchResult.match_number,
+					matchResult.match_result,
+				),
+			};
+		}),
+	remove: (matchNumber) =>
+		set((state) => {
+			const newResults = new Map(state.matchResults);
+			newResults.delete(matchNumber);
+			return {
+				matchResults: newResults,
+			};
+		}),
+	get: (matchNumber) => get().matchResults.get(matchNumber),
+}));
+
 const getLayoutedElements = (
 	nodes: Node[],
 	edges: Edge[],
@@ -40,7 +79,7 @@ const getLayoutedElements = (
 	for (const node of nodes) {
 		dagreGraph.setNode(node.id, {
 			width: 350,
-			height: 200,
+			height: 450,
 		});
 	}
 	for (const edge of edges) {
@@ -106,6 +145,7 @@ function convertMatchesToNodesEdges(matches: Match[]) {
 
 function Bracket({ tournament_id, cosmWasmClient }: WithClient<BracketProps>) {
 	const { data: env } = useEnv();
+	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
 	const client = new ArenaTournamentModuleQueryClient(
 		cosmWasmClient,
 		env.ARENA_TOURNAMENT_MODULE_ADDRESS,
@@ -113,6 +153,8 @@ function Bracket({ tournament_id, cosmWasmClient }: WithClient<BracketProps>) {
 	const [hasMore, setHasMore] = useState(false);
 	const [nodes, setNodes, onNodesChange] = useNodesState([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+	const updates = useMatchResultsStore((state) => state.matchResults);
+	const addMatchResult = useMatchResultsStore((state) => state.add);
 
 	const { loadMore, loadingState } = useAsyncList<Match, string | undefined>({
 		async load({ cursor }) {
@@ -130,6 +172,15 @@ function Bracket({ tournament_id, cosmWasmClient }: WithClient<BracketProps>) {
 				});
 			setNodes([...layoutedNodes]);
 			setEdges([...layoutedEdges]);
+
+			for (const match of data) {
+				if (match.result) {
+					addMatchResult({
+						match_number: match.match_number,
+						match_result: match.result,
+					});
+				}
+			}
 
 			return {
 				items: data,
@@ -155,6 +206,40 @@ function Bracket({ tournament_id, cosmWasmClient }: WithClient<BracketProps>) {
 		[nodes, edges, setEdges, setNodes],
 	);
 
+	const onSubmit = async () => {
+		try {
+			if (!address) throw "Could not get user address";
+			if (updates.size === 0) throw "Updates are empty";
+
+			const client = await getSigningCosmWasmClient();
+
+			const tournamentModuleClient = new ArenaTournamentModuleClient(
+				client,
+				address,
+				env.ARENA_TOURNAMENT_MODULE_ADDRESS,
+			);
+
+			await tournamentModuleClient.extension({
+				msg: {
+					process_match: {
+						match_results: Array.from(updates).map((x) => {
+							return { match_number: x[0], match_result: x[1] };
+						}),
+						tournament_id: tournament_id,
+					},
+				},
+			});
+
+			useMatchResultsStore.setState(() => ({ matchResults: new Map() }));
+			toast.success("Matches were processed successfully");
+
+			// biome-ignore lint/suspicious/noExplicitAny: try-catch
+		} catch (e: any) {
+			console.error(e);
+			toast.error(e.toString());
+		}
+	};
+
 	return (
 		<ReactFlow
 			nodes={nodes}
@@ -171,7 +256,9 @@ function Bracket({ tournament_id, cosmWasmClient }: WithClient<BracketProps>) {
 				<ButtonGroup>
 					<Button onClick={() => onLayout("TB")}>Vertical Layout</Button>
 					<Button onClick={() => onLayout("LR")}>Horizontal Layout</Button>
-					<Button>Submit</Button>
+					<Button isDisabled={updates.size === 0} onClick={onSubmit}>
+						Submit
+					</Button>
 				</ButtonGroup>
 			</Panel>
 		</ReactFlow>

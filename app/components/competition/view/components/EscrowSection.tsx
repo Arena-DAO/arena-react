@@ -62,7 +62,7 @@ const EscrowSection = ({
 
 	const deposit = async () => {
 		try {
-			if (!address) throw "User's address was not provided";
+			if (!address) throw "Could not get user address";
 			if (!data || !data.due) throw "User has none due";
 
 			const client = await getSigningCosmWasmClient();
