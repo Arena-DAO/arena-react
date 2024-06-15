@@ -23,6 +23,7 @@ export interface ProfileProps extends Omit<UserProps, "name"> {
 	address: string;
 	hideIfInvalid?: boolean;
 	justAvatar?: boolean;
+	isTooltipDisabled?: boolean;
 }
 
 const Profile = ({
@@ -30,6 +31,7 @@ const Profile = ({
 	cosmWasmClient,
 	hideIfInvalid = false,
 	justAvatar = false,
+	isTooltipDisabled = false,
 	...props
 }: WithClient<ProfileProps>) => {
 	const { data: env } = useEnv();
@@ -52,6 +54,7 @@ const Profile = ({
 
 	return (
 		<Tooltip
+			isDisabled={isTooltipDisabled}
 			content={
 				<div className="flex gap-4">
 					<CopyAddressButton address={data?.address ?? ""} />

@@ -39,22 +39,22 @@ const MatchNode = memo(
 				<Handle type="target" position={targetPosition ?? Position.Left} />
 				<Card
 					className={clsx(
-						"min-w-72",
+						"min-w-80",
 						data.team_1 &&
 							data.team_2 &&
 							!data.result &&
 							"border-4 border-success",
 					)}
 				>
-					<CardHeader className="font-bold text-2xl">
+					<CardHeader className="font-bold text-4xl">
 						Match {data.match_number}
 					</CardHeader>
-					<CardBody className="gap-4 text-center align-middle text-xl">
+					<CardBody className="gap-4 text-center align-middle text-3xl">
 						{data.team_1 ? (
 							<Profile
 								address={data.team_1}
 								cosmWasmClient={cosmWasmClient}
-								classNames={{ name: "text-xl" }}
+								classNames={{ name: "text-3xl" }}
 							/>
 						) : (
 							<p>TBD</p>
@@ -64,18 +64,19 @@ const MatchNode = memo(
 							<Profile
 								address={data.team_2}
 								cosmWasmClient={cosmWasmClient}
-								classNames={{ name: "text-xl" }}
+								classNames={{ name: "text-3xl" }}
 							/>
 						) : (
 							<p>TBD</p>
 						)}
 					</CardBody>
-					<CardFooter>
+					<CardFooter className="mt-1">
 						<Select
 							items={[{ team: "team1" }, { team: "team2" }]}
 							label="Match Result"
 							placeholder="Select a winner"
 							labelPlacement="outside"
+							size="lg"
 							isDisabled={!data.team_1 || !data.team_2}
 							selectedKeys={currentMatchResult ? [currentMatchResult] : []}
 							onChange={(e) => {
@@ -95,12 +96,16 @@ const MatchNode = memo(
 											<Profile
 												address={data.team_1}
 												cosmWasmClient={cosmWasmClient}
+												isTooltipDisabled
+												classNames={{ name: "text-2xl" }}
 											/>
 										)}
 										{item.textValue === "team2" && data.team_2 && (
 											<Profile
 												address={data.team_2}
 												cosmWasmClient={cosmWasmClient}
+												isTooltipDisabled
+												classNames={{ name: "text-2xl" }}
 											/>
 										)}
 									</div>
@@ -113,12 +118,14 @@ const MatchNode = memo(
 										<Profile
 											address={data.team_1}
 											cosmWasmClient={cosmWasmClient}
+											isTooltipDisabled
 										/>
 									)}
 									{user.team === "team2" && data.team_2 && (
 										<Profile
 											address={data.team_2}
 											cosmWasmClient={cosmWasmClient}
+											isTooltipDisabled
 										/>
 									)}
 								</SelectItem>

@@ -78,7 +78,7 @@ const getLayoutedElements = (
 
 	for (const node of nodes) {
 		dagreGraph.setNode(node.id, {
-			width: 350,
+			width: 400,
 			height: 450,
 		});
 	}
@@ -88,7 +88,7 @@ const getLayoutedElements = (
 		});
 	}
 
-	dagre.layout(dagreGraph, { ranker: "longest-path" });
+	dagre.layout(dagreGraph);
 
 	return {
 		nodes: nodes.map((node) => {
