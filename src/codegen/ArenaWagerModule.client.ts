@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, EmptyWrapper, QueryMsg, CompetitionsFilter, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForEmpty, FeeInformationForAddr, ArrayOfCompetitionResponseForEmpty, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, WagerInstantiateExt, QueryMsg, CompetitionsFilter, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForWagerExt, WagerExt, FeeInformationForAddr, ArrayOfCompetitionResponseForWagerExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaWagerModule.types";
 export interface ArenaWagerModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForEmpty>;
@@ -16,7 +16,7 @@ export interface ArenaWagerModuleReadOnlyInterface {
     competitionId
   }: {
     competitionId: Uint128;
-  }) => Promise<CompetitionResponseForEmpty>;
+  }) => Promise<CompetitionResponseForWagerExt>;
   competitions: ({
     filter,
     limit,
@@ -25,7 +25,7 @@ export interface ArenaWagerModuleReadOnlyInterface {
     filter?: CompetitionsFilter;
     limit?: number;
     startAfter?: Uint128;
-  }) => Promise<ArrayOfCompetitionResponseForEmpty>;
+  }) => Promise<ArrayOfCompetitionResponseForWagerExt>;
   evidence: ({
     competitionId,
     limit,
@@ -84,7 +84,7 @@ export class ArenaWagerModuleQueryClient implements ArenaWagerModuleReadOnlyInte
     competitionId
   }: {
     competitionId: Uint128;
-  }): Promise<CompetitionResponseForEmpty> => {
+  }): Promise<CompetitionResponseForWagerExt> => {
     return this.client.queryContractSmart(this.contractAddress, {
       competition: {
         competition_id: competitionId
@@ -99,7 +99,7 @@ export class ArenaWagerModuleQueryClient implements ArenaWagerModuleReadOnlyInte
     filter?: CompetitionsFilter;
     limit?: number;
     startAfter?: Uint128;
-  }): Promise<ArrayOfCompetitionResponseForEmpty> => {
+  }): Promise<ArrayOfCompetitionResponseForWagerExt> => {
     return this.client.queryContractSmart(this.contractAddress, {
       competitions: {
         filter,
@@ -195,7 +195,7 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
     escrow?: EscrowInstantiateInfo;
     expiration: Expiration;
     host: ModuleInfo;
-    instantiateExtension: EmptyWrapper;
+    instantiateExtension: WagerInstantiateExt;
     name: string;
     rules: string[];
     rulesets: Uint128[];
@@ -311,7 +311,7 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
     escrow?: EscrowInstantiateInfo;
     expiration: Expiration;
     host: ModuleInfo;
-    instantiateExtension: EmptyWrapper;
+    instantiateExtension: WagerInstantiateExt;
     name: string;
     rules: string[];
     rulesets: Uint128[];

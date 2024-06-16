@@ -7,13 +7,13 @@ import {
 	type CardProps,
 } from "@nextui-org/react";
 import { type Dispatch, type SetStateAction, useState } from "react";
-import type { CompetitionResponseForCompetitionExt } from "~/codegen/ArenaLeagueModule.types";
+import type { CompetitionResponseForLeagueExt } from "~/codegen/ArenaLeagueModule.types";
 import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import type { WithClient } from "~/types/util";
 import RoundDisplay from "./RoundDisplay";
 
 interface RoundsDisplayProps extends CardProps {
-	league: CompetitionResponseForCompetitionExt;
+	league: CompetitionResponseForLeagueExt;
 	moduleAddr: string;
 	version: number;
 	setVersion: Dispatch<SetStateAction<number>>;

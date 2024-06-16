@@ -26,6 +26,11 @@ export type Admin = {
   core_module: {};
 };
 export type Binary = string;
+export type Duration = {
+  height: number;
+} | {
+  time: number;
+};
 export type Decimal = string;
 export interface InstantiateMsg {
   deposit_info?: UncheckedDepositInfo | null;
@@ -40,6 +45,7 @@ export interface UncheckedDepositInfo {
 export interface InstantiateExt {
   categories: NewCompetitionCategory[];
   competition_modules_instantiate_info: ModuleInstantiateInfo[];
+  rating_period: Duration;
   rulesets: NewRuleset[];
   tax: Decimal;
   tax_configuration: TaxConfiguration;
@@ -112,6 +118,15 @@ export type ExecuteExt = {
     to_add: NewCompetitionCategory[];
     to_edit: EditCompetitionCategory[];
   };
+} | {
+  adjust_ratings: {
+    category_id: Uint128;
+    member_results: [MemberResultForString, MemberResultForString][];
+  };
+} | {
+  update_rating_period: {
+    period: Duration;
+  };
 };
 export type EditCompetitionCategory = {
   disable: {
@@ -144,6 +159,10 @@ export interface DistributionForString {
 export interface MemberPercentageForString {
   addr: string;
   percentage: Decimal;
+}
+export interface MemberResultForString {
+  addr: string;
+  result: Decimal;
 }
 export type QueryMsg = {
   proposal_module: {};
@@ -208,6 +227,17 @@ export type QueryExt = {
   tax_config: {
     height: number;
   };
+} | {
+  rating: {
+    addr: string;
+    category_id: Uint128;
+  };
+} | {
+  rating_leaderboard: {
+    category_id: Uint128;
+    limit?: number | null;
+    start_after?: [Uint128, string] | null;
+  };
 };
 export type CompetitionModuleQuery = {
   key: [string, number | null];
@@ -217,9 +247,12 @@ export type CompetitionModuleQuery = {
 export type MigrateMsg = {
   from_compatible: {};
 };
+export type Timestamp = Uint64;
+export type Uint64 = string;
 export interface SudoMsg {
   competition_category: CompetitionCategory;
   dump_state_response: DumpStateResponse;
+  rating: Rating;
   ruleset: Ruleset;
 }
 export interface CompetitionCategory {
@@ -236,6 +269,18 @@ export interface CompetitionModuleResponseForString {
   competition_count: Uint128;
   is_enabled: boolean;
   key: string;
+}
+export interface Rating {
+  last_block?: BlockInfo | null;
+  phi: Decimal;
+  sigma: Decimal;
+  value: Decimal;
+}
+export interface BlockInfo {
+  chain_id: string;
+  height: number;
+  time: Timestamp;
+  [k: string]: unknown;
 }
 export interface Ruleset {
   category_id?: Uint128 | null;

@@ -53,12 +53,9 @@ export interface FormComponentProps {
 	control: Control<CreateCompetitionFormValues>;
 }
 
-interface CreateCompetitionFormProps extends PropsWithChildren {
-	isMembersFromDuesVisible?: boolean;
-}
+interface CreateCompetitionFormProps extends PropsWithChildren {}
 
 export default function CreateCompetitionForm({
-	isMembersFromDuesVisible = true,
 	children,
 }: CreateCompetitionFormProps) {
 	const { data: env } = useEnv();
@@ -225,32 +222,30 @@ export default function CreateCompetitionForm({
 			<Card>
 				<CardHeader className="flex justify-between gap-4">
 					<div>Dues</div>
-					{isMembersFromDuesVisible && (
-						<div className="flex flex-nowrap gap-2">
-							<Switch
-								aria-label="Members from Dues"
-								isDisabled={isSubmitting}
-								defaultSelected={defaultValues?.membersFromDues}
-								isSelected={watchMembersFromDues}
-								onValueChange={(value) => {
-									setValue("membersFromDues", value);
-									if (!value)
-										setValue(
-											"members",
-											getValues("dues").map((x) => ({ address: x.addr })),
-										);
-									else setValue("members", []);
-								}}
-							>
-								Members from Dues
-							</Switch>
-							<Tooltip content="If enabled, then competition members can be inferred from the dues">
-								<Button isIconOnly variant="light">
-									<BsInfoCircle />
-								</Button>
-							</Tooltip>
-						</div>
-					)}
+					<div className="flex flex-nowrap gap-2">
+						<Switch
+							aria-label="Members from Dues"
+							isDisabled={isSubmitting}
+							defaultSelected={defaultValues?.membersFromDues}
+							isSelected={watchMembersFromDues}
+							onValueChange={(value) => {
+								setValue("membersFromDues", value);
+								if (!value)
+									setValue(
+										"members",
+										getValues("dues").map((x) => ({ address: x.addr })),
+									);
+								else setValue("members", []);
+							}}
+						>
+							Members from Dues
+						</Switch>
+						<Tooltip content="If enabled, then competition members can be inferred from the dues">
+							<Button isIconOnly variant="light">
+								<BsInfoCircle />
+							</Button>
+						</Tooltip>
+					</div>
 				</CardHeader>
 				<CardBody>
 					<Table aria-label="Dues" removeWrapper hideHeader>
@@ -335,7 +330,7 @@ export default function CreateCompetitionForm({
 					</Button>
 				</CardFooter>
 			</Card>
-			{isMembersFromDuesVisible && !watchMembersFromDues && (
+			{!watchMembersFromDues && (
 				<Card>
 					<CardHeader>Members</CardHeader>
 					<CardBody>

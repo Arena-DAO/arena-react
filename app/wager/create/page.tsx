@@ -140,6 +140,10 @@ const CreateWager = () => {
 				env.ARENA_WAGER_MODULE_ADDRESS,
 			);
 
+			const members = values.membersFromDues
+				? values.dues.map((x) => x.addr)
+				: values.members.map((x) => x.address);
+
 			const host = values.isAutomaticHost
 				? {
 						new: {
@@ -206,7 +210,9 @@ const CreateWager = () => {
 				name: values.name,
 				rules: values.rules.map((x) => x.rule),
 				rulesets: values.rulesets.map((x) => x.ruleset_id.toString()),
-				instantiateExtension: {},
+				instantiateExtension: {
+					registered_members: members.length === 2 ? members : undefined,
+				},
 				host: host,
 				escrow: convertToEscrowInstantiate(
 					env.CODE_ID_ESCROW,
@@ -341,9 +347,7 @@ const CreateWager = () => {
 							)}
 						</div>
 					)}
-					<CreateCompetitionForm
-						isMembersFromDuesVisible={watchIsAutomaticHost}
-					/>
+					<CreateCompetitionForm />
 					<div className="flex">
 						<Button
 							type="submit"

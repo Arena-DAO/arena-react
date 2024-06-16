@@ -91,7 +91,7 @@ export type Admin = {
 export type ExecuteExt = {
   process_match: {
     league_id: Uint128;
-    match_results: MatchResult[];
+    match_results: MatchResultMsg[];
     round_number: Uint64;
   };
 } | {
@@ -106,7 +106,7 @@ export type ExecuteExt = {
     point_adjustments: PointAdjustment[];
   };
 };
-export type Result = "team1" | "team2" | "draw";
+export type MatchResult = "team1" | "team2" | "draw";
 export type Int128 = string;
 export type Action = {
   transfer_ownership: {
@@ -154,9 +154,9 @@ export interface LeagueInstantiateExt {
   match_win_points: Uint64;
   teams: string[];
 }
-export interface MatchResult {
+export interface MatchResultMsg {
   match_number: Uint128;
-  result?: Result | null;
+  match_result: MatchResult;
 }
 export interface PointAdjustment {
   amount: Int128;
@@ -203,6 +203,10 @@ export type CompetitionsFilter = {
   category: {
     id?: Uint128 | null;
   };
+} | {
+  host: {
+    addr: string;
+  };
 };
 export type CompetitionStatus = "pending" | "active" | "inactive" | "jailed";
 export type LeagueQueryExt = {
@@ -246,7 +250,7 @@ export interface RoundResponse {
 }
 export interface Match {
   match_number: Uint128;
-  result?: Result | null;
+  result?: MatchResult | null;
   team_1: Addr;
   team_2: Addr;
 }

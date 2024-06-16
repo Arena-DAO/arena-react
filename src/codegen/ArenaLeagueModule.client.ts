@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, ExecuteExt, Result, Int128, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, LeagueInstantiateExt, MatchResult, PointAdjustment, QueryMsg, CompetitionsFilter, CompetitionStatus, LeagueQueryExt, MigrateMsg, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForLeagueExt, LeagueExt, FeeInformationForAddr, ArrayOfCompetitionResponseForLeagueExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaLeagueModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, ExecuteExt, MatchResult, Int128, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, LeagueInstantiateExt, MatchResultMsg, PointAdjustment, QueryMsg, CompetitionsFilter, CompetitionStatus, LeagueQueryExt, MigrateMsg, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForLeagueExt, LeagueExt, FeeInformationForAddr, ArrayOfCompetitionResponseForLeagueExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaLeagueModule.types";
 export interface ArenaLeagueModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForEmpty>;

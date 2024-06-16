@@ -189,6 +189,10 @@ export type CompetitionsFilter = {
   category: {
     id?: Uint128 | null;
   };
+} | {
+  host: {
+    addr: string;
+  };
 };
 export type CompetitionStatus = "pending" | "active" | "inactive" | "jailed";
 export type QueryExt = {

@@ -5,7 +5,7 @@
 */
 
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import { Uint128, DepositToken, UncheckedDenom, DepositRefundPolicy, Admin, Binary, Decimal, InstantiateMsg, UncheckedDepositInfo, InstantiateExt, NewCompetitionCategory, ModuleInstantiateInfo, NewRuleset, TaxConfiguration, ExecuteMsg, ExecuteExt, EditCompetitionCategory, Status, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, QueryMsg, QueryExt, CompetitionModuleQuery, MigrateMsg, SudoMsg, CompetitionCategory, DumpStateResponse, CompetitionModuleResponseForString, Ruleset, CheckedDenom, Addr, Config, CheckedDepositInfo, DepositInfoResponse, HooksResponse } from "./ArenaCore.types";
+import { Uint128, DepositToken, UncheckedDenom, DepositRefundPolicy, Admin, Binary, Duration, Decimal, InstantiateMsg, UncheckedDepositInfo, InstantiateExt, NewCompetitionCategory, ModuleInstantiateInfo, NewRuleset, TaxConfiguration, ExecuteMsg, ExecuteExt, EditCompetitionCategory, Status, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, MemberResultForString, QueryMsg, QueryExt, CompetitionModuleQuery, MigrateMsg, Timestamp, Uint64, SudoMsg, CompetitionCategory, DumpStateResponse, CompetitionModuleResponseForString, Rating, BlockInfo, Ruleset, CheckedDenom, Addr, Config, CheckedDepositInfo, DepositInfoResponse, HooksResponse } from "./ArenaCore.types";
 import { ArenaCoreQueryClient } from "./ArenaCore.client";
 export interface ArenaCoreReactQuery<TResponse, TData = TResponse> {
   client: ArenaCoreQueryClient;

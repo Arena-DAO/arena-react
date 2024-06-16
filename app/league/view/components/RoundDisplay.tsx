@@ -22,7 +22,7 @@ import {
 import { useArenaLeagueModuleQueryExtensionQuery } from "~/codegen/ArenaLeagueModule.react-query";
 import type {
 	CompetitionStatus,
-	Result,
+	MatchResult,
 	RoundResponse,
 } from "~/codegen/ArenaLeagueModule.types";
 import { LeagueResultValues } from "~/helpers/ArenaHelpers";
@@ -54,7 +54,7 @@ const RoundDisplay = ({
 		args: { msg: { round: { league_id, round_number } } },
 	});
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [changeMap, setChangeMap] = useState(new Map<string, Result>());
+	const [changeMap, setChangeMap] = useState(new Map<string, MatchResult>());
 	// biome-ignore lint/correctness/useExhaustiveDependencies: We want to clear the change map if the round number changes
 	useEffect(() => {
 		setChangeMap(new Map());
@@ -79,7 +79,7 @@ const RoundDisplay = ({
 
 			setChangeMap(updatedMap);
 		} else {
-			setChangeMap((x) => new Map(x.set(match_number, value as Result)));
+			setChangeMap((x) => new Map(x.set(match_number, value as MatchResult)));
 		}
 	};
 
@@ -103,7 +103,7 @@ const RoundDisplay = ({
 						round_number,
 						match_results: Array.from(changeMap.entries()).map((x) => ({
 							match_number: x[0],
-							result: x[1],
+							match_result: x[1],
 						})),
 					},
 				},

@@ -38,7 +38,7 @@ export type ExecuteMsg = {
     escrow?: EscrowInstantiateInfo | null;
     expiration: Expiration;
     host: ModuleInfo;
-    instantiate_extension: EmptyWrapper;
+    instantiate_extension: WagerInstantiateExt;
     name: string;
     rules: string[];
     rulesets: Uint128[];
@@ -127,8 +127,8 @@ export interface ModuleInstantiateInfo {
   label: string;
   msg: Binary;
 }
-export interface EmptyWrapper {
-  [k: string]: unknown;
+export interface WagerInstantiateExt {
+  registered_members?: string[] | null;
 }
 export type QueryMsg = {
   config: {};
@@ -171,6 +171,10 @@ export type CompetitionsFilter = {
   category: {
     id?: Uint128 | null;
   };
+} | {
+  host: {
+    addr: string;
+  };
 };
 export type CompetitionStatus = "pending" | "active" | "inactive" | "jailed";
 export type MigrateMsg = {
@@ -178,12 +182,12 @@ export type MigrateMsg = {
 };
 export type Null = null;
 export type Addr = string;
-export interface CompetitionResponseForEmpty {
+export interface CompetitionResponseForWagerExt {
   category_id?: Uint128 | null;
   description: string;
   escrow?: Addr | null;
   expiration: Expiration;
-  extension: Empty;
+  extension: WagerExt;
   fees?: FeeInformationForAddr[] | null;
   host: Addr;
   id: Uint128;
@@ -194,13 +198,16 @@ export interface CompetitionResponseForEmpty {
   start_height: number;
   status: CompetitionStatus;
 }
+export interface WagerExt {
+  registered_members?: Addr[] | null;
+}
 export interface FeeInformationForAddr {
   cw20_msg?: Binary | null;
   cw721_msg?: Binary | null;
   receiver: Addr;
   tax: Decimal;
 }
-export type ArrayOfCompetitionResponseForEmpty = CompetitionResponseForEmpty[];
+export type ArrayOfCompetitionResponseForWagerExt = CompetitionResponseForWagerExt[];
 export interface ConfigForEmpty {
   description: string;
   extension: Empty;
