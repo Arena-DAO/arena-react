@@ -17,20 +17,19 @@ import {
 } from "@nextui-org/react";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { useArenaWagerModuleResultQuery } from "~/codegen/ArenaWagerModule.react-query";
-import type { WithClient } from "~/types/util";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 
 interface ResultSectionProps {
 	competitionId: string;
 	moduleAddr: string;
 }
 
-const ResultSection = ({
-	cosmWasmClient,
-	competitionId,
-	moduleAddr,
-}: WithClient<ResultSectionProps>) => {
+const ResultSection = ({ competitionId, moduleAddr }: ResultSectionProps) => {
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { data, isLoading, isError } = useArenaWagerModuleResultQuery({
-		client: new ArenaWagerModuleQueryClient(cosmWasmClient, moduleAddr),
+		client:
+			cosmWasmClient &&
+			new ArenaWagerModuleQueryClient(cosmWasmClient, moduleAddr),
 		args: { competitionId },
 	});
 
@@ -64,10 +63,7 @@ const ResultSection = ({
 									{data.member_percentages.map((item) => (
 										<TableRow key={item.addr}>
 											<TableCell>
-												<Profile
-													cosmWasmClient={cosmWasmClient}
-													address={item.addr}
-												/>
+												<Profile address={item.addr} />
 											</TableCell>
 											<TableCell>
 												<Progress

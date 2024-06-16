@@ -231,11 +231,9 @@ const CreateLeague = () => {
 								/>
 							)}
 						/>
-						{watchHost && cosmWasmClient && (
-							<Profile address={watchHost} cosmWasmClient={cosmWasmClient} />
-						)}
+						{watchHost && <Profile address={watchHost} />}
 					</div>
-					<CreateCompetitionForm isMembersFromDuesVisible>
+					<CreateCompetitionForm>
 						<>
 							<Card>
 								<CardHeader>Final Distribution</CardHeader>

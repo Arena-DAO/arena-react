@@ -4,11 +4,261 @@
 * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
 */
 
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
+import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
+import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
+import { StdFee } from "@cosmjs/amino";
 import { InstantiateMsg, ExecuteMsg, Binary, Expiration, Timestamp, Uint64, Uint128, Action, Empty, Coin, QueryMsg, AllNftInfoResponseForEmpty, OwnerOfResponse, Approval, NftInfoResponseForEmpty, OperatorsResponse, TokensResponse, ApprovalResponse, ApprovalsResponse, ContractInfoResponse, Null, NullableString, MinterResponse, NumTokensResponse, OperatorResponse, OwnershipForString } from "./Cw721Base.types";
-import { Cw721BaseQueryClient } from "./Cw721Base.client";
+import { Cw721BaseQueryClient, Cw721BaseClient } from "./Cw721Base.client";
+export const cw721BaseQueryKeys = {
+  contract: ([{
+    contract: "cw721Base"
+  }] as const),
+  address: (contractAddress: string | undefined) => ([{ ...cw721BaseQueryKeys.contract[0],
+    address: contractAddress
+  }] as const),
+  ownerOf: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...cw721BaseQueryKeys.address(contractAddress)[0],
+    method: "owner_of",
+    args
+  }] as const),
+  approval: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...cw721BaseQueryKeys.address(contractAddress)[0],
+    method: "approval",
+    args
+  }] as const),
+  approvals: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...cw721BaseQueryKeys.address(contractAddress)[0],
+    method: "approvals",
+    args
+  }] as const),
+  operator: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...cw721BaseQueryKeys.address(contractAddress)[0],
+    method: "operator",
+    args
+  }] as const),
+  allOperators: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...cw721BaseQueryKeys.address(contractAddress)[0],
+    method: "all_operators",
+    args
+  }] as const),
+  numTokens: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...cw721BaseQueryKeys.address(contractAddress)[0],
+    method: "num_tokens",
+    args
+  }] as const),
+  contractInfo: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...cw721BaseQueryKeys.address(contractAddress)[0],
+    method: "contract_info",
+    args
+  }] as const),
+  nftInfo: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...cw721BaseQueryKeys.address(contractAddress)[0],
+    method: "nft_info",
+    args
+  }] as const),
+  allNftInfo: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...cw721BaseQueryKeys.address(contractAddress)[0],
+    method: "all_nft_info",
+    args
+  }] as const),
+  tokens: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...cw721BaseQueryKeys.address(contractAddress)[0],
+    method: "tokens",
+    args
+  }] as const),
+  allTokens: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...cw721BaseQueryKeys.address(contractAddress)[0],
+    method: "all_tokens",
+    args
+  }] as const),
+  minter: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...cw721BaseQueryKeys.address(contractAddress)[0],
+    method: "minter",
+    args
+  }] as const),
+  extension: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...cw721BaseQueryKeys.address(contractAddress)[0],
+    method: "extension",
+    args
+  }] as const),
+  getWithdrawAddress: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...cw721BaseQueryKeys.address(contractAddress)[0],
+    method: "get_withdraw_address",
+    args
+  }] as const),
+  ownership: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...cw721BaseQueryKeys.address(contractAddress)[0],
+    method: "ownership",
+    args
+  }] as const)
+};
+export const cw721BaseQueries = {
+  ownerOf: <TData = OwnerOfResponse,>({
+    client,
+    args,
+    options
+  }: Cw721BaseOwnerOfQuery<TData>): UseQueryOptions<OwnerOfResponse, Error, TData> => ({
+    queryKey: cw721BaseQueryKeys.ownerOf(client?.contractAddress, args),
+    queryFn: () => client ? client.ownerOf({
+      includeExpired: args.includeExpired,
+      tokenId: args.tokenId
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  approval: <TData = ApprovalResponse,>({
+    client,
+    args,
+    options
+  }: Cw721BaseApprovalQuery<TData>): UseQueryOptions<ApprovalResponse, Error, TData> => ({
+    queryKey: cw721BaseQueryKeys.approval(client?.contractAddress, args),
+    queryFn: () => client ? client.approval({
+      includeExpired: args.includeExpired,
+      spender: args.spender,
+      tokenId: args.tokenId
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  approvals: <TData = ApprovalsResponse,>({
+    client,
+    args,
+    options
+  }: Cw721BaseApprovalsQuery<TData>): UseQueryOptions<ApprovalsResponse, Error, TData> => ({
+    queryKey: cw721BaseQueryKeys.approvals(client?.contractAddress, args),
+    queryFn: () => client ? client.approvals({
+      includeExpired: args.includeExpired,
+      tokenId: args.tokenId
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  operator: <TData = OperatorResponse,>({
+    client,
+    args,
+    options
+  }: Cw721BaseOperatorQuery<TData>): UseQueryOptions<OperatorResponse, Error, TData> => ({
+    queryKey: cw721BaseQueryKeys.operator(client?.contractAddress, args),
+    queryFn: () => client ? client.operator({
+      includeExpired: args.includeExpired,
+      operator: args.operator,
+      owner: args.owner
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  allOperators: <TData = OperatorsResponse,>({
+    client,
+    args,
+    options
+  }: Cw721BaseAllOperatorsQuery<TData>): UseQueryOptions<OperatorsResponse, Error, TData> => ({
+    queryKey: cw721BaseQueryKeys.allOperators(client?.contractAddress, args),
+    queryFn: () => client ? client.allOperators({
+      includeExpired: args.includeExpired,
+      limit: args.limit,
+      owner: args.owner,
+      startAfter: args.startAfter
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  numTokens: <TData = NumTokensResponse,>({
+    client,
+    options
+  }: Cw721BaseNumTokensQuery<TData>): UseQueryOptions<NumTokensResponse, Error, TData> => ({
+    queryKey: cw721BaseQueryKeys.numTokens(client?.contractAddress),
+    queryFn: () => client ? client.numTokens() : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  contractInfo: <TData = ContractInfoResponse,>({
+    client,
+    options
+  }: Cw721BaseContractInfoQuery<TData>): UseQueryOptions<ContractInfoResponse, Error, TData> => ({
+    queryKey: cw721BaseQueryKeys.contractInfo(client?.contractAddress),
+    queryFn: () => client ? client.contractInfo() : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  nftInfo: <TData = NftInfoResponseForEmpty,>({
+    client,
+    args,
+    options
+  }: Cw721BaseNftInfoQuery<TData>): UseQueryOptions<NftInfoResponseForEmpty, Error, TData> => ({
+    queryKey: cw721BaseQueryKeys.nftInfo(client?.contractAddress, args),
+    queryFn: () => client ? client.nftInfo({
+      tokenId: args.tokenId
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  allNftInfo: <TData = AllNftInfoResponseForEmpty,>({
+    client,
+    args,
+    options
+  }: Cw721BaseAllNftInfoQuery<TData>): UseQueryOptions<AllNftInfoResponseForEmpty, Error, TData> => ({
+    queryKey: cw721BaseQueryKeys.allNftInfo(client?.contractAddress, args),
+    queryFn: () => client ? client.allNftInfo({
+      includeExpired: args.includeExpired,
+      tokenId: args.tokenId
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  tokens: <TData = TokensResponse,>({
+    client,
+    args,
+    options
+  }: Cw721BaseTokensQuery<TData>): UseQueryOptions<TokensResponse, Error, TData> => ({
+    queryKey: cw721BaseQueryKeys.tokens(client?.contractAddress, args),
+    queryFn: () => client ? client.tokens({
+      limit: args.limit,
+      owner: args.owner,
+      startAfter: args.startAfter
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  allTokens: <TData = TokensResponse,>({
+    client,
+    args,
+    options
+  }: Cw721BaseAllTokensQuery<TData>): UseQueryOptions<TokensResponse, Error, TData> => ({
+    queryKey: cw721BaseQueryKeys.allTokens(client?.contractAddress, args),
+    queryFn: () => client ? client.allTokens({
+      limit: args.limit,
+      startAfter: args.startAfter
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  minter: <TData = MinterResponse,>({
+    client,
+    options
+  }: Cw721BaseMinterQuery<TData>): UseQueryOptions<MinterResponse, Error, TData> => ({
+    queryKey: cw721BaseQueryKeys.minter(client?.contractAddress),
+    queryFn: () => client ? client.minter() : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  extension: <TData = Null,>({
+    client,
+    args,
+    options
+  }: Cw721BaseExtensionQuery<TData>): UseQueryOptions<Null, Error, TData> => ({
+    queryKey: cw721BaseQueryKeys.extension(client?.contractAddress, args),
+    queryFn: () => client ? client.extension({
+      msg: args.msg
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  getWithdrawAddress: <TData = NullableString,>({
+    client,
+    options
+  }: Cw721BaseGetWithdrawAddressQuery<TData>): UseQueryOptions<NullableString, Error, TData> => ({
+    queryKey: cw721BaseQueryKeys.getWithdrawAddress(client?.contractAddress),
+    queryFn: () => client ? client.getWithdrawAddress() : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  ownership: <TData = OwnershipForString,>({
+    client,
+    options
+  }: Cw721BaseOwnershipQuery<TData>): UseQueryOptions<OwnershipForString, Error, TData> => ({
+    queryKey: cw721BaseQueryKeys.ownership(client?.contractAddress),
+    queryFn: () => client ? client.ownership() : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  })
+};
 export interface Cw721BaseReactQuery<TResponse, TData = TResponse> {
-  client: Cw721BaseQueryClient;
+  client: Cw721BaseQueryClient | undefined;
   options?: Omit<UseQueryOptions<TResponse, Error, TData>, "'queryKey' | 'queryFn' | 'initialData'"> & {
     initialData?: undefined;
   };
@@ -18,14 +268,18 @@ export function useCw721BaseOwnershipQuery<TData = OwnershipForString>({
   client,
   options
 }: Cw721BaseOwnershipQuery<TData>) {
-  return useQuery<OwnershipForString, Error, TData>(["cw721BaseOwnership", client.contractAddress], () => client.ownership(), options);
+  return useQuery<OwnershipForString, Error, TData>(cw721BaseQueryKeys.ownership(client?.contractAddress), () => client ? client.ownership() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface Cw721BaseGetWithdrawAddressQuery<TData> extends Cw721BaseReactQuery<NullableString, TData> {}
 export function useCw721BaseGetWithdrawAddressQuery<TData = NullableString>({
   client,
   options
 }: Cw721BaseGetWithdrawAddressQuery<TData>) {
-  return useQuery<NullableString, Error, TData>(["cw721BaseGetWithdrawAddress", client.contractAddress], () => client.getWithdrawAddress(), options);
+  return useQuery<NullableString, Error, TData>(cw721BaseQueryKeys.getWithdrawAddress(client?.contractAddress), () => client ? client.getWithdrawAddress() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface Cw721BaseExtensionQuery<TData> extends Cw721BaseReactQuery<Null, TData> {
   args: {
@@ -37,16 +291,20 @@ export function useCw721BaseExtensionQuery<TData = Null>({
   args,
   options
 }: Cw721BaseExtensionQuery<TData>) {
-  return useQuery<Null, Error, TData>(["cw721BaseExtension", client.contractAddress, JSON.stringify(args)], () => client.extension({
+  return useQuery<Null, Error, TData>(cw721BaseQueryKeys.extension(client?.contractAddress, args), () => client ? client.extension({
     msg: args.msg
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface Cw721BaseMinterQuery<TData> extends Cw721BaseReactQuery<MinterResponse, TData> {}
 export function useCw721BaseMinterQuery<TData = MinterResponse>({
   client,
   options
 }: Cw721BaseMinterQuery<TData>) {
-  return useQuery<MinterResponse, Error, TData>(["cw721BaseMinter", client.contractAddress], () => client.minter(), options);
+  return useQuery<MinterResponse, Error, TData>(cw721BaseQueryKeys.minter(client?.contractAddress), () => client ? client.minter() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface Cw721BaseAllTokensQuery<TData> extends Cw721BaseReactQuery<TokensResponse, TData> {
   args: {
@@ -59,10 +317,12 @@ export function useCw721BaseAllTokensQuery<TData = TokensResponse>({
   args,
   options
 }: Cw721BaseAllTokensQuery<TData>) {
-  return useQuery<TokensResponse, Error, TData>(["cw721BaseAllTokens", client.contractAddress, JSON.stringify(args)], () => client.allTokens({
+  return useQuery<TokensResponse, Error, TData>(cw721BaseQueryKeys.allTokens(client?.contractAddress, args), () => client ? client.allTokens({
     limit: args.limit,
     startAfter: args.startAfter
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface Cw721BaseTokensQuery<TData> extends Cw721BaseReactQuery<TokensResponse, TData> {
   args: {
@@ -76,11 +336,13 @@ export function useCw721BaseTokensQuery<TData = TokensResponse>({
   args,
   options
 }: Cw721BaseTokensQuery<TData>) {
-  return useQuery<TokensResponse, Error, TData>(["cw721BaseTokens", client.contractAddress, JSON.stringify(args)], () => client.tokens({
+  return useQuery<TokensResponse, Error, TData>(cw721BaseQueryKeys.tokens(client?.contractAddress, args), () => client ? client.tokens({
     limit: args.limit,
     owner: args.owner,
     startAfter: args.startAfter
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface Cw721BaseAllNftInfoQuery<TData> extends Cw721BaseReactQuery<AllNftInfoResponseForEmpty, TData> {
   args: {
@@ -93,10 +355,12 @@ export function useCw721BaseAllNftInfoQuery<TData = AllNftInfoResponseForEmpty>(
   args,
   options
 }: Cw721BaseAllNftInfoQuery<TData>) {
-  return useQuery<AllNftInfoResponseForEmpty, Error, TData>(["cw721BaseAllNftInfo", client.contractAddress, JSON.stringify(args)], () => client.allNftInfo({
+  return useQuery<AllNftInfoResponseForEmpty, Error, TData>(cw721BaseQueryKeys.allNftInfo(client?.contractAddress, args), () => client ? client.allNftInfo({
     includeExpired: args.includeExpired,
     tokenId: args.tokenId
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface Cw721BaseNftInfoQuery<TData> extends Cw721BaseReactQuery<NftInfoResponseForEmpty, TData> {
   args: {
@@ -108,23 +372,29 @@ export function useCw721BaseNftInfoQuery<TData = NftInfoResponseForEmpty>({
   args,
   options
 }: Cw721BaseNftInfoQuery<TData>) {
-  return useQuery<NftInfoResponseForEmpty, Error, TData>(["cw721BaseNftInfo", client.contractAddress, JSON.stringify(args)], () => client.nftInfo({
+  return useQuery<NftInfoResponseForEmpty, Error, TData>(cw721BaseQueryKeys.nftInfo(client?.contractAddress, args), () => client ? client.nftInfo({
     tokenId: args.tokenId
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface Cw721BaseContractInfoQuery<TData> extends Cw721BaseReactQuery<ContractInfoResponse, TData> {}
 export function useCw721BaseContractInfoQuery<TData = ContractInfoResponse>({
   client,
   options
 }: Cw721BaseContractInfoQuery<TData>) {
-  return useQuery<ContractInfoResponse, Error, TData>(["cw721BaseContractInfo", client.contractAddress], () => client.contractInfo(), options);
+  return useQuery<ContractInfoResponse, Error, TData>(cw721BaseQueryKeys.contractInfo(client?.contractAddress), () => client ? client.contractInfo() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface Cw721BaseNumTokensQuery<TData> extends Cw721BaseReactQuery<NumTokensResponse, TData> {}
 export function useCw721BaseNumTokensQuery<TData = NumTokensResponse>({
   client,
   options
 }: Cw721BaseNumTokensQuery<TData>) {
-  return useQuery<NumTokensResponse, Error, TData>(["cw721BaseNumTokens", client.contractAddress], () => client.numTokens(), options);
+  return useQuery<NumTokensResponse, Error, TData>(cw721BaseQueryKeys.numTokens(client?.contractAddress), () => client ? client.numTokens() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface Cw721BaseAllOperatorsQuery<TData> extends Cw721BaseReactQuery<OperatorsResponse, TData> {
   args: {
@@ -139,12 +409,14 @@ export function useCw721BaseAllOperatorsQuery<TData = OperatorsResponse>({
   args,
   options
 }: Cw721BaseAllOperatorsQuery<TData>) {
-  return useQuery<OperatorsResponse, Error, TData>(["cw721BaseAllOperators", client.contractAddress, JSON.stringify(args)], () => client.allOperators({
+  return useQuery<OperatorsResponse, Error, TData>(cw721BaseQueryKeys.allOperators(client?.contractAddress, args), () => client ? client.allOperators({
     includeExpired: args.includeExpired,
     limit: args.limit,
     owner: args.owner,
     startAfter: args.startAfter
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface Cw721BaseOperatorQuery<TData> extends Cw721BaseReactQuery<OperatorResponse, TData> {
   args: {
@@ -158,11 +430,13 @@ export function useCw721BaseOperatorQuery<TData = OperatorResponse>({
   args,
   options
 }: Cw721BaseOperatorQuery<TData>) {
-  return useQuery<OperatorResponse, Error, TData>(["cw721BaseOperator", client.contractAddress, JSON.stringify(args)], () => client.operator({
+  return useQuery<OperatorResponse, Error, TData>(cw721BaseQueryKeys.operator(client?.contractAddress, args), () => client ? client.operator({
     includeExpired: args.includeExpired,
     operator: args.operator,
     owner: args.owner
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface Cw721BaseApprovalsQuery<TData> extends Cw721BaseReactQuery<ApprovalsResponse, TData> {
   args: {
@@ -175,10 +449,12 @@ export function useCw721BaseApprovalsQuery<TData = ApprovalsResponse>({
   args,
   options
 }: Cw721BaseApprovalsQuery<TData>) {
-  return useQuery<ApprovalsResponse, Error, TData>(["cw721BaseApprovals", client.contractAddress, JSON.stringify(args)], () => client.approvals({
+  return useQuery<ApprovalsResponse, Error, TData>(cw721BaseQueryKeys.approvals(client?.contractAddress, args), () => client ? client.approvals({
     includeExpired: args.includeExpired,
     tokenId: args.tokenId
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface Cw721BaseApprovalQuery<TData> extends Cw721BaseReactQuery<ApprovalResponse, TData> {
   args: {
@@ -192,11 +468,13 @@ export function useCw721BaseApprovalQuery<TData = ApprovalResponse>({
   args,
   options
 }: Cw721BaseApprovalQuery<TData>) {
-  return useQuery<ApprovalResponse, Error, TData>(["cw721BaseApproval", client.contractAddress, JSON.stringify(args)], () => client.approval({
+  return useQuery<ApprovalResponse, Error, TData>(cw721BaseQueryKeys.approval(client?.contractAddress, args), () => client ? client.approval({
     includeExpired: args.includeExpired,
     spender: args.spender,
     tokenId: args.tokenId
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface Cw721BaseOwnerOfQuery<TData> extends Cw721BaseReactQuery<OwnerOfResponse, TData> {
   args: {
@@ -209,8 +487,300 @@ export function useCw721BaseOwnerOfQuery<TData = OwnerOfResponse>({
   args,
   options
 }: Cw721BaseOwnerOfQuery<TData>) {
-  return useQuery<OwnerOfResponse, Error, TData>(["cw721BaseOwnerOf", client.contractAddress, JSON.stringify(args)], () => client.ownerOf({
+  return useQuery<OwnerOfResponse, Error, TData>(cw721BaseQueryKeys.ownerOf(client?.contractAddress, args), () => client ? client.ownerOf({
     includeExpired: args.includeExpired,
     tokenId: args.tokenId
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
+}
+export interface Cw721BaseUpdateOwnershipMutation {
+  client: Cw721BaseClient;
+  msg: Action;
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useCw721BaseUpdateOwnershipMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, Cw721BaseUpdateOwnershipMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, Cw721BaseUpdateOwnershipMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.updateOwnership(msg, fee, memo, funds), options);
+}
+export interface Cw721BaseWithdrawFundsMutation {
+  client: Cw721BaseClient;
+  msg: {
+    amount: Coin;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useCw721BaseWithdrawFundsMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, Cw721BaseWithdrawFundsMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, Cw721BaseWithdrawFundsMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.withdrawFunds(msg, fee, memo, funds), options);
+}
+export interface Cw721BaseRemoveWithdrawAddressMutation {
+  client: Cw721BaseClient;
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useCw721BaseRemoveWithdrawAddressMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, Cw721BaseRemoveWithdrawAddressMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, Cw721BaseRemoveWithdrawAddressMutation>(({
+    client,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.removeWithdrawAddress(fee, memo, funds), options);
+}
+export interface Cw721BaseSetWithdrawAddressMutation {
+  client: Cw721BaseClient;
+  msg: {
+    address: string;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useCw721BaseSetWithdrawAddressMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, Cw721BaseSetWithdrawAddressMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, Cw721BaseSetWithdrawAddressMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.setWithdrawAddress(msg, fee, memo, funds), options);
+}
+export interface Cw721BaseExtensionMutation {
+  client: Cw721BaseClient;
+  msg: {
+    msg: Empty;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useCw721BaseExtensionMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, Cw721BaseExtensionMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, Cw721BaseExtensionMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.extension(msg, fee, memo, funds), options);
+}
+export interface Cw721BaseBurnMutation {
+  client: Cw721BaseClient;
+  msg: {
+    tokenId: string;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useCw721BaseBurnMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, Cw721BaseBurnMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, Cw721BaseBurnMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.burn(msg, fee, memo, funds), options);
+}
+export interface Cw721BaseMintMutation {
+  client: Cw721BaseClient;
+  msg: {
+    extension: Empty;
+    owner: string;
+    tokenId: string;
+    tokenUri?: string;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useCw721BaseMintMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, Cw721BaseMintMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, Cw721BaseMintMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.mint(msg, fee, memo, funds), options);
+}
+export interface Cw721BaseRevokeAllMutation {
+  client: Cw721BaseClient;
+  msg: {
+    operator: string;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useCw721BaseRevokeAllMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, Cw721BaseRevokeAllMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, Cw721BaseRevokeAllMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.revokeAll(msg, fee, memo, funds), options);
+}
+export interface Cw721BaseApproveAllMutation {
+  client: Cw721BaseClient;
+  msg: {
+    expires?: Expiration;
+    operator: string;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useCw721BaseApproveAllMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, Cw721BaseApproveAllMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, Cw721BaseApproveAllMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.approveAll(msg, fee, memo, funds), options);
+}
+export interface Cw721BaseRevokeMutation {
+  client: Cw721BaseClient;
+  msg: {
+    spender: string;
+    tokenId: string;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useCw721BaseRevokeMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, Cw721BaseRevokeMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, Cw721BaseRevokeMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.revoke(msg, fee, memo, funds), options);
+}
+export interface Cw721BaseApproveMutation {
+  client: Cw721BaseClient;
+  msg: {
+    expires?: Expiration;
+    spender: string;
+    tokenId: string;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useCw721BaseApproveMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, Cw721BaseApproveMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, Cw721BaseApproveMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.approve(msg, fee, memo, funds), options);
+}
+export interface Cw721BaseSendNftMutation {
+  client: Cw721BaseClient;
+  msg: {
+    contract: string;
+    msg: Binary;
+    tokenId: string;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useCw721BaseSendNftMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, Cw721BaseSendNftMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, Cw721BaseSendNftMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.sendNft(msg, fee, memo, funds), options);
+}
+export interface Cw721BaseTransferNftMutation {
+  client: Cw721BaseClient;
+  msg: {
+    recipient: string;
+    tokenId: string;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useCw721BaseTransferNftMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, Cw721BaseTransferNftMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, Cw721BaseTransferNftMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.transferNft(msg, fee, memo, funds), options);
 }

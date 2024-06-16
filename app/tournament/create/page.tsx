@@ -244,11 +244,9 @@ const CreateTournament = () => {
 								/>
 							)}
 						/>
-						{watchHost && cosmWasmClient && (
-							<Profile address={watchHost} cosmWasmClient={cosmWasmClient} />
-						)}
+						{watchHost && <Profile address={watchHost} />}
 					</div>
-					<CreateCompetitionForm isMembersFromDuesVisible>
+					<CreateCompetitionForm>
 						<>
 							<Select
 								label="Elimination Type"

@@ -1,34 +1,33 @@
 "use client";
 
 import ViewCompetition from "@/components/competition/view/ViewCompetition";
+import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { useArenaWagerModuleCompetitionQuery } from "~/codegen/ArenaWagerModule.react-query";
-import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 
 const ViewWager = () => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
+	const queryClient = useQueryClient();
 	const searchParams = useSearchParams();
 	const competitionId = searchParams?.get("competitionId");
-	const [status, setStatus] = useState<CompetitionStatus>("pending");
 
 	const { data } = useArenaWagerModuleCompetitionQuery({
-		client: new ArenaWagerModuleQueryClient(
-			// biome-ignore lint/style/noNonNullAssertion: Checked by enabled option
-			cosmWasmClient!,
-			env.ARENA_WAGER_MODULE_ADDRESS,
-		),
+		client:
+			cosmWasmClient &&
+			new ArenaWagerModuleQueryClient(
+				cosmWasmClient,
+				env.ARENA_WAGER_MODULE_ADDRESS,
+			),
 		args: {
 			// biome-ignore lint/style/noNonNullAssertion: Checked by enabled option
 			competitionId: competitionId!,
 		},
 		options: {
-			enabled: !!cosmWasmClient && !!competitionId,
-			onSuccess: (data) => setStatus(data.status),
+			enabled: !!competitionId,
 		},
 	});
 
@@ -40,13 +39,11 @@ const ViewWager = () => {
 	return (
 		<div className="mx-auto w-full max-w-screen-xl justify-center space-y-4 px-10">
 			<h1 className="title text-center text-5xl">View Wager</h1>
-			{data && cosmWasmClient && (
+			{data && (
 				<ViewCompetition
-					cosmWasmClient={cosmWasmClient}
 					competition={data}
 					moduleAddr={env.ARENA_WAGER_MODULE_ADDRESS}
-					status={status}
-					setStatus={setStatus}
+					competitionType="wager"
 				/>
 			)}
 		</div>

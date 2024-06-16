@@ -266,15 +266,12 @@ const AddDueForm = ({
 			<ModalContent>
 				<ModalHeader className="flex justify-between pr-8">
 					<div>Add Due</div>
-					{cosmWasmClient &&
-						watchTokenType !== "cw721" &&
-						debouncedDenomOrAddress.length > 0 && (
-							<TokenInfo
-								denomOrAddress={debouncedDenomOrAddress}
-								isNative={watchTokenType === "native"}
-								cosmWasmClient={cosmWasmClient}
-							/>
-						)}
+					{watchTokenType !== "cw721" && debouncedDenomOrAddress.length > 0 && (
+						<TokenInfo
+							denomOrAddress={debouncedDenomOrAddress}
+							isNative={watchTokenType === "native"}
+						/>
+					)}
 				</ModalHeader>
 				<ModalBody className="space-y-4">
 					<Controller

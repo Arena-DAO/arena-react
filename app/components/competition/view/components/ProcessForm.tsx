@@ -24,31 +24,42 @@ import {
 	Textarea,
 	useDisclosure,
 } from "@nextui-org/react";
-import type { Dispatch, SetStateAction } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import type {} from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { BsPercent } from "react-icons/bs";
 import { FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { ZodIssueCode, z } from "zod";
+import { arenaEscrowQueryKeys } from "~/codegen/ArenaEscrow.react-query";
 import { ArenaWagerModuleClient } from "~/codegen/ArenaWagerModule.client";
-import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
+import {
+	useArenaWagerModuleJailCompetitionMutation,
+	useArenaWagerModuleProcessCompetitionMutation,
+} from "~/codegen/ArenaWagerModule.react-query";
 import { DistributionSchema } from "~/config/schemas";
+import { getCompetitionQueryKey } from "~/helpers/CompetitionHelpers";
 import { convertToDistribution } from "~/helpers/SchemaHelpers";
-import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
+import type { CompetitionResponse } from "~/types/CompetitionResponse";
+import type { CompetitionType } from "~/types/CompetitionType";
 
 type ProcessFormProps = {
+	competitionType: CompetitionType;
 	competitionId: string;
 	moduleAddr: string;
 } & (
-	| { host: string }
+	| {
+			host: string;
+			escrow?: string | null;
+	  }
 	| {
 			is_expired: true;
-			setCompetitionStatus: Dispatch<SetStateAction<CompetitionStatus>>;
 	  }
 );
 
 const ProcessForm = ({
+	competitionType,
 	moduleAddr,
 	competitionId,
 	...props
@@ -80,9 +91,43 @@ const ProcessForm = ({
 
 	type ProcessFormValues = z.infer<typeof ProcessFormSchema>;
 
+	const queryClient = useQueryClient();
 	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
+
+	const processMutation = useArenaWagerModuleProcessCompetitionMutation({
+		onMutate: async () => {
+			queryClient.setQueryData<CompetitionResponse | undefined>(
+				getCompetitionQueryKey(env, competitionType, competitionId),
+				(old) => {
+					if (old) {
+						return { ...old, status: "inactive" };
+					}
+					return old;
+				},
+			);
+
+			if ("escrow" in props && props.escrow) {
+				queryClient.invalidateQueries(
+					arenaEscrowQueryKeys.balances(props.escrow),
+				);
+			}
+		},
+	});
+	const jailMutation = useArenaWagerModuleJailCompetitionMutation({
+		onMutate: async () => {
+			queryClient.setQueryData<CompetitionResponse | undefined>(
+				getCompetitionQueryKey(env, competitionType, competitionId),
+				(old) => {
+					if (old) {
+						return { ...old, status: "jailed" };
+					}
+					return old;
+				},
+			);
+		},
+	});
+
 	const {
 		control,
 		formState: { errors, isSubmitting },
@@ -123,24 +168,39 @@ const ProcessForm = ({
 			const distribution = convertToDistribution(values.distribution);
 
 			if ("is_expired" in props) {
-				await competitionClient.jailCompetition({
-					proposeMessage: {
-						competition_id: competitionId,
-						distribution,
-						title: values.title,
-						description: values.description,
+				await jailMutation.mutateAsync(
+					{
+						client: competitionClient,
+						msg: {
+							proposeMessage: {
+								competition_id: competitionId,
+								distribution,
+								title: values.title,
+								description: values.description,
+							},
+						},
 					},
-				});
-
-				toast.success("The competition has been jailed");
-				props.setCompetitionStatus("jailed");
+					{
+						onSuccess: () => {
+							toast.success("The competition has been jailed");
+						},
+					},
+				);
 			} else {
-				await competitionClient.processCompetition({
-					competitionId,
-					distribution,
-				});
-
-				toast.success("The competition has been processed successfully");
+				await processMutation.mutateAsync(
+					{
+						client: competitionClient,
+						msg: {
+							competitionId,
+							distribution,
+						},
+					},
+					{
+						onSuccess: () => {
+							toast.success("The competition has been processed successfully");
+						},
+					},
+				);
 			}
 			// biome-ignore lint/suspicious/noExplicitAny: try-catch
 		} catch (e: any) {
@@ -227,11 +287,10 @@ const ProcessForm = ({
 									/>
 								)}
 							/>
-							{remainderAddr && cosmWasmClient && (
+							{remainderAddr && (
 								<Profile
 									className="mt-2"
 									address={remainderAddr}
-									cosmWasmClient={cosmWasmClient}
 									hideIfInvalid
 								/>
 							)}
@@ -268,16 +327,13 @@ const ProcessForm = ({
 															/>
 														)}
 													/>
-													{cosmWasmClient && (
-														<Profile
-															className="mt-2"
-															address={getValues(
-																`distribution.member_percentages.${i}.addr`,
-															)}
-															cosmWasmClient={cosmWasmClient}
-															hideIfInvalid
-														/>
-													)}
+													<Profile
+														className="mt-2"
+														address={getValues(
+															`distribution.member_percentages.${i}.addr`,
+														)}
+														hideIfInvalid
+													/>
 												</TableCell>
 												<TableCell className="align-top">
 													<Controller

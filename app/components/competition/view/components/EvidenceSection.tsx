@@ -40,8 +40,8 @@ import {
 import type { Evidence } from "~/codegen/ArenaWagerModule.types";
 import EvidenceSchema from "~/config/schemas/EvidenceSchema";
 import { formatTimestampToDisplay } from "~/helpers/DateHelpers";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import type { WithClient } from "~/types/util";
 
 interface EvidenceSectionProps {
 	moduleAddr: string;
@@ -56,16 +56,20 @@ const EvidenceFormSchema = z.object({
 type EvidenceFormValues = z.infer<typeof EvidenceFormSchema>;
 
 const EvidenceSection = ({
-	cosmWasmClient,
 	competitionId,
 	moduleAddr,
 	hideIfEmpty,
-}: WithClient<EvidenceSectionProps>) => {
+}: EvidenceSectionProps) => {
 	const { data: env } = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const [hasMore, setHasMore] = useState(false);
 	const list = useAsyncList<Evidence, string | undefined>({
 		async load({ cursor }) {
+			if (!cosmWasmClient) {
+				return { items: [] };
+			}
+
 			const client = new ArenaWagerModuleQueryClient(
 				cosmWasmClient,
 				moduleAddr,
@@ -113,13 +117,30 @@ const EvidenceSection = ({
 				moduleAddr,
 			);
 
-			await competitionClient.submitEvidence({
+			const response = await competitionClient.submitEvidence({
 				competitionId,
 				evidence: values.evidence.map((x) => x.content),
 			});
 
 			toast.success("Evidence has been submitted");
-			list.reload();
+
+			const evidence_id = response.events
+				.find((x) => x.attributes.find((attr) => attr.key === "evidence_count"))
+				?.attributes.find((attr) => attr.key === "evidence_count")?.value;
+
+			if (evidence_id) {
+				list.append(
+					...values.evidence.map((x, i) => ({
+						id: (Number(evidence_id) - values.evidence.length + i).toString(),
+						content: x.content,
+						submit_time: new Date().toString(),
+						submit_user: address,
+					})),
+				);
+			} else {
+				list.reload();
+			}
+
 			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 		} catch (e: any) {
 			console.error(e);
@@ -167,10 +188,7 @@ const EvidenceSection = ({
 										{formatTimestampToDisplay(item.submit_time)}
 									</TableCell>
 									<TableCell>
-										<Profile
-											address={item.submit_user}
-											cosmWasmClient={cosmWasmClient}
-										/>
+										<Profile address={item.submit_user} />
 									</TableCell>
 									<TableCell>
 										<MaybeLink content={item.content} />

@@ -16,7 +16,6 @@ import {
 } from "~/helpers/AddressHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import { useProfileData } from "~/hooks/useProfile";
-import type { WithClient } from "~/types/util";
 import { CopyAddressButton } from "./CopyAddressButton";
 
 export interface ProfileProps extends Omit<UserProps, "name"> {
@@ -28,15 +27,14 @@ export interface ProfileProps extends Omit<UserProps, "name"> {
 
 const Profile = ({
 	address,
-	cosmWasmClient,
 	hideIfInvalid = false,
 	justAvatar = false,
 	isTooltipDisabled = false,
 	...props
-}: WithClient<ProfileProps>) => {
+}: ProfileProps) => {
 	const { data: env } = useEnv();
 	const isValid = isValidBech32Address(address, env.BECH32_PREFIX);
-	const { data, isLoading } = useProfileData(address, cosmWasmClient, isValid);
+	const { data, isLoading } = useProfileData(address, isValid);
 
 	if (!isValid && hideIfInvalid) {
 		return null;

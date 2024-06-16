@@ -2,7 +2,6 @@
 
 import { Skeleton, User, type UserProps } from "@nextui-org/react";
 import { useToken } from "~/hooks/useToken";
-import type { WithClient } from "~/types/util";
 
 interface TokenCardProps extends Omit<UserProps, "name"> {
 	denomOrAddress: string;
@@ -10,11 +9,10 @@ interface TokenCardProps extends Omit<UserProps, "name"> {
 }
 
 const TokenInfo = ({
-	cosmWasmClient,
 	denomOrAddress,
 	isNative = false,
 	...props
-}: WithClient<TokenCardProps>) => {
+}: TokenCardProps) => {
 	denomOrAddress = isNative
 		? denomOrAddress
 		: denomOrAddress.replace("cw20:", "");
@@ -22,7 +20,7 @@ const TokenInfo = ({
 		data: token,
 		isLoading,
 		isError,
-	} = useToken(cosmWasmClient, denomOrAddress, isNative);
+	} = useToken(denomOrAddress, isNative);
 
 	if (isError) {
 		return <User name={denomOrAddress} {...props} />;

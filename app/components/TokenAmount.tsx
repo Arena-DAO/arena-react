@@ -3,7 +3,6 @@
 import { Spinner } from "@nextui-org/react";
 import { getDisplayToken } from "~/helpers/TokenHelpers";
 import { useToken } from "~/hooks/useToken";
-import type { WithClient } from "~/types/util";
 
 interface TokenAmountProps {
 	amount: bigint;
@@ -13,12 +12,11 @@ interface TokenAmountProps {
 }
 
 const TokenAmount = ({
-	cosmWasmClient,
 	amount,
 	denomOrAddress,
 	isNative = false,
 	className,
-}: WithClient<TokenAmountProps>) => {
+}: TokenAmountProps) => {
 	denomOrAddress = isNative
 		? denomOrAddress
 		: denomOrAddress.replace("cw20:", "");
@@ -27,7 +25,7 @@ const TokenAmount = ({
 		data: token,
 		isLoading,
 		isError,
-	} = useToken(cosmWasmClient, denomOrAddress, isNative);
+	} = useToken(denomOrAddress, isNative);
 
 	if (isError) {
 		return <div className={className}>{amount.toString()}</div>;

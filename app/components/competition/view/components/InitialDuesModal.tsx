@@ -21,23 +21,25 @@ import { useState } from "react";
 import { useAsyncList } from "react-stately";
 import { ArenaEscrowQueryClient } from "~/codegen/ArenaEscrow.client";
 import type { MemberBalanceChecked } from "~/codegen/ArenaEscrow.types";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import type { WithClient } from "~/types/util";
 import BalanceDisplay from "./BalanceDisplay";
 
 interface InitialDuesModalProps {
 	escrow: string;
 }
 
-const InitialDuesModal = ({
-	escrow,
-	cosmWasmClient,
-}: WithClient<InitialDuesModalProps>) => {
+const InitialDuesModal = ({ escrow }: InitialDuesModalProps) => {
 	const { data: env } = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const [hasMore, setHasMore] = useState(false);
 	const list = useAsyncList<MemberBalanceChecked, string | undefined>({
 		async load({ cursor }) {
+			if (!cosmWasmClient) {
+				return { items: [] };
+			}
+
 			const client = new ArenaEscrowQueryClient(cosmWasmClient, escrow);
 
 			const data = await client.initialDues({ startAfter: cursor });
@@ -92,16 +94,10 @@ const InitialDuesModal = ({
 								{(item: MemberBalanceChecked) => (
 									<TableRow key={item.addr}>
 										<TableCell>
-											<Profile
-												address={item.addr}
-												cosmWasmClient={cosmWasmClient}
-											/>
+											<Profile address={item.addr} />
 										</TableCell>
 										<TableCell>
-											<BalanceDisplay
-												balance={item.balance}
-												cosmWasmClient={cosmWasmClient}
-											/>
+											<BalanceDisplay balance={item.balance} />
 										</TableCell>
 									</TableRow>
 								)}

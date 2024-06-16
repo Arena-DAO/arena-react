@@ -15,27 +15,32 @@ import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
 import { useState } from "react";
 import { useAsyncList } from "react-stately";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
-import type { CompetitionResponseForEmpty } from "~/codegen/ArenaWagerModule.types";
+import type { CompetitionResponseForWagerExt } from "~/codegen/ArenaWagerModule.types";
 import { useCategoryMap } from "~/hooks/useCategories";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import type { WithClient } from "~/types/util";
+
+type CompetitionResponse = Omit<CompetitionResponseForWagerExt, "extension">;
 
 interface CompetitionModuleSectionProps {
 	module_addr: string;
 	path: string;
 }
 
-const CompetitionModuleSectionItems = ({
-	cosmWasmClient,
+const CompetitionModuleSection = ({
 	module_addr,
 	path,
-}: WithClient<CompetitionModuleSectionProps>) => {
+}: CompetitionModuleSectionProps) => {
 	const { data: env } = useEnv();
-	const [hasMore, setHasMore] = useState(false);
+	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const [hasMore, setHasMore] = useState(true);
 	const { data: categoryMap } = useCategoryMap("id");
-	const list = useAsyncList<CompetitionResponseForEmpty, string | undefined>({
+	const list = useAsyncList<CompetitionResponse, string | undefined>({
 		async load({ cursor }) {
+			if (!cosmWasmClient) {
+				return { items: [] };
+			}
+
 			const client = new ArenaWagerModuleQueryClient(
 				cosmWasmClient,
 				module_addr,
@@ -109,7 +114,7 @@ const CompetitionModuleSectionItems = ({
 				isLoading={list.isLoading}
 				loadingContent={<Spinner color="white" />}
 			>
-				{(item: CompetitionResponseForEmpty) => (
+				{(item: CompetitionResponse) => (
 					<TableRow key={item.id}>
 						<TableCell>{item.name}</TableCell>
 						<TableCell>{item.description}</TableCell>
@@ -127,15 +132,6 @@ const CompetitionModuleSectionItems = ({
 				)}
 			</TableBody>
 		</Table>
-	);
-};
-
-const CompetitionModuleSection = (props: CompetitionModuleSectionProps) => {
-	const { data: cosmWasmClient } = useCosmWasmClient();
-
-	if (!cosmWasmClient) return null;
-	return (
-		<CompetitionModuleSectionItems cosmWasmClient={cosmWasmClient} {...props} />
 	);
 };
 

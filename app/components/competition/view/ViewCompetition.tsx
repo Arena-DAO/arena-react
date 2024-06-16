@@ -2,7 +2,6 @@
 
 import MaybeLink from "@/components/MaybeLink";
 import Profile from "@/components/Profile";
-import { useChain } from "@cosmos-kit/react";
 import {
 	Accordion,
 	AccordionItem,
@@ -27,17 +26,14 @@ import {
 	Tooltip,
 } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
-import type { Dispatch, PropsWithChildren, SetStateAction } from "react";
+import type { PropsWithChildren } from "react";
 import { BsArrowLeft, BsHourglassBottom, BsYinYang } from "react-icons/bs";
-import type {
-	CompetitionResponseForEmpty,
-	CompetitionStatus,
-} from "~/codegen/ArenaWagerModule.types";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { statusColors } from "~/helpers/ArenaHelpers";
 import { formatExpirationTime } from "~/helpers/DateHelpers";
 import { useEnv } from "~/hooks/useEnv";
-import type { WithClient } from "~/types/util";
+import type { CompetitionResponse } from "~/types/CompetitionResponse";
+import type { CompetitionType } from "~/types/CompetitionType";
 import EscrowSection from "./components/EscrowSection";
 import EvidenceSection from "./components/EvidenceSection";
 import PresetDistributionForm from "./components/PresetDistributionForm";
@@ -47,23 +43,19 @@ import RulesetsSection from "./components/RulesetsSection";
 
 interface ViewCompetitionProps extends PropsWithChildren {
 	moduleAddr: string;
-	competition: Omit<CompetitionResponseForEmpty, "extension">;
+	competition: CompetitionResponse;
 	hideProcess?: boolean;
-	status: CompetitionStatus;
-	setStatus: Dispatch<SetStateAction<CompetitionStatus>>;
+	competitionType: CompetitionType;
 }
 
 const ViewCompetition = ({
-	cosmWasmClient,
 	moduleAddr,
 	competition,
 	children,
 	hideProcess = false,
-	status,
-	setStatus,
-}: WithClient<ViewCompetitionProps>) => {
+	competitionType,
+}: ViewCompetitionProps) => {
 	const { data: env } = useEnv();
-	const { address } = useChain(env.CHAIN);
 
 	const searchParams = useSearchParams();
 
@@ -89,19 +81,19 @@ const ViewCompetition = ({
 						isInvisible={
 							!(
 								competition.is_expired &&
-								(status === "active" || status === "pending")
+								(competition.status === "active" ||
+									competition.status === "pending")
 							)
 						}
 					>
-						<Chip color={statusColors[status]}>{status}</Chip>
+						<Chip color={statusColors[competition.status]}>
+							{competition.status}
+						</Chip>
 					</Badge>
 				</CardHeader>
 				<CardBody>
 					<div className="flex justify-between">
-						<Profile
-							address={competition.host}
-							cosmWasmClient={cosmWasmClient}
-						/>
+						<Profile address={competition.host} />
 						{isValidContractAddress(competition.host, env.BECH32_PREFIX) && (
 							<Tooltip content="View through DAO DAO">
 								<Button
@@ -163,11 +155,7 @@ const ViewCompetition = ({
 					<CardHeader>Rules</CardHeader>
 					<CardBody className="space-y-4">
 						{competition.rulesets.map((rulesetId) => (
-							<RulesetsSection
-								key={rulesetId}
-								rulesetId={rulesetId}
-								cosmWasmClient={cosmWasmClient}
-							/>
+							<RulesetsSection key={rulesetId} rulesetId={rulesetId} />
 						))}
 						<ul className="list-inside list-disc">
 							{competition.rules.map((item, i) => (
@@ -180,62 +168,48 @@ const ViewCompetition = ({
 					</CardBody>
 				</Card>
 			)}
-			{(status === "jailed" || status === "inactive") && (
+			{(competition.status === "jailed" ||
+				competition.status === "inactive") && (
 				<EvidenceSection
 					moduleAddr={moduleAddr}
 					competitionId={competition.id}
-					cosmWasmClient={cosmWasmClient}
-					hideIfEmpty={status === "inactive"}
+					hideIfEmpty={competition.status === "inactive"}
 				/>
 			)}
 			<div className="flex gap-2 overflow-x-auto">
-				{!hideProcess && status === "active" && (
+				{!hideProcess && competition.status === "active" && (
 					<ProcessForm
 						moduleAddr={moduleAddr}
 						competitionId={competition.id}
 						host={competition.host}
+						competitionType={competitionType}
+						escrow={competition.escrow}
 					/>
 				)}
 				{competition.is_expired &&
-					status !== "inactive" &&
-					status !== "pending" && (
+					competition.status !== "inactive" &&
+					competition.status !== "pending" && (
 						<ProcessForm
 							moduleAddr={moduleAddr}
 							competitionId={competition.id}
-							setCompetitionStatus={setStatus}
 							is_expired
+							competitionType={competitionType}
 						/>
 					)}
-				{competition.is_expired && status !== "inactive" && (
-					<ProcessForm
-						moduleAddr={moduleAddr}
-						competitionId={competition.id}
-						setCompetitionStatus={setStatus}
-						is_expired
-					/>
-				)}
-				{status !== "inactive" && competition.escrow && (
-					<PresetDistributionForm
-						escrow={competition.escrow}
-						cosmWasmClient={cosmWasmClient}
-					/>
+				{competition.status !== "inactive" && competition.escrow && (
+					<PresetDistributionForm escrow={competition.escrow} />
 				)}
 			</div>
 			{competition.escrow && (
 				<EscrowSection
-					cosmWasmClient={cosmWasmClient}
-					address={address}
 					escrow={competition.escrow}
-					setCompetitionStatus={setStatus}
-					status={status}
-				/>
-			)}
-			{status === "inactive" && (
-				<ResultSection
-					cosmWasmClient={cosmWasmClient}
-					moduleAddr={moduleAddr}
+					competitionStatus={competition.status}
+					competitionType={competitionType}
 					competitionId={competition.id}
 				/>
+			)}
+			{competition.status === "inactive" && (
+				<ResultSection moduleAddr={moduleAddr} competitionId={competition.id} />
 			)}
 			{competition.fees && (
 				<Accordion variant="splitted">
@@ -257,10 +231,7 @@ const ViewCompetition = ({
 									// biome-ignore lint/suspicious/noArrayIndexKey: best option
 									<TableRow key={i}>
 										<TableCell>
-											<Profile
-												cosmWasmClient={cosmWasmClient}
-												address={x.receiver}
-											/>
+											<Profile address={x.receiver} />
 										</TableCell>
 										<TableCell>
 											<Progress

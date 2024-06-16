@@ -37,17 +37,18 @@ const ViewWager = () => {
 	const [status, setStatus] = useState<CompetitionStatus>("pending");
 
 	const { data } = useArenaTournamentModuleCompetitionQuery({
-		client: new ArenaTournamentModuleQueryClient(
-			// biome-ignore lint/style/noNonNullAssertion: Checked by enabled option
-			cosmWasmClient!,
-			env.ARENA_TOURNAMENT_MODULE_ADDRESS,
-		),
+		client:
+			cosmWasmClient &&
+			new ArenaTournamentModuleQueryClient(
+				cosmWasmClient,
+				env.ARENA_TOURNAMENT_MODULE_ADDRESS,
+			),
 		args: {
 			// biome-ignore lint/style/noNonNullAssertion: Checked by enabled option
 			competitionId: competitionId!,
 		},
 		options: {
-			enabled: !!cosmWasmClient && !!competitionId,
+			enabled: !!competitionId,
 			onSuccess: (data) => setStatus(data.status),
 		},
 	});
@@ -62,23 +63,18 @@ const ViewWager = () => {
 	return (
 		<div className="mx-auto w-full max-w-screen-xl justify-center space-y-4 px-10">
 			<h1 className="title text-center text-5xl">View Tournament</h1>
-			{data && cosmWasmClient && (
+			{data && (
 				<ViewCompetition
-					cosmWasmClient={cosmWasmClient}
 					competition={data}
 					moduleAddr={env.ARENA_TOURNAMENT_MODULE_ADDRESS}
 					hideProcess
-					status={status}
-					setStatus={setStatus}
+					competitionType="tournament"
 				>
 					<Tabs aria-label="Tournament Info" color="primary">
 						<Tab key="bracket" title="Bracket" className="text-xs md:text-lg">
 							<div className="h-[85vh] w-full">
 								<ReactFlowProvider>
-									<Bracket
-										tournament_id={competitionId}
-										cosmWasmClient={cosmWasmClient}
-									/>
+									<Bracket tournamentId={competitionId} escrow={data.escrow} />
 								</ReactFlowProvider>
 							</div>
 						</Tab>

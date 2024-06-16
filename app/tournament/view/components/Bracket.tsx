@@ -20,17 +20,23 @@ import type {
 	MatchResultMsg,
 } from "~/codegen/ArenaTournamentModule.types";
 import { useEnv } from "~/hooks/useEnv";
-import type { WithClient } from "~/types/util";
 import "reactflow/dist/style.css";
 import { useChain } from "@cosmos-kit/react";
 import dagre from "@dagrejs/dagre";
 import { Button, ButtonGroup } from "@nextui-org/react";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { create } from "zustand";
+import { arenaEscrowQueryKeys } from "~/codegen/ArenaEscrow.react-query";
+import { useArenaTournamentModuleExtensionMutation } from "~/codegen/ArenaTournamentModule.react-query";
+import { getCompetitionQueryKey } from "~/helpers/CompetitionHelpers";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
+import type { CompetitionResponse } from "~/types/CompetitionResponse";
 import MatchNode from "./MatchNode";
 
 interface BracketProps {
-	tournament_id: string;
+	tournamentId: string;
+	escrow?: string | null;
 }
 
 const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
@@ -143,13 +149,14 @@ function convertMatchesToNodesEdges(matches: Match[]) {
 	return { nodes, edges };
 }
 
-function Bracket({ tournament_id, cosmWasmClient }: WithClient<BracketProps>) {
+function Bracket({ tournamentId, escrow }: BracketProps) {
+	const queryClient = useQueryClient();
 	const { data: env } = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+
+	const processMatchesMutation = useArenaTournamentModuleExtensionMutation();
+
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
-	const client = new ArenaTournamentModuleQueryClient(
-		cosmWasmClient,
-		env.ARENA_TOURNAMENT_MODULE_ADDRESS,
-	);
 	const [hasMore, setHasMore] = useState(false);
 	const [nodes, setNodes, onNodesChange] = useNodesState([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -158,8 +165,17 @@ function Bracket({ tournament_id, cosmWasmClient }: WithClient<BracketProps>) {
 
 	const { loadMore, loadingState } = useAsyncList<Match, string | undefined>({
 		async load({ cursor }) {
+			if (!cosmWasmClient) {
+				return { items: [] };
+			}
+
+			const client = new ArenaTournamentModuleQueryClient(
+				cosmWasmClient,
+				env.ARENA_TOURNAMENT_MODULE_ADDRESS,
+			);
+
 			const data = (await client.queryExtension({
-				msg: { bracket: { tournament_id, start_after: cursor } },
+				msg: { bracket: { tournament_id: tournamentId, start_after: cursor } },
 			})) as unknown as Match[];
 			setHasMore(data.length === env.PAGINATION_LIMIT);
 
@@ -219,19 +235,55 @@ function Bracket({ tournament_id, cosmWasmClient }: WithClient<BracketProps>) {
 				env.ARENA_TOURNAMENT_MODULE_ADDRESS,
 			);
 
-			await tournamentModuleClient.extension({
-				msg: {
-					process_match: {
-						match_results: Array.from(updates).map((x) => {
-							return { match_number: x[0], match_result: x[1] };
-						}),
-						tournament_id: tournament_id,
+			await processMatchesMutation.mutateAsync(
+				{
+					client: tournamentModuleClient,
+					msg: {
+						msg: {
+							process_match: {
+								match_results: Array.from(updates).map((x) => {
+									return { match_number: x[0], match_result: x[1] };
+								}),
+								tournament_id: tournamentId,
+							},
+						},
 					},
 				},
-			});
+				{
+					onSuccess(response) {
+						useMatchResultsStore.setState(() => ({ matchResults: new Map() }));
+						toast.success("Matches were processed successfully");
 
-			useMatchResultsStore.setState(() => ({ matchResults: new Map() }));
-			toast.success("Matches were processed successfully");
+						if (
+							response.events.find((event) =>
+								event.attributes.find(
+									(attr) =>
+										attr.key === "action" &&
+										attr.value === "process_competition",
+								),
+							)
+						) {
+							queryClient.setQueryData<CompetitionResponse | undefined>(
+								getCompetitionQueryKey(env, "tournament", tournamentId),
+								(old) => {
+									if (old) {
+										return { ...old, status: "inactive" };
+									}
+									return old;
+								},
+							);
+
+							if (escrow) {
+								queryClient.invalidateQueries(
+									arenaEscrowQueryKeys.balances(escrow),
+								);
+							}
+
+							toast.success("The league is now fully processed");
+						}
+					},
+				},
+			);
 
 			// biome-ignore lint/suspicious/noExplicitAny: try-catch
 		} catch (e: any) {

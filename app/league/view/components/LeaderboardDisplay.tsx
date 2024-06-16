@@ -12,30 +12,30 @@ import {
 	TableHeader,
 	TableRow,
 } from "@nextui-org/react";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { ArenaLeagueModuleQueryClient } from "~/codegen/ArenaLeagueModule.client";
 import { useArenaLeagueModuleQueryExtensionQuery } from "~/codegen/ArenaLeagueModule.react-query";
 import type {
-	CompetitionResponseForCompetitionExt,
+	CompetitionResponseForLeagueExt,
 	MemberPoints,
 } from "~/codegen/ArenaLeagueModule.types";
-import type { WithClient } from "~/types/util";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
+import { useEnv } from "~/hooks/useEnv";
 
 interface LeaderboardDisplayProps extends CardProps {
-	league: CompetitionResponseForCompetitionExt;
-	moduleAddr: string;
-	version: number;
+	league: CompetitionResponseForLeagueExt;
 }
 
-const LeaderboardDisplay = ({
-	cosmWasmClient,
-	moduleAddr,
-	league,
-	version,
-	...props
-}: WithClient<LeaderboardDisplayProps>) => {
-	const { data, refetch } = useArenaLeagueModuleQueryExtensionQuery({
-		client: new ArenaLeagueModuleQueryClient(cosmWasmClient, moduleAddr),
+const LeaderboardDisplay = ({ league, ...props }: LeaderboardDisplayProps) => {
+	const { data: env } = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const { data } = useArenaLeagueModuleQueryExtensionQuery({
+		client:
+			cosmWasmClient &&
+			new ArenaLeagueModuleQueryClient(
+				cosmWasmClient,
+				env.ARENA_LEAGUE_MODULE_ADDRESS,
+			),
 		args: { msg: { leaderboard: { league_id: league.id } } },
 	});
 
@@ -45,10 +45,6 @@ const LeaderboardDisplay = ({
 		sortedData.sort((a, b) => Number(BigInt(b.points) - BigInt(a.points)));
 		return sortedData;
 	}, [data]);
-
-	useEffect(() => {
-		if (version > 0) refetch();
-	}, [version, refetch]);
 
 	return (
 		<Card {...props}>
@@ -79,7 +75,7 @@ const LeaderboardDisplay = ({
 						{(x) => (
 							<TableRow key={x.member}>
 								<TableCell>
-									<Profile address={x.member} cosmWasmClient={cosmWasmClient} />
+									<Profile address={x.member} />
 								</TableCell>
 								<TableCell>{x.matches_played}</TableCell>
 								<TableCell>{x.points}</TableCell>

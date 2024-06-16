@@ -1,9 +1,9 @@
-import type { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useQuery } from "@tanstack/react-query";
 import { DaoDaoCoreQueryClient } from "~/codegen/DaoDaoCore.client";
 import { useDaoDaoCoreConfigQuery } from "~/codegen/DaoDaoCore.react-query";
 import { isValidWalletAddress } from "~/helpers/AddressHelpers";
 import { withIpfsSupport } from "~/helpers/IPFSHelpers";
+import { useCosmWasmClient } from "./useCosmWamClient";
 import { useEnv } from "./useEnv";
 
 type UserProfile = {
@@ -54,14 +54,12 @@ const fetchProfile = async (
 	};
 };
 
-export const useProfileData = (
-	address: string,
-	cosmWasmClient: CosmWasmClient,
-	isValid: boolean,
-) => {
+export const useProfileData = (address: string, isValid: boolean) => {
 	const isWallet = isValidWalletAddress(address);
 
 	const { data: env } = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+
 	const walletQuery = useQuery(
 		["profile", address],
 		async () => await fetchProfile(env.PFPK_URL, address),
@@ -78,7 +76,8 @@ export const useProfileData = (
 		},
 	);
 	const daoQuery = useDaoDaoCoreConfigQuery({
-		client: new DaoDaoCoreQueryClient(cosmWasmClient, address),
+		client:
+			cosmWasmClient && new DaoDaoCoreQueryClient(cosmWasmClient, address),
 		options: {
 			staleTime: Number.POSITIVE_INFINITY,
 			enabled: !isWallet && isValid,

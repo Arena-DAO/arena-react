@@ -4,11 +4,159 @@
 * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
 */
 
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
+import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
+import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
+import { StdFee, Coin } from "@cosmjs/amino";
 import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, EliminationType, ExecuteExt, MatchResult, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, TournamentInstantiateExt, MatchResultMsg, QueryMsg, CompetitionsFilter, CompetitionStatus, QueryExt, MigrateMsg, Addr, SudoMsg, Match, Null, CompetitionResponseForTournamentExt, TournamentExt, FeeInformationForAddr, ArrayOfCompetitionResponseForTournamentExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaTournamentModule.types";
-import { ArenaTournamentModuleQueryClient } from "./ArenaTournamentModule.client";
+import { ArenaTournamentModuleQueryClient, ArenaTournamentModuleClient } from "./ArenaTournamentModule.client";
+export const arenaTournamentModuleQueryKeys = {
+  contract: ([{
+    contract: "arenaTournamentModule"
+  }] as const),
+  address: (contractAddress: string | undefined) => ([{ ...arenaTournamentModuleQueryKeys.contract[0],
+    address: contractAddress
+  }] as const),
+  config: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaTournamentModuleQueryKeys.address(contractAddress)[0],
+    method: "config",
+    args
+  }] as const),
+  dAO: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaTournamentModuleQueryKeys.address(contractAddress)[0],
+    method: "d_a_o",
+    args
+  }] as const),
+  competitionCount: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaTournamentModuleQueryKeys.address(contractAddress)[0],
+    method: "competition_count",
+    args
+  }] as const),
+  competition: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaTournamentModuleQueryKeys.address(contractAddress)[0],
+    method: "competition",
+    args
+  }] as const),
+  competitions: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaTournamentModuleQueryKeys.address(contractAddress)[0],
+    method: "competitions",
+    args
+  }] as const),
+  evidence: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaTournamentModuleQueryKeys.address(contractAddress)[0],
+    method: "evidence",
+    args
+  }] as const),
+  result: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaTournamentModuleQueryKeys.address(contractAddress)[0],
+    method: "result",
+    args
+  }] as const),
+  queryExtension: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaTournamentModuleQueryKeys.address(contractAddress)[0],
+    method: "query_extension",
+    args
+  }] as const),
+  ownership: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaTournamentModuleQueryKeys.address(contractAddress)[0],
+    method: "ownership",
+    args
+  }] as const)
+};
+export const arenaTournamentModuleQueries = {
+  config: <TData = ConfigForEmpty,>({
+    client,
+    options
+  }: ArenaTournamentModuleConfigQuery<TData>): UseQueryOptions<ConfigForEmpty, Error, TData> => ({
+    queryKey: arenaTournamentModuleQueryKeys.config(client?.contractAddress),
+    queryFn: () => client ? client.config() : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  dAO: <TData = String,>({
+    client,
+    options
+  }: ArenaTournamentModuleDAOQuery<TData>): UseQueryOptions<String, Error, TData> => ({
+    queryKey: arenaTournamentModuleQueryKeys.dAO(client?.contractAddress),
+    queryFn: () => client ? client.dAO() : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  competitionCount: <TData = Uint128,>({
+    client,
+    options
+  }: ArenaTournamentModuleCompetitionCountQuery<TData>): UseQueryOptions<Uint128, Error, TData> => ({
+    queryKey: arenaTournamentModuleQueryKeys.competitionCount(client?.contractAddress),
+    queryFn: () => client ? client.competitionCount() : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  competition: <TData = CompetitionResponseForTournamentExt,>({
+    client,
+    args,
+    options
+  }: ArenaTournamentModuleCompetitionQuery<TData>): UseQueryOptions<CompetitionResponseForTournamentExt, Error, TData> => ({
+    queryKey: arenaTournamentModuleQueryKeys.competition(client?.contractAddress, args),
+    queryFn: () => client ? client.competition({
+      competitionId: args.competitionId
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  competitions: <TData = ArrayOfCompetitionResponseForTournamentExt,>({
+    client,
+    args,
+    options
+  }: ArenaTournamentModuleCompetitionsQuery<TData>): UseQueryOptions<ArrayOfCompetitionResponseForTournamentExt, Error, TData> => ({
+    queryKey: arenaTournamentModuleQueryKeys.competitions(client?.contractAddress, args),
+    queryFn: () => client ? client.competitions({
+      filter: args.filter,
+      limit: args.limit,
+      startAfter: args.startAfter
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  evidence: <TData = ArrayOfEvidence,>({
+    client,
+    args,
+    options
+  }: ArenaTournamentModuleEvidenceQuery<TData>): UseQueryOptions<ArrayOfEvidence, Error, TData> => ({
+    queryKey: arenaTournamentModuleQueryKeys.evidence(client?.contractAddress, args),
+    queryFn: () => client ? client.evidence({
+      competitionId: args.competitionId,
+      limit: args.limit,
+      startAfter: args.startAfter
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  result: <TData = NullableDistributionForString,>({
+    client,
+    args,
+    options
+  }: ArenaTournamentModuleResultQuery<TData>): UseQueryOptions<NullableDistributionForString, Error, TData> => ({
+    queryKey: arenaTournamentModuleQueryKeys.result(client?.contractAddress, args),
+    queryFn: () => client ? client.result({
+      competitionId: args.competitionId
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  queryExtension: <TData = Binary,>({
+    client,
+    args,
+    options
+  }: ArenaTournamentModuleQueryExtensionQuery<TData>): UseQueryOptions<Binary, Error, TData> => ({
+    queryKey: arenaTournamentModuleQueryKeys.queryExtension(client?.contractAddress, args),
+    queryFn: () => client ? client.queryExtension({
+      msg: args.msg
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  ownership: <TData = OwnershipForString,>({
+    client,
+    options
+  }: ArenaTournamentModuleOwnershipQuery<TData>): UseQueryOptions<OwnershipForString, Error, TData> => ({
+    queryKey: arenaTournamentModuleQueryKeys.ownership(client?.contractAddress),
+    queryFn: () => client ? client.ownership() : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  })
+};
 export interface ArenaTournamentModuleReactQuery<TResponse, TData = TResponse> {
-  client: ArenaTournamentModuleQueryClient;
+  client: ArenaTournamentModuleQueryClient | undefined;
   options?: Omit<UseQueryOptions<TResponse, Error, TData>, "'queryKey' | 'queryFn' | 'initialData'"> & {
     initialData?: undefined;
   };
@@ -18,7 +166,9 @@ export function useArenaTournamentModuleOwnershipQuery<TData = OwnershipForStrin
   client,
   options
 }: ArenaTournamentModuleOwnershipQuery<TData>) {
-  return useQuery<OwnershipForString, Error, TData>(["arenaTournamentModuleOwnership", client.contractAddress], () => client.ownership(), options);
+  return useQuery<OwnershipForString, Error, TData>(arenaTournamentModuleQueryKeys.ownership(client?.contractAddress), () => client ? client.ownership() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface ArenaTournamentModuleQueryExtensionQuery<TData> extends ArenaTournamentModuleReactQuery<Binary, TData> {
   args: {
@@ -30,9 +180,11 @@ export function useArenaTournamentModuleQueryExtensionQuery<TData = Binary>({
   args,
   options
 }: ArenaTournamentModuleQueryExtensionQuery<TData>) {
-  return useQuery<Binary, Error, TData>(["arenaTournamentModuleQueryExtension", client.contractAddress, JSON.stringify(args)], () => client.queryExtension({
+  return useQuery<Binary, Error, TData>(arenaTournamentModuleQueryKeys.queryExtension(client?.contractAddress, args), () => client ? client.queryExtension({
     msg: args.msg
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface ArenaTournamentModuleResultQuery<TData> extends ArenaTournamentModuleReactQuery<NullableDistributionForString, TData> {
   args: {
@@ -44,9 +196,11 @@ export function useArenaTournamentModuleResultQuery<TData = NullableDistribution
   args,
   options
 }: ArenaTournamentModuleResultQuery<TData>) {
-  return useQuery<NullableDistributionForString, Error, TData>(["arenaTournamentModuleResult", client.contractAddress, JSON.stringify(args)], () => client.result({
+  return useQuery<NullableDistributionForString, Error, TData>(arenaTournamentModuleQueryKeys.result(client?.contractAddress, args), () => client ? client.result({
     competitionId: args.competitionId
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface ArenaTournamentModuleEvidenceQuery<TData> extends ArenaTournamentModuleReactQuery<ArrayOfEvidence, TData> {
   args: {
@@ -60,11 +214,13 @@ export function useArenaTournamentModuleEvidenceQuery<TData = ArrayOfEvidence>({
   args,
   options
 }: ArenaTournamentModuleEvidenceQuery<TData>) {
-  return useQuery<ArrayOfEvidence, Error, TData>(["arenaTournamentModuleEvidence", client.contractAddress, JSON.stringify(args)], () => client.evidence({
+  return useQuery<ArrayOfEvidence, Error, TData>(arenaTournamentModuleQueryKeys.evidence(client?.contractAddress, args), () => client ? client.evidence({
     competitionId: args.competitionId,
     limit: args.limit,
     startAfter: args.startAfter
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface ArenaTournamentModuleCompetitionsQuery<TData> extends ArenaTournamentModuleReactQuery<ArrayOfCompetitionResponseForTournamentExt, TData> {
   args: {
@@ -78,11 +234,13 @@ export function useArenaTournamentModuleCompetitionsQuery<TData = ArrayOfCompeti
   args,
   options
 }: ArenaTournamentModuleCompetitionsQuery<TData>) {
-  return useQuery<ArrayOfCompetitionResponseForTournamentExt, Error, TData>(["arenaTournamentModuleCompetitions", client.contractAddress, JSON.stringify(args)], () => client.competitions({
+  return useQuery<ArrayOfCompetitionResponseForTournamentExt, Error, TData>(arenaTournamentModuleQueryKeys.competitions(client?.contractAddress, args), () => client ? client.competitions({
     filter: args.filter,
     limit: args.limit,
     startAfter: args.startAfter
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface ArenaTournamentModuleCompetitionQuery<TData> extends ArenaTournamentModuleReactQuery<CompetitionResponseForTournamentExt, TData> {
   args: {
@@ -94,28 +252,261 @@ export function useArenaTournamentModuleCompetitionQuery<TData = CompetitionResp
   args,
   options
 }: ArenaTournamentModuleCompetitionQuery<TData>) {
-  return useQuery<CompetitionResponseForTournamentExt, Error, TData>(["arenaTournamentModuleCompetition", client.contractAddress, JSON.stringify(args)], () => client.competition({
+  return useQuery<CompetitionResponseForTournamentExt, Error, TData>(arenaTournamentModuleQueryKeys.competition(client?.contractAddress, args), () => client ? client.competition({
     competitionId: args.competitionId
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface ArenaTournamentModuleCompetitionCountQuery<TData> extends ArenaTournamentModuleReactQuery<Uint128, TData> {}
 export function useArenaTournamentModuleCompetitionCountQuery<TData = Uint128>({
   client,
   options
 }: ArenaTournamentModuleCompetitionCountQuery<TData>) {
-  return useQuery<Uint128, Error, TData>(["arenaTournamentModuleCompetitionCount", client.contractAddress], () => client.competitionCount(), options);
+  return useQuery<Uint128, Error, TData>(arenaTournamentModuleQueryKeys.competitionCount(client?.contractAddress), () => client ? client.competitionCount() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface ArenaTournamentModuleDAOQuery<TData> extends ArenaTournamentModuleReactQuery<String, TData> {}
 export function useArenaTournamentModuleDAOQuery<TData = String>({
   client,
   options
 }: ArenaTournamentModuleDAOQuery<TData>) {
-  return useQuery<String, Error, TData>(["arenaTournamentModuleDAO", client.contractAddress], () => client.dAO(), options);
+  return useQuery<String, Error, TData>(arenaTournamentModuleQueryKeys.dAO(client?.contractAddress), () => client ? client.dAO() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface ArenaTournamentModuleConfigQuery<TData> extends ArenaTournamentModuleReactQuery<ConfigForEmpty, TData> {}
 export function useArenaTournamentModuleConfigQuery<TData = ConfigForEmpty>({
   client,
   options
 }: ArenaTournamentModuleConfigQuery<TData>) {
-  return useQuery<ConfigForEmpty, Error, TData>(["arenaTournamentModuleConfig", client.contractAddress], () => client.config(), options);
+  return useQuery<ConfigForEmpty, Error, TData>(arenaTournamentModuleQueryKeys.config(client?.contractAddress), () => client ? client.config() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
+}
+export interface ArenaTournamentModuleUpdateOwnershipMutation {
+  client: ArenaTournamentModuleClient;
+  msg: Action;
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaTournamentModuleUpdateOwnershipMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTournamentModuleUpdateOwnershipMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaTournamentModuleUpdateOwnershipMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.updateOwnership(msg, fee, memo, funds), options);
+}
+export interface ArenaTournamentModuleExtensionMutation {
+  client: ArenaTournamentModuleClient;
+  msg: {
+    msg: ExecuteExt;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaTournamentModuleExtensionMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTournamentModuleExtensionMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaTournamentModuleExtensionMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.extension(msg, fee, memo, funds), options);
+}
+export interface ArenaTournamentModuleProcessCompetitionMutation {
+  client: ArenaTournamentModuleClient;
+  msg: {
+    competitionId: Uint128;
+    distribution?: DistributionForString;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaTournamentModuleProcessCompetitionMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTournamentModuleProcessCompetitionMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaTournamentModuleProcessCompetitionMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.processCompetition(msg, fee, memo, funds), options);
+}
+export interface ArenaTournamentModuleSubmitEvidenceMutation {
+  client: ArenaTournamentModuleClient;
+  msg: {
+    competitionId: Uint128;
+    evidence: string[];
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaTournamentModuleSubmitEvidenceMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTournamentModuleSubmitEvidenceMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaTournamentModuleSubmitEvidenceMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.submitEvidence(msg, fee, memo, funds), options);
+}
+export interface ArenaTournamentModuleCreateCompetitionMutation {
+  client: ArenaTournamentModuleClient;
+  msg: {
+    categoryId?: Uint128;
+    description: string;
+    escrow?: EscrowInstantiateInfo;
+    expiration: Expiration;
+    host: ModuleInfo;
+    instantiateExtension: TournamentInstantiateExt;
+    name: string;
+    rules: string[];
+    rulesets: Uint128[];
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaTournamentModuleCreateCompetitionMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTournamentModuleCreateCompetitionMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaTournamentModuleCreateCompetitionMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.createCompetition(msg, fee, memo, funds), options);
+}
+export interface ArenaTournamentModuleExecuteCompetitionHookMutation {
+  client: ArenaTournamentModuleClient;
+  msg: {
+    competitionId: Uint128;
+    distribution?: DistributionForString;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaTournamentModuleExecuteCompetitionHookMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTournamentModuleExecuteCompetitionHookMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaTournamentModuleExecuteCompetitionHookMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.executeCompetitionHook(msg, fee, memo, funds), options);
+}
+export interface ArenaTournamentModuleRemoveCompetitionHookMutation {
+  client: ArenaTournamentModuleClient;
+  msg: {
+    competitionId: Uint128;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaTournamentModuleRemoveCompetitionHookMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTournamentModuleRemoveCompetitionHookMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaTournamentModuleRemoveCompetitionHookMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.removeCompetitionHook(msg, fee, memo, funds), options);
+}
+export interface ArenaTournamentModuleAddCompetitionHookMutation {
+  client: ArenaTournamentModuleClient;
+  msg: {
+    competitionId: Uint128;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaTournamentModuleAddCompetitionHookMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTournamentModuleAddCompetitionHookMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaTournamentModuleAddCompetitionHookMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.addCompetitionHook(msg, fee, memo, funds), options);
+}
+export interface ArenaTournamentModuleActivateMutation {
+  client: ArenaTournamentModuleClient;
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaTournamentModuleActivateMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTournamentModuleActivateMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaTournamentModuleActivateMutation>(({
+    client,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.activate(fee, memo, funds), options);
+}
+export interface ArenaTournamentModuleJailCompetitionMutation {
+  client: ArenaTournamentModuleClient;
+  msg: {
+    proposeMessage: ProposeMessage;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaTournamentModuleJailCompetitionMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTournamentModuleJailCompetitionMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaTournamentModuleJailCompetitionMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.jailCompetition(msg, fee, memo, funds), options);
 }

@@ -24,6 +24,7 @@ import {
 	TableRow,
 	useDisclosure,
 } from "@nextui-org/react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { BsPercent } from "react-icons/bs";
 import { FiPlus, FiTrash } from "react-icons/fi";
@@ -33,33 +34,50 @@ import {
 	ArenaEscrowClient,
 	ArenaEscrowQueryClient,
 } from "~/codegen/ArenaEscrow.client";
-import { useArenaEscrowDistributionQuery } from "~/codegen/ArenaEscrow.react-query";
+import {
+	arenaEscrowQueryKeys,
+	useArenaEscrowDistributionQuery,
+	useArenaEscrowSetDistributionMutation,
+} from "~/codegen/ArenaEscrow.react-query";
+import type { NullableDistributionForString } from "~/codegen/ArenaEscrow.types";
 import { DistributionSchema } from "~/config/schemas";
 import { convertToDistribution } from "~/helpers/SchemaHelpers";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import type { WithClient } from "~/types/util";
 
 type PresetDistributionFormProps = {
 	escrow: string;
 };
 
-const ProcessFormSchema = z.object({
+const PresetDistributionFormSchema = z.object({
 	distribution: DistributionSchema,
 });
 
-type ProcessFormValues = z.infer<typeof ProcessFormSchema>;
+type PresetDistributionFormValues = z.infer<
+	typeof PresetDistributionFormSchema
+>;
 
-const PresetDistributionForm = ({
-	escrow,
-	cosmWasmClient,
-}: WithClient<PresetDistributionFormProps>) => {
+const PresetDistributionForm = ({ escrow }: PresetDistributionFormProps) => {
 	const { data: env } = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
+	const queryClient = useQueryClient();
+	const setDistributionMutation = useArenaEscrowSetDistributionMutation({
+		onMutate: async (variables) => {
+			queryClient.setQueryData<NullableDistributionForString | undefined>(
+				arenaEscrowQueryKeys.distribution(escrow, { addr: address }),
+				() => {
+					return variables.msg.distribution;
+				},
+			);
+		},
+	});
 
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-	const { data, refetch } = useArenaEscrowDistributionQuery({
-		client: new ArenaEscrowQueryClient(cosmWasmClient, escrow),
+	const { data } = useArenaEscrowDistributionQuery({
+		client:
+			cosmWasmClient && new ArenaEscrowQueryClient(cosmWasmClient, escrow),
 		// biome-ignore lint/style/noNonNullAssertion: enabled flag is checking this
 		args: { addr: address! },
 		options: { enabled: !!address && isOpen },
@@ -71,13 +89,13 @@ const PresetDistributionForm = ({
 		handleSubmit,
 		watch,
 		getValues,
-	} = useForm<ProcessFormValues>({
+	} = useForm<PresetDistributionFormValues>({
 		defaultValues: {
 			distribution: {
 				member_percentages: [],
 			},
 		},
-		resolver: zodResolver(ProcessFormSchema),
+		resolver: zodResolver(PresetDistributionFormSchema),
 	});
 	const { fields, append, remove } = useFieldArray({
 		control,
@@ -86,7 +104,7 @@ const PresetDistributionForm = ({
 	const percentages = watch("distribution.member_percentages");
 	const remainderAddr = watch("distribution.remainder_addr");
 
-	const onSubmit = async (values: ProcessFormValues) => {
+	const onSubmit = async (values: PresetDistributionFormValues) => {
 		try {
 			if (!address) throw "Could not get user address";
 
@@ -95,10 +113,17 @@ const PresetDistributionForm = ({
 			const escrowClient = new ArenaEscrowClient(client, address, escrow);
 			const distribution = convertToDistribution(values.distribution);
 
-			await escrowClient.setDistribution({ distribution });
-
-			toast.success("The preset distribution has been updated");
-			refetch();
+			await setDistributionMutation.mutateAsync(
+				{
+					client: escrowClient,
+					msg: { distribution },
+				},
+				{
+					onSuccess() {
+						toast.success("The preset distribution has been updated");
+					},
+				},
+			);
 			// biome-ignore lint/suspicious/noExplicitAny: try-catch
 		} catch (e: any) {
 			console.error(e);
@@ -132,10 +157,7 @@ const PresetDistributionForm = ({
 							<Card>
 								<CardHeader>Current Preset Distribution</CardHeader>
 								<CardBody className="space-y-4">
-									<Profile
-										address={data.remainder_addr}
-										cosmWasmClient={cosmWasmClient}
-									/>
+									<Profile address={data.remainder_addr} />
 									<Table aria-label="Distribution" removeWrapper>
 										<TableHeader>
 											<TableColumn>Member</TableColumn>
@@ -145,10 +167,7 @@ const PresetDistributionForm = ({
 											{data.member_percentages.map((item) => (
 												<TableRow key={item.addr}>
 													<TableCell>
-														<Profile
-															cosmWasmClient={cosmWasmClient}
-															address={item.addr}
-														/>
+														<Profile address={item.addr} />
 													</TableCell>
 													<TableCell>
 														<Progress
@@ -185,7 +204,6 @@ const PresetDistributionForm = ({
 								<Profile
 									className="mt-2"
 									address={remainderAddr}
-									cosmWasmClient={cosmWasmClient}
 									hideIfInvalid
 								/>
 							)}
@@ -222,16 +240,13 @@ const PresetDistributionForm = ({
 															/>
 														)}
 													/>
-													{cosmWasmClient && (
-														<Profile
-															className="mt-2"
-															address={getValues(
-																`distribution.member_percentages.${i}.addr`,
-															)}
-															cosmWasmClient={cosmWasmClient}
-															hideIfInvalid
-														/>
-													)}
+													<Profile
+														className="mt-2"
+														address={getValues(
+															`distribution.member_percentages.${i}.addr`,
+														)}
+														hideIfInvalid
+													/>
 												</TableCell>
 												<TableCell className="align-top">
 													<Controller

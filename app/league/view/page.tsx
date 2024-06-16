@@ -18,10 +18,8 @@ import {
 	Tabs,
 } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
 import { ArenaLeagueModuleQueryClient } from "~/codegen/ArenaLeagueModule.client";
 import { useArenaLeagueModuleCompetitionQuery } from "~/codegen/ArenaLeagueModule.react-query";
-import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import { getNumberWithOrdinal } from "~/helpers/UIHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
@@ -33,22 +31,20 @@ const ViewWager = () => {
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const searchParams = useSearchParams();
 	const competitionId = searchParams?.get("competitionId");
-	const [version, setVersion] = useState(0);
-	const [status, setStatus] = useState<CompetitionStatus>("pending");
 
 	const { data } = useArenaLeagueModuleCompetitionQuery({
-		client: new ArenaLeagueModuleQueryClient(
-			// biome-ignore lint/style/noNonNullAssertion: Checked by enabled option
-			cosmWasmClient!,
-			env.ARENA_LEAGUE_MODULE_ADDRESS,
-		),
+		client:
+			cosmWasmClient &&
+			new ArenaLeagueModuleQueryClient(
+				cosmWasmClient,
+				env.ARENA_LEAGUE_MODULE_ADDRESS,
+			),
 		args: {
 			// biome-ignore lint/style/noNonNullAssertion: Checked by enabled option
 			competitionId: competitionId!,
 		},
 		options: {
-			enabled: !!cosmWasmClient && !!competitionId,
-			onSuccess: (data) => setStatus(data.status),
+			enabled: !!competitionId,
 		},
 	});
 
@@ -60,14 +56,12 @@ const ViewWager = () => {
 	return (
 		<div className="mx-auto w-full max-w-screen-xl justify-center space-y-4 px-10">
 			<h1 className="title text-center text-5xl">View League</h1>
-			{data && cosmWasmClient && (
+			{data && (
 				<ViewCompetition
-					cosmWasmClient={cosmWasmClient}
 					competition={data}
 					moduleAddr={env.ARENA_LEAGUE_MODULE_ADDRESS}
 					hideProcess
-					status={status}
-					setStatus={setStatus}
+					competitionType="league"
 				>
 					<Tabs aria-label="League Info" color="primary">
 						<Tab
@@ -75,12 +69,7 @@ const ViewWager = () => {
 							title="Leaderboard"
 							className="text-xs md:text-lg"
 						>
-							<LeaderboardDisplay
-								cosmWasmClient={cosmWasmClient}
-								moduleAddr={env.ARENA_LEAGUE_MODULE_ADDRESS}
-								league={data}
-								version={version}
-							/>
+							<LeaderboardDisplay league={data} />
 						</Tab>
 						<Tab
 							key="basic"
@@ -146,12 +135,8 @@ const ViewWager = () => {
 						</Tab>
 						<Tab key="rounds" title="Rounds" className="text-xs md:text-lg">
 							<RoundsDisplay
-								cosmWasmClient={cosmWasmClient}
 								moduleAddr={env.ARENA_LEAGUE_MODULE_ADDRESS}
 								league={data}
-								version={version}
-								setVersion={setVersion}
-								setStatus={setStatus}
 							/>
 						</Tab>
 					</Tabs>

@@ -1,16 +1,16 @@
-import type { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import { useQuery } from "@tanstack/react-query";
 import { getCw20Asset, getNativeAsset } from "~/helpers/TokenHelpers";
+import { useCosmWasmClient } from "./useCosmWamClient";
 import { useEnv } from "./useEnv";
 
 export const useToken = (
-	cosmWasmClient: CosmWasmClient,
 	denomOrAddress: string,
 	isNative = true,
 	chain?: string,
 ) => {
 	const { data: env } = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { assets } = useChain(chain ?? env.CHAIN);
 	return useQuery(
 		["token", denomOrAddress, isNative],
@@ -18,7 +18,8 @@ export const useToken = (
 			isNative
 				? await getNativeAsset(denomOrAddress, env.RPC_URL, assets?.assets)
 				: await getCw20Asset(
-						cosmWasmClient,
+						// biome-ignore lint/style/noNonNullAssertion: Handled by enabled option
+						cosmWasmClient!,
 						denomOrAddress,
 						env.IPFS_GATEWAY,
 						assets?.assets,
@@ -28,6 +29,7 @@ export const useToken = (
 			staleTime: Number.POSITIVE_INFINITY,
 			retryOnMount: false,
 			retry: false,
+			enabled: !!cosmWasmClient,
 		},
 	);
 };

@@ -18,12 +18,11 @@ import { useState } from "react";
 import { BsHourglassBottom, BsPlus } from "react-icons/bs";
 import { useAsyncList } from "react-stately";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
-import type { CompetitionResponseForEmpty } from "~/codegen/ArenaWagerModule.types";
+import type { CompetitionResponseForWagerExt } from "~/codegen/ArenaWagerModule.types";
 import { statusColors } from "~/helpers/ArenaHelpers";
 import type { CategoryLeaf } from "~/hooks/useCategories";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import type { WithClient } from "~/types/util";
 
 interface CompetitionModuleSectionProps {
 	category: CategoryLeaf;
@@ -32,29 +31,39 @@ interface CompetitionModuleSectionProps {
 }
 
 const CompetitionModuleSectionItems = ({
-	cosmWasmClient,
 	category,
 	module_addr,
 	path,
-}: WithClient<CompetitionModuleSectionProps>) => {
+}: CompetitionModuleSectionProps) => {
 	const { data: env } = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const [hasMore, setHasMore] = useState(false);
-	const client = new ArenaWagerModuleQueryClient(cosmWasmClient, module_addr);
-	const list = useAsyncList<CompetitionResponseForEmpty, string | undefined>({
-		async load({ cursor }) {
-			const data = await client.competitions({
-				startAfter: cursor,
-				filter: { category: { id: category.category_id?.toString() } },
-			});
+	const list = useAsyncList<CompetitionResponseForWagerExt, string | undefined>(
+		{
+			async load({ cursor }) {
+				if (!cosmWasmClient) {
+					return { items: [] };
+				}
 
-			setHasMore(data.length === env.PAGINATION_LIMIT);
+				const client = new ArenaWagerModuleQueryClient(
+					cosmWasmClient,
+					module_addr,
+				);
 
-			return {
-				items: data,
-				cursor: data[data.length - 1]?.id,
-			};
+				const data = await client.competitions({
+					startAfter: cursor,
+					filter: { category: { id: category.category_id?.toString() } },
+				});
+
+				setHasMore(data.length === env.PAGINATION_LIMIT);
+
+				return {
+					items: data,
+					cursor: data[data.length - 1]?.id,
+				};
+			},
 		},
-	});
+	);
 	const [loaderRef, scrollerRef] = useInfiniteScroll({
 		hasMore,
 		onLoadMore: list.loadMore,
@@ -88,7 +97,7 @@ const CompetitionModuleSectionItems = ({
 				isLoading={list.isLoading}
 				loadingContent={<Spinner color="white" />}
 			>
-				{(item: CompetitionResponseForEmpty) => (
+				{(item: CompetitionResponseForWagerExt) => (
 					<TableRow key={item.id}>
 						<TableCell>{item.name}</TableCell>
 						<TableCell>
@@ -124,8 +133,6 @@ const CompetitionModuleSectionItems = ({
 };
 
 const CompetitionModuleSection = (props: CompetitionModuleSectionProps) => {
-	const { data: cosmWasmClient } = useCosmWasmClient();
-
 	return (
 		<div className="space-y-4">
 			<div className="block text-right">
@@ -137,12 +144,7 @@ const CompetitionModuleSection = (props: CompetitionModuleSectionProps) => {
 					Create
 				</Button>
 			</div>
-			{cosmWasmClient && (
-				<CompetitionModuleSectionItems
-					cosmWasmClient={cosmWasmClient}
-					{...props}
-				/>
-			)}
+			<CompetitionModuleSectionItems {...props} />
 		</div>
 	);
 };

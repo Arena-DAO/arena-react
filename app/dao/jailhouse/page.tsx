@@ -10,7 +10,7 @@ const Jailhouse = () => {
 	return (
 		<div className="mx-auto max-w-screen-xl space-y-4 px-10">
 			<h1 className="title text-center text-5xl">Jailhouse</h1>
-			<Tabs aria-label="Competition Modules" disabledKeys={["tournaments"]}>
+			<Tabs aria-label="Competition Modules">
 				<Tab key="wagers" title="Wagers">
 					<CompetitionModuleSection
 						path="wager"
@@ -23,7 +23,12 @@ const Jailhouse = () => {
 						module_addr={env.ARENA_LEAGUE_MODULE_ADDRESS}
 					/>
 				</Tab>
-				<Tab key="tournaments" title="Tournaments" />
+				<Tab key="tournaments" title="Tournaments">
+					<CompetitionModuleSection
+						path="tournament"
+						module_addr={env.ARENA_TOURNAMENT_MODULE_ADDRESS}
+					/>
+				</Tab>
 			</Tabs>
 		</div>
 	);

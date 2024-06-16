@@ -7,27 +7,27 @@
 import * as _0 from "./DaoDaoCore.types";
 import * as _1 from "./DaoDaoCore.client";
 import * as _2 from "./DaoDaoCore.react-query";
-import * as _3 from "./ArenaWagerModule.types";
-import * as _4 from "./ArenaWagerModule.client";
-import * as _5 from "./ArenaWagerModule.react-query";
-import * as _6 from "./ArenaTournamentModule.types";
-import * as _7 from "./ArenaTournamentModule.client";
-import * as _8 from "./ArenaTournamentModule.react-query";
-import * as _9 from "./ArenaLeagueModule.types";
-import * as _10 from "./ArenaLeagueModule.client";
-import * as _11 from "./ArenaLeagueModule.react-query";
-import * as _12 from "./ArenaEscrow.types";
-import * as _13 from "./ArenaEscrow.client";
-import * as _14 from "./ArenaEscrow.react-query";
-import * as _15 from "./ArenaCore.types";
-import * as _16 from "./ArenaCore.client";
-import * as _17 from "./ArenaCore.react-query";
-import * as _18 from "./Cw721Base.types";
-import * as _19 from "./Cw721Base.client";
-import * as _20 from "./Cw721Base.react-query";
-import * as _21 from "./Cw20Base.types";
-import * as _22 from "./Cw20Base.client";
-import * as _23 from "./Cw20Base.react-query";
+import * as _3 from "./Cw20Base.types";
+import * as _4 from "./Cw20Base.client";
+import * as _5 from "./Cw20Base.react-query";
+import * as _6 from "./ArenaWagerModule.types";
+import * as _7 from "./ArenaWagerModule.client";
+import * as _8 from "./ArenaWagerModule.react-query";
+import * as _9 from "./ArenaTournamentModule.types";
+import * as _10 from "./ArenaTournamentModule.client";
+import * as _11 from "./ArenaTournamentModule.react-query";
+import * as _12 from "./ArenaLeagueModule.types";
+import * as _13 from "./ArenaLeagueModule.client";
+import * as _14 from "./ArenaLeagueModule.react-query";
+import * as _15 from "./ArenaEscrow.types";
+import * as _16 from "./ArenaEscrow.client";
+import * as _17 from "./ArenaEscrow.react-query";
+import * as _18 from "./ArenaCore.types";
+import * as _19 from "./ArenaCore.client";
+import * as _20 from "./ArenaCore.react-query";
+import * as _21 from "./Cw721Base.types";
+import * as _22 from "./Cw721Base.client";
+import * as _23 from "./Cw721Base.react-query";
 import * as _24 from "./DaoVotingCw4.types";
 import * as _25 from "./DaoVotingCw4.client";
 import * as _26 from "./DaoVotingCw4.react-query";
@@ -42,31 +42,31 @@ export namespace contracts {
     ..._1,
     ..._2
   };
-  export const ArenaWagerModule = { ..._3,
+  export const Cw20Base = { ..._3,
     ..._4,
     ..._5
   };
-  export const ArenaTournamentModule = { ..._6,
+  export const ArenaWagerModule = { ..._6,
     ..._7,
     ..._8
   };
-  export const ArenaLeagueModule = { ..._9,
+  export const ArenaTournamentModule = { ..._9,
     ..._10,
     ..._11
   };
-  export const ArenaEscrow = { ..._12,
+  export const ArenaLeagueModule = { ..._12,
     ..._13,
     ..._14
   };
-  export const ArenaCore = { ..._15,
+  export const ArenaEscrow = { ..._15,
     ..._16,
     ..._17
   };
-  export const Cw721Base = { ..._18,
+  export const ArenaCore = { ..._18,
     ..._19,
     ..._20
   };
-  export const Cw20Base = { ..._21,
+  export const Cw721Base = { ..._21,
     ..._22,
     ..._23
   };

@@ -259,13 +259,11 @@ export default function CreateCompetitionForm({
 										<Card>
 											<CardHeader className="flex justify-between gap-4">
 												<div className="text-nowrap">Due {i + 1}</div>
-												{cosmWasmClient && (
-													<DueProfile
-														cosmWasmClient={cosmWasmClient}
-														index={i}
-														control={control}
-													/>
-												)}
+												<DueProfile
+													cosmWasmClient={cosmWasmClient}
+													index={i}
+													control={control}
+												/>
 											</CardHeader>
 											<CardBody className="space-y-4">
 												<Controller
@@ -364,13 +362,7 @@ export default function CreateCompetitionForm({
 											/>
 										)}
 									/>
-									{cosmWasmClient && (
-										<MemberProfile
-											cosmWasmClient={cosmWasmClient}
-											index={i}
-											control={control}
-										/>
-									)}
+									<MemberProfile index={i} control={control} />
 								</div>
 							))}
 						</div>
@@ -394,12 +386,7 @@ export default function CreateCompetitionForm({
 			<Card>
 				<CardHeader>Rules</CardHeader>
 				<CardBody>
-					{cosmWasmClient && (
-						<RulesetsSelection
-							category_id={category_id}
-							cosmWasmClient={cosmWasmClient}
-						/>
-					)}
+					<RulesetsSelection category_id={category_id} />
 					<Table aria-label="Rules" hideHeader removeWrapper>
 						<TableHeader>
 							<TableColumn>Rules</TableColumn>
@@ -486,14 +473,11 @@ export default function CreateCompetitionForm({
 												/>
 											)}
 										/>
-										{cosmWasmClient && (
-											<Profile
-												className="mt-2"
-												address={getValues(`additionalLayeredFees.${i}.addr`)}
-												cosmWasmClient={cosmWasmClient}
-												hideIfInvalid
-											/>
-										)}
+										<Profile
+											className="mt-2"
+											address={getValues(`additionalLayeredFees.${i}.addr`)}
+											hideIfInvalid
+										/>
 									</TableCell>
 									<TableCell className="align-top">
 										<Controller

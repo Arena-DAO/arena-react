@@ -11,16 +11,12 @@ import {
 	TableRow,
 } from "@nextui-org/react";
 import type { BalanceVerified } from "~/codegen/ArenaEscrow.types";
-import type { WithClient } from "~/types/util";
 
 interface BalanceDisplayProps {
 	balance: BalanceVerified;
 }
 
-const BalanceDisplay = ({
-	balance,
-	cosmWasmClient,
-}: WithClient<BalanceDisplayProps>) => {
+const BalanceDisplay = ({ balance }: BalanceDisplayProps) => {
 	return (
 		<>
 			{balance.native.length > 0 && (
@@ -33,15 +29,10 @@ const BalanceDisplay = ({
 						{balance.native.map((x) => (
 							<TableRow key={x.denom}>
 								<TableCell className="w-1/2">
-									<TokenInfo
-										cosmWasmClient={cosmWasmClient}
-										denomOrAddress={x.denom}
-										isNative
-									/>
+									<TokenInfo denomOrAddress={x.denom} isNative />
 								</TableCell>
 								<TableCell className="text-right">
 									<TokenAmount
-										cosmWasmClient={cosmWasmClient}
 										amount={BigInt(x.amount)}
 										denomOrAddress={x.denom}
 										isNative
@@ -62,15 +53,10 @@ const BalanceDisplay = ({
 						{balance.cw20.map((x) => (
 							<TableRow key={x.address}>
 								<TableCell className="w-1/2">
-									<TokenInfo
-										cosmWasmClient={cosmWasmClient}
-										denomOrAddress={x.address}
-										isNative
-									/>
+									<TokenInfo denomOrAddress={x.address} isNative />
 								</TableCell>
 								<TableCell className="text-right">
 									<TokenAmount
-										cosmWasmClient={cosmWasmClient}
 										amount={BigInt(x.amount)}
 										denomOrAddress={x.address}
 										isNative

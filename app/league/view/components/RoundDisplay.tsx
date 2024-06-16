@@ -13,55 +13,58 @@ import {
 	TableHeader,
 	TableRow,
 } from "@nextui-org/react";
-import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { arenaEscrowQueryKeys } from "~/codegen/ArenaEscrow.react-query";
 import {
 	ArenaLeagueModuleClient,
 	ArenaLeagueModuleQueryClient,
 } from "~/codegen/ArenaLeagueModule.client";
-import { useArenaLeagueModuleQueryExtensionQuery } from "~/codegen/ArenaLeagueModule.react-query";
+import {
+	useArenaLeagueModuleExtensionMutation,
+	useArenaLeagueModuleQueryExtensionQuery,
+} from "~/codegen/ArenaLeagueModule.react-query";
 import type {
-	CompetitionStatus,
 	MatchResult,
 	RoundResponse,
 } from "~/codegen/ArenaLeagueModule.types";
 import { LeagueResultValues } from "~/helpers/ArenaHelpers";
+import { getCompetitionQueryKey } from "~/helpers/CompetitionHelpers";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import type { WithClient } from "~/types/util";
+import type { CompetitionResponse } from "~/types/CompetitionResponse";
 
 interface RoundDisplayProps {
-	league_id: string;
+	leagueId: string;
 	moduleAddr: string;
 	round_number: string;
-	version: number;
-	setVersion: Dispatch<SetStateAction<number>>;
-	setStatus: Dispatch<SetStateAction<CompetitionStatus>>;
+	escrow?: string | null;
 }
 
 const RoundDisplay = ({
-	cosmWasmClient,
 	moduleAddr,
-	league_id,
+	leagueId,
 	round_number,
-	version,
-	setVersion,
-	setStatus,
-}: WithClient<RoundDisplayProps>) => {
+	escrow,
+}: RoundDisplayProps) => {
+	const queryClient = useQueryClient();
 	const { data: env } = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
-	const { data, refetch } = useArenaLeagueModuleQueryExtensionQuery({
-		client: new ArenaLeagueModuleQueryClient(cosmWasmClient, moduleAddr),
-		args: { msg: { round: { league_id, round_number } } },
+	const { data } = useArenaLeagueModuleQueryExtensionQuery({
+		client:
+			cosmWasmClient &&
+			new ArenaLeagueModuleQueryClient(cosmWasmClient, moduleAddr),
+		args: { msg: { round: { league_id: leagueId, round_number } } },
 	});
+	const roundMutation = useArenaLeagueModuleExtensionMutation();
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [changeMap, setChangeMap] = useState(new Map<string, MatchResult>());
 	// biome-ignore lint/correctness/useExhaustiveDependencies: We want to clear the change map if the round number changes
 	useEffect(() => {
 		setChangeMap(new Map());
 	}, [round_number]);
-	useEffect(() => {
-		if (version > 0) refetch();
-	}, [version, refetch]);
 
 	if (!data) return null;
 
@@ -96,32 +99,56 @@ const RoundDisplay = ({
 				env.ARENA_LEAGUE_MODULE_ADDRESS,
 			);
 
-			const response = await leagueModuleClient.extension({
-				msg: {
-					process_match: {
-						league_id,
-						round_number,
-						match_results: Array.from(changeMap.entries()).map((x) => ({
-							match_number: x[0],
-							match_result: x[1],
-						})),
+			await roundMutation.mutateAsync(
+				{
+					client: leagueModuleClient,
+					msg: {
+						msg: {
+							process_match: {
+								league_id: leagueId,
+								round_number,
+								match_results: Array.from(changeMap.entries()).map((x) => ({
+									match_number: x[0],
+									match_result: x[1],
+								})),
+							},
+						},
 					},
 				},
-			});
+				{
+					onSuccess(response) {
+						toast.success("The results were submitted");
 
-			toast.success("The results were submitted");
-			setVersion((x) => x + 1);
+						if (
+							response.events.find((event) =>
+								event.attributes.find(
+									(attr) =>
+										attr.key === "action" &&
+										attr.value === "process_competition",
+								),
+							)
+						) {
+							queryClient.setQueryData<CompetitionResponse | undefined>(
+								getCompetitionQueryKey(env, "league", leagueId),
+								(old) => {
+									if (old) {
+										return { ...old, status: "inactive" };
+									}
+									return old;
+								},
+							);
 
-			if (
-				response.events.find((event) =>
-					event.attributes.find(
-						(attr) =>
-							attr.key === "action" && attr.value === "process_competition",
-					),
-				)
-			) {
-				setStatus("inactive");
-			}
+							if (escrow) {
+								queryClient.invalidateQueries(
+									arenaEscrowQueryKeys.balances(escrow),
+								);
+							}
+
+							toast.success("The league is now fully processed");
+						}
+					},
+				},
+			);
 			// biome-ignore lint/suspicious/noExplicitAny: Try-catch
 		} catch (e: any) {
 			console.error(e);
@@ -143,10 +170,10 @@ const RoundDisplay = ({
 					{(x) => (
 						<TableRow key={x.match_number}>
 							<TableCell>
-								<Profile address={x.team_1} cosmWasmClient={cosmWasmClient} />
+								<Profile address={x.team_1} />
 							</TableCell>
 							<TableCell>
-								<Profile address={x.team_2} cosmWasmClient={cosmWasmClient} />
+								<Profile address={x.team_2} />
 							</TableCell>
 							<TableCell>
 								<Select

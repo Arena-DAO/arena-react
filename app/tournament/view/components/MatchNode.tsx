@@ -13,7 +13,6 @@ import clsx from "clsx";
 import { memo } from "react";
 import { Handle, type NodeProps, Position } from "reactflow";
 import type { Match, MatchResult } from "~/codegen/ArenaTournamentModule.types";
-import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useMatchResultsStore } from "./Bracket";
 
 interface MatchNodeProps extends NodeProps {
@@ -26,14 +25,12 @@ type SelectItemType = {
 
 const MatchNode = memo(
 	({ data, targetPosition, sourcePosition }: MatchNodeProps) => {
-		const { data: cosmWasmClient } = useCosmWasmClient();
 		const currentMatchResult = useMatchResultsStore((state) =>
 			state.get(data.match_number),
 		);
 		const removeMatchResult = useMatchResultsStore((state) => state.remove);
 		const setMatchResult = useMatchResultsStore((state) => state.add);
 
-		if (!cosmWasmClient) return null;
 		return (
 			<>
 				<Handle type="target" position={targetPosition ?? Position.Left} />
@@ -53,7 +50,6 @@ const MatchNode = memo(
 						{data.team_1 ? (
 							<Profile
 								address={data.team_1}
-								cosmWasmClient={cosmWasmClient}
 								classNames={{ name: "text-3xl" }}
 							/>
 						) : (
@@ -63,7 +59,6 @@ const MatchNode = memo(
 						{data.team_2 ? (
 							<Profile
 								address={data.team_2}
-								cosmWasmClient={cosmWasmClient}
 								classNames={{ name: "text-3xl" }}
 							/>
 						) : (
@@ -95,7 +90,6 @@ const MatchNode = memo(
 										{item.textValue === "team1" && data.team_1 && (
 											<Profile
 												address={data.team_1}
-												cosmWasmClient={cosmWasmClient}
 												isTooltipDisabled
 												classNames={{ name: "text-2xl" }}
 											/>
@@ -103,7 +97,6 @@ const MatchNode = memo(
 										{item.textValue === "team2" && data.team_2 && (
 											<Profile
 												address={data.team_2}
-												cosmWasmClient={cosmWasmClient}
 												isTooltipDisabled
 												classNames={{ name: "text-2xl" }}
 											/>
@@ -115,18 +108,10 @@ const MatchNode = memo(
 							{(user) => (
 								<SelectItem key={user.team} textValue={user.team}>
 									{user.team === "team1" && data.team_1 && (
-										<Profile
-											address={data.team_1}
-											cosmWasmClient={cosmWasmClient}
-											isTooltipDisabled
-										/>
+										<Profile address={data.team_1} isTooltipDisabled />
 									)}
 									{user.team === "team2" && data.team_2 && (
-										<Profile
-											address={data.team_2}
-											cosmWasmClient={cosmWasmClient}
-											isTooltipDisabled
-										/>
+										<Profile address={data.team_2} isTooltipDisabled />
 									)}
 								</SelectItem>
 							)}

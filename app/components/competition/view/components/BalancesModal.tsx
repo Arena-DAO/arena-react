@@ -17,32 +17,29 @@ import {
 	useDisclosure,
 } from "@nextui-org/react";
 import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAsyncList } from "react-stately";
 import { ArenaEscrowQueryClient } from "~/codegen/ArenaEscrow.client";
 import type { MemberBalanceChecked } from "~/codegen/ArenaEscrow.types";
-import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import type { WithClient } from "~/types/util";
 import BalanceDisplay from "./BalanceDisplay";
 
 interface BalancesModalProps {
 	escrow: string;
-	version: number;
-	status: CompetitionStatus;
 }
 
-const BalancesModal = ({
-	escrow,
-	version,
-	cosmWasmClient,
-	status,
-}: WithClient<BalancesModalProps>) => {
+const BalancesModal = ({ escrow }: BalancesModalProps) => {
 	const { data: env } = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const [hasMore, setHasMore] = useState(false);
 	const list = useAsyncList<MemberBalanceChecked, string | undefined>({
 		async load({ cursor }) {
+			if (!cosmWasmClient) {
+				return { items: [] };
+			}
+
 			const client = new ArenaEscrowQueryClient(cosmWasmClient, escrow);
 
 			const data = await client.balances({ startAfter: cursor });
@@ -59,12 +56,6 @@ const BalancesModal = ({
 		hasMore,
 		onLoadMore: list.loadMore,
 	});
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Stops cycle
-	useEffect(() => {
-		if (version > 0 || status === "inactive") {
-			list.reload();
-		}
-	}, [version, status]);
 
 	return (
 		<>
@@ -101,16 +92,10 @@ const BalancesModal = ({
 								{(item: MemberBalanceChecked) => (
 									<TableRow key={item.addr}>
 										<TableCell>
-											<Profile
-												address={item.addr}
-												cosmWasmClient={cosmWasmClient}
-											/>
+											<Profile address={item.addr} />
 										</TableCell>
 										<TableCell>
-											<BalanceDisplay
-												balance={item.balance}
-												cosmWasmClient={cosmWasmClient}
-											/>
+											<BalanceDisplay balance={item.balance} />
 										</TableCell>
 									</TableRow>
 								)}

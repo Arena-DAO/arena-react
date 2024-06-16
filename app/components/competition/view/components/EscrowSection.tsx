@@ -10,18 +10,28 @@ import {
 	CardHeader,
 	Spinner,
 } from "@nextui-org/react";
-import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import {
 	ArenaEscrowClient,
 	ArenaEscrowQueryClient,
 } from "~/codegen/ArenaEscrow.client";
-import { useArenaEscrowDumpStateQuery } from "~/codegen/ArenaEscrow.react-query";
-import type { ExecuteMsg as EscrowExecuteMsg } from "~/codegen/ArenaEscrow.types";
+import {
+	arenaEscrowQueryKeys,
+	useArenaEscrowDumpStateQuery,
+	useArenaEscrowWithdrawMutation,
+} from "~/codegen/ArenaEscrow.react-query";
+import type {
+	DumpStateResponse,
+	ExecuteMsg as EscrowExecuteMsg,
+} from "~/codegen/ArenaEscrow.types";
 import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import type { ExecuteMsg as Cw20ExecuteMsg } from "~/codegen/Cw20Base.types";
+import { getCompetitionQueryKey } from "~/helpers/CompetitionHelpers";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import type { WithClient } from "~/types/util";
+import type { CompetitionResponse } from "~/types/CompetitionResponse";
+import type { CompetitionType } from "~/types/CompetitionType";
 import BalanceDisplay from "./BalanceDisplay";
 import BalancesModal from "./BalancesModal";
 import DuesModal from "./DuesModal";
@@ -29,36 +39,47 @@ import InitialDuesModal from "./InitialDuesModal";
 
 interface EscrowSectionProps {
 	escrow: string;
-	address?: string;
-	setCompetitionStatus: Dispatch<SetStateAction<CompetitionStatus>>;
-	status: CompetitionStatus;
+	competitionStatus: CompetitionStatus;
+	competitionType: CompetitionType;
+	competitionId: string;
 }
 
 const EscrowSection = ({
 	escrow,
-	cosmWasmClient,
-	address,
-	status,
-	setCompetitionStatus,
-}: WithClient<EscrowSectionProps>) => {
+	competitionStatus,
+	competitionType,
+	competitionId,
+}: EscrowSectionProps) => {
 	const { data: env } = useEnv();
-	const { getSigningCosmWasmClient } = useChain(env.CHAIN);
-	const { data, isLoading, refetch } = useArenaEscrowDumpStateQuery({
-		client: new ArenaEscrowQueryClient(cosmWasmClient, escrow),
+	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
+	const queryClient = useQueryClient();
+	const { data, isLoading } = useArenaEscrowDumpStateQuery({
+		client:
+			cosmWasmClient && new ArenaEscrowQueryClient(cosmWasmClient, escrow),
 		args: { addr: address },
 	});
-	const [version, setVersion] = useState(0);
-	const [isLocked, setIsLocked] = useState(true);
-	useEffect(() => {
-		if (version > 0 || status === "inactive") {
-			refetch();
-		}
-	}, [version, refetch, status]);
-	useEffect(() => {
-		if (data) {
-			setIsLocked(data.is_locked);
-		}
-	}, [data]);
+	const withdrawMutation = useArenaEscrowWithdrawMutation({
+		onMutate: async () => {
+			queryClient.setQueryData<DumpStateResponse | undefined>(
+				arenaEscrowQueryKeys.dumpState(escrow, { addr: address }),
+				(old) => {
+					if (old) {
+						return { ...old, balance: undefined };
+					}
+					return old;
+				},
+			);
+
+			await queryClient.cancelQueries(arenaEscrowQueryKeys.balances(escrow));
+			await queryClient.invalidateQueries(
+				arenaEscrowQueryKeys.balances(escrow),
+			);
+
+			await queryClient.cancelQueries(arenaEscrowQueryKeys.dues(escrow));
+			await queryClient.invalidateQueries(arenaEscrowQueryKeys.dues(escrow));
+		},
+	});
 
 	const deposit = async () => {
 		try {
@@ -91,6 +112,8 @@ const EscrowSection = ({
 
 			const response = await client.executeMultiple(address, msgs, "auto");
 
+			toast.success("Funds have been sucessfully deposited");
+
 			// Check if the response contains the activate action, so we can mark the competition as active
 			if (
 				response.events.find((event) =>
@@ -99,13 +122,17 @@ const EscrowSection = ({
 					),
 				)
 			) {
-				setIsLocked(true);
-				setCompetitionStatus("active");
+				queryClient.setQueryData<CompetitionResponse | undefined>(
+					getCompetitionQueryKey(env, competitionType, competitionId),
+					(old) => {
+						if (old) {
+							return { ...old, status: "active" };
+						}
+						return old;
+					},
+				);
 				toast.success("The competition is now active");
 			}
-
-			toast.success("Funds have been sucessfully deposited");
-			setVersion((x) => x + 1);
 			// biome-ignore lint/suspicious/noExplicitAny: try-catch
 		} catch (e: any) {
 			console.error(e);
@@ -121,10 +148,17 @@ const EscrowSection = ({
 
 			const escrowClient = new ArenaEscrowClient(client, address, escrow);
 
-			await escrowClient.withdraw({});
-
-			toast.success("Funds have been successfully withdrawn");
-			setVersion((x) => x + 1);
+			await withdrawMutation.mutateAsync(
+				{
+					client: escrowClient,
+					msg: {},
+				},
+				{
+					onSuccess: () => {
+						toast.success("Funds have been successfully withdrawn");
+					},
+				},
+			);
 			// biome-ignore lint/suspicious/noExplicitAny: try-catch
 		} catch (e: any) {
 			console.error(e);
@@ -146,12 +180,9 @@ const EscrowSection = ({
 					<Card className="col-span-12 lg:col-span-4 md:col-span-6">
 						<CardHeader>User Balance</CardHeader>
 						<CardBody>
-							<BalanceDisplay
-								cosmWasmClient={cosmWasmClient}
-								balance={data.balance}
-							/>
+							<BalanceDisplay balance={data.balance} />
 						</CardBody>
-						{!isLocked && (
+						{!data.is_locked && (
 							<CardFooter>
 								<Button color="primary" onClick={withdraw}>
 									Withdraw
@@ -164,12 +195,9 @@ const EscrowSection = ({
 					<Card className="col-span-12 lg:col-span-4 md:col-span-6">
 						<CardHeader>User Due</CardHeader>
 						<CardBody>
-							<BalanceDisplay
-								cosmWasmClient={cosmWasmClient}
-								balance={data.due}
-							/>
+							<BalanceDisplay balance={data.due} />
 						</CardBody>
-						{!isLocked && (
+						{!data.is_locked && (
 							<CardFooter>
 								<Button color="primary" onClick={deposit}>
 									Deposit
@@ -182,31 +210,17 @@ const EscrowSection = ({
 					<Card className="col-span-12 lg:col-span-4 md:col-span-6">
 						<CardHeader>Total Balance</CardHeader>
 						<CardBody>
-							<BalanceDisplay
-								cosmWasmClient={cosmWasmClient}
-								balance={data.total_balance}
-							/>
+							<BalanceDisplay balance={data.total_balance} />
 						</CardBody>
 					</Card>
 				)}
 			</div>
 			<div className="flex flex-col justify-center gap-2 overflow-x-auto md:flex-row md:justify-start">
-				{status === "pending" && (
-					<DuesModal
-						escrow={escrow}
-						cosmWasmClient={cosmWasmClient}
-						version={version}
-					/>
+				{competitionStatus === "pending" && <DuesModal escrow={escrow} />}
+				{competitionStatus !== "pending" && (
+					<InitialDuesModal escrow={escrow} />
 				)}
-				{status !== "pending" && (
-					<InitialDuesModal escrow={escrow} cosmWasmClient={cosmWasmClient} />
-				)}
-				<BalancesModal
-					escrow={escrow}
-					cosmWasmClient={cosmWasmClient}
-					version={version}
-					status={status}
-				/>
+				<BalancesModal escrow={escrow} />
 			</div>
 		</>
 	);

@@ -65,23 +65,14 @@ const DueBalance = ({
 								{native.fields.map((x, i) => (
 									<TableRow key={x.id}>
 										<TableCell className="w-1/2">
-											{cosmWasmClient && (
-												<TokenInfo
-													cosmWasmClient={cosmWasmClient}
-													denomOrAddress={x.denom}
-													isNative
-												/>
-											)}
+											<TokenInfo denomOrAddress={x.denom} isNative />
 										</TableCell>
 										<TableCell className="text-right">
-											{cosmWasmClient && (
-												<TokenAmount
-													cosmWasmClient={cosmWasmClient}
-													amount={x.amount}
-													denomOrAddress={x.denom}
-													isNative
-												/>
-											)}
+											<TokenAmount
+												amount={x.amount}
+												denomOrAddress={x.denom}
+												isNative
+											/>
 										</TableCell>
 										<TableCell className="text-right">
 											<Tooltip content="Delete due">
@@ -110,21 +101,13 @@ const DueBalance = ({
 								{cw20.fields.map((x, i) => (
 									<TableRow key={x.id}>
 										<TableCell className="w-1/2">
-											{cosmWasmClient && (
-												<TokenInfo
-													cosmWasmClient={cosmWasmClient}
-													denomOrAddress={x.address}
-												/>
-											)}
+											<TokenInfo denomOrAddress={x.address} />
 										</TableCell>
 										<TableCell className="w-1/4 text-right">
-											{cosmWasmClient && (
-												<TokenAmount
-													cosmWasmClient={cosmWasmClient}
-													amount={x.amount}
-													denomOrAddress={x.address}
-												/>
-											)}
+											<TokenAmount
+												amount={x.amount}
+												denomOrAddress={x.address}
+											/>
 										</TableCell>
 										<TableCell className="w-1/4 text-right">
 											<Tooltip content="Delete due">

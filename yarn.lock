@@ -184,10 +184,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.44.10":
-  version: 0.44.10
-  resolution: "@chain-registry/types@npm:0.44.10"
-  checksum: 10c0/b6324dac7cb37cc423d751e97fabe588c888c88e947199399987cf6817a333f75aef21bfbd94cedd06fae334eec4a914a69ccdeca8974fd21082069a6faeaab0
+"@chain-registry/types@npm:^0.44.11":
+  version: 0.44.11
+  resolution: "@chain-registry/types@npm:0.44.11"
+  checksum: 10c0/55c9d5dd570fc390c30c467e109f3bdfe4e2e997651d33c768feeeee29432f2827a918003bcbbf3ae4b97d85248e6b65110f6e3a2bb62405fda563b067a933d3
   languageName: node
   linkType: hard
 
@@ -195,6 +195,13 @@ __metadata:
   version: 0.44.2
   resolution: "@chain-registry/types@npm:0.44.2"
   checksum: 10c0/9590cbc702059b620949d66de6535af8f51439668fbb98008342c91bd887609ee98118ac593b541abb1f0412449d44c5908322491181c479a71f36bf694204fb
+  languageName: node
+  linkType: hard
+
+"@chain-registry/types@npm:^0.45.0":
+  version: 0.45.0
+  resolution: "@chain-registry/types@npm:0.45.0"
+  checksum: 10c0/f601f2b7bb96ed8b5ef382456b4913e8525bba9dec7b91e08d96e46058714ae5aac86269ccf45737b1dbb7174842274dfdb3915bba41225e312cb3da3bad213e
   languageName: node
   linkType: hard
 
@@ -6619,7 +6626,7 @@ __metadata:
   resolution: "arena-react@workspace:."
   dependencies:
     "@biomejs/biome": "npm:1.8.1"
-    "@chain-registry/types": "npm:^0.44.10"
+    "@chain-registry/types": "npm:^0.44.11"
     "@cosmjs/amino": "npm:^0.32.3"
     "@cosmjs/cosmwasm-stargate": "npm:0.32.3"
     "@cosmjs/encoding": "npm:^0.32.3"
@@ -6646,7 +6653,7 @@ __metadata:
     "@types/react": "npm:18.3.3"
     "@types/react-dom": "npm:^18.3.0"
     autoprefixer: "npm:^10.4.19"
-    chain-registry: "npm:1.62.12"
+    chain-registry: "npm:1.63.0"
     clsx: "npm:^2.1.1"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^7.0.2"
@@ -6662,7 +6669,7 @@ __metadata:
     postcss-import: "npm:^16.1.0"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-hook-form: "npm:^7.51.5"
+    react-hook-form: "npm:^7.52.0"
     react-icons: "npm:5.2.1"
     react-stately: "npm:^3.31.1"
     react-toastify: "npm:^10.0.5"
@@ -7138,12 +7145,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.62.12":
-  version: 1.62.12
-  resolution: "chain-registry@npm:1.62.12"
+"chain-registry@npm:1.63.0":
+  version: 1.63.0
+  resolution: "chain-registry@npm:1.63.0"
   dependencies:
-    "@chain-registry/types": "npm:^0.44.10"
-  checksum: 10c0/f61ceebd9c38a1c64b53d558e817c293618c29f5ffab897efb4f55147482a6ffb4d791fd8d50c368c78018c876238137deb92257541eb2297362a72e031c7990
+    "@chain-registry/types": "npm:^0.45.0"
+  checksum: 10c0/34f882704cbd3a6df0646c076cd5595c8d3815d5d867381242c8fbaadf4d63b1b55540d16d82018c1aec7be4ff1a6aacef81c6d1c0171a15b9318b289a69beeb
   languageName: node
   linkType: hard
 
@@ -10722,12 +10729,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:^7.51.5":
-  version: 7.51.5
-  resolution: "react-hook-form@npm:7.51.5"
+"react-hook-form@npm:^7.52.0":
+  version: 7.52.0
+  resolution: "react-hook-form@npm:7.52.0"
   peerDependencies:
-    react: ^16.8.0 || ^17 || ^18
-  checksum: 10c0/5b13f99a125d92ee618f2d4e218d5ec854f8cac1b568e83b4b125efb002cc79eef0f5c06b54015c78e16a830cf1ea356a646e8c6abb00b7ca8225dba9a92091e
+    react: ^16.8.0 || ^17 || ^18 || ^19
+  checksum: 10c0/058bf5596f314c071863bb133979deb56d0a7817d5bf1908a569c003fe03a15736402b040d3e18aeb259723c6e15c243fe75d2d887ea47ff4be87fc472f31ad5
   languageName: node
   linkType: hard
 

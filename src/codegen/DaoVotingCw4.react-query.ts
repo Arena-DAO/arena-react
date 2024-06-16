@@ -7,8 +7,90 @@
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import { GroupContract, InstantiateMsg, Member, ExecuteMsg, QueryMsg, MigrateMsg, Addr, InfoResponse, ContractVersion, Uint128, TotalPowerAtHeightResponse, VotingPowerAtHeightResponse } from "./DaoVotingCw4.types";
 import { DaoVotingCw4QueryClient } from "./DaoVotingCw4.client";
+export const daoVotingCw4QueryKeys = {
+  contract: ([{
+    contract: "daoVotingCw4"
+  }] as const),
+  address: (contractAddress: string | undefined) => ([{ ...daoVotingCw4QueryKeys.contract[0],
+    address: contractAddress
+  }] as const),
+  groupContract: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...daoVotingCw4QueryKeys.address(contractAddress)[0],
+    method: "group_contract",
+    args
+  }] as const),
+  votingPowerAtHeight: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...daoVotingCw4QueryKeys.address(contractAddress)[0],
+    method: "voting_power_at_height",
+    args
+  }] as const),
+  totalPowerAtHeight: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...daoVotingCw4QueryKeys.address(contractAddress)[0],
+    method: "total_power_at_height",
+    args
+  }] as const),
+  dao: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...daoVotingCw4QueryKeys.address(contractAddress)[0],
+    method: "dao",
+    args
+  }] as const),
+  info: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...daoVotingCw4QueryKeys.address(contractAddress)[0],
+    method: "info",
+    args
+  }] as const)
+};
+export const daoVotingCw4Queries = {
+  groupContract: <TData = Addr,>({
+    client,
+    options
+  }: DaoVotingCw4GroupContractQuery<TData>): UseQueryOptions<Addr, Error, TData> => ({
+    queryKey: daoVotingCw4QueryKeys.groupContract(client?.contractAddress),
+    queryFn: () => client ? client.groupContract() : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  votingPowerAtHeight: <TData = VotingPowerAtHeightResponse,>({
+    client,
+    args,
+    options
+  }: DaoVotingCw4VotingPowerAtHeightQuery<TData>): UseQueryOptions<VotingPowerAtHeightResponse, Error, TData> => ({
+    queryKey: daoVotingCw4QueryKeys.votingPowerAtHeight(client?.contractAddress, args),
+    queryFn: () => client ? client.votingPowerAtHeight({
+      address: args.address,
+      height: args.height
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  totalPowerAtHeight: <TData = TotalPowerAtHeightResponse,>({
+    client,
+    args,
+    options
+  }: DaoVotingCw4TotalPowerAtHeightQuery<TData>): UseQueryOptions<TotalPowerAtHeightResponse, Error, TData> => ({
+    queryKey: daoVotingCw4QueryKeys.totalPowerAtHeight(client?.contractAddress, args),
+    queryFn: () => client ? client.totalPowerAtHeight({
+      height: args.height
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  dao: <TData = Addr,>({
+    client,
+    options
+  }: DaoVotingCw4DaoQuery<TData>): UseQueryOptions<Addr, Error, TData> => ({
+    queryKey: daoVotingCw4QueryKeys.dao(client?.contractAddress),
+    queryFn: () => client ? client.dao() : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  info: <TData = InfoResponse,>({
+    client,
+    options
+  }: DaoVotingCw4InfoQuery<TData>): UseQueryOptions<InfoResponse, Error, TData> => ({
+    queryKey: daoVotingCw4QueryKeys.info(client?.contractAddress),
+    queryFn: () => client ? client.info() : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  })
+};
 export interface DaoVotingCw4ReactQuery<TResponse, TData = TResponse> {
-  client: DaoVotingCw4QueryClient;
+  client: DaoVotingCw4QueryClient | undefined;
   options?: Omit<UseQueryOptions<TResponse, Error, TData>, "'queryKey' | 'queryFn' | 'initialData'"> & {
     initialData?: undefined;
   };
@@ -18,14 +100,18 @@ export function useDaoVotingCw4InfoQuery<TData = InfoResponse>({
   client,
   options
 }: DaoVotingCw4InfoQuery<TData>) {
-  return useQuery<InfoResponse, Error, TData>(["daoVotingCw4Info", client.contractAddress], () => client.info(), options);
+  return useQuery<InfoResponse, Error, TData>(daoVotingCw4QueryKeys.info(client?.contractAddress), () => client ? client.info() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface DaoVotingCw4DaoQuery<TData> extends DaoVotingCw4ReactQuery<Addr, TData> {}
 export function useDaoVotingCw4DaoQuery<TData = Addr>({
   client,
   options
 }: DaoVotingCw4DaoQuery<TData>) {
-  return useQuery<Addr, Error, TData>(["daoVotingCw4Dao", client.contractAddress], () => client.dao(), options);
+  return useQuery<Addr, Error, TData>(daoVotingCw4QueryKeys.dao(client?.contractAddress), () => client ? client.dao() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface DaoVotingCw4TotalPowerAtHeightQuery<TData> extends DaoVotingCw4ReactQuery<TotalPowerAtHeightResponse, TData> {
   args: {
@@ -37,9 +123,11 @@ export function useDaoVotingCw4TotalPowerAtHeightQuery<TData = TotalPowerAtHeigh
   args,
   options
 }: DaoVotingCw4TotalPowerAtHeightQuery<TData>) {
-  return useQuery<TotalPowerAtHeightResponse, Error, TData>(["daoVotingCw4TotalPowerAtHeight", client.contractAddress, JSON.stringify(args)], () => client.totalPowerAtHeight({
+  return useQuery<TotalPowerAtHeightResponse, Error, TData>(daoVotingCw4QueryKeys.totalPowerAtHeight(client?.contractAddress, args), () => client ? client.totalPowerAtHeight({
     height: args.height
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface DaoVotingCw4VotingPowerAtHeightQuery<TData> extends DaoVotingCw4ReactQuery<VotingPowerAtHeightResponse, TData> {
   args: {
@@ -52,15 +140,19 @@ export function useDaoVotingCw4VotingPowerAtHeightQuery<TData = VotingPowerAtHei
   args,
   options
 }: DaoVotingCw4VotingPowerAtHeightQuery<TData>) {
-  return useQuery<VotingPowerAtHeightResponse, Error, TData>(["daoVotingCw4VotingPowerAtHeight", client.contractAddress, JSON.stringify(args)], () => client.votingPowerAtHeight({
+  return useQuery<VotingPowerAtHeightResponse, Error, TData>(daoVotingCw4QueryKeys.votingPowerAtHeight(client?.contractAddress, args), () => client ? client.votingPowerAtHeight({
     address: args.address,
     height: args.height
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface DaoVotingCw4GroupContractQuery<TData> extends DaoVotingCw4ReactQuery<Addr, TData> {}
 export function useDaoVotingCw4GroupContractQuery<TData = Addr>({
   client,
   options
 }: DaoVotingCw4GroupContractQuery<TData>) {
-  return useQuery<Addr, Error, TData>(["daoVotingCw4GroupContract", client.contractAddress], () => client.groupContract(), options);
+  return useQuery<Addr, Error, TData>(daoVotingCw4QueryKeys.groupContract(client?.contractAddress), () => client ? client.groupContract() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }

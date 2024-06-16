@@ -4,11 +4,206 @@
 * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
 */
 
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
+import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
+import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
+import { StdFee } from "@cosmjs/amino";
 import { Uint128, InstantiateMsg, MemberBalanceUnchecked, BalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, DistributionForString, MemberPercentageForString, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, FeeInformationForString, QueryMsg, MigrateMsg, NullableBalanceVerified, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceChecked, MemberBalanceChecked, NullableDistributionForString, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
-import { ArenaEscrowQueryClient } from "./ArenaEscrow.client";
+import { ArenaEscrowQueryClient, ArenaEscrowClient } from "./ArenaEscrow.client";
+export const arenaEscrowQueryKeys = {
+  contract: ([{
+    contract: "arenaEscrow"
+  }] as const),
+  address: (contractAddress: string | undefined) => ([{ ...arenaEscrowQueryKeys.contract[0],
+    address: contractAddress
+  }] as const),
+  balances: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaEscrowQueryKeys.address(contractAddress)[0],
+    method: "balances",
+    args
+  }] as const),
+  balance: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaEscrowQueryKeys.address(contractAddress)[0],
+    method: "balance",
+    args
+  }] as const),
+  due: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaEscrowQueryKeys.address(contractAddress)[0],
+    method: "due",
+    args
+  }] as const),
+  dues: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaEscrowQueryKeys.address(contractAddress)[0],
+    method: "dues",
+    args
+  }] as const),
+  initialDues: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaEscrowQueryKeys.address(contractAddress)[0],
+    method: "initial_dues",
+    args
+  }] as const),
+  isFunded: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaEscrowQueryKeys.address(contractAddress)[0],
+    method: "is_funded",
+    args
+  }] as const),
+  isFullyFunded: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaEscrowQueryKeys.address(contractAddress)[0],
+    method: "is_fully_funded",
+    args
+  }] as const),
+  totalBalance: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaEscrowQueryKeys.address(contractAddress)[0],
+    method: "total_balance",
+    args
+  }] as const),
+  isLocked: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaEscrowQueryKeys.address(contractAddress)[0],
+    method: "is_locked",
+    args
+  }] as const),
+  distribution: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaEscrowQueryKeys.address(contractAddress)[0],
+    method: "distribution",
+    args
+  }] as const),
+  dumpState: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaEscrowQueryKeys.address(contractAddress)[0],
+    method: "dump_state",
+    args
+  }] as const),
+  ownership: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaEscrowQueryKeys.address(contractAddress)[0],
+    method: "ownership",
+    args
+  }] as const)
+};
+export const arenaEscrowQueries = {
+  balances: <TData = ArrayOfMemberBalanceChecked,>({
+    client,
+    args,
+    options
+  }: ArenaEscrowBalancesQuery<TData>): UseQueryOptions<ArrayOfMemberBalanceChecked, Error, TData> => ({
+    queryKey: arenaEscrowQueryKeys.balances(client?.contractAddress, args),
+    queryFn: () => client ? client.balances({
+      limit: args.limit,
+      startAfter: args.startAfter
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  balance: <TData = NullableBalanceVerified,>({
+    client,
+    args,
+    options
+  }: ArenaEscrowBalanceQuery<TData>): UseQueryOptions<NullableBalanceVerified, Error, TData> => ({
+    queryKey: arenaEscrowQueryKeys.balance(client?.contractAddress, args),
+    queryFn: () => client ? client.balance({
+      addr: args.addr
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  due: <TData = NullableBalanceVerified,>({
+    client,
+    args,
+    options
+  }: ArenaEscrowDueQuery<TData>): UseQueryOptions<NullableBalanceVerified, Error, TData> => ({
+    queryKey: arenaEscrowQueryKeys.due(client?.contractAddress, args),
+    queryFn: () => client ? client.due({
+      addr: args.addr
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  dues: <TData = ArrayOfMemberBalanceChecked,>({
+    client,
+    args,
+    options
+  }: ArenaEscrowDuesQuery<TData>): UseQueryOptions<ArrayOfMemberBalanceChecked, Error, TData> => ({
+    queryKey: arenaEscrowQueryKeys.dues(client?.contractAddress, args),
+    queryFn: () => client ? client.dues({
+      limit: args.limit,
+      startAfter: args.startAfter
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  initialDues: <TData = ArrayOfMemberBalanceChecked,>({
+    client,
+    args,
+    options
+  }: ArenaEscrowInitialDuesQuery<TData>): UseQueryOptions<ArrayOfMemberBalanceChecked, Error, TData> => ({
+    queryKey: arenaEscrowQueryKeys.initialDues(client?.contractAddress, args),
+    queryFn: () => client ? client.initialDues({
+      limit: args.limit,
+      startAfter: args.startAfter
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  isFunded: <TData = Boolean,>({
+    client,
+    args,
+    options
+  }: ArenaEscrowIsFundedQuery<TData>): UseQueryOptions<Boolean, Error, TData> => ({
+    queryKey: arenaEscrowQueryKeys.isFunded(client?.contractAddress, args),
+    queryFn: () => client ? client.isFunded({
+      addr: args.addr
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  isFullyFunded: <TData = Boolean,>({
+    client,
+    options
+  }: ArenaEscrowIsFullyFundedQuery<TData>): UseQueryOptions<Boolean, Error, TData> => ({
+    queryKey: arenaEscrowQueryKeys.isFullyFunded(client?.contractAddress),
+    queryFn: () => client ? client.isFullyFunded() : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  totalBalance: <TData = NullableBalanceVerified,>({
+    client,
+    options
+  }: ArenaEscrowTotalBalanceQuery<TData>): UseQueryOptions<NullableBalanceVerified, Error, TData> => ({
+    queryKey: arenaEscrowQueryKeys.totalBalance(client?.contractAddress),
+    queryFn: () => client ? client.totalBalance() : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  isLocked: <TData = Boolean,>({
+    client,
+    options
+  }: ArenaEscrowIsLockedQuery<TData>): UseQueryOptions<Boolean, Error, TData> => ({
+    queryKey: arenaEscrowQueryKeys.isLocked(client?.contractAddress),
+    queryFn: () => client ? client.isLocked() : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  distribution: <TData = NullableDistributionForString,>({
+    client,
+    args,
+    options
+  }: ArenaEscrowDistributionQuery<TData>): UseQueryOptions<NullableDistributionForString, Error, TData> => ({
+    queryKey: arenaEscrowQueryKeys.distribution(client?.contractAddress, args),
+    queryFn: () => client ? client.distribution({
+      addr: args.addr
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  dumpState: <TData = DumpStateResponse,>({
+    client,
+    args,
+    options
+  }: ArenaEscrowDumpStateQuery<TData>): UseQueryOptions<DumpStateResponse, Error, TData> => ({
+    queryKey: arenaEscrowQueryKeys.dumpState(client?.contractAddress, args),
+    queryFn: () => client ? client.dumpState({
+      addr: args.addr
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  ownership: <TData = OwnershipForString,>({
+    client,
+    options
+  }: ArenaEscrowOwnershipQuery<TData>): UseQueryOptions<OwnershipForString, Error, TData> => ({
+    queryKey: arenaEscrowQueryKeys.ownership(client?.contractAddress),
+    queryFn: () => client ? client.ownership() : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  })
+};
 export interface ArenaEscrowReactQuery<TResponse, TData = TResponse> {
-  client: ArenaEscrowQueryClient;
+  client: ArenaEscrowQueryClient | undefined;
   options?: Omit<UseQueryOptions<TResponse, Error, TData>, "'queryKey' | 'queryFn' | 'initialData'"> & {
     initialData?: undefined;
   };
@@ -18,7 +213,9 @@ export function useArenaEscrowOwnershipQuery<TData = OwnershipForString>({
   client,
   options
 }: ArenaEscrowOwnershipQuery<TData>) {
-  return useQuery<OwnershipForString, Error, TData>(["arenaEscrowOwnership", client.contractAddress], () => client.ownership(), options);
+  return useQuery<OwnershipForString, Error, TData>(arenaEscrowQueryKeys.ownership(client?.contractAddress), () => client ? client.ownership() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface ArenaEscrowDumpStateQuery<TData> extends ArenaEscrowReactQuery<DumpStateResponse, TData> {
   args: {
@@ -30,9 +227,11 @@ export function useArenaEscrowDumpStateQuery<TData = DumpStateResponse>({
   args,
   options
 }: ArenaEscrowDumpStateQuery<TData>) {
-  return useQuery<DumpStateResponse, Error, TData>(["arenaEscrowDumpState", client.contractAddress, JSON.stringify(args)], () => client.dumpState({
+  return useQuery<DumpStateResponse, Error, TData>(arenaEscrowQueryKeys.dumpState(client?.contractAddress, args), () => client ? client.dumpState({
     addr: args.addr
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface ArenaEscrowDistributionQuery<TData> extends ArenaEscrowReactQuery<NullableDistributionForString, TData> {
   args: {
@@ -44,30 +243,38 @@ export function useArenaEscrowDistributionQuery<TData = NullableDistributionForS
   args,
   options
 }: ArenaEscrowDistributionQuery<TData>) {
-  return useQuery<NullableDistributionForString, Error, TData>(["arenaEscrowDistribution", client.contractAddress, JSON.stringify(args)], () => client.distribution({
+  return useQuery<NullableDistributionForString, Error, TData>(arenaEscrowQueryKeys.distribution(client?.contractAddress, args), () => client ? client.distribution({
     addr: args.addr
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface ArenaEscrowIsLockedQuery<TData> extends ArenaEscrowReactQuery<Boolean, TData> {}
 export function useArenaEscrowIsLockedQuery<TData = Boolean>({
   client,
   options
 }: ArenaEscrowIsLockedQuery<TData>) {
-  return useQuery<Boolean, Error, TData>(["arenaEscrowIsLocked", client.contractAddress], () => client.isLocked(), options);
+  return useQuery<Boolean, Error, TData>(arenaEscrowQueryKeys.isLocked(client?.contractAddress), () => client ? client.isLocked() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface ArenaEscrowTotalBalanceQuery<TData> extends ArenaEscrowReactQuery<NullableBalanceVerified, TData> {}
 export function useArenaEscrowTotalBalanceQuery<TData = NullableBalanceVerified>({
   client,
   options
 }: ArenaEscrowTotalBalanceQuery<TData>) {
-  return useQuery<NullableBalanceVerified, Error, TData>(["arenaEscrowTotalBalance", client.contractAddress], () => client.totalBalance(), options);
+  return useQuery<NullableBalanceVerified, Error, TData>(arenaEscrowQueryKeys.totalBalance(client?.contractAddress), () => client ? client.totalBalance() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface ArenaEscrowIsFullyFundedQuery<TData> extends ArenaEscrowReactQuery<Boolean, TData> {}
 export function useArenaEscrowIsFullyFundedQuery<TData = Boolean>({
   client,
   options
 }: ArenaEscrowIsFullyFundedQuery<TData>) {
-  return useQuery<Boolean, Error, TData>(["arenaEscrowIsFullyFunded", client.contractAddress], () => client.isFullyFunded(), options);
+  return useQuery<Boolean, Error, TData>(arenaEscrowQueryKeys.isFullyFunded(client?.contractAddress), () => client ? client.isFullyFunded() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface ArenaEscrowIsFundedQuery<TData> extends ArenaEscrowReactQuery<Boolean, TData> {
   args: {
@@ -79,9 +286,11 @@ export function useArenaEscrowIsFundedQuery<TData = Boolean>({
   args,
   options
 }: ArenaEscrowIsFundedQuery<TData>) {
-  return useQuery<Boolean, Error, TData>(["arenaEscrowIsFunded", client.contractAddress, JSON.stringify(args)], () => client.isFunded({
+  return useQuery<Boolean, Error, TData>(arenaEscrowQueryKeys.isFunded(client?.contractAddress, args), () => client ? client.isFunded({
     addr: args.addr
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface ArenaEscrowInitialDuesQuery<TData> extends ArenaEscrowReactQuery<ArrayOfMemberBalanceChecked, TData> {
   args: {
@@ -94,10 +303,12 @@ export function useArenaEscrowInitialDuesQuery<TData = ArrayOfMemberBalanceCheck
   args,
   options
 }: ArenaEscrowInitialDuesQuery<TData>) {
-  return useQuery<ArrayOfMemberBalanceChecked, Error, TData>(["arenaEscrowInitialDues", client.contractAddress, JSON.stringify(args)], () => client.initialDues({
+  return useQuery<ArrayOfMemberBalanceChecked, Error, TData>(arenaEscrowQueryKeys.initialDues(client?.contractAddress, args), () => client ? client.initialDues({
     limit: args.limit,
     startAfter: args.startAfter
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface ArenaEscrowDuesQuery<TData> extends ArenaEscrowReactQuery<ArrayOfMemberBalanceChecked, TData> {
   args: {
@@ -110,10 +321,12 @@ export function useArenaEscrowDuesQuery<TData = ArrayOfMemberBalanceChecked>({
   args,
   options
 }: ArenaEscrowDuesQuery<TData>) {
-  return useQuery<ArrayOfMemberBalanceChecked, Error, TData>(["arenaEscrowDues", client.contractAddress, JSON.stringify(args)], () => client.dues({
+  return useQuery<ArrayOfMemberBalanceChecked, Error, TData>(arenaEscrowQueryKeys.dues(client?.contractAddress, args), () => client ? client.dues({
     limit: args.limit,
     startAfter: args.startAfter
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface ArenaEscrowDueQuery<TData> extends ArenaEscrowReactQuery<NullableBalanceVerified, TData> {
   args: {
@@ -125,9 +338,11 @@ export function useArenaEscrowDueQuery<TData = NullableBalanceVerified>({
   args,
   options
 }: ArenaEscrowDueQuery<TData>) {
-  return useQuery<NullableBalanceVerified, Error, TData>(["arenaEscrowDue", client.contractAddress, JSON.stringify(args)], () => client.due({
+  return useQuery<NullableBalanceVerified, Error, TData>(arenaEscrowQueryKeys.due(client?.contractAddress, args), () => client ? client.due({
     addr: args.addr
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface ArenaEscrowBalanceQuery<TData> extends ArenaEscrowReactQuery<NullableBalanceVerified, TData> {
   args: {
@@ -139,9 +354,11 @@ export function useArenaEscrowBalanceQuery<TData = NullableBalanceVerified>({
   args,
   options
 }: ArenaEscrowBalanceQuery<TData>) {
-  return useQuery<NullableBalanceVerified, Error, TData>(["arenaEscrowBalance", client.contractAddress, JSON.stringify(args)], () => client.balance({
+  return useQuery<NullableBalanceVerified, Error, TData>(arenaEscrowQueryKeys.balance(client?.contractAddress, args), () => client ? client.balance({
     addr: args.addr
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
 }
 export interface ArenaEscrowBalancesQuery<TData> extends ArenaEscrowReactQuery<ArrayOfMemberBalanceChecked, TData> {
   args: {
@@ -154,8 +371,186 @@ export function useArenaEscrowBalancesQuery<TData = ArrayOfMemberBalanceChecked>
   args,
   options
 }: ArenaEscrowBalancesQuery<TData>) {
-  return useQuery<ArrayOfMemberBalanceChecked, Error, TData>(["arenaEscrowBalances", client.contractAddress, JSON.stringify(args)], () => client.balances({
+  return useQuery<ArrayOfMemberBalanceChecked, Error, TData>(arenaEscrowQueryKeys.balances(client?.contractAddress, args), () => client ? client.balances({
     limit: args.limit,
     startAfter: args.startAfter
-  }), options);
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
+}
+export interface ArenaEscrowUpdateOwnershipMutation {
+  client: ArenaEscrowClient;
+  msg: Action;
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaEscrowUpdateOwnershipMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaEscrowUpdateOwnershipMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaEscrowUpdateOwnershipMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.updateOwnership(msg, fee, memo, funds), options);
+}
+export interface ArenaEscrowLockMutation {
+  client: ArenaEscrowClient;
+  msg: {
+    value: boolean;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaEscrowLockMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaEscrowLockMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaEscrowLockMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.lock(msg, fee, memo, funds), options);
+}
+export interface ArenaEscrowDistributeMutation {
+  client: ArenaEscrowClient;
+  msg: {
+    distribution?: DistributionForString;
+    layeredFees?: FeeInformationForString[];
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaEscrowDistributeMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaEscrowDistributeMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaEscrowDistributeMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.distribute(msg, fee, memo, funds), options);
+}
+export interface ArenaEscrowReceiveNftMutation {
+  client: ArenaEscrowClient;
+  msg: {
+    msg: Binary;
+    sender: string;
+    tokenId: string;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaEscrowReceiveNftMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaEscrowReceiveNftMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaEscrowReceiveNftMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.receiveNft(msg, fee, memo, funds), options);
+}
+export interface ArenaEscrowReceiveMutation {
+  client: ArenaEscrowClient;
+  msg: {
+    amount: Uint128;
+    msg: Binary;
+    sender: string;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaEscrowReceiveMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaEscrowReceiveMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaEscrowReceiveMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.receive(msg, fee, memo, funds), options);
+}
+export interface ArenaEscrowReceiveNativeMutation {
+  client: ArenaEscrowClient;
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaEscrowReceiveNativeMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaEscrowReceiveNativeMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaEscrowReceiveNativeMutation>(({
+    client,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.receiveNative(fee, memo, funds), options);
+}
+export interface ArenaEscrowSetDistributionMutation {
+  client: ArenaEscrowClient;
+  msg: {
+    distribution?: DistributionForString;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaEscrowSetDistributionMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaEscrowSetDistributionMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaEscrowSetDistributionMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.setDistribution(msg, fee, memo, funds), options);
+}
+export interface ArenaEscrowWithdrawMutation {
+  client: ArenaEscrowClient;
+  msg: {
+    cw20Msg?: Binary;
+    cw721Msg?: Binary;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaEscrowWithdrawMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaEscrowWithdrawMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaEscrowWithdrawMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.withdraw(msg, fee, memo, funds), options);
 }
