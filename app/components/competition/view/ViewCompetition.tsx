@@ -184,6 +184,7 @@ const ViewCompetition = ({
 						host={competition.host}
 						competitionType={competitionType}
 						escrow={competition.escrow}
+						categoryId={competition.category_id}
 					/>
 				)}
 				{competition.is_expired &&

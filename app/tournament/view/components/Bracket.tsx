@@ -27,6 +27,7 @@ import { Button, ButtonGroup } from "@nextui-org/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { create } from "zustand";
+import { arenaCoreQueryKeys } from "~/codegen/ArenaCore.react-query";
 import { arenaEscrowQueryKeys } from "~/codegen/ArenaEscrow.react-query";
 import { useArenaTournamentModuleExtensionMutation } from "~/codegen/ArenaTournamentModule.react-query";
 import { getCompetitionQueryKey } from "~/helpers/CompetitionHelpers";
@@ -37,6 +38,7 @@ import MatchNode from "./MatchNode";
 interface BracketProps {
 	tournamentId: string;
 	escrow?: string | null;
+	categoryId?: string | null;
 }
 
 const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
@@ -149,7 +151,7 @@ function convertMatchesToNodesEdges(matches: Match[]) {
 	return { nodes, edges };
 }
 
-function Bracket({ tournamentId, escrow }: BracketProps) {
+function Bracket({ tournamentId, escrow, categoryId }: BracketProps) {
 	const queryClient = useQueryClient();
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
@@ -253,6 +255,29 @@ function Bracket({ tournamentId, escrow }: BracketProps) {
 					onSuccess(response) {
 						useMatchResultsStore.setState(() => ({ matchResults: new Map() }));
 						toast.success("Matches were processed successfully");
+
+						if (categoryId) {
+							const ratingAdjustmentsEvent = response.events.find((event) =>
+								event.attributes.find(
+									(attr) =>
+										attr.key === "action" && attr.value === "adjust_ratings",
+								),
+							);
+							if (ratingAdjustmentsEvent) {
+								for (const attr of ratingAdjustmentsEvent.attributes) {
+									if (attr.key === "action") continue;
+
+									queryClient.setQueryData<string | undefined>(
+										arenaCoreQueryKeys.queryExtension(env.ARENA_CORE_ADDRESS, {
+											msg: {
+												rating: { addr: attr.key, category_id: categoryId },
+											},
+										}),
+										() => attr.value,
+									);
+								}
+							}
+						}
 
 						if (
 							response.events.find((event) =>

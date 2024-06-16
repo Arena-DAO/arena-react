@@ -19,11 +19,9 @@ import {
 	Tabs,
 } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
 import { ReactFlowProvider } from "reactflow";
 import { ArenaTournamentModuleQueryClient } from "~/codegen/ArenaTournamentModule.client";
 import { useArenaTournamentModuleCompetitionQuery } from "~/codegen/ArenaTournamentModule.react-query";
-import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import { getNumberWithOrdinal } from "~/helpers/UIHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
@@ -34,7 +32,6 @@ const ViewWager = () => {
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const searchParams = useSearchParams();
 	const competitionId = searchParams?.get("competitionId");
-	const [status, setStatus] = useState<CompetitionStatus>("pending");
 
 	const { data } = useArenaTournamentModuleCompetitionQuery({
 		client:
@@ -49,7 +46,6 @@ const ViewWager = () => {
 		},
 		options: {
 			enabled: !!competitionId,
-			onSuccess: (data) => setStatus(data.status),
 		},
 	});
 
@@ -74,7 +70,11 @@ const ViewWager = () => {
 						<Tab key="bracket" title="Bracket" className="text-xs md:text-lg">
 							<div className="h-[85vh] w-full">
 								<ReactFlowProvider>
-									<Bracket tournamentId={competitionId} escrow={data.escrow} />
+									<Bracket
+										tournamentId={data.id}
+										escrow={data.escrow}
+										categoryId={data.category_id}
+									/>
 								</ReactFlowProvider>
 							</div>
 						</Tab>

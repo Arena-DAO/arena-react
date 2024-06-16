@@ -16,6 +16,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { arenaCoreQueryKeys } from "~/codegen/ArenaCore.react-query";
 import { arenaEscrowQueryKeys } from "~/codegen/ArenaEscrow.react-query";
 import {
 	ArenaLeagueModuleClient,
@@ -38,15 +39,17 @@ import type { CompetitionResponse } from "~/types/CompetitionResponse";
 interface RoundDisplayProps {
 	leagueId: string;
 	moduleAddr: string;
-	round_number: string;
+	roundNumber: string;
 	escrow?: string | null;
+	categoryId?: string | null;
 }
 
 const RoundDisplay = ({
 	moduleAddr,
 	leagueId,
-	round_number,
+	roundNumber,
 	escrow,
+	categoryId,
 }: RoundDisplayProps) => {
 	const queryClient = useQueryClient();
 	const { data: env } = useEnv();
@@ -56,7 +59,9 @@ const RoundDisplay = ({
 		client:
 			cosmWasmClient &&
 			new ArenaLeagueModuleQueryClient(cosmWasmClient, moduleAddr),
-		args: { msg: { round: { league_id: leagueId, round_number } } },
+		args: {
+			msg: { round: { league_id: leagueId, round_number: roundNumber } },
+		},
 	});
 	const roundMutation = useArenaLeagueModuleExtensionMutation();
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -64,7 +69,7 @@ const RoundDisplay = ({
 	// biome-ignore lint/correctness/useExhaustiveDependencies: We want to clear the change map if the round number changes
 	useEffect(() => {
 		setChangeMap(new Map());
-	}, [round_number]);
+	}, [roundNumber]);
 
 	if (!data) return null;
 
@@ -106,7 +111,7 @@ const RoundDisplay = ({
 						msg: {
 							process_match: {
 								league_id: leagueId,
-								round_number,
+								round_number: roundNumber,
 								match_results: Array.from(changeMap.entries()).map((x) => ({
 									match_number: x[0],
 									match_result: x[1],
@@ -118,6 +123,29 @@ const RoundDisplay = ({
 				{
 					onSuccess(response) {
 						toast.success("The results were submitted");
+
+						if (categoryId) {
+							const ratingAdjustmentsEvent = response.events.find((event) =>
+								event.attributes.find(
+									(attr) =>
+										attr.key === "action" && attr.value === "adjust_ratings",
+								),
+							);
+							if (ratingAdjustmentsEvent) {
+								for (const attr of ratingAdjustmentsEvent.attributes) {
+									if (attr.key === "action") continue;
+
+									queryClient.setQueryData<string | undefined>(
+										arenaCoreQueryKeys.queryExtension(env.ARENA_CORE_ADDRESS, {
+											msg: {
+												rating: { addr: attr.key, category_id: categoryId },
+											},
+										}),
+										() => attr.value,
+									);
+								}
+							}
+						}
 
 						if (
 							response.events.find((event) =>

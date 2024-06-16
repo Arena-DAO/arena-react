@@ -40,9 +40,10 @@ const RoundsDisplay = ({
 				</p>
 				<RoundDisplay
 					leagueId={league.id}
-					round_number={currentRound.toString()}
+					roundNumber={currentRound.toString()}
 					moduleAddr={moduleAddr}
 					escrow={league.escrow}
+					categoryId={league.category_id}
 				/>
 			</CardBody>
 			<CardFooter>

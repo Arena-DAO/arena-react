@@ -31,6 +31,7 @@ import { BsPercent } from "react-icons/bs";
 import { FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { ZodIssueCode, z } from "zod";
+import { arenaCoreQueryKeys } from "~/codegen/ArenaCore.react-query";
 import { arenaEscrowQueryKeys } from "~/codegen/ArenaEscrow.react-query";
 import { ArenaWagerModuleClient } from "~/codegen/ArenaWagerModule.client";
 import {
@@ -48,6 +49,7 @@ type ProcessFormProps = {
 	competitionType: CompetitionType;
 	competitionId: string;
 	moduleAddr: string;
+	categoryId?: string | null;
 } & (
 	| {
 			host: string;
@@ -62,6 +64,7 @@ const ProcessForm = ({
 	competitionType,
 	moduleAddr,
 	competitionId,
+	categoryId,
 	...props
 }: ProcessFormProps) => {
 	const ProcessFormSchema = z
@@ -196,8 +199,34 @@ const ProcessForm = ({
 						},
 					},
 					{
-						onSuccess: () => {
+						onSuccess: (response) => {
 							toast.success("The competition has been processed successfully");
+
+							if (categoryId) {
+								const ratingAdjustmentsEvent = response.events.find((event) =>
+									event.attributes.find(
+										(attr) =>
+											attr.key === "action" && attr.value === "adjust_ratings",
+									),
+								);
+								if (ratingAdjustmentsEvent) {
+									for (const attr of ratingAdjustmentsEvent.attributes) {
+										if (attr.key === "action") continue;
+
+										queryClient.setQueryData<string | undefined>(
+											arenaCoreQueryKeys.queryExtension(
+												env.ARENA_CORE_ADDRESS,
+												{
+													msg: {
+														rating: { addr: attr.key, category_id: categoryId },
+													},
+												},
+											),
+											() => attr.value,
+										);
+									}
+								}
+							}
 						},
 					},
 				);
