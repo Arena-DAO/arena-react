@@ -29,7 +29,10 @@ import { toast } from "react-toastify";
 import { create } from "zustand";
 import { arenaCoreQueryKeys } from "~/codegen/ArenaCore.react-query";
 import { arenaEscrowQueryKeys } from "~/codegen/ArenaEscrow.react-query";
-import { useArenaTournamentModuleExtensionMutation } from "~/codegen/ArenaTournamentModule.react-query";
+import {
+	arenaTournamentModuleQueryKeys,
+	useArenaTournamentModuleExtensionMutation,
+} from "~/codegen/ArenaTournamentModule.react-query";
 import { getCompetitionQueryKey } from "~/helpers/CompetitionHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import type { CompetitionResponse } from "~/types/CompetitionResponse";
@@ -255,6 +258,15 @@ function Bracket({ tournamentId, escrow, categoryId }: BracketProps) {
 					onSuccess(response) {
 						useMatchResultsStore.setState(() => ({ matchResults: new Map() }));
 						toast.success("Matches were processed successfully");
+
+						queryClient.invalidateQueries(
+							arenaTournamentModuleQueryKeys.queryExtension(
+								env.ARENA_LEAGUE_MODULE_ADDRESS,
+								{
+									msg: { bracket: { tournament_id: tournamentId } },
+								},
+							),
+						);
 
 						if (categoryId) {
 							const ratingAdjustmentsEvent = response.events.find((event) =>

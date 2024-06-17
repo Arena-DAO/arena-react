@@ -23,6 +23,7 @@ import {
 	ArenaLeagueModuleQueryClient,
 } from "~/codegen/ArenaLeagueModule.client";
 import {
+	arenaLeagueModuleQueryKeys,
 	useArenaLeagueModuleExtensionMutation,
 	useArenaLeagueModuleQueryExtensionQuery,
 } from "~/codegen/ArenaLeagueModule.react-query";
@@ -123,6 +124,42 @@ const RoundDisplay = ({
 				{
 					onSuccess(response) {
 						toast.success("The results were submitted");
+
+						queryClient.setQueryData<string | undefined>(
+							arenaLeagueModuleQueryKeys.queryExtension(
+								env.ARENA_LEAGUE_MODULE_ADDRESS,
+								{
+									msg: {
+										round: { league_id: leagueId, round_number: roundNumber },
+									},
+								},
+							),
+							(old) => {
+								if (old) {
+									const parsedData = data as unknown as RoundResponse;
+
+									for (const change of changeMap) {
+										const foundData = parsedData.matches.find(
+											(x) => x.match_number === change[0],
+										);
+										if (foundData) {
+											foundData.result = change[1];
+										}
+									}
+
+									return parsedData as unknown as string;
+								}
+
+								return old;
+							},
+						);
+
+						queryClient.invalidateQueries(
+							arenaLeagueModuleQueryKeys.queryExtension(
+								env.ARENA_LEAGUE_MODULE_ADDRESS,
+								{ msg: { leaderboard: { league_id: leagueId } } },
+							),
+						);
 
 						if (categoryId) {
 							const ratingAdjustmentsEvent = response.events.find((event) =>
