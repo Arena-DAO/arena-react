@@ -184,13 +184,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.44.11":
-  version: 0.44.11
-  resolution: "@chain-registry/types@npm:0.44.11"
-  checksum: 10c0/55c9d5dd570fc390c30c467e109f3bdfe4e2e997651d33c768feeeee29432f2827a918003bcbbf3ae4b97d85248e6b65110f6e3a2bb62405fda563b067a933d3
-  languageName: node
-  linkType: hard
-
 "@chain-registry/types@npm:^0.44.2":
   version: 0.44.2
   resolution: "@chain-registry/types@npm:0.44.2"
@@ -6154,12 +6147,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.14.2":
-  version: 20.14.2
-  resolution: "@types/node@npm:20.14.2"
+"@types/node@npm:^20.14.3":
+  version: 20.14.3
+  resolution: "@types/node@npm:20.14.3"
   dependencies:
     undici-types: "npm:~5.26.4"
-  checksum: 10c0/2d86e5f2227aaa42212e82ea0affe72799111b888ff900916376450b02b09b963ca888b20d9c332d8d2b833ed4781987867a38eaa2e4863fa8439071468b0a6f
+  checksum: 10c0/fbd15d63ac64b7d864e7a423c9af4fcc672cc78316c66b764effcf39736f3bac907df491dbd827329492252de08174d877b1855ec6e853e421eb0eeba31737e2
   languageName: node
   linkType: hard
 
@@ -6626,7 +6619,7 @@ __metadata:
   resolution: "arena-react@workspace:."
   dependencies:
     "@biomejs/biome": "npm:1.8.1"
-    "@chain-registry/types": "npm:^0.44.11"
+    "@chain-registry/types": "npm:^0.45.0"
     "@cosmjs/amino": "npm:^0.32.3"
     "@cosmjs/cosmwasm-stargate": "npm:0.32.3"
     "@cosmjs/encoding": "npm:^0.32.3"
@@ -6649,11 +6642,11 @@ __metadata:
     "@nextui-org/use-infinite-scroll": "npm:^2.1.3"
     "@tanstack/react-query": "npm:4.36.1"
     "@types/lodash": "npm:^4.17.5"
-    "@types/node": "npm:^20.14.2"
+    "@types/node": "npm:^20.14.3"
     "@types/react": "npm:18.3.3"
     "@types/react-dom": "npm:^18.3.0"
     autoprefixer: "npm:^10.4.19"
-    chain-registry: "npm:1.63.0"
+    chain-registry: "npm:1.63.1"
     clsx: "npm:^2.1.1"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^7.0.2"
@@ -7145,12 +7138,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.63.0":
-  version: 1.63.0
-  resolution: "chain-registry@npm:1.63.0"
+"chain-registry@npm:1.63.1":
+  version: 1.63.1
+  resolution: "chain-registry@npm:1.63.1"
   dependencies:
     "@chain-registry/types": "npm:^0.45.0"
-  checksum: 10c0/34f882704cbd3a6df0646c076cd5595c8d3815d5d867381242c8fbaadf4d63b1b55540d16d82018c1aec7be4ff1a6aacef81c6d1c0171a15b9318b289a69beeb
+  checksum: 10c0/7e0709df7c48cf267eb23bfb4b1f03fca26e8222c3496d79f6a0b5018ece1d502c509301b6c9655dd07beb70f1ee2789e1e3b33c444b0972fadba3bc1aa8b321
   languageName: node
   linkType: hard
 
