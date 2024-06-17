@@ -207,6 +207,7 @@ const RoundDisplay = ({
 								<Select
 									label="Result"
 									className="min-w-52"
+									isRequired={!!x.result}
 									value={changeMap.get(x.match_number)}
 									defaultSelectedKeys={x.result ? [x.result] : undefined}
 									onChange={(e) => handleSelectionChange(x.match_number, e)}
