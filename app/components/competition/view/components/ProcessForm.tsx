@@ -252,9 +252,7 @@ const ProcessForm = ({
 	const action = "is_expired" in props ? "Jail" : "Process";
 	return (
 		<>
-			<Button onClick={tryOpen} isDisabled={!address}>
-				{action}
-			</Button>
+			<Button onClick={tryOpen}>{action}</Button>
 			<Modal
 				isOpen={isOpen}
 				onOpenChange={onOpenChange}

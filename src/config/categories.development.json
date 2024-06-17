@@ -85,6 +85,30 @@
 					"title": "Madden 24",
 					"img": "/category_images/madden-24.jpg",
 					"category_id": 19
+				},
+				{
+					"url": "xdefiant",
+					"title": "XDefiant",
+					"img": "/category_images/xdefiant.jpg",
+					"category_id": 20
+				},
+				{
+					"url": "halo-infinite",
+					"title": "Halo Infinite",
+					"img": "/category_images/halo-infinite.webp",
+					"category_id": 21
+				},
+				{
+					"url": "topspin",
+					"title": "TopSpin 2K25",
+					"img": "/category_images/topspin-25.jpg",
+					"category_id": 22
+				},
+				{
+					"url": "brawl-stars",
+					"title": "Brawl Stars",
+					"img": "/category_images/brawl-stars.avif",
+					"category_id": 23
 				}
 			]
 		},

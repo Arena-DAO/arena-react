@@ -199,7 +199,7 @@ const EvidenceSection = ({
 					</Table>
 				</CardBody>
 				<CardFooter>
-					<Button onClick={onOpen} isDisabled={!address}>
+					<Button onClick={onOpen} isDisabled={isSubmitting}>
 						Add Evidence
 					</Button>
 				</CardFooter>

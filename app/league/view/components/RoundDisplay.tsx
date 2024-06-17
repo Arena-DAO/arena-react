@@ -227,7 +227,7 @@ const RoundDisplay = ({
 					type="submit"
 					className="ml-auto"
 					onClick={onSubmit}
-					isDisabled={changeMap.size === 0 || !address || isSubmitting}
+					isDisabled={changeMap.size === 0 || isSubmitting}
 				>
 					Submit
 				</Button>
