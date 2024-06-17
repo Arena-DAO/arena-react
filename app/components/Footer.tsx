@@ -11,7 +11,7 @@ export default function Footer() {
 					className="w-full text-center text-small md:w-1/2 md:text-left"
 					translate="no"
 				>
-					"Audendo virtus crescit, tardando timor." - Publilius Syrus
+					"Fortune favours the bold" - Terence
 				</div>
 				<div>
 					<ButtonGroup variant="light">
