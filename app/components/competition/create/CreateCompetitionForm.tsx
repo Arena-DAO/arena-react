@@ -24,7 +24,6 @@ import {
 	Textarea,
 	Tooltip,
 } from "@nextui-org/react";
-import { useSearchParams } from "next/navigation";
 import type { PropsWithChildren } from "react";
 import {
 	type Control,
@@ -37,9 +36,6 @@ import { BsInfoCircle, BsPercent } from "react-icons/bs";
 import { FiPlus, FiTrash } from "react-icons/fi";
 import type { z } from "zod";
 import type { CreateCompetitionSchema } from "~/config/schemas";
-import { useCategoryMap } from "~/hooks/useCategories";
-import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
-import { useEnv } from "~/hooks/useEnv";
 import DueBalance from "./components/DueBalance";
 import DueProfile from "./components/DueProfile";
 import MemberProfile from "./components/MemberProfile";
@@ -58,10 +54,6 @@ interface CreateCompetitionFormProps extends PropsWithChildren {}
 export default function CreateCompetitionForm({
 	children,
 }: CreateCompetitionFormProps) {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
-	const searchParams = useSearchParams();
-	const { data: categories } = useCategoryMap();
 	const {
 		control,
 		watch,
@@ -93,13 +85,6 @@ export default function CreateCompetitionForm({
 		append: additionalLayeredFeesAppend,
 		remove: additionalLayeredFeesRemove,
 	} = useFieldArray({ name: "additionalLayeredFees", control });
-
-	const category = searchParams?.get("category") ?? "";
-	const categoryItem = categories.get(category);
-	const category_id =
-		categoryItem && "category_id" in categoryItem
-			? categoryItem.category_id
-			: undefined;
 
 	return (
 		<div className="space-y-4">
@@ -259,11 +244,7 @@ export default function CreateCompetitionForm({
 										<Card>
 											<CardHeader className="flex justify-between gap-4">
 												<div className="text-nowrap">Due {i + 1}</div>
-												<DueProfile
-													cosmWasmClient={cosmWasmClient}
-													index={i}
-													control={control}
-												/>
+												<DueProfile index={i} control={control} />
 											</CardHeader>
 											<CardBody className="space-y-4">
 												<Controller
@@ -386,7 +367,7 @@ export default function CreateCompetitionForm({
 			<Card>
 				<CardHeader>Rules</CardHeader>
 				<CardBody>
-					<RulesetsSelection category_id={category_id} />
+					<RulesetsSelection />
 					<Table aria-label="Rules" hideHeader removeWrapper>
 						<TableHeader>
 							<TableColumn>Rules</TableColumn>

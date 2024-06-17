@@ -20,22 +20,22 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 import { useAsyncList } from "react-stately";
 import { ArenaCoreQueryClient } from "~/codegen/ArenaCore.client";
 import type { Ruleset } from "~/codegen/ArenaCore.types";
+import { useCategory } from "~/hooks/useCategory";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import type { WithClient } from "~/types/util";
 import type { CreateCompetitionFormValues } from "../CreateCompetitionForm";
 
-interface RulesetsSelectionProps {
-	category_id?: number | null;
-}
-
-const RulesetsSelection = ({
-	cosmWasmClient,
-	category_id,
-}: WithClient<RulesetsSelectionProps>) => {
+const RulesetsSelection = () => {
 	const { data: env } = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const { data: category } = useCategory();
+
 	const [hasMore, setHasMore] = useState(false);
 	const list = useAsyncList<Ruleset, string | undefined>({
 		async load({ cursor }) {
+			if (!cosmWasmClient) {
+				return { items: [] };
+			}
 			const client = new ArenaCoreQueryClient(
 				cosmWasmClient,
 				env.ARENA_CORE_ADDRESS,
@@ -45,7 +45,7 @@ const RulesetsSelection = ({
 				msg: {
 					rulesets: {
 						start_after: cursor,
-						category_id: category_id?.toString(),
+						category_id: category?.category_id?.toString(),
 					},
 				},
 			});

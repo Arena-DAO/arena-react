@@ -22,7 +22,7 @@ import {
 	Tooltip,
 } from "@nextui-org/react";
 import { addMonths } from "date-fns";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import {
 	Controller,
@@ -46,8 +46,7 @@ import {
 	convertToExpiration,
 } from "~/helpers/SchemaHelpers";
 import { getNumberWithOrdinal } from "~/helpers/UIHelpers";
-import { useCategoryMap } from "~/hooks/useCategories";
-import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
+import { useCategory } from "~/hooks/useCategory";
 import { useEnv } from "~/hooks/useEnv";
 
 const CreateLeagueSchema = CreateCompetitionSchema.extend({
@@ -76,21 +75,11 @@ type CreateLeagueFormValues = z.infer<typeof CreateLeagueSchema>;
 
 const CreateLeague = () => {
 	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const { data: category } = useCategory();
 	const { getSigningCosmWasmClient, address, isWalletConnected } = useChain(
 		env.CHAIN,
 	);
-	const searchParams = useSearchParams();
 	const router = useRouter();
-	const { data: categories } = useCategoryMap();
-
-	const category = searchParams?.get("category") ?? "";
-	const categoryItem = categories.get(category);
-	const category_id = categoryItem
-		? "category_id" in categoryItem
-			? categoryItem.category_id
-			: undefined
-		: undefined;
 	const formMethods = useForm<CreateLeagueFormValues>({
 		defaultValues: {
 			expiration: {
@@ -149,7 +138,7 @@ const CreateLeague = () => {
 			);
 
 			const msg = {
-				categoryId: category_id?.toString(),
+				categoryId: category?.category_id?.toString(),
 				description: values.description,
 				expiration: convertToExpiration(values.expiration),
 				name: values.name,
@@ -209,7 +198,7 @@ const CreateLeague = () => {
 							<Button
 								isIconOnly
 								as={Link}
-								href={`/compete?category=${category}`}
+								href={`/compete?category=${category.url}`}
 							>
 								<BsArrowLeft />
 							</Button>
