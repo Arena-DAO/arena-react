@@ -31,6 +31,7 @@ export interface ProfileProps extends Omit<UserProps, "name"> {
 	hideIfInvalid?: boolean;
 	justAvatar?: boolean;
 	isTooltipDisabled?: boolean;
+	isRatingDisabled?: boolean; // Should not be checked by the WalletConnectToggle
 }
 
 const Profile = ({
@@ -38,6 +39,7 @@ const Profile = ({
 	hideIfInvalid = false,
 	justAvatar = false,
 	isTooltipDisabled = false,
+	isRatingDisabled = false,
 	...props
 }: ProfileProps) => {
 	const { data: env } = useEnv();
@@ -59,22 +61,22 @@ const Profile = ({
 				},
 			},
 		},
-		options: { enabled: typeof category?.category_id === "number" },
+		options: {
+			enabled: !isRatingDisabled && typeof category?.category_id === "number",
+		},
 	});
 
 	if (!isValid && hideIfInvalid) {
 		return null;
 	}
 
+	if (isLoading) return <Skeleton />;
+
 	if (justAvatar) {
 		return (
-			<Skeleton isLoaded={!isLoading}>
-				<Avatar showFallback src={data?.imageUrl} />
-			</Skeleton>
+			<Avatar src={data?.imageUrl} content={data?.name ?? data?.address} />
 		);
 	}
-
-	if (isLoading) return <Skeleton />;
 
 	return (
 		<Tooltip
@@ -109,7 +111,6 @@ const Profile = ({
 				name={data?.name ?? data?.address}
 				avatarProps={{
 					src: data?.imageUrl,
-					showFallback: true,
 				}}
 			/>
 		</Tooltip>

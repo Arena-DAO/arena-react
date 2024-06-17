@@ -21,7 +21,11 @@ export default function WalletConnectToggle() {
 			<Dropdown placement="bottom-end">
 				<DropdownTrigger>
 					<Button variant="light" isIconOnly>
-						<Profile address={chainContext.address} justAvatar />
+						<Profile
+							address={chainContext.address}
+							justAvatar
+							isRatingDisabled
+						/>
 					</Button>
 				</DropdownTrigger>
 				<DropdownMenu
