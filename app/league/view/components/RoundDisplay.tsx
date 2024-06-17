@@ -208,7 +208,6 @@ const RoundDisplay = ({
 									label="Result"
 									className="min-w-52"
 									value={changeMap.get(x.match_number)}
-									isDisabled={!!x.result && env.ARENA_CORE_ADDRESS !== address}
 									defaultSelectedKeys={x.result ? [x.result] : undefined}
 									onChange={(e) => handleSelectionChange(x.match_number, e)}
 								>
