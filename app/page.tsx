@@ -2,7 +2,8 @@
 
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
-import { Button, Link } from "@nextui-org/react";
+import { Button, Image, Link } from "@nextui-org/react";
+import NextImage from "next/image";
 import { useState } from "react";
 import { useEnv } from "~/hooks/useEnv";
 
@@ -93,7 +94,7 @@ function HomePage() {
 						<div
 							className="absolute inset-0 z-[-1] bg-center bg-cover bg-no-repeat"
 							style={{
-								backgroundImage: `url('/landing/${id}.jpg')`,
+								backgroundImage: `url('${env.JACKAL_PATH}landing_${id}.jpg')`,
 								opacity: 0.5, // Set the opacity value (0 to 1)
 							}}
 						/>
@@ -191,7 +192,13 @@ function HomePage() {
 					</p>
 				</div>
 				<div className="w-[80%] md:mx-auto md:w-1/2">
-					<img src="/landing/join.png" alt="join" />
+					<Image
+						as={NextImage}
+						src={`${env.JACKAL_PATH}helmet.png`}
+						alt="Helmet"
+						width={2048}
+						height={2048}
+					/>
 				</div>
 			</section>
 			<section className="mx-auto mt-8 flex w-full max-w-screen-xl flex-col-reverse items-center gap-[10%] px-10 md:flex-row">
@@ -218,7 +225,13 @@ function HomePage() {
 					</p>
 				</div>
 				<div className="w-[80%] md:mx-auto md:w-1/2">
-					<img src="/landing/about.png" alt="about" />
+					<Image
+						as={NextImage}
+						src={`${env.JACKAL_PATH}colosseum.png`}
+						alt="Colosseum"
+						width={2048}
+						height={2048}
+					/>
 				</div>
 			</section>
 		</>

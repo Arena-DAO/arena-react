@@ -10,6 +10,7 @@ export interface Env {
 	DEFAULT_TEAM_VOTING_DURATION_TIME: number;
 	PAGINATION_LIMIT: number;
 	IBC_FUN: string;
+	JACKAL_PATH: string;
 
 	// Variables specific to both .env.development and .env.production
 	CHAIN: string;
@@ -72,6 +73,7 @@ function getEnv(): Env {
 		CHAIN: checkEnv(process.env.NEXT_PUBLIC_CHAIN),
 		DEFAULT_NATIVE: checkEnv(process.env.NEXT_PUBLIC_DEFAULT_NATIVE),
 		ENV: checkEnv(process.env.NEXT_PUBLIC_ENV),
+		JACKAL_PATH: checkEnv(process.env.NEXT_PUBLIC_JACKAL_PATH),
 		CODE_ID_DAO_PROPOSAL_SINGLE: checkEnvNumber(
 			process.env.NEXT_PUBLIC_CODE_ID_DAO_PROPOSAL_SINGLE,
 		),

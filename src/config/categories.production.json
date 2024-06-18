@@ -5,85 +5,85 @@
 	"children": [
 		{
 			"url": "gaming",
-			"img": "/category_images/gaming.jpg",
+			"img": "gaming.jpg",
 			"title": "Gaming",
 			"children": [
 				{
 					"url": "fortnite",
 					"title": "Fortnite",
-					"img": "/category_images/fortnite.webp",
+					"img": "fortnite.webp",
 					"category_id": 1
 				},
 				{
 					"url": "ea-sports-fc-24",
 					"title": "EA Sports FC 24",
-					"img": "/category_images/ea-sports-fc-24.webp",
+					"img": "ea-sports-fc-24.webp",
 					"category_id": 2
 				},
 				{
 					"url": "overwatch-2",
 					"title": "Overwatch 2",
-					"img": "/category_images/overwatch-2.webp",
+					"img": "overwatch-2.webp",
 					"category_id": 3
 				},
 				{
 					"url": "rocket-league",
 					"title": "Rocket League",
-					"img": "/category_images/rocket-league.webp",
+					"img": "rocket-league.webp",
 					"category_id": 4
 				},
 				{
 					"url": "counter-strike",
 					"title": "Counter Strike",
-					"img": "/category_images/counter-strike.webp",
+					"img": "counter-strike.webp",
 					"category_id": 5
 				},
 				{
 					"url": "call-of-duty",
 					"title": "Call of Duty",
-					"img": "/category_images/call-of-duty.webp",
+					"img": "call-of-duty.webp",
 					"category_id": 6
 				},
 				{
 					"url": "apex-legends",
 					"title": "Apex Legends",
-					"img": "/category_images/apex-legends.webp",
+					"img": "apex-legends.webp",
 					"category_id": 7
 				},
 				{
 					"url": "valorant",
 					"title": "Valorant",
-					"img": "/category_images/valorant.webp",
+					"img": "valorant.webp",
 					"category_id": 8
 				},
 				{
 					"url": "the-finals",
 					"title": "The Finals",
-					"img": "/category_images/the-finals.webp",
+					"img": "the-finals.webp",
 					"category_id": 9
 				},
 				{
 					"url": "league-of-legends",
 					"title": "League of Legends",
-					"img": "/category_images/league-of-legends.jpg",
+					"img": "league-of-legends.jpg",
 					"category_id": 16
 				},
 				{
 					"url": "dota-2",
 					"title": "Dota 2",
-					"img": "/category_images/dota-2.jpg",
+					"img": "dota-2.jpg",
 					"category_id": 17
 				},
 				{
 					"url": "nba-2k",
 					"title": "NBA 2K",
-					"img": "/category_images/nba-2k.webp",
+					"img": "nba-2k.webp",
 					"category_id": 18
 				},
 				{
 					"url": "madden",
 					"title": "Madden 24",
-					"img": "/category_images/madden-24.jpg",
+					"img": "madden-24.jpg",
 					"category_id": 19
 				}
 			]
@@ -91,42 +91,42 @@
 		{
 			"url": "sports",
 			"title": "Sports",
-			"img": "/category_images/sports.jpg",
+			"img": "sports.jpg",
 			"children": [
 				{
 					"url": "soccer",
 					"title": "Soccer",
-					"img": "/category_images/soccer.jpg",
+					"img": "soccer.jpg",
 					"category_id": 10
 				},
 				{
 					"url": "basketball",
 					"title": "Basketball",
-					"img": "/category_images/basketball.jpg",
+					"img": "basketball.jpg",
 					"category_id": 11
 				},
 				{
 					"url": "baseball",
 					"title": "Baseball",
-					"img": "/category_images/baseball.webp",
+					"img": "baseball.webp",
 					"category_id": 12
 				},
 				{
 					"url": "volleyball",
 					"title": "Volleyball",
-					"img": "/category_images/volleyball.webp",
+					"img": "volleyball.webp",
 					"category_id": 13
 				},
 				{
 					"url": "tennis",
 					"title": "Tennis",
-					"img": "/category_images/tennis.jpg",
+					"img": "tennis.jpg",
 					"category_id": 14
 				},
 				{
 					"url": "football",
 					"title": "Football",
-					"img": "/category_images/football.jpg",
+					"img": "football.jpg",
 					"category_id": 15
 				}
 			]
@@ -134,7 +134,7 @@
 		{
 			"url": "miscellaneous",
 			"title": "Miscellaneous",
-			"img": "/category_images/default_trophy.jpg",
+			"img": "default_trophy.jpg",
 			"category_id": null
 		}
 	]
