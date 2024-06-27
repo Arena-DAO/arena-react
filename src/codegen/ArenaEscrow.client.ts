@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { Uint128, InstantiateMsg, MemberBalanceUnchecked, BalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, DistributionForString, MemberPercentageForString, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, FeeInformationForString, QueryMsg, MigrateMsg, NullableBalanceVerified, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceChecked, MemberBalanceChecked, NullableDistributionForString, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
+import { Uint128, InstantiateMsg, MemberBalanceUnchecked, BalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, DistributionForString, MemberPercentageForString, Cw20ReceiveMsg, Cw721ReceiveMsg, FeeInformationForString, QueryMsg, MigrateMsg, NullableBalanceVerified, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceChecked, MemberBalanceChecked, NullableDistributionForString, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
 export interface ArenaEscrowReadOnlyInterface {
   contractAddress: string;
   balances: ({
@@ -58,6 +58,7 @@ export interface ArenaEscrowReadOnlyInterface {
   }: {
     addr?: string;
   }) => Promise<DumpStateResponse>;
+  shouldActivateOnFunded: () => Promise<Boolean>;
   ownership: () => Promise<OwnershipForString>;
 }
 export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
@@ -78,6 +79,7 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
     this.isLocked = this.isLocked.bind(this);
     this.distribution = this.distribution.bind(this);
     this.dumpState = this.dumpState.bind(this);
+    this.shouldActivateOnFunded = this.shouldActivateOnFunded.bind(this);
     this.ownership = this.ownership.bind(this);
   }
 
@@ -193,6 +195,11 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
       }
     });
   };
+  shouldActivateOnFunded = async (): Promise<Boolean> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      should_activate_on_funded: {}
+    });
+  };
   ownership = async (): Promise<OwnershipForString> => {
     return this.client.queryContractSmart(this.contractAddress, {
       ownership: {}
@@ -214,6 +221,7 @@ export interface ArenaEscrowInterface extends ArenaEscrowReadOnlyInterface {
   }: {
     distribution?: DistributionForString;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  activate: (fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   receiveNative: (fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   receive: ({
     amount,
@@ -259,6 +267,7 @@ export class ArenaEscrowClient extends ArenaEscrowQueryClient implements ArenaEs
     this.contractAddress = contractAddress;
     this.withdraw = this.withdraw.bind(this);
     this.setDistribution = this.setDistribution.bind(this);
+    this.activate = this.activate.bind(this);
     this.receiveNative = this.receiveNative.bind(this);
     this.receive = this.receive.bind(this);
     this.receiveNft = this.receiveNft.bind(this);
@@ -290,6 +299,11 @@ export class ArenaEscrowClient extends ArenaEscrowQueryClient implements ArenaEs
       set_distribution: {
         distribution
       }
+    }, fee, memo, _funds);
+  };
+  activate = async (fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      activate: {}
     }, fee, memo, _funds);
   };
   receiveNative = async (fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {

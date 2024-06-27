@@ -33,6 +33,7 @@ export type ExecuteMsg = {
   };
 } | {
   create_competition: {
+    banner?: string | null;
     category_id?: Uint128 | null;
     description: string;
     escrow?: EscrowInstantiateInfo | null;
@@ -42,6 +43,7 @@ export type ExecuteMsg = {
     name: string;
     rules: string[];
     rulesets: Uint128[];
+    should_activate_on_funded?: boolean | null;
   };
 } | {
   submit_evidence: {
@@ -56,6 +58,18 @@ export type ExecuteMsg = {
 } | {
   extension: {
     msg: ExecuteExt;
+  };
+} | {
+  activate_manually: {
+    id: Uint128;
+  };
+} | {
+  migrate_escrows: {
+    escrow_code_id: number;
+    escrow_migrate_msg: MigrateMsg;
+    filter?: CompetitionsFilter | null;
+    limit?: number | null;
+    start_after?: Uint128 | null;
   };
 } | {
   update_ownership: Action;
@@ -108,6 +122,21 @@ export type ExecuteExt = {
 };
 export type MatchResult = "team1" | "team2" | "draw";
 export type Int128 = string;
+export type MigrateMsg = {
+  from_compatible: {};
+};
+export type CompetitionsFilter = {
+  competition_status: {
+    status: CompetitionStatus;
+  };
+} | {
+  category: {
+    id?: Uint128 | null;
+  };
+} | {
+  host: string;
+};
+export type CompetitionStatus = "pending" | "active" | "inactive" | "jailed";
 export type Action = {
   transfer_ownership: {
     expiry?: Expiration | null;
@@ -195,20 +224,6 @@ export type QueryMsg = {
 } | {
   ownership: {};
 };
-export type CompetitionsFilter = {
-  competition_status: {
-    status: CompetitionStatus;
-  };
-} | {
-  category: {
-    id?: Uint128 | null;
-  };
-} | {
-  host: {
-    addr: string;
-  };
-};
-export type CompetitionStatus = "pending" | "active" | "inactive" | "jailed";
 export type LeagueQueryExt = {
   leaderboard: {
     league_id: Uint128;
@@ -230,9 +245,6 @@ export type LeagueQueryExt = {
     league_id: Uint128;
     round_number: Uint64;
   };
-};
-export type MigrateMsg = {
-  from_compatible: {};
 };
 export type Addr = string;
 export interface SudoMsg {
@@ -256,6 +268,7 @@ export interface Match {
 }
 export type Null = null;
 export interface CompetitionResponseForLeagueExt {
+  banner?: string | null;
   category_id?: Uint128 | null;
   description: string;
   escrow?: Addr | null;

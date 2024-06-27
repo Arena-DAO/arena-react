@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee, Coin } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, ExecuteExt, MatchResult, Int128, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, LeagueInstantiateExt, MatchResultMsg, PointAdjustment, QueryMsg, CompetitionsFilter, CompetitionStatus, LeagueQueryExt, MigrateMsg, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForLeagueExt, LeagueExt, FeeInformationForAddr, ArrayOfCompetitionResponseForLeagueExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaLeagueModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, ExecuteExt, MatchResult, Int128, MigrateMsg, CompetitionsFilter, CompetitionStatus, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, LeagueInstantiateExt, MatchResultMsg, PointAdjustment, QueryMsg, LeagueQueryExt, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForLeagueExt, LeagueExt, FeeInformationForAddr, ArrayOfCompetitionResponseForLeagueExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaLeagueModule.types";
 import { ArenaLeagueModuleQueryClient, ArenaLeagueModuleClient } from "./ArenaLeagueModule.client";
 export const arenaLeagueModuleQueryKeys = {
   contract: ([{
@@ -305,6 +305,54 @@ export function useArenaLeagueModuleUpdateOwnershipMutation(options?: Omit<UseMu
     } = {}
   }) => client.updateOwnership(msg, fee, memo, funds), options);
 }
+export interface ArenaLeagueModuleMigrateEscrowsMutation {
+  client: ArenaLeagueModuleClient;
+  msg: {
+    escrowCodeId: number;
+    escrowMigrateMsg: MigrateMsg;
+    filter?: CompetitionsFilter;
+    limit?: number;
+    startAfter?: Uint128;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaLeagueModuleMigrateEscrowsMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaLeagueModuleMigrateEscrowsMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaLeagueModuleMigrateEscrowsMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.migrateEscrows(msg, fee, memo, funds), options);
+}
+export interface ArenaLeagueModuleActivateManuallyMutation {
+  client: ArenaLeagueModuleClient;
+  msg: {
+    id: Uint128;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaLeagueModuleActivateManuallyMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaLeagueModuleActivateManuallyMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaLeagueModuleActivateManuallyMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.activateManually(msg, fee, memo, funds), options);
+}
 export interface ArenaLeagueModuleExtensionMutation {
   client: ArenaLeagueModuleClient;
   msg: {
@@ -376,6 +424,7 @@ export function useArenaLeagueModuleSubmitEvidenceMutation(options?: Omit<UseMut
 export interface ArenaLeagueModuleCreateCompetitionMutation {
   client: ArenaLeagueModuleClient;
   msg: {
+    banner?: string;
     categoryId?: Uint128;
     description: string;
     escrow?: EscrowInstantiateInfo;
@@ -385,6 +434,7 @@ export interface ArenaLeagueModuleCreateCompetitionMutation {
     name: string;
     rules: string[];
     rulesets: Uint128[];
+    shouldActivateOnFunded?: boolean;
   };
   args?: {
     fee?: number | StdFee | "auto";

@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee, Coin } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, WagerInstantiateExt, QueryMsg, CompetitionsFilter, CompetitionStatus, MigrateMsg, Null, Addr, CompetitionResponseForWagerExt, WagerExt, FeeInformationForAddr, ArrayOfCompetitionResponseForWagerExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, MigrateMsg, CompetitionsFilter, CompetitionStatus, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, WagerInstantiateExt, QueryMsg, Null, Addr, CompetitionResponseForWagerExt, WagerExt, FeeInformationForAddr, ArrayOfCompetitionResponseForWagerExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaWagerModule.types";
 import { ArenaWagerModuleQueryClient, ArenaWagerModuleClient } from "./ArenaWagerModule.client";
 export const arenaWagerModuleQueryKeys = {
   contract: ([{
@@ -305,6 +305,54 @@ export function useArenaWagerModuleUpdateOwnershipMutation(options?: Omit<UseMut
     } = {}
   }) => client.updateOwnership(msg, fee, memo, funds), options);
 }
+export interface ArenaWagerModuleMigrateEscrowsMutation {
+  client: ArenaWagerModuleClient;
+  msg: {
+    escrowCodeId: number;
+    escrowMigrateMsg: MigrateMsg;
+    filter?: CompetitionsFilter;
+    limit?: number;
+    startAfter?: Uint128;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaWagerModuleMigrateEscrowsMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleMigrateEscrowsMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaWagerModuleMigrateEscrowsMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.migrateEscrows(msg, fee, memo, funds), options);
+}
+export interface ArenaWagerModuleActivateManuallyMutation {
+  client: ArenaWagerModuleClient;
+  msg: {
+    id: Uint128;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaWagerModuleActivateManuallyMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleActivateManuallyMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaWagerModuleActivateManuallyMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.activateManually(msg, fee, memo, funds), options);
+}
 export interface ArenaWagerModuleExtensionMutation {
   client: ArenaWagerModuleClient;
   msg: {
@@ -376,6 +424,7 @@ export function useArenaWagerModuleSubmitEvidenceMutation(options?: Omit<UseMuta
 export interface ArenaWagerModuleCreateCompetitionMutation {
   client: ArenaWagerModuleClient;
   msg: {
+    banner?: string;
     categoryId?: Uint128;
     description: string;
     escrow?: EscrowInstantiateInfo;
@@ -385,6 +434,7 @@ export interface ArenaWagerModuleCreateCompetitionMutation {
     name: string;
     rules: string[];
     rulesets: Uint128[];
+    shouldActivateOnFunded?: boolean;
   };
   args?: {
     fee?: number | StdFee | "auto";

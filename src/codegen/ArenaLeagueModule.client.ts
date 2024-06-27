@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, ExecuteExt, MatchResult, Int128, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, LeagueInstantiateExt, MatchResultMsg, PointAdjustment, QueryMsg, CompetitionsFilter, CompetitionStatus, LeagueQueryExt, MigrateMsg, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForLeagueExt, LeagueExt, FeeInformationForAddr, ArrayOfCompetitionResponseForLeagueExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaLeagueModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, ExecuteExt, MatchResult, Int128, MigrateMsg, CompetitionsFilter, CompetitionStatus, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, LeagueInstantiateExt, MatchResultMsg, PointAdjustment, QueryMsg, LeagueQueryExt, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForLeagueExt, LeagueExt, FeeInformationForAddr, ArrayOfCompetitionResponseForLeagueExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaLeagueModule.types";
 export interface ArenaLeagueModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForEmpty>;
@@ -180,6 +180,7 @@ export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInt
     distribution?: DistributionForString;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   createCompetition: ({
+    banner,
     categoryId,
     description,
     escrow,
@@ -188,8 +189,10 @@ export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInt
     instantiateExtension,
     name,
     rules,
-    rulesets
+    rulesets,
+    shouldActivateOnFunded
   }: {
+    banner?: string;
     categoryId?: Uint128;
     description: string;
     escrow?: EscrowInstantiateInfo;
@@ -199,6 +202,7 @@ export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInt
     name: string;
     rules: string[];
     rulesets: Uint128[];
+    shouldActivateOnFunded?: boolean;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   submitEvidence: ({
     competitionId,
@@ -218,6 +222,24 @@ export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInt
     msg
   }: {
     msg: ExecuteExt;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  activateManually: ({
+    id
+  }: {
+    id: Uint128;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  migrateEscrows: ({
+    escrowCodeId,
+    escrowMigrateMsg,
+    filter,
+    limit,
+    startAfter
+  }: {
+    escrowCodeId: number;
+    escrowMigrateMsg: MigrateMsg;
+    filter?: CompetitionsFilter;
+    limit?: number;
+    startAfter?: Uint128;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   updateOwnership: (action: Action, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
 }
@@ -240,6 +262,8 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
     this.submitEvidence = this.submitEvidence.bind(this);
     this.processCompetition = this.processCompetition.bind(this);
     this.extension = this.extension.bind(this);
+    this.activateManually = this.activateManually.bind(this);
+    this.migrateEscrows = this.migrateEscrows.bind(this);
     this.updateOwnership = this.updateOwnership.bind(this);
   }
 
@@ -296,6 +320,7 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
     }, fee, memo, _funds);
   };
   createCompetition = async ({
+    banner,
     categoryId,
     description,
     escrow,
@@ -304,8 +329,10 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
     instantiateExtension,
     name,
     rules,
-    rulesets
+    rulesets,
+    shouldActivateOnFunded
   }: {
+    banner?: string;
     categoryId?: Uint128;
     description: string;
     escrow?: EscrowInstantiateInfo;
@@ -315,9 +342,11 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
     name: string;
     rules: string[];
     rulesets: Uint128[];
+    shouldActivateOnFunded?: boolean;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       create_competition: {
+        banner,
         category_id: categoryId,
         description,
         escrow,
@@ -326,7 +355,8 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
         instantiate_extension: instantiateExtension,
         name,
         rules,
-        rulesets
+        rulesets,
+        should_activate_on_funded: shouldActivateOnFunded
       }
     }, fee, memo, _funds);
   };
@@ -366,6 +396,40 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
     return await this.client.execute(this.sender, this.contractAddress, {
       extension: {
         msg
+      }
+    }, fee, memo, _funds);
+  };
+  activateManually = async ({
+    id
+  }: {
+    id: Uint128;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      activate_manually: {
+        id
+      }
+    }, fee, memo, _funds);
+  };
+  migrateEscrows = async ({
+    escrowCodeId,
+    escrowMigrateMsg,
+    filter,
+    limit,
+    startAfter
+  }: {
+    escrowCodeId: number;
+    escrowMigrateMsg: MigrateMsg;
+    filter?: CompetitionsFilter;
+    limit?: number;
+    startAfter?: Uint128;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      migrate_escrows: {
+        escrow_code_id: escrowCodeId,
+        escrow_migrate_msg: escrowMigrateMsg,
+        filter,
+        limit,
+        start_after: startAfter
       }
     }, fee, memo, _funds);
   };

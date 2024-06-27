@@ -16,27 +16,27 @@ import * as _8 from "./ArenaWagerModule.react-query";
 import * as _9 from "./ArenaTournamentModule.types";
 import * as _10 from "./ArenaTournamentModule.client";
 import * as _11 from "./ArenaTournamentModule.react-query";
-import * as _12 from "./ArenaLeagueModule.types";
-import * as _13 from "./ArenaLeagueModule.client";
-import * as _14 from "./ArenaLeagueModule.react-query";
-import * as _15 from "./ArenaEscrow.types";
-import * as _16 from "./ArenaEscrow.client";
-import * as _17 from "./ArenaEscrow.react-query";
+import * as _12 from "./ArenaEscrow.types";
+import * as _13 from "./ArenaEscrow.client";
+import * as _14 from "./ArenaEscrow.react-query";
+import * as _15 from "./ArenaLeagueModule.types";
+import * as _16 from "./ArenaLeagueModule.client";
+import * as _17 from "./ArenaLeagueModule.react-query";
 import * as _18 from "./ArenaCore.types";
 import * as _19 from "./ArenaCore.client";
 import * as _20 from "./ArenaCore.react-query";
-import * as _21 from "./Cw721Base.types";
-import * as _22 from "./Cw721Base.client";
-import * as _23 from "./Cw721Base.react-query";
-import * as _24 from "./DaoVotingCw4.types";
-import * as _25 from "./DaoVotingCw4.client";
-import * as _26 from "./DaoVotingCw4.react-query";
-import * as _27 from "./DaoProposalSingle.types";
-import * as _28 from "./DaoProposalSingle.client";
-import * as _29 from "./DaoProposalSingle.react-query";
-import * as _30 from "./CwAbc.types";
-import * as _31 from "./CwAbc.client";
-import * as _32 from "./CwAbc.react-query";
+import * as _21 from "./ArenaCompetitionEnrollment.types";
+import * as _22 from "./ArenaCompetitionEnrollment.client";
+import * as _23 from "./ArenaCompetitionEnrollment.react-query";
+import * as _24 from "./Cw721Base.types";
+import * as _25 from "./Cw721Base.client";
+import * as _26 from "./Cw721Base.react-query";
+import * as _27 from "./DaoVotingCw4.types";
+import * as _28 from "./DaoVotingCw4.client";
+import * as _29 from "./DaoVotingCw4.react-query";
+import * as _30 from "./DaoProposalSingle.types";
+import * as _31 from "./DaoProposalSingle.client";
+import * as _32 from "./DaoProposalSingle.react-query";
 export namespace contracts {
   export const DaoDaoCore = { ..._0,
     ..._1,
@@ -54,11 +54,11 @@ export namespace contracts {
     ..._10,
     ..._11
   };
-  export const ArenaLeagueModule = { ..._12,
+  export const ArenaEscrow = { ..._12,
     ..._13,
     ..._14
   };
-  export const ArenaEscrow = { ..._15,
+  export const ArenaLeagueModule = { ..._15,
     ..._16,
     ..._17
   };
@@ -66,19 +66,19 @@ export namespace contracts {
     ..._19,
     ..._20
   };
-  export const Cw721Base = { ..._21,
+  export const ArenaCompetitionEnrollment = { ..._21,
     ..._22,
     ..._23
   };
-  export const DaoVotingCw4 = { ..._24,
+  export const Cw721Base = { ..._24,
     ..._25,
     ..._26
   };
-  export const DaoProposalSingle = { ..._27,
+  export const DaoVotingCw4 = { ..._27,
     ..._28,
     ..._29
   };
-  export const CwAbc = { ..._30,
+  export const DaoProposalSingle = { ..._30,
     ..._31,
     ..._32
   };

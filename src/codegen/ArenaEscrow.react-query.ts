@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { Uint128, InstantiateMsg, MemberBalanceUnchecked, BalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, DistributionForString, MemberPercentageForString, Cw20ReceiveMsg, Cw721ReceiveMsg, CompetitionEscrowDistributeMsg, FeeInformationForString, QueryMsg, MigrateMsg, NullableBalanceVerified, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceChecked, MemberBalanceChecked, NullableDistributionForString, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
+import { Uint128, InstantiateMsg, MemberBalanceUnchecked, BalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, DistributionForString, MemberPercentageForString, Cw20ReceiveMsg, Cw721ReceiveMsg, FeeInformationForString, QueryMsg, MigrateMsg, NullableBalanceVerified, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceChecked, MemberBalanceChecked, NullableDistributionForString, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
 import { ArenaEscrowQueryClient, ArenaEscrowClient } from "./ArenaEscrow.client";
 export const arenaEscrowQueryKeys = {
   contract: ([{
@@ -58,6 +58,10 @@ export const arenaEscrowQueryKeys = {
   }] as const),
   dumpState: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaEscrowQueryKeys.address(contractAddress)[0],
     method: "dump_state",
+    args
+  }] as const),
+  shouldActivateOnFunded: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaEscrowQueryKeys.address(contractAddress)[0],
+    method: "should_activate_on_funded",
     args
   }] as const),
   ownership: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaEscrowQueryKeys.address(contractAddress)[0],
@@ -192,6 +196,15 @@ export const arenaEscrowQueries = {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   }),
+  shouldActivateOnFunded: <TData = Boolean,>({
+    client,
+    options
+  }: ArenaEscrowShouldActivateOnFundedQuery<TData>): UseQueryOptions<Boolean, Error, TData> => ({
+    queryKey: arenaEscrowQueryKeys.shouldActivateOnFunded(client?.contractAddress),
+    queryFn: () => client ? client.shouldActivateOnFunded() : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
   ownership: <TData = OwnershipForString,>({
     client,
     options
@@ -214,6 +227,15 @@ export function useArenaEscrowOwnershipQuery<TData = OwnershipForString>({
   options
 }: ArenaEscrowOwnershipQuery<TData>) {
   return useQuery<OwnershipForString, Error, TData>(arenaEscrowQueryKeys.ownership(client?.contractAddress), () => client ? client.ownership() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
+}
+export interface ArenaEscrowShouldActivateOnFundedQuery<TData> extends ArenaEscrowReactQuery<Boolean, TData> {}
+export function useArenaEscrowShouldActivateOnFundedQuery<TData = Boolean>({
+  client,
+  options
+}: ArenaEscrowShouldActivateOnFundedQuery<TData>) {
+  return useQuery<Boolean, Error, TData>(arenaEscrowQueryKeys.shouldActivateOnFunded(client?.contractAddress), () => client ? client.shouldActivateOnFunded() : Promise.reject(new Error("Invalid client")), { ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
@@ -508,6 +530,24 @@ export function useArenaEscrowReceiveNativeMutation(options?: Omit<UseMutationOp
       funds
     } = {}
   }) => client.receiveNative(fee, memo, funds), options);
+}
+export interface ArenaEscrowActivateMutation {
+  client: ArenaEscrowClient;
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaEscrowActivateMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaEscrowActivateMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaEscrowActivateMutation>(({
+    client,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.activate(fee, memo, funds), options);
 }
 export interface ArenaEscrowSetDistributionMutation {
   client: ArenaEscrowClient;

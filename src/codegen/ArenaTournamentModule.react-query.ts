@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee, Coin } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, EliminationType, ExecuteExt, MatchResult, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, TournamentInstantiateExt, MatchResultMsg, QueryMsg, CompetitionsFilter, CompetitionStatus, QueryExt, MigrateMsg, Addr, SudoMsg, Match, Null, CompetitionResponseForTournamentExt, TournamentExt, FeeInformationForAddr, ArrayOfCompetitionResponseForTournamentExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaTournamentModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, EliminationType, ExecuteExt, MatchResult, MigrateMsg, CompetitionsFilter, CompetitionStatus, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, TournamentInstantiateExt, MatchResultMsg, QueryMsg, QueryExt, Addr, SudoMsg, Match, Null, CompetitionResponseForTournamentExt, TournamentExt, FeeInformationForAddr, ArrayOfCompetitionResponseForTournamentExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaTournamentModule.types";
 import { ArenaTournamentModuleQueryClient, ArenaTournamentModuleClient } from "./ArenaTournamentModule.client";
 export const arenaTournamentModuleQueryKeys = {
   contract: ([{
@@ -305,6 +305,54 @@ export function useArenaTournamentModuleUpdateOwnershipMutation(options?: Omit<U
     } = {}
   }) => client.updateOwnership(msg, fee, memo, funds), options);
 }
+export interface ArenaTournamentModuleMigrateEscrowsMutation {
+  client: ArenaTournamentModuleClient;
+  msg: {
+    escrowCodeId: number;
+    escrowMigrateMsg: MigrateMsg;
+    filter?: CompetitionsFilter;
+    limit?: number;
+    startAfter?: Uint128;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaTournamentModuleMigrateEscrowsMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTournamentModuleMigrateEscrowsMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaTournamentModuleMigrateEscrowsMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.migrateEscrows(msg, fee, memo, funds), options);
+}
+export interface ArenaTournamentModuleActivateManuallyMutation {
+  client: ArenaTournamentModuleClient;
+  msg: {
+    id: Uint128;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaTournamentModuleActivateManuallyMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTournamentModuleActivateManuallyMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaTournamentModuleActivateManuallyMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.activateManually(msg, fee, memo, funds), options);
+}
 export interface ArenaTournamentModuleExtensionMutation {
   client: ArenaTournamentModuleClient;
   msg: {
@@ -376,6 +424,7 @@ export function useArenaTournamentModuleSubmitEvidenceMutation(options?: Omit<Us
 export interface ArenaTournamentModuleCreateCompetitionMutation {
   client: ArenaTournamentModuleClient;
   msg: {
+    banner?: string;
     categoryId?: Uint128;
     description: string;
     escrow?: EscrowInstantiateInfo;
@@ -385,6 +434,7 @@ export interface ArenaTournamentModuleCreateCompetitionMutation {
     name: string;
     rules: string[];
     rulesets: Uint128[];
+    shouldActivateOnFunded?: boolean;
   };
   args?: {
     fee?: number | StdFee | "auto";

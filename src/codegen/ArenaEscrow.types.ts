@@ -7,15 +7,16 @@
 export type Uint128 = string;
 export interface InstantiateMsg {
   dues: MemberBalanceUnchecked[];
+  should_activate_on_funded?: boolean | null;
 }
 export interface MemberBalanceUnchecked {
   addr: string;
   balance: BalanceUnchecked;
 }
 export interface BalanceUnchecked {
-  cw20: Cw20Coin[];
-  cw721: Cw721Collection[];
-  native: Coin[];
+  cw20?: Cw20Coin[] | null;
+  cw721?: Cw721Collection[] | null;
+  native?: Coin[] | null;
 }
 export interface Cw20Coin {
   address: string;
@@ -40,13 +41,18 @@ export type ExecuteMsg = {
     distribution?: DistributionForString | null;
   };
 } | {
+  activate: {};
+} | {
   receive_native: {};
 } | {
   receive: Cw20ReceiveMsg;
 } | {
   receive_nft: Cw721ReceiveMsg;
 } | {
-  distribute: CompetitionEscrowDistributeMsg;
+  distribute: {
+    distribution?: DistributionForString | null;
+    layered_fees?: FeeInformationForString[] | null;
+  };
 } | {
   lock: {
     value: boolean;
@@ -88,10 +94,6 @@ export interface Cw721ReceiveMsg {
   msg: Binary;
   sender: string;
   token_id: string;
-}
-export interface CompetitionEscrowDistributeMsg {
-  distribution?: DistributionForString | null;
-  layered_fees?: FeeInformationForString[] | null;
 }
 export interface FeeInformationForString {
   cw20_msg?: Binary | null;
@@ -141,6 +143,8 @@ export type QueryMsg = {
     addr?: string | null;
   };
 } | {
+  should_activate_on_funded: {};
+} | {
   ownership: {};
 };
 export type MigrateMsg = {
@@ -149,9 +153,9 @@ export type MigrateMsg = {
 export type NullableBalanceVerified = BalanceVerified | null;
 export type Addr = string;
 export interface BalanceVerified {
-  cw20: Cw20CoinVerified[];
-  cw721: Cw721CollectionVerified[];
-  native: Coin[];
+  cw20?: Cw20CoinVerified[] | null;
+  cw721?: Cw721CollectionVerified[] | null;
+  native?: Coin[] | null;
 }
 export interface Cw20CoinVerified {
   address: Addr;
