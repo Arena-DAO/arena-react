@@ -12,12 +12,9 @@ export interface Env {
 	IBC_FUN: string;
 	JACKAL_PATH: string;
 
-	// Variables specific to both .env.development and .env.production
 	CHAIN: string;
 	DEFAULT_NATIVE: string;
 	ENV: string;
-
-	// Variables specific to .env.development
 	CODE_ID_DAO_PROPOSAL_SINGLE: number;
 	CODE_ID_DAO_PREPROPOSE_SINGLE: number;
 	CODE_ID_DAO_CORE: number;
@@ -29,6 +26,7 @@ export interface Env {
 	ARENA_WAGER_MODULE_ADDRESS: string;
 	ARENA_LEAGUE_MODULE_ADDRESS: string;
 	ARENA_TOURNAMENT_MODULE_ADDRESS: string;
+	ARENA_COMPETITION_ENROLLMENT_ADDRESS: string;
 	DAO_DAO_URL: string;
 	DOCS_URL: string;
 	RPC_URL: string;
@@ -98,6 +96,9 @@ function getEnv(): Env {
 		),
 		ARENA_TOURNAMENT_MODULE_ADDRESS: checkEnv(
 			process.env.NEXT_PUBLIC_ARENA_TOURNAMENT_MODULE_ADDRESS,
+		),
+		ARENA_COMPETITION_ENROLLMENT_ADDRESS: checkEnv(
+			process.env.NEXT_PUBLIC_ARENA_COMPETITION_ENROLLMENT_ADDRESS,
 		),
 		DAO_DAO_URL: checkEnv(process.env.NEXT_PUBLIC_DAO_DAO_URL),
 		DOCS_URL: checkEnv(process.env.NEXT_PUBLIC_DOCS_URL),

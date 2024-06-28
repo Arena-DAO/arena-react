@@ -2,6 +2,7 @@
 
 import {
 	Button,
+	Chip,
 	Dropdown,
 	DropdownItem,
 	DropdownMenu,
@@ -152,6 +153,11 @@ export default function AppNavbar() {
 							removeWrapper
 						/>
 						<p className="title ml-2 font-bold">Arena DAO</p>
+						{env.ENV === "development" && (
+							<Chip className="ml-2 hidden md:flex" size="sm">
+								testnet
+							</Chip>
+						)}
 					</Link>
 				</NavbarBrand>
 			</NavbarContent>
@@ -202,6 +208,11 @@ export default function AppNavbar() {
 			</NavbarContent>
 
 			<NavbarMenu>
+				{env.ENV === "development" && (
+					<NavbarItem>
+						<Chip size="sm">testnet</Chip>
+					</NavbarItem>
+				)}
 				<NavbarItem>
 					<Link
 						className="ml-4 flex cursor-pointer items-center py-1 font-semibold text-xl"
