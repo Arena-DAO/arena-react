@@ -1,12 +1,9 @@
 import NFTInfo from "@/components/NFTInfo";
-import TokenAmount from "@/components/TokenAmount";
 import TokenInfo from "@/components/TokenInfo";
 import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	Button,
-	Card,
-	CardBody,
 	Input,
 	Modal,
 	ModalBody,
@@ -15,8 +12,10 @@ import {
 	ModalHeader,
 	Radio,
 	RadioGroup,
+	Spinner,
 } from "@nextui-org/react";
 import _ from "lodash";
+import type React from "react";
 import { useEffect, useState } from "react";
 import {
 	Controller,
@@ -75,25 +74,41 @@ interface AddDueFormProps {
 	onClose: () => void;
 }
 
-const AddDueForm = ({
+const AddDueForm: React.FC<AddDueFormProps> = ({
 	isOpen,
 	onOpenChange,
 	index,
 	onClose,
-}: AddDueFormProps) => {
+}) => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { assets } = useChain(env.CHAIN);
-	const { getValues } = useFormContext<CreateCompetitionFormValues>();
+	const { control: competitionControl } =
+		useFormContext<CreateCompetitionFormValues>();
+
+	const { append: appendNative, fields: nativeFields } = useFieldArray({
+		control: competitionControl,
+		name: `dues.${index}.balance.native`,
+	});
+
+	const { append: appendCw20, fields: cw20Fields } = useFieldArray({
+		control: competitionControl,
+		name: `dues.${index}.balance.cw20`,
+	});
+
+	const { append: appendCw721 } = useFieldArray({
+		control: competitionControl,
+		name: `dues.${index}.balance.cw721`,
+	});
 
 	const {
+		control,
 		handleSubmit,
 		watch,
 		setError,
-		formState: { errors, isSubmitting, defaultValues },
-		resetField,
+		formState: { errors, isSubmitting },
+		reset,
 		setValue,
-		control,
 	} = useForm<DueFormValues>({
 		resolver: zodResolver(DueFormSchema),
 		defaultValues: {
@@ -114,172 +129,116 @@ const AddDueForm = ({
 
 	const watchDenomOrAddress = watch("denomOrAddress");
 	const watchTokenType = watch("tokenType");
-	const watchAmount = watch("amount");
 	const watchTokenIds = watch("tokenIds");
-	const [isInit, setIsInit] = useState(true);
 
 	const [debouncedDenomOrAddress, setDebouncedDenomOrAddress] =
 		useState(watchDenomOrAddress);
+	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
-		const debouncer = _.debounce((value) => {
-			setDebouncedDenomOrAddress(value);
-		}, 500);
+		const debouncer = _.debounce(setDebouncedDenomOrAddress, 500);
+		debouncer(watchDenomOrAddress);
+		return debouncer.cancel;
+	}, [watchDenomOrAddress]);
 
-		if (watchDenomOrAddress.trim() === "") {
-			debouncer.cancel();
-			setDebouncedDenomOrAddress("");
-		} else if (isInit) {
-			debouncer.cancel();
-			setDebouncedDenomOrAddress(watchDenomOrAddress);
-			setIsInit(false);
-		} else {
-			debouncer(watchDenomOrAddress);
-		}
-
-		return () => {
-			debouncer.cancel();
-		};
-	}, [watchDenomOrAddress, isInit]);
+	const handleTokenTypeChange = (value: string) => {
+		setValue("tokenType", value as "native" | "cw20" | "cw721");
+		setValue("denomOrAddress", value === "native" ? env.DEFAULT_NATIVE : "");
+		setValue("amount", undefined);
+		setValue("tokenIds", []);
+	};
 
 	const onSubmit = async (values: DueFormValues) => {
+		setIsLoading(true);
 		try {
-			if (!cosmWasmClient) {
-				throw "Could not get the CosmWasm client";
-			}
-			const { setValue } = useFormContext<CreateCompetitionFormValues>();
 			switch (values.tokenType) {
-				case "cw20": {
-					const cw20 = await getCw20Asset(
-						cosmWasmClient,
-						values.denomOrAddress,
-						env.IPFS_GATEWAY,
-						assets?.assets,
-						env.BECH32_PREFIX,
-					);
-
-					if (
-						getValues(`dues.${index}.balance.cw20`).find(
-							(x: { address: string }) =>
-								cw20.denom_units.find((y) => y.denom === x.address),
-						)
-					) {
-						setError("denomOrAddress", { message: "Cannot add duplicates" });
-						return;
-					}
-
-					if (!values.amount) {
-						throw new Error("Amount is required for fungible tokens");
-					}
-
-					const token = getBaseToken(
-						{
-							denom: values.denomOrAddress,
-							amount: values.amount.toString(),
-						},
-						cw20,
-					);
-
-					setValue(`dues.${index}.balance.cw20`, [
-						...getValues(`dues.${index}.balance.cw20`),
-						{
-							address: token.denom,
-							amount: BigInt(token.amount),
-						},
-					]);
+				case "cw20":
+					await handleCw20Submission(values);
 					break;
-				}
-				case "cw721": {
-					if (!values.tokenIds || values.tokenIds.length === 0) {
-						throw new Error("Token IDs are required for NFTs");
-					}
-					setValue(`dues.${index}.balance.cw721`, [
-						...getValues(`dues.${index}.balance.cw721`),
-						{
-							address: values.denomOrAddress,
-							token_ids: values.tokenIds.map((t) => t.id),
-						},
-					]);
+				case "native":
+					await handleNativeSubmission(values);
 					break;
-				}
-				case "native": {
-					try {
-						const native = await getNativeAsset(
-							values.denomOrAddress,
-							env.RPC_URL,
-							assets?.assets,
-						);
-
-						if (
-							getValues(`dues.${index}.balance.native`).find(
-								(x: { denom: string }) =>
-									native.denom_units.find((y) => y.denom === x.denom),
-							)
-						) {
-							setError("denomOrAddress", { message: "Cannot add duplicates" });
-							return;
-						}
-
-						if (!values.amount) {
-							throw new Error("Amount is required for fungible tokens");
-						}
-
-						const token = getBaseToken(
-							{
-								denom: values.denomOrAddress,
-								amount: values.amount.toString(),
-							},
-							native,
-						);
-
-						setValue(`dues.${index}.balance.native`, [
-							...getValues(`dues.${index}.balance.native`),
-							{ denom: token.denom, amount: BigInt(token.amount) },
-						]);
-					} catch {
-						if (
-							getValues(`dues.${index}.balance.native`).find(
-								(x: { denom: string }) => values.denomOrAddress === x.denom,
-							)
-						) {
-							setError("denomOrAddress", { message: "Cannot add duplicates" });
-							return;
-						}
-
-						if (!values.amount) {
-							throw new Error("Amount is required for fungible tokens");
-						}
-
-						setValue(`dues.${index}.balance.native`, [
-							...getValues(`dues.${index}.balance.native`),
-							{
-								denom: values.denomOrAddress,
-								amount: BigInt(values.amount),
-							},
-						]);
-					}
-					break;
-				}
-				default:
+				case "cw721":
+					await handleCw721Submission(values);
 					break;
 			}
 
 			onClose();
-			// biome-ignore lint/suspicious/noExplicitAny: try-catch
-		} catch (e: any) {
+		} catch (e) {
 			console.error(e);
 			setError("denomOrAddress", { message: "Invalid address or denom" });
+		} finally {
+			setIsLoading(false);
 		}
+	};
+
+	const handleCw20Submission = async (values: DueFormValues) => {
+		if (!cosmWasmClient) throw new Error("Cannot get CosmWasm client");
+
+		const cw20 = await getCw20Asset(
+			cosmWasmClient,
+			values.denomOrAddress,
+			env.IPFS_GATEWAY,
+			assets?.assets,
+			env.BECH32_PREFIX,
+		);
+		if (
+			cw20Fields.find((x) =>
+				cw20.denom_units.find((y) => y.denom === x.address),
+			)
+		) {
+			throw new Error("Cannot add duplicates");
+		}
+		if (!values.amount) {
+			throw new Error("Amount is required for fungible tokens");
+		}
+		const token = getBaseToken(
+			{ denom: values.denomOrAddress, amount: values.amount.toString() },
+			cw20,
+		);
+		appendCw20({ address: token.denom, amount: BigInt(token.amount) });
+	};
+
+	const handleNativeSubmission = async (values: DueFormValues) => {
+		const native = await getNativeAsset(
+			values.denomOrAddress,
+			env.RPC_URL,
+			assets?.assets,
+		);
+		if (
+			nativeFields.find((x) =>
+				native.denom_units.find((y) => y.denom === x.denom),
+			)
+		) {
+			throw new Error("Cannot add duplicates");
+		}
+		if (!values.amount) {
+			throw new Error("Amount is required for fungible tokens");
+		}
+		const token = getBaseToken(
+			{ denom: values.denomOrAddress, amount: values.amount.toString() },
+			native,
+		);
+		appendNative({ denom: token.denom, amount: BigInt(token.amount) });
+	};
+
+	const handleCw721Submission = async (values: DueFormValues) => {
+		if (!values.tokenIds || values.tokenIds.length === 0) {
+			throw new Error("Token IDs are required for NFTs");
+		}
+		appendCw721({
+			address: values.denomOrAddress,
+			token_ids: values.tokenIds.map((t) => t.id),
+		});
 	};
 
 	return (
 		<Modal
 			isOpen={isOpen}
 			onOpenChange={onOpenChange}
-			aria-label="Add Due"
 			onClose={() => {
-				resetField("denomOrAddress");
-				setIsInit(true);
+				reset();
+				onClose();
 			}}
 		>
 			<ModalContent>
@@ -299,29 +258,14 @@ const AddDueForm = ({
 						render={({ field }) => (
 							<RadioGroup
 								label="Token Type"
-								defaultValue={defaultValues?.tokenType}
-								{...field}
-								onChange={(e) => {
-									field.onChange(e);
-									const denomOrAddress =
-										e.target.value === "native"
-											? defaultValues?.denomOrAddress ?? ""
-											: "";
-									setValue("denomOrAddress", denomOrAddress, {
-										shouldTouch: true,
-									});
-									setDebouncedDenomOrAddress(denomOrAddress);
-									setValue("amount", undefined, {
-										shouldTouch: true,
-									});
-									setValue("tokenIds", [], {
-										shouldTouch: true,
-									});
-								}}
+								value={field.value}
+								onValueChange={handleTokenTypeChange}
 							>
 								<Radio value="native">Native</Radio>
 								<Radio value="cw20">Cw20</Radio>
-								<Radio value="cw721">NFT</Radio>
+								<Radio value="cw721" isDisabled>
+									NFT
+								</Radio>
 							</RadioGroup>
 						)}
 					/>
@@ -330,12 +274,13 @@ const AddDueForm = ({
 						name="denomOrAddress"
 						render={({ field }) => (
 							<Input
+								{...field}
 								autoFocus
+								isRequired
 								label={watchTokenType === "native" ? "Denom" : "Address"}
 								isDisabled={isSubmitting}
 								isInvalid={!!errors.denomOrAddress}
 								errorMessage={errors.denomOrAddress?.message}
-								{...field}
 							/>
 						)}
 					/>
@@ -345,12 +290,13 @@ const AddDueForm = ({
 							name="amount"
 							render={({ field }) => (
 								<Input
+									{...field}
 									type="number"
 									label="Amount"
+									isRequired
 									isDisabled={isSubmitting}
 									isInvalid={!!errors.amount}
 									errorMessage={errors.amount?.message}
-									{...field}
 									value={field.value?.toString() || ""}
 									onChange={(e) =>
 										field.onChange(Number.parseFloat(e.target.value))
@@ -371,9 +317,10 @@ const AddDueForm = ({
 										name={`tokenIds.${index}.id`}
 										render={({ field }) => (
 											<Input
+												{...field}
+												isRequired
 												label={`Token ID ${index + 1}`}
 												isDisabled={isSubmitting}
-												{...field}
 											/>
 										)}
 									/>
@@ -394,19 +341,6 @@ const AddDueForm = ({
 							</Button>
 						</div>
 					)}
-					{watchTokenType !== "cw721" &&
-						watchAmount &&
-						debouncedDenomOrAddress && (
-							<Card>
-								<CardBody>
-									<TokenAmount
-										amount={BigInt(watchAmount)}
-										denomOrAddress={debouncedDenomOrAddress}
-										isNative={watchTokenType === "native"}
-									/>
-								</CardBody>
-							</Card>
-						)}
 					{watchTokenType === "cw721" &&
 						watchTokenIds &&
 						watchTokenIds.length > 0 &&
@@ -418,8 +352,11 @@ const AddDueForm = ({
 						)}
 				</ModalBody>
 				<ModalFooter>
-					<Button onClick={handleSubmit(onSubmit)} isLoading={isSubmitting}>
-						Submit
+					<Button
+						onClick={handleSubmit(onSubmit)}
+						isLoading={isSubmitting || isLoading}
+					>
+						{isLoading ? <Spinner size="sm" /> : "Submit"}
 					</Button>
 				</ModalFooter>
 			</ModalContent>

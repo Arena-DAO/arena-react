@@ -16,7 +16,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { FiAward, FiBookOpen, FiUsers } from "react-icons/fi";
+import { FiAward, FiBookOpen, FiSettings, FiUsers } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import type { CompetitionType } from "~/codegen/ArenaCompetitionEnrollment.types";
@@ -58,7 +58,7 @@ const CreateCompetitionPage = () => {
 			expiration: { at_time: new Date().toISOString() },
 			rules: [{ rule: "" }],
 			rulesets: [],
-			dues: [{ addr: "", balance: { native: [], cw20: [], cw721: [] } }],
+			dues: [{ addr: "", balance: {} }],
 			membersFromDues: true,
 			members: [{ address: "" }],
 			leagueInfo: {
@@ -75,7 +75,6 @@ const CreateCompetitionPage = () => {
 			enrollmentInfo: {
 				maxMembers: 10,
 				minMembers: 2,
-				entryFee: { amount: "", denom: "" },
 				enrollment_expiration: { at_time: new Date().toISOString() },
 			},
 		},
@@ -112,7 +111,6 @@ const CreateCompetitionPage = () => {
 					expiration: convertToExpiration(values.expiration),
 					rules: values.rules.map((r) => r.rule),
 					rulesets: values.rulesets.map((r) => r.ruleset_id.toString()),
-					host: { existing: { addr: values.host ?? address } },
 				};
 
 				if (values.useCrowdfunding) {
@@ -331,82 +329,116 @@ const CreateCompetitionPage = () => {
 	);
 
 	return (
-		<div className="mx-auto w-full max-w-screen-xl justify-center space-y-8 px-4 py-12 lg:px-8 sm:px-6">
+		<div className="mx-auto w-full max-w-screen-xl justify-center space-y-8 px-4 py-12 sm:px-6 lg:px-8">
 			<h1 className="mb-8 text-center font-bold text-5xl">
 				Create a Competition
 			</h1>
 
 			<FormProvider {...formMethods}>
 				<form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-					<Card>
-						<CardHeader className="flex flex-col gap-1">
-							<h2 className="flex items-center font-semibold text-2xl">
-								<FiAward className="mr-2" /> Competition Details
-							</h2>
-						</CardHeader>
-						<CardBody>
-							<Tabs
-								aria-label="Competition Type"
-								selectedKey={competitionType}
-								onSelectionChange={(key) =>
-									setValue(
-										"competitionType",
-										key as "wager" | "league" | "tournament",
-									)
-								}
-							>
-								<Tab key="wager" title="Wager">
+					<Tabs
+						aria-label="Competition Creation Tabs"
+						color="primary"
+						variant="bordered"
+					>
+						<Tab
+							key="basics"
+							title={
+								<div className="flex items-center space-x-2">
+									<FiAward />
+									<span>Basics</span>
+								</div>
+							}
+						>
+							<Card>
+								<CardBody>
 									<BasicInformationForm />
-								</Tab>
-								<Tab key="league" title="League">
-									<BasicInformationForm />
-									<Divider className="my-6" />
-									<LeagueInformationForm />
-								</Tab>
-								<Tab key="tournament" title="Tournament">
-									<BasicInformationForm />
-									<Divider className="my-6" />
-									<TournamentInformationForm />
-								</Tab>
-							</Tabs>
-						</CardBody>
-					</Card>
+									{competitionType === "league" && (
+										<>
+											<Divider className="my-6" />
+											<LeagueInformationForm />
+										</>
+									)}
+									{competitionType === "tournament" && (
+										<>
+											<Divider className="my-6" />
+											<TournamentInformationForm />
+										</>
+									)}
+								</CardBody>
+							</Card>
+						</Tab>
+						<Tab
+							key="rules"
+							title={
+								<div className="flex items-center space-x-2">
+									<FiBookOpen />
+									<span>Rules</span>
+								</div>
+							}
+						>
+							<Card>
+								<CardBody>
+									<RulesAndRulesetsForm />
+								</CardBody>
+							</Card>
+						</Tab>
+						<Tab
+							key="participants"
+							title={
+								<div className="flex items-center space-x-2">
+									<FiUsers />
+									<span>Participants</span>
+								</div>
+							}
+						>
+							<Card>
+								<CardHeader className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-0">
+									<h2 className="font-semibold text-2xl">
+										Participation Details
+									</h2>
+									<div className="flex items-center">
+										<Switch
+											isSelected={useCrowdfunding}
+											onValueChange={(checked) =>
+												setValue("useCrowdfunding", checked)
+											}
+										>
+											Use Crowdfunding
+										</Switch>
+									</div>
+								</CardHeader>
+								<CardBody>
+									{useCrowdfunding ? (
+										<EnrollmentInformationForm />
+									) : (
+										<MembersAndDuesForm />
+									)}
+								</CardBody>
+							</Card>
+						</Tab>
+						<Tab
+							key="review"
+							title={
+								<div className="flex items-center space-x-2">
+									<FiSettings />
+									<span>Review</span>
+								</div>
+							}
+						>
+							<Card>
+								<CardBody>
+									{/* Add a summary of the competition details here */}
+									<h2 className="mb-4 font-semibold text-2xl">
+										Review Your Competition
+									</h2>
+									{/* Display a summary of the form data here */}
+								</CardBody>
+							</Card>
+						</Tab>
+					</Tabs>
 
-					<Card>
-						<CardHeader className="flex flex-col gap-1">
-							<h2 className="flex items-center font-semibold text-2xl">
-								<FiBookOpen className="mr-2" /> Rules and Rulesets
-							</h2>
-						</CardHeader>
-						<CardBody>
-							<RulesAndRulesetsForm />
-						</CardBody>
-					</Card>
-
-					<Card>
-						<CardHeader className="flex items-center justify-between">
-							<h2 className="flex items-center font-semibold text-2xl">
-								<FiUsers className="mr-2" /> Participation Details
-							</h2>
-							<Switch
-								isSelected={useCrowdfunding}
-								onValueChange={(checked) =>
-									formMethods.setValue("useCrowdfunding", checked)
-								}
-							>
-								Use Crowdfunding
-							</Switch>
-						</CardHeader>
-						<CardBody>
-							{useCrowdfunding ? (
-								<EnrollmentInformationForm />
-							) : (
-								<MembersAndDuesForm />
-							)}
-						</CardBody>
-					</Card>
-
-					<div className="flex justify-center">
+					<div className="mt-8 flex justify-center">
 						<Button
 							type="submit"
 							color="primary"

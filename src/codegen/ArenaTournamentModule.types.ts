@@ -14,10 +14,14 @@ export interface Empty {
 }
 export type ExecuteMsg = {
   jail_competition: {
-    propose_message: ProposeMessage;
+    additional_layered_fees?: FeeInformationForString | null;
+    competition_id: Uint128;
+    description: string;
+    distribution?: DistributionForString | null;
+    title: string;
   };
 } | {
-  activate: {};
+  activate_competition: {};
 } | {
   add_competition_hook: {
     competition_id: Uint128;
@@ -38,7 +42,7 @@ export type ExecuteMsg = {
     description: string;
     escrow?: EscrowInstantiateInfo | null;
     expiration: Expiration;
-    host: ModuleInfo;
+    host?: string | null;
     instantiate_extension: TournamentInstantiateExt;
     name: string;
     rules: string[];
@@ -60,7 +64,7 @@ export type ExecuteMsg = {
     msg: ExecuteExt;
   };
 } | {
-  activate_manually: {
+  activate_competition_manually: {
     id: Uint128;
   };
 } | {
@@ -86,22 +90,6 @@ export type Expiration = {
 };
 export type Timestamp = Uint64;
 export type Uint64 = string;
-export type ModuleInfo = {
-  new: {
-    info: ModuleInstantiateInfo;
-  };
-} | {
-  existing: {
-    addr: string;
-  };
-};
-export type Admin = {
-  address: {
-    addr: string;
-  };
-} | {
-  core_module: {};
-};
 export type EliminationType = "double_elimination" | {
   single_elimination: {
     play_third_place_match: boolean;
@@ -135,13 +123,6 @@ export type Action = {
     new_owner: string;
   };
 } | "accept_ownership" | "renounce_ownership";
-export interface ProposeMessage {
-  additional_layered_fees?: FeeInformationForString | null;
-  competition_id: Uint128;
-  description: string;
-  distribution?: DistributionForString | null;
-  title: string;
-}
 export interface FeeInformationForString {
   cw20_msg?: Binary | null;
   cw721_msg?: Binary | null;
@@ -158,12 +139,6 @@ export interface MemberPercentageForString {
 }
 export interface EscrowInstantiateInfo {
   additional_layered_fees?: FeeInformationForString[] | null;
-  code_id: number;
-  label: string;
-  msg: Binary;
-}
-export interface ModuleInstantiateInfo {
-  admin?: Admin | null;
   code_id: number;
   label: string;
   msg: Binary;

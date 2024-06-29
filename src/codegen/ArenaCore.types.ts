@@ -43,10 +43,10 @@ export interface UncheckedDepositInfo {
   refund_policy: DepositRefundPolicy;
 }
 export interface InstantiateExt {
-  categories: NewCompetitionCategory[];
-  competition_modules_instantiate_info: ModuleInstantiateInfo[];
+  categories?: NewCompetitionCategory[] | null;
+  competition_modules_instantiate_info?: ModuleInstantiateInfo[] | null;
   rating_period: Duration;
-  rulesets: NewRuleset[];
+  rulesets?: NewRuleset[] | null;
   tax: Decimal;
   tax_configuration: TaxConfiguration;
 }
@@ -60,7 +60,7 @@ export interface ModuleInstantiateInfo {
   msg: Binary;
 }
 export interface NewRuleset {
-  category_id?: Uint128 | null;
+  category_id: Uint128;
   description: string;
   rules: string[];
 }
@@ -101,8 +101,8 @@ export type ExecuteMsg = {
 };
 export type ExecuteExt = {
   update_competition_modules: {
-    to_add: ModuleInstantiateInfo[];
-    to_disable: string[];
+    to_add?: ModuleInstantiateInfo[] | null;
+    to_disable?: string[] | null;
   };
 } | {
   update_tax: {
@@ -110,13 +110,13 @@ export type ExecuteExt = {
   };
 } | {
   update_rulesets: {
-    to_add: NewRuleset[];
-    to_disable: Uint128[];
+    to_add?: NewRuleset[] | null;
+    to_disable?: Uint128[] | null;
   };
 } | {
   update_categories: {
-    to_add: NewCompetitionCategory[];
-    to_edit: EditCompetitionCategory[];
+    to_add?: NewCompetitionCategory[] | null;
+    to_edit?: EditCompetitionCategory[] | null;
   };
 } | {
   adjust_ratings: {
@@ -126,6 +126,11 @@ export type ExecuteExt = {
 } | {
   update_rating_period: {
     period: Duration;
+  };
+} | {
+  update_enrollment_modules: {
+    to_add?: string[] | null;
+    to_remove?: string[] | null;
   };
 };
 export type EditCompetitionCategory = {
@@ -144,6 +149,7 @@ export interface ProposeMessage {
   competition_id: Uint128;
   description: string;
   distribution?: DistributionForString | null;
+  originator: string;
   title: string;
 }
 export interface FeeInformationForString {
@@ -193,7 +199,7 @@ export type QueryExt = {
   };
 } | {
   rulesets: {
-    category_id?: Uint128 | null;
+    category_id: Uint128;
     include_disabled?: boolean | null;
     limit?: number | null;
     start_after?: Uint128 | null;
@@ -218,8 +224,12 @@ export type QueryExt = {
   };
 } | {
   is_valid_category_and_rulesets: {
-    category_id?: Uint128 | null;
+    category_id: Uint128;
     rulesets: Uint128[];
+  };
+} | {
+  is_valid_enrollment_module: {
+    addr: string;
   };
 } | {
   dump_state: {};
@@ -283,7 +293,7 @@ export interface BlockInfo {
   [k: string]: unknown;
 }
 export interface Ruleset {
-  category_id?: Uint128 | null;
+  category_id: Uint128;
   description: string;
   id: Uint128;
   is_enabled: boolean;

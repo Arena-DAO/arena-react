@@ -1,12 +1,12 @@
-import { Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
-import type React from "react";
+import { Button, Input, Tooltip } from "@nextui-org/react";
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
-import { FiPlus, FiTrash } from "react-icons/fi";
-import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
+import { FiInfo, FiMinus, FiPlus } from "react-icons/fi";
+import { useCategory } from "~/hooks/useCategory";
+import RulesetsSelection from "./RulesetsSelection";
 
-const RulesAndRulesetsForm: React.FC = () => {
-	const { control } = useFormContext<CreateCompetitionFormValues>();
-
+const RulesAndRulesetsForm = () => {
+	const { control } = useFormContext();
+	const { data: category } = useCategory();
 	const {
 		fields: ruleFields,
 		append: appendRule,
@@ -16,96 +16,65 @@ const RulesAndRulesetsForm: React.FC = () => {
 		name: "rules",
 	});
 
-	const {
-		fields: rulesetFields,
-		append: appendRuleset,
-		remove: removeRuleset,
-	} = useFieldArray({
-		control,
-		name: "rulesets",
-	});
-
 	return (
 		<div className="space-y-6">
-			<Card>
-				<CardHeader>
-					<h3 className="font-semibold text-lg">Rules</h3>
-				</CardHeader>
-				<CardBody>
-					{ruleFields.map((field, index) => (
-						<div key={field.id} className="mb-2 flex items-center space-x-2">
-							<Controller
-								name={`rules.${index}.rule`}
-								control={control}
-								render={({ field }) => (
-									<Input
-										{...field}
-										label={`Rule ${index + 1}`}
-										placeholder="Enter a rule"
-										className="flex-grow"
-									/>
-								)}
-							/>
-							<Button
-								isIconOnly
-								color="danger"
-								aria-label="Delete rule"
-								onClick={() => removeRule(index)}
-							>
-								<FiTrash />
-							</Button>
-						</div>
-					))}
-					<Button
-						color="primary"
-						startContent={<FiPlus />}
-						onClick={() => appendRule({ rule: "" })}
-					>
-						Add Rule
-					</Button>
-				</CardBody>
-			</Card>
-
-			<Card>
-				<CardHeader>
-					<h3 className="font-semibold text-lg">Rulesets</h3>
-				</CardHeader>
-				<CardBody>
-					{rulesetFields.map((field, index) => (
-						<div key={field.id} className="mb-2 flex items-center space-x-2">
-							<Controller
-								name={`rulesets.${index}.ruleset_id`}
-								control={control}
-								render={({ field }) => (
-									<Input
-										{...field}
-										type="number"
-										value={field.value.toString()}
-										label={`Ruleset ${index + 1}`}
-										placeholder="Enter ruleset ID"
-										className="flex-grow"
-									/>
-								)}
-							/>
-							<Button
-								isIconOnly
-								color="danger"
-								aria-label="Delete ruleset"
-								onClick={() => removeRuleset(index)}
-							>
-								<FiTrash />
-							</Button>
-						</div>
-					))}
-					<Button
-						color="primary"
-						startContent={<FiPlus />}
-						onClick={() => appendRuleset({ ruleset_id: BigInt(0) })}
-					>
-						Add Ruleset
-					</Button>
-				</CardBody>
-			</Card>
+			<div>
+				<h3 className="mb-2 flex items-center font-semibold text-lg">
+					Rules
+					<Tooltip content="You can enter a text rule or paste a link to an external document">
+						<span className="ml-2 cursor-help">
+							<FiInfo />
+						</span>
+					</Tooltip>
+				</h3>
+				{ruleFields.map((field, index) => (
+					<div key={field.id} className="mt-4 flex items-center space-x-2">
+						<Controller
+							name={`rules.${index}.rule`}
+							control={control}
+							render={({ field, fieldState: { error } }) => (
+								<Input
+									{...field}
+									label={`Rule ${index + 1}`}
+									placeholder="Enter rule or paste a link"
+									isInvalid={!!error}
+									errorMessage={error?.message}
+									endContent={
+										<Button
+											variant="faded"
+											isIconOnly
+											className="my-auto"
+											onClick={() => removeRule(index)}
+										>
+											<FiMinus />
+										</Button>
+									}
+								/>
+							)}
+						/>
+					</div>
+				))}
+				<Button
+					className="mt-4"
+					onClick={() => appendRule({ rule: "" })}
+					startContent={<FiPlus />}
+				>
+					Add Rule
+				</Button>
+			</div>
+			{category?.category_id && (
+				<div>
+					<h3 className="mb-2 flex items-center font-semibold text-lg">
+						Rulesets
+						<Tooltip content="Select predefined rulesets for this category">
+							<span className="ml-2 cursor-help">
+								<FiInfo />
+							</span>
+						</Tooltip>
+					</h3>
+					<RulesetsSelection category_id={category.category_id.toString()} />
+				</div>
+			)}
 		</div>
 	);
 };

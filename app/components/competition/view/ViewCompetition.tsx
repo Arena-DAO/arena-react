@@ -121,7 +121,7 @@ const ViewCompetition = ({
 			<Textarea label="Description" value={competition.description} readOnly />
 			<div className="grid grid-cols-12 gap-2">
 				<Input
-					className="col-span-12 lg:col-span-4 sm:col-span-6"
+					className="col-span-12 sm:col-span-6 lg:col-span-4"
 					label="Expiration"
 					value={
 						"at_time" in competition.expiration
@@ -134,7 +134,7 @@ const ViewCompetition = ({
 				/>
 				{"at_height" in competition.expiration && (
 					<Input
-						className="col-span-12 lg:col-span-4 sm:col-span-6"
+						className="col-span-12 sm:col-span-6 lg:col-span-4"
 						label="Height"
 						type="number"
 						value={competition.expiration.at_height.toString()}
@@ -143,7 +143,7 @@ const ViewCompetition = ({
 				)}
 				{"at_time" in competition.expiration && (
 					<DatePicker
-						className="col-span-12 lg:col-span-4 sm:col-span-6"
+						className="col-span-12 sm:col-span-6 lg:col-span-4"
 						label="Time"
 						value={formatExpirationTime(competition.expiration.at_time)}
 						isReadOnly

@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, EliminationType, ExecuteExt, MatchResult, MigrateMsg, CompetitionsFilter, CompetitionStatus, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, TournamentInstantiateExt, MatchResultMsg, QueryMsg, QueryExt, Addr, SudoMsg, Match, Null, CompetitionResponseForTournamentExt, TournamentExt, FeeInformationForAddr, ArrayOfCompetitionResponseForTournamentExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaTournamentModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, EliminationType, ExecuteExt, MatchResult, MigrateMsg, CompetitionsFilter, CompetitionStatus, Action, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, TournamentInstantiateExt, MatchResultMsg, QueryMsg, QueryExt, Addr, SudoMsg, Match, Null, CompetitionResponseForTournamentExt, TournamentExt, FeeInformationForAddr, ArrayOfCompetitionResponseForTournamentExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaTournamentModule.types";
 export interface ArenaTournamentModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForEmpty>;
@@ -157,11 +157,19 @@ export interface ArenaTournamentModuleInterface extends ArenaTournamentModuleRea
   contractAddress: string;
   sender: string;
   jailCompetition: ({
-    proposeMessage
+    additionalLayeredFees,
+    competitionId,
+    description,
+    distribution,
+    title
   }: {
-    proposeMessage: ProposeMessage;
+    additionalLayeredFees?: FeeInformationForString;
+    competitionId: Uint128;
+    description: string;
+    distribution?: DistributionForString;
+    title: string;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
-  activate: (fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  activateCompetition: (fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   addCompetitionHook: ({
     competitionId
   }: {
@@ -197,7 +205,7 @@ export interface ArenaTournamentModuleInterface extends ArenaTournamentModuleRea
     description: string;
     escrow?: EscrowInstantiateInfo;
     expiration: Expiration;
-    host: ModuleInfo;
+    host?: string;
     instantiateExtension: TournamentInstantiateExt;
     name: string;
     rules: string[];
@@ -223,7 +231,7 @@ export interface ArenaTournamentModuleInterface extends ArenaTournamentModuleRea
   }: {
     msg: ExecuteExt;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
-  activateManually: ({
+  activateCompetitionManually: ({
     id
   }: {
     id: Uint128;
@@ -254,7 +262,7 @@ export class ArenaTournamentModuleClient extends ArenaTournamentModuleQueryClien
     this.sender = sender;
     this.contractAddress = contractAddress;
     this.jailCompetition = this.jailCompetition.bind(this);
-    this.activate = this.activate.bind(this);
+    this.activateCompetition = this.activateCompetition.bind(this);
     this.addCompetitionHook = this.addCompetitionHook.bind(this);
     this.removeCompetitionHook = this.removeCompetitionHook.bind(this);
     this.executeCompetitionHook = this.executeCompetitionHook.bind(this);
@@ -262,25 +270,37 @@ export class ArenaTournamentModuleClient extends ArenaTournamentModuleQueryClien
     this.submitEvidence = this.submitEvidence.bind(this);
     this.processCompetition = this.processCompetition.bind(this);
     this.extension = this.extension.bind(this);
-    this.activateManually = this.activateManually.bind(this);
+    this.activateCompetitionManually = this.activateCompetitionManually.bind(this);
     this.migrateEscrows = this.migrateEscrows.bind(this);
     this.updateOwnership = this.updateOwnership.bind(this);
   }
 
   jailCompetition = async ({
-    proposeMessage
+    additionalLayeredFees,
+    competitionId,
+    description,
+    distribution,
+    title
   }: {
-    proposeMessage: ProposeMessage;
+    additionalLayeredFees?: FeeInformationForString;
+    competitionId: Uint128;
+    description: string;
+    distribution?: DistributionForString;
+    title: string;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       jail_competition: {
-        propose_message: proposeMessage
+        additional_layered_fees: additionalLayeredFees,
+        competition_id: competitionId,
+        description,
+        distribution,
+        title
       }
     }, fee, memo, _funds);
   };
-  activate = async (fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+  activateCompetition = async (fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      activate: {}
+      activate_competition: {}
     }, fee, memo, _funds);
   };
   addCompetitionHook = async ({
@@ -337,7 +357,7 @@ export class ArenaTournamentModuleClient extends ArenaTournamentModuleQueryClien
     description: string;
     escrow?: EscrowInstantiateInfo;
     expiration: Expiration;
-    host: ModuleInfo;
+    host?: string;
     instantiateExtension: TournamentInstantiateExt;
     name: string;
     rules: string[];
@@ -399,13 +419,13 @@ export class ArenaTournamentModuleClient extends ArenaTournamentModuleQueryClien
       }
     }, fee, memo, _funds);
   };
-  activateManually = async ({
+  activateCompetitionManually = async ({
     id
   }: {
     id: Uint128;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      activate_manually: {
+      activate_competition_manually: {
         id
       }
     }, fee, memo, _funds);

@@ -101,11 +101,11 @@ function HomePage() {
 					</div>
 				))}
 				<div className="absolute top-[30%] mx-10 my-auto opacity-100 md:top-[20%] md:left-[5%]">
-					<div className="title text-center text-[180%] leading-none md:max-w-[70%] md:text-left md:text-[400%] sm:text-[250%]">
+					<div className="title text-center text-[180%] leading-none sm:text-[250%] md:max-w-[70%] md:text-left md:text-[400%]">
 						Welcome to{" "}
 						<span className="whitespace-nowrap text-primary">The Arena</span>
 					</div>
-					<div className="text-center text-[100%] md:text-left md:text-[150%] sm:text-[120%]">
+					<div className="text-center text-[100%] sm:text-[120%] md:text-left md:text-[150%]">
 						The next iteration of competition infrastructure
 					</div>
 					<div className="mt-2 flex justify-center gap-4 md:justify-normal">

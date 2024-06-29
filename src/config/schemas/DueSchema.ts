@@ -7,18 +7,18 @@ const DueSchema = z
 		addr: AddressSchema,
 		balance: BalanceSchema,
 	})
-	.superRefine((value, context) => {
-		if (
-			value.balance.cw20.length === 0 &&
-			value.balance.cw721.length === 0 &&
-			value.balance.native.length === 0
-		) {
-			context.addIssue({
-				path: ["balance"],
-				code: z.ZodIssueCode.custom,
-				message: "Due balance cannot be empty",
-			});
-		}
-	});
+	.refine(
+		(data) => {
+			return (
+				(data.balance.cw20 && data.balance.cw20.length > 0) ||
+				(data.balance.cw721 && data.balance.cw721.length > 0) ||
+				(data.balance.native && data.balance.native.length > 0)
+			);
+		},
+		{
+			message:
+				"At least one of cw20, cw721, or native must be provided and not empty",
+		},
+	);
 
 export default DueSchema;

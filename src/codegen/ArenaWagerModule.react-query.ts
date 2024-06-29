@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee, Coin } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ModuleInfo, Admin, MigrateMsg, CompetitionsFilter, CompetitionStatus, Action, ProposeMessage, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, ModuleInstantiateInfo, WagerInstantiateExt, QueryMsg, Null, Addr, CompetitionResponseForWagerExt, WagerExt, FeeInformationForAddr, ArrayOfCompetitionResponseForWagerExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, MigrateMsg, CompetitionsFilter, CompetitionStatus, Action, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, WagerInstantiateExt, QueryMsg, Null, Addr, CompetitionResponseForWagerExt, WagerExt, FeeInformationForAddr, ArrayOfCompetitionResponseForWagerExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableDistributionForString } from "./ArenaWagerModule.types";
 import { ArenaWagerModuleQueryClient, ArenaWagerModuleClient } from "./ArenaWagerModule.client";
 export const arenaWagerModuleQueryKeys = {
   contract: ([{
@@ -331,7 +331,7 @@ export function useArenaWagerModuleMigrateEscrowsMutation(options?: Omit<UseMuta
     } = {}
   }) => client.migrateEscrows(msg, fee, memo, funds), options);
 }
-export interface ArenaWagerModuleActivateManuallyMutation {
+export interface ArenaWagerModuleActivateCompetitionManuallyMutation {
   client: ArenaWagerModuleClient;
   msg: {
     id: Uint128;
@@ -342,8 +342,8 @@ export interface ArenaWagerModuleActivateManuallyMutation {
     funds?: Coin[];
   };
 }
-export function useArenaWagerModuleActivateManuallyMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleActivateManuallyMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaWagerModuleActivateManuallyMutation>(({
+export function useArenaWagerModuleActivateCompetitionManuallyMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleActivateCompetitionManuallyMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaWagerModuleActivateCompetitionManuallyMutation>(({
     client,
     msg,
     args: {
@@ -351,7 +351,7 @@ export function useArenaWagerModuleActivateManuallyMutation(options?: Omit<UseMu
       memo,
       funds
     } = {}
-  }) => client.activateManually(msg, fee, memo, funds), options);
+  }) => client.activateCompetitionManually(msg, fee, memo, funds), options);
 }
 export interface ArenaWagerModuleExtensionMutation {
   client: ArenaWagerModuleClient;
@@ -429,7 +429,7 @@ export interface ArenaWagerModuleCreateCompetitionMutation {
     description: string;
     escrow?: EscrowInstantiateInfo;
     expiration: Expiration;
-    host: ModuleInfo;
+    host?: string;
     instantiateExtension: WagerInstantiateExt;
     name: string;
     rules: string[];
@@ -520,7 +520,7 @@ export function useArenaWagerModuleAddCompetitionHookMutation(options?: Omit<Use
     } = {}
   }) => client.addCompetitionHook(msg, fee, memo, funds), options);
 }
-export interface ArenaWagerModuleActivateMutation {
+export interface ArenaWagerModuleActivateCompetitionMutation {
   client: ArenaWagerModuleClient;
   args?: {
     fee?: number | StdFee | "auto";
@@ -528,20 +528,24 @@ export interface ArenaWagerModuleActivateMutation {
     funds?: Coin[];
   };
 }
-export function useArenaWagerModuleActivateMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleActivateMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaWagerModuleActivateMutation>(({
+export function useArenaWagerModuleActivateCompetitionMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleActivateCompetitionMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaWagerModuleActivateCompetitionMutation>(({
     client,
     args: {
       fee,
       memo,
       funds
     } = {}
-  }) => client.activate(fee, memo, funds), options);
+  }) => client.activateCompetition(fee, memo, funds), options);
 }
 export interface ArenaWagerModuleJailCompetitionMutation {
   client: ArenaWagerModuleClient;
   msg: {
-    proposeMessage: ProposeMessage;
+    additionalLayeredFees?: FeeInformationForString;
+    competitionId: Uint128;
+    description: string;
+    distribution?: DistributionForString;
+    title: string;
   };
   args?: {
     fee?: number | StdFee | "auto";

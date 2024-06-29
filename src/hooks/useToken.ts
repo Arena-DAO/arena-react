@@ -12,6 +12,7 @@ export const useToken = (
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { assets } = useChain(chain ?? env.CHAIN);
+
 	return useQuery(
 		["token", denomOrAddress, isNative],
 		async () =>
@@ -29,7 +30,7 @@ export const useToken = (
 			staleTime: Number.POSITIVE_INFINITY,
 			retryOnMount: false,
 			retry: false,
-			enabled: !!cosmWasmClient,
+			enabled: !!cosmWasmClient && denomOrAddress.length > 0,
 		},
 	);
 };

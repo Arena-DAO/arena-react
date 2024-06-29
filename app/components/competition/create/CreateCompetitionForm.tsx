@@ -117,7 +117,7 @@ export default function CreateCompetitionForm({
 			<div className="grid grid-cols-12 gap-2">
 				<Select
 					label="Expiration"
-					className="col-span-12 md:col-span-4 sm:col-span-6"
+					className="col-span-12 sm:col-span-6 md:col-span-4"
 					isDisabled={isSubmitting}
 					defaultSelectedKeys={["at_time"]}
 					onChange={(e) => {
@@ -157,7 +157,7 @@ export default function CreateCompetitionForm({
 						name="expiration.at_height"
 						render={({ field }) => (
 							<Input
-								className="col-span-12 lg:col-span-4 sm:col-span-6"
+								className="col-span-12 sm:col-span-6 lg:col-span-4"
 								label="Height"
 								type="number"
 								isDisabled={isSubmitting}
@@ -185,7 +185,7 @@ export default function CreateCompetitionForm({
 						render={({ field }) => (
 							<DatePicker
 								showMonthAndYearPickers
-								className="col-span-12 lg:col-span-4 sm:col-span-6"
+								className="col-span-12 sm:col-span-6 lg:col-span-4"
 								label="Time"
 								isDisabled={isSubmitting}
 								isInvalid={

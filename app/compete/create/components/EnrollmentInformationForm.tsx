@@ -1,34 +1,42 @@
+import TokenAmount from "@/components/TokenAmount";
 import { parseAbsoluteToLocal } from "@internationalized/date";
-import { Card, CardBody, DateInput, Input } from "@nextui-org/react";
-import { Controller, useFormContext } from "react-hook-form";
-import { FiDollarSign, FiUsers } from "react-icons/fi";
+import {
+	Button,
+	DateInput,
+	Divider,
+	Input,
+	useDisclosure,
+} from "@nextui-org/react";
+import { Controller, useFormContext, useWatch } from "react-hook-form";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
+import EntryFeeForm from "./EntryFeeForm";
 
 const EnrollmentInformationForm = () => {
 	const { control } = useFormContext<CreateCompetitionFormValues>();
+	const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+	const entryFee = useWatch({ control, name: "enrollmentInfo.entryFee" });
 
 	return (
-		<Card>
-			<CardBody className="p-6">
-				<h2 className="mb-6 font-semibold text-2xl">Enrollment Information</h2>
-				<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+		<div className="space-y-6">
+			<h2 className="font-semibold text-lg">Enrollment Information</h2>
+			<div className="space-y-6">
+				<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 					<Controller
 						name="enrollmentInfo.minMembers"
 						control={control}
 						render={({ field, fieldState: { error } }) => (
 							<Input
+								{...field}
 								type="number"
 								label="Minimum Members"
-								placeholder="Enter min members"
-								labelPlacement="outside"
-								startContent={<FiUsers />}
-								className="max-w-xs"
+								placeholder="Enter minimum members"
 								isInvalid={!!error}
 								errorMessage={error?.message}
-								{...field}
+								description="The minimum number of participants required"
 								value={field.value.toString()}
 								onChange={(e) =>
-									field.onChange(Number.parseInt(e.target.value, 10))
+									field.onChange(Number.parseInt(e.target.value))
 								}
 							/>
 						)}
@@ -38,75 +46,70 @@ const EnrollmentInformationForm = () => {
 						control={control}
 						render={({ field, fieldState: { error } }) => (
 							<Input
+								{...field}
 								type="number"
 								label="Maximum Members"
-								placeholder="Enter max members"
-								labelPlacement="outside"
-								startContent={<FiUsers />}
-								className="max-w-xs"
+								placeholder="Enter maximum members"
 								isInvalid={!!error}
-								isRequired
 								errorMessage={error?.message}
-								{...field}
+								isRequired
+								description="The maximum number of participants allowed"
 								value={field.value.toString()}
 								onChange={(e) =>
-									field.onChange(Number.parseInt(e.target.value, 10))
+									field.onChange(Number.parseInt(e.target.value))
 								}
 							/>
 						)}
 					/>
-					<Controller
-						name="enrollmentInfo.entryFee.amount"
-						control={control}
-						render={({ field, fieldState: { error } }) => (
-							<Input
-								type="text"
-								label="Entry Fee Amount"
-								placeholder="Enter fee amount"
-								labelPlacement="outside"
-								startContent={<FiDollarSign />}
-								className="max-w-xs"
-								isInvalid={!!error}
-								errorMessage={error?.message}
-								{...field}
+				</div>
+
+				<Divider />
+
+				<div>
+					<h3 className="mb-2 font-medium text-md">Entry Fee</h3>
+					{entryFee ? (
+						<div className="flex items-center justify-between">
+							<TokenAmount
+								amount={BigInt(entryFee.amount)}
+								denomOrAddress={entryFee.denom}
+								isNative={true}
 							/>
-						)}
-					/>
-					<Controller
-						name="enrollmentInfo.entryFee.denom"
-						control={control}
-						render={({ field, fieldState: { error } }) => (
-							<Input
-								type="text"
-								label="Entry Fee Denom"
-								placeholder="Enter fee denom"
-								labelPlacement="outside"
-								className="max-w-xs"
-								isInvalid={!!error}
-								errorMessage={error?.message}
-								{...field}
-							/>
-						)}
-					/>
+							<Button size="sm" onPress={onOpen}>
+								Update Fee
+							</Button>
+						</div>
+					) : (
+						<Button onPress={onOpen}>Set Entry Fee</Button>
+					)}
+				</div>
+
+				<Divider />
+
+				<div>
 					<Controller
 						name="enrollmentInfo.enrollment_expiration.at_time"
 						control={control}
 						render={({ field, fieldState: { error } }) => (
 							<DateInput
 								label="Enrollment Expiration"
-								labelPlacement="outside"
-								className="max-w-xs"
+								value={parseAbsoluteToLocal(field.value)}
+								onChange={(x) => field.onChange(x.toAbsoluteString())}
 								isInvalid={!!error}
 								errorMessage={error?.message}
 								isRequired
-								defaultValue={parseAbsoluteToLocal(field.value)}
-								onChange={(date) => field.onChange(date.toDate().toISOString())}
+								description="The deadline for enrolling in the competition"
+								className="max-w-xs"
 							/>
 						)}
 					/>
 				</div>
-			</CardBody>
-		</Card>
+			</div>
+			<EntryFeeForm
+				isOpen={isOpen}
+				onOpenChange={onOpenChange}
+				onClose={onOpenChange}
+			/>
+		</div>
 	);
 };
 

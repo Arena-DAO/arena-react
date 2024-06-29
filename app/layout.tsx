@@ -37,11 +37,6 @@ const Layout = ({ children }: PropsWithChildren) => {
 					sizes="16x16"
 					href="/favicon-16x16.png"
 				/>
-				<link
-					rel="preload"
-					href="https://jackal.link/p/jkl10u46uacs9atcdlsh92085lkvwaq3yn9v7zm2e8/radiant/Arena%20DAO/landing_1.jpg"
-					as="image"
-				/>
 				<meta property="og:image" content="/logo.png" />
 				<meta property="og:image:type" content="image/png" />
 				<meta property="og:image:width" content="1081" />

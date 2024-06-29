@@ -17,12 +17,14 @@ const EnrollmentInfoSchema = z
 			.number()
 			.int()
 			.min(2, { message: "At least 2 members are required" }),
-		entryFee: z.object({
-			amount: z.string().min(1, { message: "Entry fee amount is required" }),
-			denom: z
-				.string()
-				.min(1, { message: "Entry fee denomination is required" }),
-		}),
+		entryFee: z
+			.object({
+				amount: z.string().min(1, { message: "Entry fee amount is required" }),
+				denom: z
+					.string()
+					.min(1, { message: "Entry fee denomination is required" }),
+			})
+			.optional(),
 		enrollment_expiration: ExpirationSchema,
 	})
 	.refine((data) => data.minMembers <= data.maxMembers, {

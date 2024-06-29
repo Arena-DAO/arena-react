@@ -90,14 +90,14 @@ const EscrowSection = ({
 
 			const msgs: ExecuteInstruction[] = [];
 
-			if (data.due.native.length > 0) {
+			if (data.due.native && data.due.native.length > 0) {
 				msgs.push({
 					contractAddress: escrow,
 					msg: { receive_native: {} } as EscrowExecuteMsg,
 					funds: data.due.native,
 				});
 			}
-			if (data.due.cw20.length > 0) {
+			if (data.due.cw20 && data.due.cw20.length > 0) {
 				msgs.push(
 					...data.due.cw20.map((x) => {
 						return {
@@ -177,7 +177,7 @@ const EscrowSection = ({
 		<>
 			<div className="grid grid-cols-12 gap-4">
 				{data.balance && (
-					<Card className="col-span-12 lg:col-span-4 md:col-span-6">
+					<Card className="col-span-12 md:col-span-6 lg:col-span-4">
 						<CardHeader>User Balance</CardHeader>
 						<CardBody>
 							<BalanceDisplay balance={data.balance} />
@@ -192,7 +192,7 @@ const EscrowSection = ({
 					</Card>
 				)}
 				{data.due && (
-					<Card className="col-span-12 lg:col-span-4 md:col-span-6">
+					<Card className="col-span-12 md:col-span-6 lg:col-span-4">
 						<CardHeader>User Due</CardHeader>
 						<CardBody>
 							<BalanceDisplay balance={data.due} />
@@ -207,7 +207,7 @@ const EscrowSection = ({
 					</Card>
 				)}
 				{data.total_balance && (
-					<Card className="col-span-12 lg:col-span-4 md:col-span-6">
+					<Card className="col-span-12 md:col-span-6 lg:col-span-4">
 						<CardHeader>Total Balance</CardHeader>
 						<CardBody>
 							<BalanceDisplay balance={data.total_balance} />

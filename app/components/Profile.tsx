@@ -4,6 +4,7 @@ import {
 	Avatar,
 	Button,
 	Card,
+	CardBody,
 	CardFooter,
 	CardHeader,
 	Link,
@@ -12,7 +13,7 @@ import {
 	User,
 	type UserProps,
 } from "@nextui-org/react";
-import { useState } from "react";
+import { useMemo } from "react";
 import { BsYinYang } from "react-icons/bs";
 import { ArenaCoreQueryClient } from "~/codegen/ArenaCore.client";
 import { useArenaCoreQueryExtensionQuery } from "~/codegen/ArenaCore.react-query";
@@ -46,7 +47,10 @@ const Profile = ({
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { data: category } = useCategory();
 
-	const [isValid] = useState(isValidBech32Address(address, env.BECH32_PREFIX));
+	const isValid = useMemo(
+		() => isValidBech32Address(address, env.BECH32_PREFIX),
+		[address, env.BECH32_PREFIX],
+	);
 	const { data, isLoading } = useProfileData(address, isValid);
 	const { data: rating } = useArenaCoreQueryExtensionQuery({
 		client:
@@ -62,7 +66,10 @@ const Profile = ({
 			},
 		},
 		options: {
-			enabled: !isRatingDisabled && typeof category?.category_id === "number",
+			enabled:
+				isValid &&
+				!isRatingDisabled &&
+				typeof category?.category_id === "number",
 		},
 	});
 
@@ -72,40 +79,49 @@ const Profile = ({
 
 	if (isLoading) return <Skeleton />;
 
+	const tooltipContent = (
+		<Card shadow="none" classNames={{ header: "pb-0", footer: "px-0 py-1" }}>
+			{data?.name && justAvatar && <CardHeader>{data.name}</CardHeader>}
+			{category?.category_id && (
+				<CardBody>
+					Rating {Number.parseFloat(rating ?? "1500").toFixed(2)}
+				</CardBody>
+			)}
+			<CardFooter className="gap-2">
+				<CopyAddressButton address={data?.address ?? ""} />
+				{data?.address &&
+					isValidContractAddress(data.address, env.BECH32_PREFIX) && (
+						<Button
+							as={Link}
+							href={`${env.DAO_DAO_URL}/dao/${data.address}`}
+							isExternal
+							startContent={<BsYinYang />}
+						>
+							View on DAO DAO
+						</Button>
+					)}
+			</CardFooter>
+		</Card>
+	);
+
 	if (justAvatar) {
 		return (
-			<Avatar src={data?.imageUrl} content={data?.name ?? data?.address} />
+			<Tooltip
+				isDisabled={isTooltipDisabled}
+				showArrow
+				content={tooltipContent}
+			>
+				<Avatar
+					className={props.className}
+					src={data?.imageUrl}
+					content={data?.name ?? data?.address}
+				/>
+			</Tooltip>
 		);
 	}
 
 	return (
-		<Tooltip
-			isDisabled={isTooltipDisabled}
-			showArrow
-			content={
-				<Card shadow="none" classNames={{ body: "p-0", footer: "px-0 py-1" }}>
-					{category?.category_id && (
-						<CardHeader>
-							Rating {Number.parseFloat(rating ?? "1500").toFixed(2)}
-						</CardHeader>
-					)}
-					<CardFooter className="gap-2">
-						<CopyAddressButton address={data?.address ?? ""} />
-						{data?.address &&
-							isValidContractAddress(data.address, env.BECH32_PREFIX) && (
-								<Button
-									as={Link}
-									href={`${env.DAO_DAO_URL}/dao/${data.address}`}
-									isExternal
-									startContent={<BsYinYang />}
-								>
-									View on DAO DAO
-								</Button>
-							)}
-					</CardFooter>
-				</Card>
-			}
-		>
+		<Tooltip isDisabled={isTooltipDisabled} showArrow content={tooltipContent}>
 			<User
 				{...props}
 				name={data?.name ?? data?.address}
