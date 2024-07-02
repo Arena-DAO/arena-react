@@ -39,6 +39,7 @@ const RulesAndRulesetsForm = () => {
 									placeholder="Enter rule or paste a link"
 									isInvalid={!!error}
 									errorMessage={error?.message}
+									isRequired
 									endContent={
 										<Button
 											variant="faded"

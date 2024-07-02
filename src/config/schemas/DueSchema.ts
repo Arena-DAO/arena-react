@@ -16,6 +16,7 @@ const DueSchema = z
 			);
 		},
 		{
+			path: ["balance"],
 			message:
 				"At least one of cw20, cw721, or native must be provided and not empty",
 		},

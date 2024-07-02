@@ -7,16 +7,23 @@ import {
 	Button,
 	Card,
 	CardBody,
-	CardHeader,
 	Divider,
 	Switch,
 	Tab,
 	Tabs,
 } from "@nextui-org/react";
+import { addMonths, addWeeks } from "date-fns";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect } from "react";
+import { useCallback, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { FiAward, FiBookOpen, FiSettings, FiUsers } from "react-icons/fi";
+import {
+	FiAward,
+	FiBookOpen,
+	FiChevronLeft,
+	FiChevronRight,
+	FiSettings,
+	FiUsers,
+} from "react-icons/fi";
 import { toast } from "react-toastify";
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import type { CompetitionType } from "~/codegen/ArenaCompetitionEnrollment.types";
@@ -34,19 +41,19 @@ import {
 import { useCategory } from "~/hooks/useCategory";
 import { useEnv } from "~/hooks/useEnv";
 import BasicInformationForm from "./components/BasicInformationForm";
+import MembersAndDuesForm from "./components/DirectParticipationForm";
 import EnrollmentInformationForm from "./components/EnrollmentInformationForm";
 import LeagueInformationForm from "./components/LeagueInformationForm";
-import MembersAndDuesForm from "./components/MembersAndDuesForm";
+import ReviewCompetition from "./components/ReviewCompetition";
 import RulesAndRulesetsForm from "./components/RulesAndRulesetsForm";
 import TournamentInformationForm from "./components/TournamentInformationForm";
 
 const CreateCompetitionPage = () => {
+	const [activeTab, setActiveTab] = useState(0);
 	const { data: env } = useEnv();
 	const { data: category } = useCategory();
 	const router = useRouter();
-	const { getSigningCosmWasmClient, address, isWalletConnected } = useChain(
-		env.CHAIN,
-	);
+	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
 
 	const formMethods = useForm<CreateCompetitionFormValues>({
 		resolver: zodResolver(CreateCompetitionSchema),
@@ -55,12 +62,14 @@ const CreateCompetitionPage = () => {
 			useCrowdfunding: false,
 			name: "",
 			description: "",
-			expiration: { at_time: new Date().toISOString() },
+			expiration: { at_time: addMonths(new Date(), 1).toISOString() },
 			rules: [{ rule: "" }],
 			rulesets: [],
-			dues: [{ addr: "", balance: {} }],
-			membersFromDues: true,
-			members: [{ address: "" }],
+			additionalLayeredFees: [],
+			directParticipation: {
+				membersFromDues: true,
+				shouldActivateOnFunded: true,
+			},
 			leagueInfo: {
 				matchWinPoints: 3,
 				matchDrawPoints: 1,
@@ -74,27 +83,41 @@ const CreateCompetitionPage = () => {
 			},
 			enrollmentInfo: {
 				maxMembers: 10,
-				minMembers: 2,
-				enrollment_expiration: { at_time: new Date().toISOString() },
+				enrollment_expiration: {
+					at_time: addWeeks(new Date(), 1).toISOString(),
+				},
+				isCreatorMember: false,
 			},
 		},
 	});
 
-	const {
-		handleSubmit,
-		watch,
-		setValue,
-		formState: { isValid, isSubmitting },
-	} = formMethods;
+	const { handleSubmit, watch, setValue } = formMethods;
 
 	const useCrowdfunding = watch("useCrowdfunding");
 	const competitionType = watch("competitionType");
 
-	useEffect(() => {
-		if (address) {
-			setValue("host", address);
+	const tabs = [
+		{ key: "basics", icon: FiAward, title: "Basics" },
+		{ key: "rules", icon: FiBookOpen, title: "Rules" },
+		{ key: "participants", icon: FiUsers, title: "Participants" },
+		{ key: "review", icon: FiSettings, title: "Review" },
+	];
+
+	const handleTabChange = (index: number) => {
+		setActiveTab(index);
+	};
+
+	const handleNext = () => {
+		if (activeTab < tabs.length - 1) {
+			setActiveTab(activeTab + 1);
 		}
-	}, [address, setValue]);
+	};
+
+	const handlePrevious = () => {
+		if (activeTab > 0) {
+			setActiveTab(activeTab - 1);
+		}
+	};
 
 	const onSubmit = useCallback(
 		async (values: CreateCompetitionFormValues) => {
@@ -195,17 +218,62 @@ const CreateCompetitionPage = () => {
 							),
 						},
 						maxMembers: values.enrollmentInfo.maxMembers.toString(),
-						minMembers: values.enrollmentInfo.minMembers.toString(),
+						minMembers: values.enrollmentInfo.minMembers?.toString(),
 						entryFee: values.enrollmentInfo.entryFee,
-						isCreatorMember: true,
-						expiration: values.enrollmentInfo.enrollment_expiration,
+						expiration: convertToExpiration(
+							values.enrollmentInfo.enrollment_expiration,
+						),
+						isCreatorMember: values.enrollmentInfo.isCreatorMember,
 					});
+
+					// Extract competition ID from the result
+					let enrollmentId: string | undefined;
+					for (const event of result.events) {
+						for (const attribute of event.attributes) {
+							if (attribute.key === "id") {
+								enrollmentId = attribute.value;
+								break;
+							}
+						}
+						if (enrollmentId) break;
+					}
+
+					// Redirect to the appropriate page
+					if (enrollmentId) {
+						router.push(
+							`/enrollment/view?${category?.url ? `category=${category.url}&` : ""}enrollmentId=${enrollmentId}`,
+						);
+					} else {
+						console.warn("Enrollment created but ID not found in the result");
+					}
 				} else {
-					const escrow = convertToEscrowInstantiate(
-						env.CODE_ID_ESCROW,
-						values.dues,
-						values.additionalLayeredFees,
-					);
+					if (!values.directParticipation) {
+						throw new Error(
+							"Direct participation information is required for crowdfunding",
+						);
+					}
+
+					// Construct the members array based on the logic
+					let members: string[] = [];
+					if (values.directParticipation.membersFromDues) {
+						members = values.directParticipation.dues
+							? values.directParticipation.dues.map((due) => due.addr)
+							: [];
+					} else if (values.directParticipation.members) {
+						members = values.directParticipation.members.map(
+							(member) => member.address,
+						);
+					}
+
+					const escrow =
+						values.directParticipation.dues &&
+						values.directParticipation.dues.length > 0
+							? convertToEscrowInstantiate(
+									env.CODE_ID_ESCROW,
+									values.directParticipation.dues,
+									values.additionalLayeredFees,
+								)
+							: undefined;
 
 					switch (values.competitionType) {
 						case "wager": {
@@ -217,11 +285,11 @@ const CreateCompetitionPage = () => {
 							result = await wagerClient.createCompetition({
 								...commonMsg,
 								escrow,
+								shouldActivateOnFunded:
+									values.directParticipation.shouldActivateOnFunded,
 								instantiateExtension: {
 									registered_members:
-										values.dues.length === 2
-											? values.dues.map((d) => d.addr)
-											: undefined,
+										members.length === 2 ? members : undefined,
 								},
 							});
 							break;
@@ -240,6 +308,8 @@ const CreateCompetitionPage = () => {
 							result = await leagueClient.createCompetition({
 								...commonMsg,
 								escrow,
+								shouldActivateOnFunded:
+									values.directParticipation.shouldActivateOnFunded,
 								instantiateExtension: {
 									distribution: values.leagueInfo.distribution.map((mp) =>
 										mp.percent.toString(),
@@ -249,7 +319,7 @@ const CreateCompetitionPage = () => {
 										values.leagueInfo.matchDrawPoints.toString(),
 									match_lose_points:
 										values.leagueInfo.matchLosePoints.toString(),
-									teams: values.dues.map((d) => d.addr),
+									teams: members,
 								},
 							});
 							break;
@@ -265,9 +335,12 @@ const CreateCompetitionPage = () => {
 								address,
 								env.ARENA_TOURNAMENT_MODULE_ADDRESS,
 							);
+
 							result = await tournamentClient.createCompetition({
 								...commonMsg,
 								escrow,
+								shouldActivateOnFunded:
+									values.directParticipation.shouldActivateOnFunded,
 								instantiateExtension: {
 									distribution: values.tournamentInfo.distribution.map((mp) =>
 										mp.percent.toString(),
@@ -281,9 +354,32 @@ const CreateCompetitionPage = () => {
 													},
 												}
 											: "double_elimination",
-									teams: values.dues.map((d) => d.addr),
+									teams: members,
 								},
 							});
+
+							// Extract competition ID from the result
+							let competitionId: string | undefined;
+							for (const event of result.events) {
+								for (const attribute of event.attributes) {
+									if (attribute.key === "competition_id") {
+										competitionId = attribute.value;
+										break;
+									}
+								}
+								if (competitionId) break;
+							}
+
+							// Redirect to the appropriate page
+							if (competitionId) {
+								router.push(
+									`/${competitionType}/view?${category?.url ? `category=${category.url}&` : ""}competitionId=${competitionId}`,
+								);
+							} else {
+								console.warn(
+									"Competition created but ID not found in the result",
+								);
+							}
 							break;
 						}
 						default:
@@ -294,38 +390,13 @@ const CreateCompetitionPage = () => {
 				}
 
 				toast.success(`The ${values.competitionType} was created successfully`);
-
-				// Extract competition ID from the result
-				let competitionId: string | undefined;
-				for (const event of result.events) {
-					for (const attribute of event.attributes) {
-						if (attribute.key === "competition_id") {
-							competitionId = attribute.value;
-							break;
-						}
-					}
-					if (competitionId) break;
-				}
-
-				// Redirect to the appropriate page
-				if (competitionId) {
-					if (values.useCrowdfunding) {
-						router.push(`/enrollments/${competitionId}`);
-					} else {
-						router.push(
-							`/compete/view?category=${category?.url}&competitionId=${competitionId}&type=${values.competitionType}`,
-						);
-					}
-				} else {
-					console.warn("Competition created but ID not found in the result");
-				}
 				// biome-ignore lint/suspicious/noExplicitAny: try-catch
 			} catch (e: any) {
 				console.error(e);
 				toast.error(e.toString());
 			}
 		},
-		[getSigningCosmWasmClient, address, category, env, router],
+		[getSigningCosmWasmClient, address, category, env, router, competitionType],
 	);
 
 	return (
@@ -340,114 +411,86 @@ const CreateCompetitionPage = () => {
 						aria-label="Competition Creation Tabs"
 						color="primary"
 						variant="bordered"
+						selectedKey={tabs[activeTab]?.key}
+						onSelectionChange={(key) =>
+							handleTabChange(tabs.findIndex((tab) => tab.key === key))
+						}
 					>
-						<Tab
-							key="basics"
-							title={
-								<div className="flex items-center space-x-2">
-									<FiAward />
-									<span>Basics</span>
-								</div>
-							}
-						>
-							<Card>
-								<CardBody>
-									<BasicInformationForm />
-									{competitionType === "league" && (
-										<>
-											<Divider className="my-6" />
-											<LeagueInformationForm />
-										</>
-									)}
-									{competitionType === "tournament" && (
-										<>
-											<Divider className="my-6" />
-											<TournamentInformationForm />
-										</>
-									)}
-								</CardBody>
-							</Card>
-						</Tab>
-						<Tab
-							key="rules"
-							title={
-								<div className="flex items-center space-x-2">
-									<FiBookOpen />
-									<span>Rules</span>
-								</div>
-							}
-						>
-							<Card>
-								<CardBody>
-									<RulesAndRulesetsForm />
-								</CardBody>
-							</Card>
-						</Tab>
-						<Tab
-							key="participants"
-							title={
-								<div className="flex items-center space-x-2">
-									<FiUsers />
-									<span>Participants</span>
-								</div>
-							}
-						>
-							<Card>
-								<CardHeader className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-0">
-									<h2 className="font-semibold text-2xl">
-										Participation Details
-									</h2>
-									<div className="flex items-center">
-										<Switch
-											isSelected={useCrowdfunding}
-											onValueChange={(checked) =>
-												setValue("useCrowdfunding", checked)
-											}
-										>
-											Use Crowdfunding
-										</Switch>
+						{tabs.map((tab) => (
+							<Tab
+								key={tab.key}
+								title={
+									<div className="flex items-center space-x-2">
+										<tab.icon />
+										<span>{tab.title}</span>
 									</div>
-								</CardHeader>
-								<CardBody>
-									{useCrowdfunding ? (
-										<EnrollmentInformationForm />
-									) : (
-										<MembersAndDuesForm />
-									)}
-								</CardBody>
-							</Card>
-						</Tab>
-						<Tab
-							key="review"
-							title={
-								<div className="flex items-center space-x-2">
-									<FiSettings />
-									<span>Review</span>
-								</div>
-							}
-						>
-							<Card>
-								<CardBody>
-									{/* Add a summary of the competition details here */}
-									<h2 className="mb-4 font-semibold text-2xl">
-										Review Your Competition
-									</h2>
-									{/* Display a summary of the form data here */}
-								</CardBody>
-							</Card>
-						</Tab>
+								}
+							>
+								<Card>
+									<CardBody>
+										{tab.key === "basics" && (
+											<>
+												<div className="flex flex-col items-start justify-between gap-2 pb-4 sm:flex-row sm:items-center sm:gap-0">
+													<h3>Competition Info</h3>
+													{category && <h3>Category: {category.title}</h3>}
+												</div>
+												<BasicInformationForm />
+												{competitionType === "league" && (
+													<>
+														<Divider className="my-6" />
+														<LeagueInformationForm />
+													</>
+												)}
+												{competitionType === "tournament" && (
+													<>
+														<Divider className="my-6" />
+														<TournamentInformationForm />
+													</>
+												)}
+											</>
+										)}
+										{tab.key === "rules" && <RulesAndRulesetsForm />}
+										{tab.key === "participants" && (
+											<>
+												<div className="flex flex-col items-start justify-between gap-2 pb-4 sm:flex-row sm:items-center sm:gap-0">
+													<h3>Participation Details</h3>
+													<Switch
+														isSelected={useCrowdfunding}
+														onValueChange={(checked) =>
+															setValue("useCrowdfunding", checked)
+														}
+													>
+														Use Crowdfunding
+													</Switch>
+												</div>
+												{useCrowdfunding ? (
+													<EnrollmentInformationForm />
+												) : (
+													<MembersAndDuesForm />
+												)}
+											</>
+										)}
+										{tab.key === "review" && <ReviewCompetition />}
+									</CardBody>
+								</Card>
+							</Tab>
+						))}
 					</Tabs>
 
-					<div className="mt-8 flex justify-center">
+					<div className="mt-8 flex justify-between">
 						<Button
-							type="submit"
-							color="primary"
-							size="lg"
-							isDisabled={!isValid}
-							isLoading={isSubmitting}
-							className="px-8 py-2 font-semibold text-lg"
+							onClick={handlePrevious}
+							isDisabled={activeTab === 0}
+							startContent={<FiChevronLeft />}
 						>
-							Create Competition
+							Previous
+						</Button>
+						<Button
+							onClick={handleNext}
+							isDisabled={activeTab === tabs.length - 1}
+							endContent={<FiChevronRight />}
+						>
+							Next
 						</Button>
 					</div>
 				</form>

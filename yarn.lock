@@ -177,10 +177,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.45.10":
-  version: 0.45.10
-  resolution: "@chain-registry/types@npm:0.45.10"
-  checksum: 10c0/0c61dcdd520a989a7e043e35d11b6063b132d8f140132ac82a87e3f1dc0c717a9d623abaa1d0dbe4c77093624efa3502738a4b4fb786b6a3aeddd2d0dcc6ce03
+"@chain-registry/types@npm:^0.45.12":
+  version: 0.45.12
+  resolution: "@chain-registry/types@npm:0.45.12"
+  checksum: 10c0/e8c718d6639b49f1ad521d83f4d43d2788fe3910537e125709770921eaccf68ba4ab29581e5c7766f964a5779e9d7d1f798b73ad7e2adc23b8c1d412d6c33a0f
   languageName: node
   linkType: hard
 
@@ -5971,7 +5971,7 @@ __metadata:
   resolution: "arena-react@workspace:."
   dependencies:
     "@biomejs/biome": "npm:1.8.3"
-    "@chain-registry/types": "npm:^0.45.10"
+    "@chain-registry/types": "npm:^0.45.12"
     "@cosmjs/amino": "npm:^0.32.4"
     "@cosmjs/cosmwasm-stargate": "npm:0.32.4"
     "@cosmjs/encoding": "npm:^0.32.4"
@@ -5998,7 +5998,7 @@ __metadata:
     "@types/react": "npm:18.3.3"
     "@types/react-dom": "npm:^18.3.0"
     autoprefixer: "npm:^10.4.19"
-    chain-registry: "npm:1.63.13"
+    chain-registry: "npm:1.63.15"
     clsx: "npm:^2.1.1"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^7.0.3"
@@ -6022,7 +6022,7 @@ __metadata:
     reactflow: "npm:^11.11.4"
     shx: "npm:^0.3.4"
     tailwindcss: "npm:^3.4.4"
-    typescript: "npm:^5.5.2"
+    typescript: "npm:^5.5.3"
     zod: "npm:^3.23.8"
     zustand: "npm:^4.5.4"
   languageName: unknown
@@ -6490,12 +6490,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.63.13":
-  version: 1.63.13
-  resolution: "chain-registry@npm:1.63.13"
+"chain-registry@npm:1.63.15":
+  version: 1.63.15
+  resolution: "chain-registry@npm:1.63.15"
   dependencies:
-    "@chain-registry/types": "npm:^0.45.10"
-  checksum: 10c0/500c346a724677098e714b0dd2e39d4b23af6022fd8594a02cf1981900d3e992af19b835b70cbfa00a7dd3c8a5cd6f0600da1d343a6fdde785dabef99317e3b2
+    "@chain-registry/types": "npm:^0.45.12"
+  checksum: 10c0/a04ca5fe1c63c7c08883b69c31483880d7b705904a006ae118980b0c64df043284b41069c9b729b44c4a29e66ebf7bf72151de283296116b7446509febe078e8
   languageName: node
   linkType: hard
 
@@ -11058,23 +11058,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.5.2":
-  version: 5.5.2
-  resolution: "typescript@npm:5.5.2"
+"typescript@npm:^5.5.3":
+  version: 5.5.3
+  resolution: "typescript@npm:5.5.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/8ca39b27b5f9bd7f32db795045933ab5247897660627251e8254180b792a395bf061ea7231947d5d7ffa5cb4cc771970fd4ef543275f9b559f08c9325cccfce3
+  checksum: 10c0/f52c71ccbc7080b034b9d3b72051d563601a4815bf3e39ded188e6ce60813f75dbedf11ad15dd4d32a12996a9ed8c7155b46c93a9b9c9bad1049766fe614bbdd
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^5.5.2#optional!builtin<compat/typescript>":
-  version: 5.5.2
-  resolution: "typescript@patch:typescript@npm%3A5.5.2#optional!builtin<compat/typescript>::version=5.5.2&hash=b45daf"
+"typescript@patch:typescript@npm%3A^5.5.3#optional!builtin<compat/typescript>":
+  version: 5.5.3
+  resolution: "typescript@patch:typescript@npm%3A5.5.3#optional!builtin<compat/typescript>::version=5.5.3&hash=b45daf"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c0/6721ac8933a70c252d7b640b345792e103d881811ff660355617c1836526dbb71c2044e2e77a8823fb3570b469f33276875a4cab6d3c4de4ae7d7ee1c3074ae4
+  checksum: 10c0/5a437c416251334deeaf29897157032311f3f126547cfdc4b133768b606cb0e62bcee733bb97cf74c42fe7268801aea1392d8e40988cdef112e9546eba4c03c5
   languageName: node
   linkType: hard
 

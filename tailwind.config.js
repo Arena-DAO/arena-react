@@ -12,8 +12,7 @@ module.exports = {
 		nextui({
 			layout: {
 				fontSize: {
-					medium: "1.4rem",
-					large: " 1.6rem",
+					large: "1.6rem",
 				},
 			},
 			themes: {

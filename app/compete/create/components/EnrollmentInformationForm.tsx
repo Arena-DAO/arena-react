@@ -1,7 +1,8 @@
-import TokenAmount from "@/components/TokenAmount";
+import TokenInfo from "@/components/TokenInfo";
 import { parseAbsoluteToLocal } from "@internationalized/date";
 import {
 	Button,
+	ButtonGroup,
 	DateInput,
 	Divider,
 	Input,
@@ -12,7 +13,7 @@ import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompeti
 import EntryFeeForm from "./EntryFeeForm";
 
 const EnrollmentInformationForm = () => {
-	const { control } = useFormContext<CreateCompetitionFormValues>();
+	const { control, setValue } = useFormContext<CreateCompetitionFormValues>();
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
 	const entryFee = useWatch({ control, name: "enrollmentInfo.entryFee" });
@@ -34,7 +35,7 @@ const EnrollmentInformationForm = () => {
 								isInvalid={!!error}
 								errorMessage={error?.message}
 								description="The minimum number of participants required"
-								value={field.value.toString()}
+								value={field.value?.toString()}
 								onChange={(e) =>
 									field.onChange(Number.parseInt(e.target.value))
 								}
@@ -69,14 +70,19 @@ const EnrollmentInformationForm = () => {
 					<h3 className="mb-2 font-medium text-md">Entry Fee</h3>
 					{entryFee ? (
 						<div className="flex items-center justify-between">
-							<TokenAmount
+							<TokenInfo
 								amount={BigInt(entryFee.amount)}
 								denomOrAddress={entryFee.denom}
 								isNative={true}
 							/>
-							<Button size="sm" onPress={onOpen}>
-								Update Fee
-							</Button>
+							<ButtonGroup>
+								<Button
+									onPress={() => setValue("enrollmentInfo.entryFee", undefined)}
+								>
+									Remove Fee
+								</Button>
+								<Button onPress={onOpen}>Update Fee</Button>
+							</ButtonGroup>
 						</div>
 					) : (
 						<Button onPress={onOpen}>Set Entry Fee</Button>

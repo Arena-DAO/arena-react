@@ -35,56 +35,63 @@ const MemberDue: React.FC<MemberDueProps> = ({
 	onRemove,
 }) => {
 	const { control } = useFormContext<CreateCompetitionFormValues>();
-	const dueAddress = useWatch({ control, name: `dues.${dueIndex}.addr` });
+	const dueAddress = useWatch({
+		control,
+		name: `directParticipation.dues.${dueIndex}.addr`,
+	});
 	const nativeBalances =
-		useWatch({ control, name: `dues.${dueIndex}.balance.native` }) || [];
+		useWatch({
+			control,
+			name: `directParticipation.dues.${dueIndex}.balance.native`,
+		}) || [];
 	const cw20Balances =
-		useWatch({ control, name: `dues.${dueIndex}.balance.cw20` }) || [];
+		useWatch({
+			control,
+			name: `directParticipation.dues.${dueIndex}.balance.cw20`,
+		}) || [];
 
 	const { remove: removeNative } = useFieldArray({
 		control,
-		name: `dues.${dueIndex}.balance.native`,
+		name: `directParticipation.dues.${dueIndex}.balance.native`,
 	});
 
 	const { remove: removeCw20 } = useFieldArray({
 		control,
-		name: `dues.${dueIndex}.balance.cw20`,
+		name: `directParticipation.dues.${dueIndex}.balance.cw20`,
 	});
 
 	return (
 		<div className="mb-4">
-			<div className="mb-2 flex items-center justify-between">
-				<Profile address={dueAddress} justAvatar className="mr-2" />
-				<div className="mr-2 flex-grow">
-					<Controller
-						name={`dues.${dueIndex}.addr`}
-						control={control}
-						render={({ field, fieldState: { error } }) => (
-							<Input
-								isRequired
-								isInvalid={!!error}
-								errorMessage={error?.message}
-								{...field}
-								label={`Due Address ${dueIndex + 1}`}
-								placeholder="Enter due address"
-								endContent={
-									<ButtonGroup variant="faded" className="my-auto">
-										<Tooltip content="Remove dues">
-											<Button isIconOnly onClick={onRemove}>
-												<FiMinus />
-											</Button>
-										</Tooltip>
-										<Tooltip content="Add more due">
-											<Button isIconOnly onClick={onEdit}>
-												<FiPlus />
-											</Button>
-										</Tooltip>
-									</ButtonGroup>
-								}
-							/>
-						)}
-					/>
-				</div>
+			<div className="mb-2 flex items-center space-x-2">
+				<Profile address={dueAddress} justAvatar className="min-w-max" />
+				<Controller
+					name={`directParticipation.dues.${dueIndex}.addr`}
+					control={control}
+					render={({ field, fieldState: { error } }) => (
+						<Input
+							isRequired
+							isInvalid={!!error}
+							errorMessage={error?.message}
+							{...field}
+							label={`Due Address ${dueIndex + 1}`}
+							placeholder="Enter due address"
+							endContent={
+								<ButtonGroup variant="faded" className="my-auto">
+									<Tooltip content="Remove dues">
+										<Button isIconOnly onClick={onRemove}>
+											<FiMinus />
+										</Button>
+									</Tooltip>
+									<Tooltip content="Add more due">
+										<Button isIconOnly onClick={onEdit}>
+											<FiPlus />
+										</Button>
+									</Tooltip>
+								</ButtonGroup>
+							}
+						/>
+					)}
+				/>
 			</div>
 			<div className="space-y-2">
 				{nativeBalances.length > 0 && (

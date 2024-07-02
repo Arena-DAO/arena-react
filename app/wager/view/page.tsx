@@ -1,7 +1,6 @@
 "use client";
 
 import ViewCompetition from "@/components/competition/view/ViewCompetition";
-import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { useArenaWagerModuleCompetitionQuery } from "~/codegen/ArenaWagerModule.react-query";
@@ -11,7 +10,6 @@ import { useEnv } from "~/hooks/useEnv";
 const ViewWager = () => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
-	const queryClient = useQueryClient();
 	const searchParams = useSearchParams();
 	const competitionId = searchParams?.get("competitionId");
 

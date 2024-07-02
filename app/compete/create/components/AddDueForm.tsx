@@ -88,17 +88,17 @@ const AddDueForm: React.FC<AddDueFormProps> = ({
 
 	const { append: appendNative, fields: nativeFields } = useFieldArray({
 		control: competitionControl,
-		name: `dues.${index}.balance.native`,
+		name: `directParticipation.dues.${index}.balance.native`,
 	});
 
 	const { append: appendCw20, fields: cw20Fields } = useFieldArray({
 		control: competitionControl,
-		name: `dues.${index}.balance.cw20`,
+		name: `directParticipation.dues.${index}.balance.cw20`,
 	});
 
 	const { append: appendCw721 } = useFieldArray({
 		control: competitionControl,
-		name: `dues.${index}.balance.cw721`,
+		name: `directParticipation.dues.${index}.balance.cw721`,
 	});
 
 	const {

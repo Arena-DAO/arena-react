@@ -1,13 +1,24 @@
 import { parseAbsoluteToLocal } from "@internationalized/date";
 import {
+	Accordion,
+	AccordionItem,
+	Button,
 	DatePicker,
 	Input,
 	Radio,
 	RadioGroup,
 	Textarea,
+	Tooltip,
 } from "@nextui-org/react";
-import { Controller, useFormContext, useWatch } from "react-hook-form";
+import {
+	Controller,
+	useFieldArray,
+	useFormContext,
+	useWatch,
+} from "react-hook-form";
+import { FiInfo, FiPlus } from "react-icons/fi";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
+import AdditionalLayeredFeeItem from "./AdditionalLayeredFee";
 
 const BasicInformationForm = () => {
 	const {
@@ -15,17 +26,24 @@ const BasicInformationForm = () => {
 		formState: { isSubmitting },
 	} = useFormContext<CreateCompetitionFormValues>();
 	const competitionExpiration = useWatch({ control, name: "expiration" });
+	const {
+		fields: additionalFeeFields,
+		append: appendFee,
+		remove: removeFee,
+	} = useFieldArray({
+		control,
+		name: "additionalLayeredFees",
+	});
 
 	return (
-		<div className="space-y-4">
-			<h3>Competition Info</h3>
+		<div className="space-y-6">
 			<Controller
 				name="name"
 				control={control}
 				render={({ field, fieldState: { error } }) => (
 					<Input
 						{...field}
-						label="Competition Name"
+						label="Name"
 						placeholder="Enter competition name"
 						isRequired
 						isInvalid={!!error}
@@ -58,7 +76,7 @@ const BasicInformationForm = () => {
 					formState: { defaultValues },
 				}) => (
 					<RadioGroup
-						label="Competition Expiration"
+						label="Expiration"
 						orientation="horizontal"
 						isDisabled={isSubmitting}
 						defaultValue="at_time"
@@ -104,6 +122,7 @@ const BasicInformationForm = () => {
 							isDisabled={isSubmitting}
 							isInvalid={!!error}
 							errorMessage={error?.message}
+							isRequired
 							{...field}
 							value={field.value.toString()}
 							onChange={(e) => field.onChange(Number.parseInt(e.target.value))}
@@ -124,6 +143,7 @@ const BasicInformationForm = () => {
 							isDisabled={isSubmitting}
 							isInvalid={!!error}
 							errorMessage={error?.message}
+							isRequired
 							{...field}
 							value={parseAbsoluteToLocal(field.value)}
 							onChange={(x) => field.onChange(x.toAbsoluteString())}
@@ -132,13 +152,44 @@ const BasicInformationForm = () => {
 					)}
 				/>
 			)}
+			<Accordion variant="bordered">
+				<AccordionItem
+					key="1"
+					aria-label="Additional Layered Fees"
+					title={
+						<div className="flex items-center">
+							Additional Layered Fees
+							<Tooltip content="Allocate layered fees after the platform tax">
+								<span className="ml-2 cursor-help">
+									<FiInfo />
+								</span>
+							</Tooltip>
+						</div>
+					}
+					classNames={{ title: "text-medium", content: "gap-2" }}
+				>
+					{additionalFeeFields.map((field, index) => (
+						<AdditionalLayeredFeeItem
+							key={field.id}
+							index={index}
+							remove={removeFee}
+						/>
+					))}
+					<Button
+						onClick={() => appendFee({ addr: "", percentage: 0 })}
+						startContent={<FiPlus />}
+					>
+						Add Fee
+					</Button>
+				</AccordionItem>
+			</Accordion>
 			<Controller
 				name="competitionType"
 				control={control}
 				render={({ field }) => (
 					<RadioGroup
 						{...field}
-						label="Competition Type"
+						label="Type"
 						orientation="horizontal"
 						description="Choose the format of your competition"
 					>

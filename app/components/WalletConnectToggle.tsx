@@ -25,6 +25,7 @@ export default function WalletConnectToggle() {
 							address={chainContext.address}
 							justAvatar
 							isRatingDisabled
+							isTooltipDisabled
 						/>
 					</Button>
 				</DropdownTrigger>

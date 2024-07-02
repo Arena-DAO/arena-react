@@ -79,11 +79,11 @@ export function convertToEscrowInstantiate(
 				return {
 					addr,
 					balance: {
-						native: balance.native.map(({ denom, amount }) => ({
+						native: balance.native?.map(({ denom, amount }) => ({
 							denom,
 							amount: amount.toString(),
 						})),
-						cw20: balance.cw20.map(({ address, amount }) => ({
+						cw20: balance.cw20?.map(({ address, amount }) => ({
 							address,
 							amount: amount.toString(),
 						})),

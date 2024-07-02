@@ -16,7 +16,8 @@ const EnrollmentInfoSchema = z
 		minMembers: z
 			.number()
 			.int()
-			.min(2, { message: "At least 2 members are required" }),
+			.min(2, { message: "At least 2 members are required" })
+			.optional(),
 		entryFee: z
 			.object({
 				amount: z.string().min(1, { message: "Entry fee amount is required" }),
@@ -26,14 +27,21 @@ const EnrollmentInfoSchema = z
 			})
 			.optional(),
 		enrollment_expiration: ExpirationSchema,
+		isCreatorMember: z.boolean().optional(),
 	})
-	.refine((data) => data.minMembers <= data.maxMembers, {
+	.refine((data) => !data.minMembers || data.minMembers <= data.maxMembers, {
 		message: "Minimum members must be less than or equal to maximum members",
 		path: ["minMembers"],
 	});
 
+const DirectParticipationSchema = z.object({
+	dues: z.array(DueSchema).optional(),
+	membersFromDues: z.boolean(),
+	members: z.array(z.object({ address: AddressSchema })),
+	shouldActivateOnFunded: z.boolean().optional(),
+});
+
 const BaseCreateCompetitionSchema = z.object({
-	category_id: z.bigint().nonnegative().optional(),
 	description: z
 		.string()
 		.min(1, { message: "Description is required" })
@@ -45,9 +53,6 @@ const BaseCreateCompetitionSchema = z.object({
 		.max(100, { message: "Name must be 100 characters or less" }),
 	rules: RulesSchema,
 	rulesets: RulesetsSchema,
-	dues: z.array(DueSchema).min(1, { message: "At least one due is required" }),
-	membersFromDues: z.boolean(),
-	members: z.array(z.object({ address: AddressSchema })),
 	additionalLayeredFees: z.array(MemberPercentageSchema).optional(),
 });
 
@@ -87,59 +92,41 @@ const TournamentSchema = z.object({
 const CreateCompetitionSchema = BaseCreateCompetitionSchema.extend({
 	competitionType: z.enum(["wager", "league", "tournament"]),
 	useCrowdfunding: z.boolean(),
-	host: AddressSchema.optional(),
 	leagueInfo: LeagueSchema.optional(),
 	tournamentInfo: TournamentSchema.optional(),
 	enrollmentInfo: EnrollmentInfoSchema.optional(),
-})
-	.refine(
-		(data) => {
-			if (data.competitionType === "league") {
-				return !!data.leagueInfo;
-			}
-			return true;
-		},
-		{
+	directParticipation: DirectParticipationSchema.optional(),
+}).superRefine((data, ctx) => {
+	if (data.useCrowdfunding && !data.enrollmentInfo) {
+		ctx.addIssue({
+			code: z.ZodIssueCode.custom,
+			message: "Enrollment information is required when using crowdfunding",
+			path: ["enrollmentInfo"],
+		});
+	}
+	if (!data.useCrowdfunding && !data.directParticipation) {
+		ctx.addIssue({
+			code: z.ZodIssueCode.custom,
+			message:
+				"Direct participation information is required when not using crowdfunding",
+			path: ["directParticipation"],
+		});
+	}
+	if (data.competitionType === "league" && !data.leagueInfo) {
+		ctx.addIssue({
+			code: z.ZodIssueCode.custom,
 			message: "League information is required for league competitions",
 			path: ["leagueInfo"],
-		},
-	)
-	.refine(
-		(data) => {
-			if (data.competitionType === "tournament") {
-				return !!data.tournamentInfo;
-			}
-			return true;
-		},
-		{
+		});
+	}
+	if (data.competitionType === "tournament" && !data.tournamentInfo) {
+		ctx.addIssue({
+			code: z.ZodIssueCode.custom,
 			message: "Tournament information is required for tournament competitions",
 			path: ["tournamentInfo"],
-		},
-	)
-	.refine(
-		(data) => {
-			if (data.useCrowdfunding) {
-				return !!data.enrollmentInfo;
-			}
-			return true;
-		},
-		{
-			message: "Enrollment information is required for crowdfunding",
-			path: ["enrollmentInfo"],
-		},
-	)
-	.refine(
-		(data) => {
-			if (data.membersFromDues) {
-				return data.dues.length >= 2;
-			}
-			return data.members.length >= 2;
-		},
-		{
-			message: "At least 2 members or dues are required",
-			path: ["members"],
-		},
-	);
+		});
+	}
+});
 
 type CreateCompetitionFormValues = z.infer<typeof CreateCompetitionSchema>;
 

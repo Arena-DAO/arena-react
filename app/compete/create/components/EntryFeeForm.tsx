@@ -48,12 +48,10 @@ const EntryFeeForm: React.FC<EntryFeeFormProps> = ({
 		setError,
 		formState: { errors, isSubmitting },
 		reset,
-		setValue,
 	} = useForm<EntryFeeFormValues>({
 		resolver: zodResolver(EntryFeeSchema),
 		defaultValues: {
 			denom: env.DEFAULT_NATIVE,
-			amount: 0,
 		},
 	});
 
@@ -146,11 +144,7 @@ const EntryFeeForm: React.FC<EntryFeeFormProps> = ({
 					)}
 				</ModalBody>
 				<ModalFooter>
-					<Button color="danger" variant="light" onPress={onClose}>
-						Cancel
-					</Button>
 					<Button
-						color="primary"
 						onClick={handleSubmit(onSubmit)}
 						isLoading={isSubmitting || isLoading}
 					>
