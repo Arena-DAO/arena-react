@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ExecuteMsg, Uint128, Binary, Decimal, Expiration, Timestamp, Uint64, CompetitionType, EliminationType, Action, CompetitionInfoMsg, FeeInformationForString, Coin, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, ArrayOfEnrollmentEntryResponse, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
+import { InstantiateMsg, ExecuteMsg, Uint128, Binary, Decimal, Expiration, Timestamp, Uint64, CompetitionType, EliminationType, Action, CompetitionInfoMsg, FeeInformationForString, Coin, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, ArrayOfAddr, ArrayOfEnrollmentEntryResponse, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
 export interface ArenaCompetitionEnrollmentReadOnlyInterface {
   contractAddress: string;
   enrollments: ({
@@ -24,6 +24,15 @@ export interface ArenaCompetitionEnrollmentReadOnlyInterface {
     id: Uint128;
   }) => Promise<EnrollmentEntryResponse>;
   enrollmentCount: () => Promise<Uint128>;
+  enrollmentMembers: ({
+    enrollmentId,
+    limit,
+    startAfter
+  }: {
+    enrollmentId: Uint128;
+    limit?: number;
+    startAfter?: string;
+  }) => Promise<ArrayOfAddr>;
   ownership: () => Promise<OwnershipForString>;
 }
 export class ArenaCompetitionEnrollmentQueryClient implements ArenaCompetitionEnrollmentReadOnlyInterface {
@@ -36,6 +45,7 @@ export class ArenaCompetitionEnrollmentQueryClient implements ArenaCompetitionEn
     this.enrollments = this.enrollments.bind(this);
     this.enrollment = this.enrollment.bind(this);
     this.enrollmentCount = this.enrollmentCount.bind(this);
+    this.enrollmentMembers = this.enrollmentMembers.bind(this);
     this.ownership = this.ownership.bind(this);
   }
 
@@ -70,6 +80,23 @@ export class ArenaCompetitionEnrollmentQueryClient implements ArenaCompetitionEn
   enrollmentCount = async (): Promise<Uint128> => {
     return this.client.queryContractSmart(this.contractAddress, {
       enrollment_count: {}
+    });
+  };
+  enrollmentMembers = async ({
+    enrollmentId,
+    limit,
+    startAfter
+  }: {
+    enrollmentId: Uint128;
+    limit?: number;
+    startAfter?: string;
+  }): Promise<ArrayOfAddr> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      enrollment_members: {
+        enrollment_id: enrollmentId,
+        limit,
+        start_after: startAfter
+      }
     });
   };
   ownership = async (): Promise<OwnershipForString> => {

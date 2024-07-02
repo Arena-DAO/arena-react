@@ -8,6 +8,7 @@ import {
 	Tooltip,
 } from "@nextui-org/react";
 import NextImage from "next/image";
+import { useRouter } from "next/navigation";
 import type React from "react";
 import { useMemo } from "react";
 import { FiClock, FiDollarSign, FiUsers } from "react-icons/fi";
@@ -61,7 +62,9 @@ const calculateMinMembers = (type: CompetitionType): number => {
 const EnrollmentCard: React.FC<EnrollmentCardProps> = ({ enrollment }) => {
 	const currentMembers = Number(enrollment.current_members);
 	const maxMembers = Number(enrollment.max_members);
-	const minMembers = calculateMinMembers(enrollment.competition_type);
+	const minMembers = enrollment.min_members
+		? Number(enrollment.min_members)
+		: calculateMinMembers(enrollment.competition_type);
 	const currentPool = useMemo(
 		() =>
 			enrollment.entry_fee
@@ -69,9 +72,16 @@ const EnrollmentCard: React.FC<EnrollmentCardProps> = ({ enrollment }) => {
 				: null,
 		[enrollment.entry_fee, enrollment.current_members],
 	);
+	const router = useRouter();
 
 	return (
-		<Card isPressable>
+		<Card
+			isPressable
+			onPress={() =>
+				router.push(`/enrollment/view?enrollmentId=${enrollment.id}`)
+			}
+			className="w-80"
+		>
 			{enrollment.competition_info.banner && (
 				<Image
 					as={NextImage}
@@ -96,11 +106,12 @@ const EnrollmentCard: React.FC<EnrollmentCardProps> = ({ enrollment }) => {
 					<Profile address={enrollment.host} />
 				</div>
 
-				<div className="mb-3 flex items-center text-default-500">
-					<FiClock className="mr-2" />
-					<span className="text-sm">
-						Expires {formatExpiration(enrollment.expiration)}
-					</span>
+				<div className="mb-3 flex items-center justify-between text-sm">
+					Expires
+					<div className="flex items-center">
+						<FiClock className="mr-2" />
+						{formatExpiration(enrollment.expiration)}
+					</div>
 				</div>
 
 				<div className="mb-3 flex items-center justify-between">

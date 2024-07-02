@@ -96,7 +96,7 @@ const BasicInformationForm = () => {
 						isRequired
 						isInvalid={!!error}
 						errorMessage={error?.message}
-						description="Provide details about the competition (markdown is supported)"
+						description="Provide details about the competition"
 					/>
 				)}
 			/>

@@ -105,6 +105,12 @@ export type QueryMsg = {
 } | {
   enrollment_count: {};
 } | {
+  enrollment_members: {
+    enrollment_id: Uint128;
+    limit?: number | null;
+    start_after?: string | null;
+  };
+} | {
   ownership: {};
 };
 export type EnrollmentFilter = {
@@ -143,6 +149,7 @@ export interface CompetitionInfoResponse {
   rules: string[];
   rulesets: Uint128[];
 }
+export type ArrayOfAddr = Addr[];
 export type ArrayOfEnrollmentEntryResponse = EnrollmentEntryResponse[];
 export interface OwnershipForString {
   owner?: string | null;

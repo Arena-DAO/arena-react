@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ExecuteMsg, Uint128, Binary, Decimal, Expiration, Timestamp, Uint64, CompetitionType, EliminationType, Action, CompetitionInfoMsg, FeeInformationForString, Coin, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, ArrayOfEnrollmentEntryResponse, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
+import { InstantiateMsg, ExecuteMsg, Uint128, Binary, Decimal, Expiration, Timestamp, Uint64, CompetitionType, EliminationType, Action, CompetitionInfoMsg, FeeInformationForString, Coin, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, ArrayOfAddr, ArrayOfEnrollmentEntryResponse, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
 import { ArenaCompetitionEnrollmentQueryClient, ArenaCompetitionEnrollmentClient } from "./ArenaCompetitionEnrollment.client";
 export const arenaCompetitionEnrollmentQueryKeys = {
   contract: ([{
@@ -26,6 +26,10 @@ export const arenaCompetitionEnrollmentQueryKeys = {
   }] as const),
   enrollmentCount: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaCompetitionEnrollmentQueryKeys.address(contractAddress)[0],
     method: "enrollment_count",
+    args
+  }] as const),
+  enrollmentMembers: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaCompetitionEnrollmentQueryKeys.address(contractAddress)[0],
+    method: "enrollment_members",
     args
   }] as const),
   ownership: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaCompetitionEnrollmentQueryKeys.address(contractAddress)[0],
@@ -69,6 +73,20 @@ export const arenaCompetitionEnrollmentQueries = {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   }),
+  enrollmentMembers: <TData = ArrayOfAddr,>({
+    client,
+    args,
+    options
+  }: ArenaCompetitionEnrollmentEnrollmentMembersQuery<TData>): UseQueryOptions<ArrayOfAddr, Error, TData> => ({
+    queryKey: arenaCompetitionEnrollmentQueryKeys.enrollmentMembers(client?.contractAddress, args),
+    queryFn: () => client ? client.enrollmentMembers({
+      enrollmentId: args.enrollmentId,
+      limit: args.limit,
+      startAfter: args.startAfter
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
   ownership: <TData = OwnershipForString,>({
     client,
     options
@@ -91,6 +109,26 @@ export function useArenaCompetitionEnrollmentOwnershipQuery<TData = OwnershipFor
   options
 }: ArenaCompetitionEnrollmentOwnershipQuery<TData>) {
   return useQuery<OwnershipForString, Error, TData>(arenaCompetitionEnrollmentQueryKeys.ownership(client?.contractAddress), () => client ? client.ownership() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
+}
+export interface ArenaCompetitionEnrollmentEnrollmentMembersQuery<TData> extends ArenaCompetitionEnrollmentReactQuery<ArrayOfAddr, TData> {
+  args: {
+    enrollmentId: Uint128;
+    limit?: number;
+    startAfter?: string;
+  };
+}
+export function useArenaCompetitionEnrollmentEnrollmentMembersQuery<TData = ArrayOfAddr>({
+  client,
+  args,
+  options
+}: ArenaCompetitionEnrollmentEnrollmentMembersQuery<TData>) {
+  return useQuery<ArrayOfAddr, Error, TData>(arenaCompetitionEnrollmentQueryKeys.enrollmentMembers(client?.contractAddress, args), () => client ? client.enrollmentMembers({
+    enrollmentId: args.enrollmentId,
+    limit: args.limit,
+    startAfter: args.startAfter
+  }) : Promise.reject(new Error("Invalid client")), { ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }

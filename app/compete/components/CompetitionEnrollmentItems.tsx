@@ -1,6 +1,6 @@
 "use client";
 
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { ArenaCompetitionEnrollmentQueryClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import { arenaCompetitionEnrollmentQueryKeys } from "~/codegen/ArenaCompetitionEnrollment.react-query";
@@ -8,6 +8,8 @@ import type { CategoryLeaf } from "~/hooks/useCategories";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import EnrollmentCard from "./EnrollmentCard";
+import { Spinner } from "@nextui-org/react";
+import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollment.types";
 
 interface CompetitionModuleSectionProps {
 	category: CategoryLeaf;
@@ -18,6 +20,7 @@ const CompetitionEnrollmentItems = ({
 }: CompetitionModuleSectionProps) => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const queryClient = useQueryClient();
 
 	const fetchEnrollments = async ({ pageParam = undefined }) => {
 		if (!cosmWasmClient) {
@@ -33,6 +36,16 @@ const CompetitionEnrollmentItems = ({
 			startAfter: pageParam,
 			filter: { category: { category_id: category.category_id?.toString() } },
 		});
+
+		for (const enrollment of data) {
+			queryClient.setQueryData<EnrollmentEntryResponse | undefined>(
+				arenaCompetitionEnrollmentQueryKeys.enrollment(
+					env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+					{ id: enrollment.id },
+				),
+				() => enrollment,
+			);
+		}
 
 		return {
 			items: data,
@@ -66,6 +79,14 @@ const CompetitionEnrollmentItems = ({
 		() => query.data?.pages.flatMap((page) => page.items) ?? [],
 		[query.data],
 	);
+
+	if (query.isInitialLoading) {
+		return (
+			<div className="flex justify-center">
+				<Spinner />
+			</div>
+		);
+	}
 
 	return (
 		<div className="grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
