@@ -134,6 +134,7 @@ const CreateCompetitionPage = () => {
 					expiration: convertToExpiration(values.expiration),
 					rules: values.rules.map((r) => r.rule),
 					rulesets: values.rulesets.map((r) => r.ruleset_id.toString()),
+					banner: values.banner,
 				};
 
 				if (values.useCrowdfunding) {
@@ -206,11 +207,7 @@ const CreateCompetitionPage = () => {
 						categoryId: commonMsg.categoryId,
 						competitionType,
 						competitionInfo: {
-							name: commonMsg.name,
-							description: commonMsg.description,
-							expiration: commonMsg.expiration,
-							rules: commonMsg.rules,
-							rulesets: commonMsg.rulesets,
+							...commonMsg,
 							additional_layered_fees: values.additionalLayeredFees?.map(
 								(x) => {
 									return { receiver: x.addr, tax: x.percentage.toString() };

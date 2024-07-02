@@ -4,12 +4,14 @@ import {
 	AccordionItem,
 	Button,
 	DatePicker,
+	Image,
 	Input,
 	Radio,
 	RadioGroup,
 	Textarea,
 	Tooltip,
 } from "@nextui-org/react";
+import NextImage from "next/image";
 import {
 	Controller,
 	useFieldArray,
@@ -18,9 +20,12 @@ import {
 } from "react-hook-form";
 import { FiInfo, FiPlus } from "react-icons/fi";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
+import { withIpfsSupport } from "~/helpers/IPFSHelpers";
+import { useEnv } from "~/hooks/useEnv";
 import AdditionalLayeredFeeItem from "./AdditionalLayeredFee";
 
 const BasicInformationForm = () => {
+	const { data: env } = useEnv();
 	const {
 		control,
 		formState: { isSubmitting },
@@ -34,9 +39,37 @@ const BasicInformationForm = () => {
 		control,
 		name: "additionalLayeredFees",
 	});
+	const bannerUrl = useWatch({ control, name: "banner" });
 
 	return (
 		<div className="space-y-6">
+			<Controller
+				name="banner"
+				control={control}
+				render={({ field, fieldState: { error } }) => (
+					<div className="space-y-2">
+						<Input
+							{...field}
+							label="Banner URL"
+							placeholder="Enter banner image URL"
+							isInvalid={!!error}
+							errorMessage={error?.message}
+							description="Provide a URL for the banner image (aspect ratio 16:9 recommended)"
+						/>
+						{bannerUrl && (
+							<Image
+								as={NextImage}
+								removeWrapper
+								width="320"
+								height="180"
+								alt="Competition Banner"
+								// biome-ignore lint/style/noNonNullAssertion: not null
+								src={withIpfsSupport(env.IPFS_GATEWAY, bannerUrl)!}
+							/>
+						)}
+					</div>
+				)}
+			/>
 			<Controller
 				name="name"
 				control={control}

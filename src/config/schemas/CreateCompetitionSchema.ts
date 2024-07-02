@@ -42,6 +42,7 @@ const DirectParticipationSchema = z.object({
 });
 
 const BaseCreateCompetitionSchema = z.object({
+	banner: z.string().optional(),
 	description: z
 		.string()
 		.min(1, { message: "Description is required" })
