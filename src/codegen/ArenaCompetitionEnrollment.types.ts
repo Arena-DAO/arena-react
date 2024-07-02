@@ -103,6 +103,8 @@ export type QueryMsg = {
     id: Uint128;
   };
 } | {
+  enrollment_count: {};
+} | {
   ownership: {};
 };
 export type EnrollmentFilter = {
@@ -123,6 +125,7 @@ export interface EnrollmentEntryResponse {
   category_id?: Uint128 | null;
   competition_info: CompetitionInfoResponse;
   competition_type: CompetitionType;
+  current_members: Uint64;
   entry_fee?: Coin | null;
   expiration: Expiration;
   has_triggered_expiration: boolean;

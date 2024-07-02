@@ -14,8 +14,10 @@ import {
 } from "@nextui-org/react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import type React from "react";
+import { useMemo } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { ArenaCoreQueryClient } from "~/codegen/ArenaCore.client";
+import { arenaCoreQueryKeys } from "~/codegen/ArenaCore.react-query";
 import type { Ruleset } from "~/codegen/ArenaCore.types";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
@@ -57,7 +59,7 @@ const RulesetsSelection: React.FC<RulesetsSelectionProps> = ({
 		const parsedData = data as unknown as Ruleset[];
 
 		return {
-			rulesets: parsedData,
+			items: parsedData,
 			nextCursor:
 				parsedData.length === env.PAGINATION_LIMIT
 					? parsedData[parsedData.length - 1]?.id
@@ -65,14 +67,28 @@ const RulesetsSelection: React.FC<RulesetsSelectionProps> = ({
 		};
 	};
 
-	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
-		useInfiniteQuery({
-			queryKey: ["rulesets", category_id],
-			queryFn: fetchRulesets,
-			getNextPageParam: (lastPage) => lastPage.nextCursor,
-		});
+	const queryKey = useMemo(
+		() =>
+			arenaCoreQueryKeys.queryExtension(env.ARENA_CORE_ADDRESS, {
+				msg: {
+					rulesets: {
+						category_id,
+					},
+				},
+			}),
+		[env.ARENA_CORE_ADDRESS, category_id],
+	);
 
-	const rulesets = data?.pages.flatMap((page) => page.rulesets) ?? [];
+	const query = useInfiniteQuery({
+		queryKey,
+		queryFn: fetchRulesets,
+		getNextPageParam: (lastPage) => lastPage.nextCursor,
+	});
+
+	const rulesets = useMemo(
+		() => query.data?.pages.flatMap((page) => page.items ?? []) ?? [],
+		[query.data],
+	);
 
 	return (
 		<div className="space-y-2">
@@ -83,11 +99,11 @@ const RulesetsSelection: React.FC<RulesetsSelectionProps> = ({
 				isStriped
 				hideHeader={rulesets.length === 0}
 				bottomContent={
-					hasNextPage && (
+					query.hasNextPage && (
 						<div className="flex justify-center">
 							<Button
-								isLoading={isFetchingNextPage}
-								onClick={() => fetchNextPage()}
+								isLoading={query.isFetchingNextPage}
+								onClick={() => query.fetchNextPage()}
 							>
 								Load More
 							</Button>
@@ -104,7 +120,7 @@ const RulesetsSelection: React.FC<RulesetsSelectionProps> = ({
 				</TableHeader>
 				<TableBody
 					items={rulesets}
-					isLoading={status === "loading"}
+					isLoading={query.isInitialLoading}
 					loadingContent={<Spinner color="white" />}
 					emptyContent={"No rulesets available"}
 				>

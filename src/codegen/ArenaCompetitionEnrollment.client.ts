@@ -23,6 +23,7 @@ export interface ArenaCompetitionEnrollmentReadOnlyInterface {
   }: {
     id: Uint128;
   }) => Promise<EnrollmentEntryResponse>;
+  enrollmentCount: () => Promise<Uint128>;
   ownership: () => Promise<OwnershipForString>;
 }
 export class ArenaCompetitionEnrollmentQueryClient implements ArenaCompetitionEnrollmentReadOnlyInterface {
@@ -34,6 +35,7 @@ export class ArenaCompetitionEnrollmentQueryClient implements ArenaCompetitionEn
     this.contractAddress = contractAddress;
     this.enrollments = this.enrollments.bind(this);
     this.enrollment = this.enrollment.bind(this);
+    this.enrollmentCount = this.enrollmentCount.bind(this);
     this.ownership = this.ownership.bind(this);
   }
 
@@ -63,6 +65,11 @@ export class ArenaCompetitionEnrollmentQueryClient implements ArenaCompetitionEn
       enrollment: {
         id
       }
+    });
+  };
+  enrollmentCount = async (): Promise<Uint128> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      enrollment_count: {}
     });
   };
   ownership = async (): Promise<OwnershipForString> => {

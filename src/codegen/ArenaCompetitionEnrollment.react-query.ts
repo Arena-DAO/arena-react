@@ -24,6 +24,10 @@ export const arenaCompetitionEnrollmentQueryKeys = {
     method: "enrollment",
     args
   }] as const),
+  enrollmentCount: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaCompetitionEnrollmentQueryKeys.address(contractAddress)[0],
+    method: "enrollment_count",
+    args
+  }] as const),
   ownership: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{ ...arenaCompetitionEnrollmentQueryKeys.address(contractAddress)[0],
     method: "ownership",
     args
@@ -56,6 +60,15 @@ export const arenaCompetitionEnrollmentQueries = {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   }),
+  enrollmentCount: <TData = Uint128,>({
+    client,
+    options
+  }: ArenaCompetitionEnrollmentEnrollmentCountQuery<TData>): UseQueryOptions<Uint128, Error, TData> => ({
+    queryKey: arenaCompetitionEnrollmentQueryKeys.enrollmentCount(client?.contractAddress),
+    queryFn: () => client ? client.enrollmentCount() : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
   ownership: <TData = OwnershipForString,>({
     client,
     options
@@ -78,6 +91,15 @@ export function useArenaCompetitionEnrollmentOwnershipQuery<TData = OwnershipFor
   options
 }: ArenaCompetitionEnrollmentOwnershipQuery<TData>) {
   return useQuery<OwnershipForString, Error, TData>(arenaCompetitionEnrollmentQueryKeys.ownership(client?.contractAddress), () => client ? client.ownership() : Promise.reject(new Error("Invalid client")), { ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
+}
+export interface ArenaCompetitionEnrollmentEnrollmentCountQuery<TData> extends ArenaCompetitionEnrollmentReactQuery<Uint128, TData> {}
+export function useArenaCompetitionEnrollmentEnrollmentCountQuery<TData = Uint128>({
+  client,
+  options
+}: ArenaCompetitionEnrollmentEnrollmentCountQuery<TData>) {
+  return useQuery<Uint128, Error, TData>(arenaCompetitionEnrollmentQueryKeys.enrollmentCount(client?.contractAddress), () => client ? client.enrollmentCount() : Promise.reject(new Error("Invalid client")), { ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }

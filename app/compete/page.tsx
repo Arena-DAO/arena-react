@@ -1,8 +1,9 @@
 "use client";
 
-import { BreadcrumbItem, Breadcrumbs, Tab, Tabs } from "@nextui-org/react";
+import { BreadcrumbItem, Breadcrumbs, Button, Link } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
+import { BsPlus } from "react-icons/bs";
 import {
 	type CategoryItem,
 	type SubCategory,
@@ -10,7 +11,7 @@ import {
 } from "~/hooks/useCategories";
 import { useEnv } from "~/hooks/useEnv";
 import CompetitionCategoryCard from "./components/CompetitionCategoryCard";
-import CompetitionModuleSection from "./components/CompetitionModuleSection";
+import CompetitionEnrollmentItems from "./components/CompetitionEnrollmentItems";
 
 const Compete = () => {
 	const searchParams = useSearchParams();
@@ -72,29 +73,16 @@ const Compete = () => {
 			)}
 			{"category_id" in categoryItem && (
 				<div>
-					<Tabs aria-label="Competition Modules">
-						<Tab key="wagers" title="Wagers">
-							<CompetitionModuleSection
-								category={categoryItem}
-								path="wager"
-								module_addr={env.ARENA_WAGER_MODULE_ADDRESS}
-							/>
-						</Tab>
-						<Tab key="leagues" title="Leagues">
-							<CompetitionModuleSection
-								category={categoryItem}
-								path="league"
-								module_addr={env.ARENA_LEAGUE_MODULE_ADDRESS}
-							/>
-						</Tab>
-						<Tab key="tournaments" title="Tournaments">
-							<CompetitionModuleSection
-								category={categoryItem}
-								path="tournament"
-								module_addr={env.ARENA_TOURNAMENT_MODULE_ADDRESS}
-							/>
-						</Tab>
-					</Tabs>
+					<div className="block text-right">
+						<Button
+							startContent={<BsPlus />}
+							as={Link}
+							href={`/compete/create?category=${category}`}
+						>
+							Create
+						</Button>
+					</div>
+					<CompetitionEnrollmentItems category={categoryItem} />
 				</div>
 			)}
 		</div>
