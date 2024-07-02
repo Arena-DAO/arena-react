@@ -34,6 +34,8 @@ const Compete = () => {
 				: undefined;
 		}
 
+		result.unshift({ title: "Categories", url: "", children: [], img: "" });
+
 		return result;
 	}, [categoryItem, categories.get]);
 
@@ -44,7 +46,10 @@ const Compete = () => {
 		<div className="mx-auto max-w-screen-xl space-y-4 px-10">
 			<Breadcrumbs>
 				{breadcrumbItems.map((item) => (
-					<BreadcrumbItem key={item.url} href={`/compete?category=${item.url}`}>
+					<BreadcrumbItem
+						key={item.title}
+						href={item.url ? `/compete?category=${item.url}` : "/compete"}
+					>
 						{item.title}
 					</BreadcrumbItem>
 				))}
