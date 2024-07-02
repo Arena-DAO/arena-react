@@ -1,14 +1,15 @@
+import Profile from "@/components/Profile";
 import {
-	Button,
 	Card,
 	CardBody,
-	CardFooter,
 	Chip,
 	Image,
 	Slider,
 	Tooltip,
 } from "@nextui-org/react";
+import NextImage from "next/image";
 import type React from "react";
+import { useMemo } from "react";
 import { FiClock, FiDollarSign, FiUsers } from "react-icons/fi";
 import type {
 	Coin,
@@ -38,84 +39,74 @@ const formatExpiration = (expiration: Expiration): string => {
 };
 
 const calculateCurrentPool = (
-	entryFee: Coin | null | undefined,
+	entryFee: Coin,
 	currentMembers: string,
 ): string => {
-	if (!entryFee) return "N/A";
 	const totalAmount = BigInt(entryFee.amount) * BigInt(currentMembers);
 	return `${totalAmount.toString()} ${entryFee.denom}`;
 };
 
 const calculateMinMembers = (type: CompetitionType): number => {
-	if ("wager" in type) {
-		return 2;
-	}
-	if ("league" in type) {
-		return Math.max(type.league.distribution.length, 2);
-	}
+	if ("wager" in type) return 2;
+	if ("league" in type) return Math.max(type.league.distribution.length, 2);
 	if ("tournament" in type) {
 		const eliminationType = type.tournament.elimination_type;
-		if ("double_elimination" === eliminationType) {
-			return Math.max(3, type.tournament.distribution.length);
-		}
-		return Math.max(4, type.tournament.distribution.length);
+		return "double_elimination" === eliminationType
+			? Math.max(3, type.tournament.distribution.length)
+			: Math.max(4, type.tournament.distribution.length);
 	}
-	return 2; // Default minimum if type is unknown
+	return 2;
 };
 
 const EnrollmentCard: React.FC<EnrollmentCardProps> = ({ enrollment }) => {
 	const currentMembers = Number(enrollment.current_members);
 	const maxMembers = Number(enrollment.max_members);
 	const minMembers = calculateMinMembers(enrollment.competition_type);
-
-	const currentPool = calculateCurrentPool(
-		enrollment.entry_fee,
-		enrollment.current_members,
+	const currentPool = useMemo(
+		() =>
+			enrollment.entry_fee
+				? calculateCurrentPool(enrollment.entry_fee, enrollment.current_members)
+				: null,
+		[enrollment.entry_fee, enrollment.current_members],
 	);
 
-	const sliderMarks = [
-		{
-			value: minMembers,
-			label: "Min",
-		},
-		{
-			value: maxMembers,
-			label: "Max",
-		},
-	];
-
 	return (
-		<Card className="w-full">
+		<Card isPressable>
 			{enrollment.competition_info.banner && (
 				<Image
+					as={NextImage}
 					src={enrollment.competition_info.banner}
 					alt={enrollment.competition_info.name}
-					className="h-48 w-full object-cover"
+					height="180"
+					width="320"
+					className="object-cover"
 				/>
 			)}
-			<CardBody className="overflow-visible py-2">
+			<CardBody className="p-3">
 				<div className="mb-2 flex items-center justify-between">
-					<h4 className="font-bold text-large">
+					<h2 className="font-bold text-lg">
 						{enrollment.competition_info.name}
-					</h4>
-					<Chip color="primary">
+					</h2>
+					<Chip color="warning" variant="flat" size="sm">
 						{getCompetitionTypeDisplay(enrollment.competition_type)}
 					</Chip>
 				</div>
-				<p className="mb-4 text-default-500 text-sm">
-					{enrollment.competition_info.description}
-				</p>
 
-				<div className="mb-4 grid grid-cols-2 gap-2">
-					<Tooltip content="Expiration">
-						<div className="flex items-center">
-							<FiClock className="mr-2" size={18} />
-							<span>{formatExpiration(enrollment.expiration)}</span>
-						</div>
-					</Tooltip>
+				<div className="mb-3">
+					<Profile address={enrollment.host} />
+				</div>
+
+				<div className="mb-3 flex items-center text-default-500">
+					<FiClock className="mr-2" />
+					<span className="text-sm">
+						Expires {formatExpiration(enrollment.expiration)}
+					</span>
+				</div>
+
+				<div className="mb-3 flex items-center justify-between">
 					<Tooltip content="Entry Fee">
 						<div className="flex items-center">
-							<FiDollarSign className="mr-2" size={18} />
+							<FiDollarSign className="mr-1" />
 							<span>
 								{enrollment.entry_fee
 									? `${enrollment.entry_fee.amount} ${enrollment.entry_fee.denom}`
@@ -123,48 +114,41 @@ const EnrollmentCard: React.FC<EnrollmentCardProps> = ({ enrollment }) => {
 							</span>
 						</div>
 					</Tooltip>
-					<Tooltip content="Current Pool">
-						<div className="flex items-center">
-							<FiDollarSign className="mr-2" size={18} />
-							<span>{currentPool}</span>
-						</div>
-					</Tooltip>
+					{currentPool && (
+						<Tooltip content={`Current Pool: ${currentPool}`}>
+							<div className="mb-2 flex items-center">
+								<FiDollarSign className="mr-1" />
+								<span className="font-semibold text-sm">{currentPool}</span>
+							</div>
+						</Tooltip>
+					)}
 				</div>
 
-				<div className="mb-4">
+				<div className="mb-2">
 					<Slider
 						label="Enrollment Progress"
-						showTooltip={true}
+						step={1}
 						maxValue={maxMembers}
 						minValue={0}
 						value={currentMembers}
-						className="max-w-md"
-						isDisabled
-						marks={sliderMarks}
+						color="primary"
+						showTooltip={true}
 						startContent={<FiUsers />}
 						endContent={<FiUsers />}
-						formatOptions={{ style: "decimal" }}
+						isDisabled
+						marks={[
+							{
+								value: minMembers,
+								label: "Min",
+							},
+							{
+								value: maxMembers,
+								label: "Max",
+							},
+						]}
 					/>
 				</div>
-
-				<div className="flex justify-between text-default-500 text-sm">
-					<span>Min: {minMembers}</span>
-					<span>Current: {currentMembers}</span>
-					<span>Max: {maxMembers}</span>
-				</div>
 			</CardBody>
-			<CardFooter className="justify-between">
-				<Button size="sm" variant="bordered">
-					View Details
-				</Button>
-				<Button
-					size="sm"
-					color="primary"
-					disabled={currentMembers >= maxMembers}
-				>
-					{currentMembers >= maxMembers ? "Full" : "Join Competition"}
-				</Button>
-			</CardFooter>
 		</Card>
 	);
 };

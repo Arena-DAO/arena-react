@@ -44,7 +44,7 @@ const Compete = () => {
 		return <h1 className="text-3xl">Category {category} not found</h1>;
 	}
 	return (
-		<div className="mx-auto max-w-screen-xl space-y-4 px-10">
+		<div className="mx-auto max-w-screen-xl space-y-4 p-4">
 			<Breadcrumbs>
 				{breadcrumbItems.map((item) => (
 					<BreadcrumbItem
@@ -55,7 +55,7 @@ const Compete = () => {
 					</BreadcrumbItem>
 				))}
 			</Breadcrumbs>
-			<h1 className="pt-4 pb-8 text-center text-5xl">
+			<h1 className="text-center text-5xl">
 				{categoryItem.title}{" "}
 				{"children" in categoryItem ? "Categories" : "Competitions"}
 			</h1>
@@ -72,8 +72,8 @@ const Compete = () => {
 				</div>
 			)}
 			{"category_id" in categoryItem && (
-				<div>
-					<div className="block text-right">
+				<>
+					<div className="flex justify-end">
 						<Button
 							startContent={<BsPlus />}
 							as={Link}
@@ -83,7 +83,7 @@ const Compete = () => {
 						</Button>
 					</div>
 					<CompetitionEnrollmentItems category={categoryItem} />
-				</div>
+				</>
 			)}
 		</div>
 	);
