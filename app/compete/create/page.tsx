@@ -424,53 +424,56 @@ const CreateCompetitionPage = () => {
 									</div>
 								}
 							>
-								<Card>
-									<CardBody>
-										{tab.key === "basics" && (
-											<>
-												<div className="flex flex-col items-start justify-between gap-2 pb-4 sm:flex-row sm:items-center sm:gap-0">
-													<h3>Competition Info</h3>
-													{category && <h3>Category: {category.title}</h3>}
-												</div>
-												<BasicInformationForm />
-												{competitionType === "league" && (
-													<>
-														<Divider className="my-6" />
-														<LeagueInformationForm />
-													</>
-												)}
-												{competitionType === "tournament" && (
-													<>
-														<Divider className="my-6" />
-														<TournamentInformationForm />
-													</>
-												)}
-											</>
-										)}
-										{tab.key === "rules" && <RulesAndRulesetsForm />}
-										{tab.key === "participants" && (
-											<>
-												<div className="flex flex-col items-start justify-between gap-2 pb-4 sm:flex-row sm:items-center sm:gap-0">
-													<h3>Participation Details</h3>
-													<Switch
-														isSelected={useCrowdfunding}
-														onValueChange={(checked) =>
-															setValue("useCrowdfunding", checked)
-														}
-													>
-														Use Crowdfunding
-													</Switch>
-												</div>
-												{useCrowdfunding ? (
-													<EnrollmentInformationForm />
-												) : (
-													<MembersAndDuesForm />
-												)}
-											</>
-										)}
-										{tab.key === "review" && <ReviewCompetition />}
-									</CardBody>
-								</Card>
+								{tab.key === "review" ? (
+									<ReviewCompetition />
+								) : (
+									<Card>
+										<CardBody>
+											{tab.key === "basics" && (
+												<>
+													<div className="flex flex-col items-start justify-between gap-2 pb-4 sm:flex-row sm:items-center sm:gap-0">
+														<h3>Competition Info</h3>
+														{category && <h3>Category: {category.title}</h3>}
+													</div>
+													<BasicInformationForm />
+													{competitionType === "league" && (
+														<>
+															<Divider className="my-6" />
+															<LeagueInformationForm />
+														</>
+													)}
+													{competitionType === "tournament" && (
+														<>
+															<Divider className="my-6" />
+															<TournamentInformationForm />
+														</>
+													)}
+												</>
+											)}
+											{tab.key === "rules" && <RulesAndRulesetsForm />}
+											{tab.key === "participants" && (
+												<>
+													<div className="flex flex-col items-start justify-between gap-2 pb-4 sm:flex-row sm:items-center sm:gap-0">
+														<h3>Participation Details</h3>
+														<Switch
+															isSelected={useCrowdfunding}
+															onValueChange={(checked) =>
+																setValue("useCrowdfunding", checked)
+															}
+														>
+															Use Crowdfunding
+														</Switch>
+													</div>
+													{useCrowdfunding ? (
+														<EnrollmentInformationForm />
+													) : (
+														<MembersAndDuesForm />
+													)}
+												</>
+											)}
+										</CardBody>
+									</Card>
+								)}
 							</Tab>
 						))}
 					</Tabs>

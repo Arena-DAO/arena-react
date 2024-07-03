@@ -89,40 +89,42 @@ const TournamentInformationForm = () => {
 			<h4 className="mb-4 font-semibold text-lg">Distribution</h4>
 			<div className="space-y-4">
 				{fields.map((field, index) => (
-					<div key={field.id} className="flex items-center space-x-2">
-						<div className="flex-grow">
-							<Controller
-								name={`tournamentInfo.distribution.${index}.percent`}
-								control={control}
-								render={({ field, fieldState: { error } }) => (
-									<Input
-										{...field}
-										type="number"
-										label={`Percentage for ${getNumberWithOrdinal(index + 1)} place`}
-										isRequired
-										placeholder="Enter percentage"
-										isInvalid={!!error}
-										errorMessage={error?.message}
-										endContent={<BsPercent />}
-										classNames={{ input: "text-right" }}
-										value={field.value?.toString()}
-										onChange={(e) =>
-											field.onChange(Number.parseFloat(e.target.value))
-										}
-										isDisabled={isSubmitting}
-									/>
-								)}
+					<Controller
+						key={field.id}
+						name={`tournamentInfo.distribution.${index}.percent`}
+						control={control}
+						render={({ field, fieldState: { error } }) => (
+							<Input
+								{...field}
+								type="number"
+								label={`Percentage for ${getNumberWithOrdinal(index + 1)} place`}
+								isRequired
+								placeholder="Enter percentage"
+								isInvalid={!!error}
+								errorMessage={error?.message}
+								endContent={
+									<div className="flex space-x-2">
+										<BsPercent className="mt-auto" />
+										<Button
+											isIconOnly
+											aria-label="Delete distribution"
+											onClick={() => remove(index)}
+											className="my-auto"
+											variant="faded"
+										>
+											<FiMinus />
+										</Button>
+									</div>
+								}
+								classNames={{ input: "text-right" }}
+								value={field.value?.toString()}
+								onChange={(e) =>
+									field.onChange(Number.parseFloat(e.target.value))
+								}
+								isDisabled={isSubmitting}
 							/>
-						</div>
-						<Button
-							color="danger"
-							isIconOnly
-							onClick={() => remove(index)}
-							isDisabled={isSubmitting}
-						>
-							<FiMinus />
-						</Button>
-					</div>
+						)}
+					/>
 				))}
 				<Button
 					onClick={() => append({ percent: 0 })}
@@ -134,14 +136,7 @@ const TournamentInformationForm = () => {
 			</div>
 			<div className="mt-6">
 				<Progress
-					size="md"
-					radius="sm"
-					classNames={{
-						base: "max-w-md",
-						track: "drop-shadow-md border border-default",
-						indicator: "bg-gradient-to-r from-pink-500 to-yellow-500",
-						label: "tracking-wider font-medium text-default-600",
-					}}
+					color="primary"
 					label="Total Distribution"
 					value={totalPercentage}
 					showValueLabel={true}

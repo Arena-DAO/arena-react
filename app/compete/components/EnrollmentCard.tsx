@@ -53,7 +53,7 @@ const EnrollmentCard: React.FC<EnrollmentCardProps> = ({ enrollment }) => {
 			)}
 			<CardBody className="p-3">
 				<div className="mt-auto mb-2 flex items-center justify-between">
-					<h2 className="font-bold text-lg">
+					<h2 className="truncate font-bold text-lg">
 						{enrollment.competition_info.name}
 					</h2>
 					<Chip color="warning" variant="flat" size="sm">

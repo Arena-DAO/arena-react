@@ -1,5 +1,6 @@
 import FormErrors from "@/components/FormErrors";
 import MaybeLink from "@/components/MaybeLink";
+import Profile from "@/components/Profile";
 import TokenInfo from "@/components/TokenInfo";
 import {
 	Button,
@@ -37,7 +38,7 @@ const ReviewCompetition = () => {
 			<CardHeader>
 				<h3 className="font-semibold text-xl">{title}</h3>
 			</CardHeader>
-			<CardBody className="gap-2">{content}</CardBody>
+			<CardBody className="gap-4">{content}</CardBody>
 		</Card>
 	);
 
@@ -173,31 +174,31 @@ const ReviewCompetition = () => {
 						<Chip color="primary">{values.competitionType}</Chip>,
 					)}
 					{renderKeyValue("Expiration", formatExpiration(values.expiration))}
-					{values.additionalLayeredFees &&
-						values.additionalLayeredFees.length > 0 &&
-						renderSection(
-							"Additional Layered Fees",
-							<Table aria-label="Additional Layered Fees table" removeWrapper>
-								<TableHeader>
-									<TableColumn>Receiver</TableColumn>
-									<TableColumn>Percentage</TableColumn>
-								</TableHeader>
-								<TableBody>
-									{values.additionalLayeredFees.map((fee, index) => (
-										// biome-ignore lint/suspicious/noArrayIndexKey: No key
-										<TableRow key={index}>
-											<TableCell>{fee.addr}</TableCell>
-											<TableCell>
-												<Progress value={fee.percentage} className="max-w-md" />
-												<span className="ml-2">{fee.percentage}%</span>
-											</TableCell>
-										</TableRow>
-									))}
-								</TableBody>
-							</Table>,
-						)}
 				</>,
 			)}
+
+			{values.additionalLayeredFees &&
+				values.additionalLayeredFees.length > 0 &&
+				renderSection(
+					"Additional Layered Fees",
+					<Table aria-label="Additional Layered Fees table" removeWrapper>
+						<TableHeader>
+							<TableColumn>Receiver</TableColumn>
+							<TableColumn>Percentage</TableColumn>
+						</TableHeader>
+						<TableBody>
+							{values.additionalLayeredFees.map((fee, index) => (
+								// biome-ignore lint/suspicious/noArrayIndexKey: No key
+								<TableRow key={index}>
+									<TableCell>
+										<Profile address={fee.addr} />
+									</TableCell>
+									<TableCell>{fee.percentage}%</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>,
+				)}
 
 			{renderRulesAndRulesets()}
 
@@ -280,13 +281,7 @@ const ReviewCompetition = () => {
 					<>
 						{renderKeyValue(
 							"Elimination Type",
-							<Chip
-								color={
-									values.tournamentInfo.eliminationType === "single"
-										? "primary"
-										: "secondary"
-								}
-							>
+							<Chip color="primary">
 								{values.tournamentInfo.eliminationType === "single"
 									? "Single Elimination"
 									: "Double Elimination"}

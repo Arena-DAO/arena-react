@@ -1,5 +1,5 @@
-import type React from "react";
 import { Progress } from "@nextui-org/react";
+import type React from "react";
 import { getNumberWithOrdinal } from "~/helpers/UIHelpers";
 
 interface DistributionDisplayProps {

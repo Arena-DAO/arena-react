@@ -4,6 +4,7 @@ import {
 	Card,
 	CardBody,
 	CardFooter,
+	CardHeader,
 	Spinner,
 	Table,
 	TableBody,
@@ -80,7 +81,7 @@ const EnrollmentMembers: React.FC<EnrollmentMembersProps> = ({
 
 	const members = useMemo(
 		() => data?.pages.flatMap((page) => page.members) || [],
-		[data?.pages.flatMap],
+		[data],
 	);
 
 	if (isLoading) return <Spinner />;
@@ -88,6 +89,9 @@ const EnrollmentMembers: React.FC<EnrollmentMembersProps> = ({
 
 	return (
 		<Card>
+			<CardHeader>
+				<h2>Members</h2>
+			</CardHeader>
 			<CardBody>
 				<Table aria-label="Enrolled Members" removeWrapper>
 					<TableHeader>

@@ -1,10 +1,10 @@
 "use client";
 
 import Profile from "@/components/Profile";
+import TokenInfo from "@/components/TokenInfo";
 import {
 	Card,
 	CardBody,
-	CardFooter,
 	CardHeader,
 	Chip,
 	Image,
@@ -30,11 +30,10 @@ import {
 } from "~/helpers/EnrollmentHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
+import DistributionDisplay from "./components/DistributionDisplay";
 import EnrollButton from "./components/EnrollButton";
 import EnrollmentMembers from "./components/EnrollmentMembers";
 import RulesSection from "./components/RulesSection";
-import TokenInfo from "@/components/TokenInfo";
-import DistributionDisplay from "./components/DistributionDisplay";
 
 const EnrollmentView = () => {
 	const { data: env } = useEnv();
@@ -72,31 +71,24 @@ const EnrollmentView = () => {
 
 	return (
 		<div className="container mx-auto space-y-4 p-4">
-			<Card className="mx-auto max-w-7xl">
-				<CardBody className="overflow-hidden p-0">
-					{enrollment.competition_info.banner && (
-						<Image
-							as={NextImage}
-							src={enrollment.competition_info.banner}
-							alt={enrollment.competition_info.name}
-							width={1280}
-							height={720}
-							className="z-0 h-full w-full object-cover"
-							removeWrapper
-						/>
-					)}
-				</CardBody>
-				<CardFooter className="flex justify-center">
-					<h1 className="text-center font-bold text-2xl">
-						{enrollment.competition_info.name}
-					</h1>
-				</CardFooter>
-			</Card>
-
+			<h1 className="text-center font-bold text-3xl">
+				{enrollment.competition_info.name}
+			</h1>
+			{enrollment.competition_info.banner && (
+				<Image
+					as={NextImage}
+					src={enrollment.competition_info.banner}
+					alt={enrollment.competition_info.name}
+					width={1280}
+					height={720}
+					className="z-0 h-full w-full"
+					removeWrapper
+				/>
+			)}
 			<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 				<Card>
 					<CardHeader>
-						<h2 className="font-semibold text-xl">Host</h2>
+						<h2>Host</h2>
 					</CardHeader>
 					<CardBody>
 						<div>
@@ -110,7 +102,7 @@ const EnrollmentView = () => {
 
 				<Card>
 					<CardHeader>
-						<h2 className="font-semibold text-xl">Expiration</h2>
+						<h2>Expiration</h2>
 					</CardHeader>
 					<CardBody>
 						<div className="flex items-center">
@@ -123,7 +115,7 @@ const EnrollmentView = () => {
 
 			<Card>
 				<CardHeader>
-					<h2 className="font-semibold text-xl">Description</h2>
+					<h2>Description</h2>
 				</CardHeader>
 				<CardBody>
 					<p>{enrollment.competition_info.description}</p>
@@ -132,7 +124,7 @@ const EnrollmentView = () => {
 
 			<Card>
 				<CardHeader className="flex items-center justify-between">
-					<h2 className="font-semibold text-xl">Competition Type</h2>
+					<h2>Competition Type</h2>
 					<Chip color="primary" variant="flat">
 						{getCompetitionTypeDisplay(enrollment.competition_type)}
 					</Chip>
@@ -140,20 +132,26 @@ const EnrollmentView = () => {
 				<CardBody>
 					{"league" in enrollment.competition_type && (
 						<div className="flex flex-col gap-4">
-							<h3 className="font-semibold text-lg">League Information</h3>
+							<h3>League Information</h3>
 							<div className="flex flex-wrap gap-2 pb-2">
-								<Chip>
-									<span className="font-semibold">Win:</span>{" "}
-									{enrollment.competition_type.league.match_win_points}
-								</Chip>
-								<Chip>
-									<span className="font-semibold">Draw:</span>{" "}
-									{enrollment.competition_type.league.match_draw_points}
-								</Chip>
-								<Chip>
-									<span className="font-semibold">Lose:</span>{" "}
-									{enrollment.competition_type.league.match_lose_points}
-								</Chip>
+								<Tooltip content="Number of points awarded for a win">
+									<Chip>
+										<span className="font-semibold">Win:</span>{" "}
+										{enrollment.competition_type.league.match_win_points}
+									</Chip>
+								</Tooltip>
+								<Tooltip content="Number of points awarded for a draw">
+									<Chip>
+										<span className="font-semibold">Draw:</span>{" "}
+										{enrollment.competition_type.league.match_draw_points}
+									</Chip>
+								</Tooltip>
+								<Tooltip content="Number of points awarded for a loss">
+									<Chip>
+										<span className="font-semibold">Lose:</span>{" "}
+										{enrollment.competition_type.league.match_lose_points}
+									</Chip>
+								</Tooltip>
 							</div>
 							<DistributionDisplay
 								distribution={enrollment.competition_type.league.distribution}
@@ -161,8 +159,8 @@ const EnrollmentView = () => {
 						</div>
 					)}
 					{"tournament" in enrollment.competition_type && (
-						<div className="mt-4">
-							<h3 className="font-semibold text-lg">Tournament Information</h3>
+						<div className="flex flex-col gap-4">
+							<h3>Tournament Information</h3>
 							<p>
 								Elimination Type:{" "}
 								{"double_elimination" ===
@@ -187,7 +185,7 @@ const EnrollmentView = () => {
 
 			<Card>
 				<CardHeader>
-					<h2 className="font-semibold text-xl">Rules and Rulesets</h2>
+					<h2>Rules and Rulesets</h2>
 				</CardHeader>
 				<CardBody>
 					<RulesSection
@@ -200,7 +198,7 @@ const EnrollmentView = () => {
 
 			<Card>
 				<CardHeader>
-					<h2 className="font-semibold text-xl">Enrollment Progress</h2>
+					<h2>Enrollment Progress</h2>
 				</CardHeader>
 				<CardBody>
 					<Slider
@@ -249,7 +247,7 @@ const EnrollmentView = () => {
 			{enrollment.competition_info.additional_layered_fees && (
 				<Card>
 					<CardHeader>
-						<h2 className="font-semibold text-xl">Additional Fees</h2>
+						<h2>Additional Fees</h2>
 					</CardHeader>
 					<CardBody>
 						<Table aria-label="Additional Fees" removeWrapper>
@@ -299,7 +297,7 @@ const EnrollmentView = () => {
 				{currentPool && (
 					<Card>
 						<CardHeader>
-							<h2 className="font-semibold text-xl">Current Pool</h2>
+							<h2>Current Pool</h2>
 						</CardHeader>
 						<CardBody>
 							<TokenInfo

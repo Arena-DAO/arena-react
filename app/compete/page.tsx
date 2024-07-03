@@ -77,6 +77,7 @@ const Compete = () => {
 							startContent={<BsPlus />}
 							as={Link}
 							href={`/compete/create?category=${category}`}
+							color="primary"
 						>
 							Create
 						</Button>

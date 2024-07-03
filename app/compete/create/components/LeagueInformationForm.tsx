@@ -100,35 +100,42 @@ const LeagueInformationForm = () => {
 			<h4 className="mb-4 font-semibold text-lg">Distribution</h4>
 			<div className="space-y-4">
 				{fields.map((field, index) => (
-					<div key={field.id} className="flex items-center space-x-2">
-						<div className="flex-grow">
-							<Controller
-								name={`leagueInfo.distribution.${index}.percent`}
-								control={control}
-								render={({ field, fieldState: { error } }) => (
-									<Input
-										{...field}
-										type="number"
-										label={`Percentage for ${getNumberWithOrdinal(index + 1)} place`}
-										isRequired
-										placeholder="Enter percentage"
-										isInvalid={!!error}
-										errorMessage={error?.message}
-										endContent={<BsPercent />}
-										classNames={{ input: "text-right" }}
-										value={field.value?.toString()}
-										onChange={(e) =>
-											field.onChange(Number.parseFloat(e.target.value))
-										}
-										description={`Percentage of the prize pool for the ${getNumberWithOrdinal(index + 1)} place`}
-									/>
-								)}
+					<Controller
+						key={field.id}
+						name={`leagueInfo.distribution.${index}.percent`}
+						control={control}
+						render={({ field, fieldState: { error } }) => (
+							<Input
+								{...field}
+								type="number"
+								label={`Percentage for ${getNumberWithOrdinal(index + 1)} place`}
+								isRequired
+								placeholder="Enter percentage"
+								isInvalid={!!error}
+								errorMessage={error?.message}
+								endContent={
+									<div className="flex space-x-2">
+										<BsPercent className="mt-auto" />
+										<Button
+											isIconOnly
+											aria-label="Delete distribution"
+											onClick={() => remove(index)}
+											className="my-auto"
+											variant="faded"
+										>
+											<FiMinus />
+										</Button>
+									</div>
+								}
+								classNames={{ input: "text-right" }}
+								value={field.value?.toString()}
+								onChange={(e) =>
+									field.onChange(Number.parseFloat(e.target.value))
+								}
+								description={`Percentage of the prize pool for the ${getNumberWithOrdinal(index + 1)} place`}
 							/>
-						</div>
-						<Button color="danger" isIconOnly onClick={() => remove(index)}>
-							<FiMinus />
-						</Button>
-					</div>
+						)}
+					/>
 				))}
 				<Button
 					onClick={() => append({ percent: 0 })}

@@ -109,16 +109,10 @@ function HomePage() {
 						The next iteration of competition infrastructure
 					</div>
 					<div className="mt-2 flex justify-center gap-4 md:justify-normal">
-						<Button as={Link} href="/compete" color="primary" variant="shadow">
+						<Button as={Link} href="/compete" color="primary">
 							Get Started
 						</Button>
-						<Button
-							as={Link}
-							href={env.DOCS_URL}
-							color="primary"
-							isExternal
-							variant="shadow"
-						>
+						<Button as={Link} href={env.DOCS_URL} color="primary" isExternal>
 							Learn More
 						</Button>
 					</div>
