@@ -58,7 +58,7 @@ const EnrollButton: React.FC<EnrollButtonProps> = ({
 						queryClient.invalidateQueries(
 							arenaCompetitionEnrollmentQueryKeys.enrollment(
 								env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
-								{ id: enrollmentId },
+								{ enrollmentId },
 							),
 						);
 						queryClient.invalidateQueries(

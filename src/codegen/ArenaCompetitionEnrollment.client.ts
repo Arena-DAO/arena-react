@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ExecuteMsg, Uint128, Binary, Decimal, Expiration, Timestamp, Uint64, CompetitionType, EliminationType, Action, CompetitionInfoMsg, FeeInformationForString, Coin, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, ArrayOfAddr, ArrayOfEnrollmentEntryResponse, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
+import { InstantiateMsg, ExecuteMsg, Uint128, Binary, Decimal, Expiration, Timestamp, Uint64, CompetitionType, EliminationType, Action, CompetitionInfoMsg, FeeInformationForString, Coin, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, ArrayOfAddr, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
 export interface ArenaCompetitionEnrollmentReadOnlyInterface {
   contractAddress: string;
   enrollments: ({
@@ -19,9 +19,9 @@ export interface ArenaCompetitionEnrollmentReadOnlyInterface {
     startAfter?: Uint128;
   }) => Promise<ArrayOfEnrollmentEntryResponse>;
   enrollment: ({
-    id
+    enrollmentId
   }: {
-    id: Uint128;
+    enrollmentId: Uint128;
   }) => Promise<EnrollmentEntryResponse>;
   enrollmentCount: () => Promise<Uint128>;
   enrollmentMembers: ({
@@ -33,6 +33,13 @@ export interface ArenaCompetitionEnrollmentReadOnlyInterface {
     limit?: number;
     startAfter?: string;
   }) => Promise<ArrayOfAddr>;
+  isMember: ({
+    addr,
+    enrollmentId
+  }: {
+    addr: string;
+    enrollmentId: Uint128;
+  }) => Promise<Boolean>;
   ownership: () => Promise<OwnershipForString>;
 }
 export class ArenaCompetitionEnrollmentQueryClient implements ArenaCompetitionEnrollmentReadOnlyInterface {
@@ -46,6 +53,7 @@ export class ArenaCompetitionEnrollmentQueryClient implements ArenaCompetitionEn
     this.enrollment = this.enrollment.bind(this);
     this.enrollmentCount = this.enrollmentCount.bind(this);
     this.enrollmentMembers = this.enrollmentMembers.bind(this);
+    this.isMember = this.isMember.bind(this);
     this.ownership = this.ownership.bind(this);
   }
 
@@ -67,13 +75,13 @@ export class ArenaCompetitionEnrollmentQueryClient implements ArenaCompetitionEn
     });
   };
   enrollment = async ({
-    id
+    enrollmentId
   }: {
-    id: Uint128;
+    enrollmentId: Uint128;
   }): Promise<EnrollmentEntryResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
       enrollment: {
-        id
+        enrollment_id: enrollmentId
       }
     });
   };
@@ -96,6 +104,20 @@ export class ArenaCompetitionEnrollmentQueryClient implements ArenaCompetitionEn
         enrollment_id: enrollmentId,
         limit,
         start_after: startAfter
+      }
+    });
+  };
+  isMember = async ({
+    addr,
+    enrollmentId
+  }: {
+    addr: string;
+    enrollmentId: Uint128;
+  }): Promise<Boolean> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      is_member: {
+        addr,
+        enrollment_id: enrollmentId
       }
     });
   };

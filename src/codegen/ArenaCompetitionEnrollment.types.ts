@@ -100,7 +100,7 @@ export type QueryMsg = {
   };
 } | {
   enrollment: {
-    id: Uint128;
+    enrollment_id: Uint128;
   };
 } | {
   enrollment_count: {};
@@ -109,6 +109,11 @@ export type QueryMsg = {
     enrollment_id: Uint128;
     limit?: number | null;
     start_after?: string | null;
+  };
+} | {
+  is_member: {
+    addr: string;
+    enrollment_id: Uint128;
   };
 } | {
   ownership: {};
@@ -151,6 +156,7 @@ export interface CompetitionInfoResponse {
 }
 export type ArrayOfAddr = Addr[];
 export type ArrayOfEnrollmentEntryResponse = EnrollmentEntryResponse[];
+export type Boolean = boolean;
 export interface OwnershipForString {
   owner?: string | null;
   pending_expiry?: Expiration | null;

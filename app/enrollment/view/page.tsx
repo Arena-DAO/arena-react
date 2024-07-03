@@ -53,7 +53,7 @@ const EnrollmentView = () => {
 				cosmWasmClient,
 				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
 			),
-		args: { id: enrollmentId || "" },
+		args: { enrollmentId: enrollmentId || "" },
 		options: { enabled: !!enrollmentId && !!cosmWasmClient },
 	});
 
