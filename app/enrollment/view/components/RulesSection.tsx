@@ -1,3 +1,4 @@
+import MaybeLink from "@/components/MaybeLink";
 import { Accordion, AccordionItem } from "@nextui-org/react";
 import type React from "react";
 import { useMemo } from "react";
@@ -44,14 +45,16 @@ const RulesSection: React.FC<RulesSectionProps> = ({
 	const rulesetsData = data as unknown as Ruleset[];
 
 	const accordionItems = useMemo(() => {
-		const allRules = rulesetsData?.map((ruleset) => ({
-			title: `Ruleset ${ruleset.id}`,
-			rules: ruleset.rules,
-			description: ruleset.description as string | undefined,
-		}));
+		const allRules =
+			rulesetsData?.map((ruleset) => ({
+				title: `Ruleset ${ruleset.id}`,
+				rules: ruleset.rules,
+				description: ruleset.description as string | undefined,
+			})) ?? [];
 
-		if (rules.length > 0)
+		if (rules.length > 0) {
 			allRules.push({ title: "Rules", rules: rules, description: undefined });
+		}
 
 		return allRules?.map((ruleSet, index) => (
 			<AccordionItem
@@ -60,11 +63,14 @@ const RulesSection: React.FC<RulesSectionProps> = ({
 				aria-label={ruleSet.title}
 				title={ruleSet.title}
 				subtitle={ruleSet.description}
+				classNames={{ title: "text-medium", content: "gap-2" }}
 			>
 				<ul className="list-inside list-disc">
 					{ruleSet.rules.map((rule, ruleIndex) => (
 						// biome-ignore lint/suspicious/noArrayIndexKey: best option
-						<li key={ruleIndex}>{rule}</li>
+						<li key={ruleIndex}>
+							<MaybeLink content={rule} />
+						</li>
 					))}
 				</ul>
 			</AccordionItem>
@@ -72,11 +78,7 @@ const RulesSection: React.FC<RulesSectionProps> = ({
 	}, [rules, rulesetsData]);
 
 	return (
-		<Accordion
-			aria-label="Rules"
-			selectionMode="multiple"
-			defaultExpandedKeys={["Rules"]}
-		>
+		<Accordion aria-label="Rules" selectionMode="multiple">
 			{accordionItems}
 		</Accordion>
 	);

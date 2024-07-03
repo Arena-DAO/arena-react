@@ -33,7 +33,7 @@ const EnrollmentMembers: React.FC<EnrollmentMembersProps> = ({
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 
 	const fetchMembers = async ({ pageParam = undefined }) => {
-		if (!cosmWasmClient) throw new Error("CosmWasm client not available");
+		if (!cosmWasmClient) throw new Error("Could not get CosmWasm client");
 
 		const client = new ArenaCompetitionEnrollmentQueryClient(
 			cosmWasmClient,
@@ -43,23 +43,17 @@ const EnrollmentMembers: React.FC<EnrollmentMembersProps> = ({
 		const result = await client.enrollmentMembers({
 			enrollmentId,
 			startAfter: pageParam,
-			limit: 20,
+			limit: env.PAGINATION_LIMIT,
 		});
 
 		return {
 			members: result,
-			nextCursor: result.length === 20 ? result[result.length - 1] : undefined,
+			nextCursor:
+				result.length === env.PAGINATION_LIMIT
+					? result[result.length - 1]
+					: undefined,
 		};
 	};
-
-	const queryKey = useMemo(
-		() =>
-			arenaCompetitionEnrollmentQueryKeys.enrollmentMembers(
-				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
-				{ enrollmentId },
-			),
-		[enrollmentId, env.ARENA_COMPETITION_ENROLLMENT_ADDRESS],
-	);
 
 	const {
 		data,
@@ -69,7 +63,10 @@ const EnrollmentMembers: React.FC<EnrollmentMembersProps> = ({
 		isLoading,
 		isError,
 	} = useInfiniteQuery({
-		queryKey,
+		queryKey: arenaCompetitionEnrollmentQueryKeys.enrollmentMembers(
+			env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+			{ enrollmentId },
+		),
 		queryFn: fetchMembers,
 		getNextPageParam: (lastPage) => lastPage.nextCursor,
 		enabled: !!cosmWasmClient,

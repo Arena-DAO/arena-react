@@ -39,8 +39,8 @@ const RulesetsSelection: React.FC<RulesetsSelectionProps> = ({
 	});
 
 	const fetchRulesets = async ({ pageParam = undefined }) => {
-		if (!cosmWasmClient || !category_id) {
-			return { rulesets: [], nextCursor: undefined };
+		if (!cosmWasmClient) {
+			throw Error("Could not get CosmWasm client");
 		}
 		const client = new ArenaCoreQueryClient(
 			cosmWasmClient,
@@ -67,22 +67,18 @@ const RulesetsSelection: React.FC<RulesetsSelectionProps> = ({
 		};
 	};
 
-	const queryKey = useMemo(
-		() =>
-			arenaCoreQueryKeys.queryExtension(env.ARENA_CORE_ADDRESS, {
-				msg: {
-					rulesets: {
-						category_id,
-					},
-				},
-			}),
-		[env.ARENA_CORE_ADDRESS, category_id],
-	);
-
 	const query = useInfiniteQuery({
-		queryKey,
+		queryKey: arenaCoreQueryKeys.queryExtension(env.ARENA_CORE_ADDRESS, {
+			msg: {
+				rulesets: {
+					category_id,
+				},
+				limit: env.PAGINATION_LIMIT,
+			},
+		}),
 		queryFn: fetchRulesets,
 		getNextPageParam: (lastPage) => lastPage.nextCursor,
+		enabled: !!cosmWasmClient,
 	});
 
 	const rulesets = useMemo(

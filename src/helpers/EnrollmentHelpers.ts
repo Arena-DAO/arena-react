@@ -23,9 +23,9 @@ export const formatExpiration = (expiration: Expiration): string => {
 export const calculateCurrentPool = (
 	entryFee: Coin,
 	currentMembers: string,
-): string => {
+): Coin => {
 	const totalAmount = BigInt(entryFee.amount) * BigInt(currentMembers);
-	return `${totalAmount.toString()} ${entryFee.denom}`;
+	return { amount: totalAmount.toString(), denom: entryFee.denom };
 };
 
 export const calculateMinMembers = (type: CompetitionType): number => {

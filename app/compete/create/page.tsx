@@ -127,8 +127,8 @@ const CreateCompetitionPage = () => {
 
 				let result: ExecuteResult;
 
+				const categoryId = category?.category_id?.toString();
 				const commonMsg = {
-					categoryId: category?.category_id?.toString(),
 					name: values.name,
 					description: values.description,
 					expiration: convertToExpiration(values.expiration),
@@ -204,7 +204,7 @@ const CreateCompetitionPage = () => {
 					}
 
 					result = await enrollmentClient.createEnrollment({
-						categoryId: commonMsg.categoryId,
+						categoryId,
 						competitionType,
 						competitionInfo: {
 							...commonMsg,
@@ -281,6 +281,7 @@ const CreateCompetitionPage = () => {
 							);
 							result = await wagerClient.createCompetition({
 								...commonMsg,
+								categoryId,
 								escrow,
 								shouldActivateOnFunded:
 									values.directParticipation.shouldActivateOnFunded,
@@ -304,6 +305,7 @@ const CreateCompetitionPage = () => {
 							);
 							result = await leagueClient.createCompetition({
 								...commonMsg,
+								categoryId,
 								escrow,
 								shouldActivateOnFunded:
 									values.directParticipation.shouldActivateOnFunded,
@@ -336,6 +338,7 @@ const CreateCompetitionPage = () => {
 							result = await tournamentClient.createCompetition({
 								...commonMsg,
 								escrow,
+								categoryId,
 								shouldActivateOnFunded:
 									values.directParticipation.shouldActivateOnFunded,
 								instantiateExtension: {
@@ -397,10 +400,8 @@ const CreateCompetitionPage = () => {
 	);
 
 	return (
-		<div className="mx-auto w-full max-w-screen-xl justify-center space-y-8 px-4 py-12 sm:px-6 lg:px-8">
-			<h1 className="mb-8 text-center font-bold text-5xl">
-				Create a Competition
-			</h1>
+		<div className="container mx-auto space-y-4 p-4">
+			<h1 className="pb-6 text-center text-5xl">Create a Competition</h1>
 
 			<FormProvider {...formMethods}>
 				<form onSubmit={handleSubmit(onSubmit)} className="space-y-8">

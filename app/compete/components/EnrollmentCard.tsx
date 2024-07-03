@@ -1,63 +1,22 @@
 import Profile from "@/components/Profile";
-import {
-	Card,
-	CardBody,
-	Chip,
-	Image,
-	Slider,
-	Tooltip,
-} from "@nextui-org/react";
+import TokenInfo from "@/components/TokenInfo";
+import { Card, CardBody, Chip, Image, Slider } from "@nextui-org/react";
 import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import type React from "react";
 import { useMemo } from "react";
-import { FiClock, FiDollarSign, FiUsers } from "react-icons/fi";
-import type {
-	Coin,
-	CompetitionType,
-	EnrollmentEntryResponse,
-	Expiration,
-} from "~/codegen/ArenaCompetitionEnrollment.types";
+import { FiClock, FiUsers } from "react-icons/fi";
+import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollment.types";
+import {
+	calculateCurrentPool,
+	calculateMinMembers,
+	formatExpiration,
+	getCompetitionTypeDisplay,
+} from "~/helpers/EnrollmentHelpers";
 
 interface EnrollmentCardProps {
 	enrollment: EnrollmentEntryResponse;
 }
-
-const getCompetitionTypeDisplay = (type: CompetitionType): string => {
-	if ("wager" in type) return "Wager";
-	if ("league" in type) return "League";
-	if ("tournament" in type) return "Tournament";
-	return "Unknown";
-};
-
-const formatExpiration = (expiration: Expiration): string => {
-	if ("at_height" in expiration) return `At height: ${expiration.at_height}`;
-	if ("at_time" in expiration) {
-		const date = new Date(Number.parseInt(expiration.at_time) / 1000000);
-		return date.toLocaleString();
-	}
-	return "Never";
-};
-
-const calculateCurrentPool = (
-	entryFee: Coin,
-	currentMembers: string,
-): string => {
-	const totalAmount = BigInt(entryFee.amount) * BigInt(currentMembers);
-	return `${totalAmount.toString()} ${entryFee.denom}`;
-};
-
-const calculateMinMembers = (type: CompetitionType): number => {
-	if ("wager" in type) return 2;
-	if ("league" in type) return Math.max(type.league.distribution.length, 2);
-	if ("tournament" in type) {
-		const eliminationType = type.tournament.elimination_type;
-		return "double_elimination" === eliminationType
-			? Math.max(3, type.tournament.distribution.length)
-			: Math.max(4, type.tournament.distribution.length);
-	}
-	return 2;
-};
 
 const EnrollmentCard: React.FC<EnrollmentCardProps> = ({ enrollment }) => {
 	const currentMembers = Number(enrollment.current_members);
@@ -80,7 +39,7 @@ const EnrollmentCard: React.FC<EnrollmentCardProps> = ({ enrollment }) => {
 			onPress={() =>
 				router.push(`/enrollment/view?enrollmentId=${enrollment.id}`)
 			}
-			className="w-80"
+			className="w-full"
 		>
 			{enrollment.competition_info.banner && (
 				<Image
@@ -89,11 +48,11 @@ const EnrollmentCard: React.FC<EnrollmentCardProps> = ({ enrollment }) => {
 					alt={enrollment.competition_info.name}
 					height="180"
 					width="320"
-					className="object-cover"
+					className="z-0 h-full w-full object-cover"
 				/>
 			)}
 			<CardBody className="p-3">
-				<div className="mb-2 flex items-center justify-between">
+				<div className="mt-auto mb-2 flex items-center justify-between">
 					<h2 className="font-bold text-lg">
 						{enrollment.competition_info.name}
 					</h2>
@@ -114,24 +73,28 @@ const EnrollmentCard: React.FC<EnrollmentCardProps> = ({ enrollment }) => {
 					</div>
 				</div>
 
-				<div className="mb-3 flex items-center justify-between">
-					<Tooltip content="Entry Fee">
-						<div className="flex items-center">
-							<FiDollarSign className="mr-1" />
-							<span>
-								{enrollment.entry_fee
-									? `${enrollment.entry_fee.amount} ${enrollment.entry_fee.denom}`
-									: "Free"}
-							</span>
-						</div>
-					</Tooltip>
+				<div className="mb-3 flex min-h-12 items-center justify-between">
+					<div className="flex items-center gap-2">
+						<span className="font-semibold text-sm">Entry:</span>
+						{enrollment.entry_fee ? (
+							<TokenInfo
+								isNative
+								denomOrAddress={enrollment.entry_fee.denom}
+								amount={BigInt(enrollment.entry_fee.amount)}
+							/>
+						) : (
+							<span className="text-sm">Free</span>
+						)}
+					</div>
 					{currentPool && (
-						<Tooltip content={`Current Pool: ${currentPool}`}>
-							<div className="mb-2 flex items-center">
-								<FiDollarSign className="mr-1" />
-								<span className="font-semibold text-sm">{currentPool}</span>
-							</div>
-						</Tooltip>
+						<div className="flex items-center gap-2">
+							<span className="font-semibold text-sm">Pool:</span>
+							<TokenInfo
+								isNative
+								denomOrAddress={currentPool.denom}
+								amount={BigInt(currentPool.amount)}
+							/>
+						</div>
 					)}
 				</div>
 

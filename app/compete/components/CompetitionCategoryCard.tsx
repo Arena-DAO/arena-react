@@ -1,18 +1,19 @@
 "use client";
 
-import { Card, CardFooter } from "@nextui-org/react";
+import { Card, CardFooter, type CardProps } from "@nextui-org/react";
 import { Image } from "@nextui-org/react";
 import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import type { SubCategory } from "~/hooks/useCategories";
 import { useEnv } from "~/hooks/useEnv";
 
-interface CompetitionCategoryCardProps {
+interface CompetitionCategoryCardProps extends CardProps {
 	category: SubCategory;
 }
 
 export default function CompetitionCategoryCard({
 	category,
+	...props
 }: CompetitionCategoryCardProps) {
 	const router = useRouter();
 	const { data: env } = useEnv();
@@ -21,7 +22,7 @@ export default function CompetitionCategoryCard({
 		<Card
 			isPressable
 			onPress={() => router.push(`/compete?category=${category.url}`)}
-			className="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3"
+			{...props}
 		>
 			<Image
 				as={NextImage}

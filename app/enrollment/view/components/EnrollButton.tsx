@@ -1,12 +1,18 @@
 import { useChain } from "@cosmos-kit/react";
 import { Button, Tooltip } from "@nextui-org/react";
+import { useQueryClient } from "@tanstack/react-query";
 import type React from "react";
 import { toast } from "react-toastify";
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
-import { useArenaCompetitionEnrollmentEnrollMutation } from "~/codegen/ArenaCompetitionEnrollment.react-query";
+import {
+	arenaCompetitionEnrollmentQueryKeys,
+	useArenaCompetitionEnrollmentEnrollMutation,
+} from "~/codegen/ArenaCompetitionEnrollment.react-query";
+import type { Coin } from "~/codegen/ArenaCompetitionEnrollment.types";
 import { useEnv } from "~/hooks/useEnv";
 
 interface EnrollButtonProps {
+	entryFee?: Coin | null;
 	enrollmentId: string;
 	isExpired: boolean;
 	isFull: boolean;
@@ -16,10 +22,12 @@ const EnrollButton: React.FC<EnrollButtonProps> = ({
 	enrollmentId,
 	isExpired,
 	isFull,
+	entryFee,
 }) => {
 	const { data: env } = useEnv();
 	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
 	const enrollMutation = useArenaCompetitionEnrollmentEnrollMutation();
+	const queryClient = useQueryClient();
 
 	const handleEnroll = async () => {
 		if (!address) {
@@ -39,16 +47,32 @@ const EnrollButton: React.FC<EnrollButtonProps> = ({
 				{
 					client: enrollmentClient,
 					msg: { id: enrollmentId },
+					args: {
+						funds: entryFee ? [entryFee] : undefined,
+					},
 				},
 				{
 					onSuccess: () => {
 						toast.success("Successfully enrolled in the competition!");
+
+						queryClient.invalidateQueries(
+							arenaCompetitionEnrollmentQueryKeys.enrollment(
+								env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+								{ id: enrollmentId },
+							),
+						);
+						queryClient.invalidateQueries(
+							arenaCompetitionEnrollmentQueryKeys.enrollmentMembers(
+								env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+								{ enrollmentId },
+							),
+						);
 					},
 				},
 			);
 		} catch (error) {
-			console.error("Enrollment error:", error);
-			toast.error("An error occurred while enrolling. Please try again.");
+			console.error(error);
+			toast.error((error as Error).toString());
 		}
 	};
 

@@ -1,4 +1,5 @@
 import FormErrors from "@/components/FormErrors";
+import MaybeLink from "@/components/MaybeLink";
 import TokenInfo from "@/components/TokenInfo";
 import {
 	Button,
@@ -36,12 +37,12 @@ const ReviewCompetition = () => {
 			<CardHeader>
 				<h3 className="font-semibold text-xl">{title}</h3>
 			</CardHeader>
-			<CardBody>{content}</CardBody>
+			<CardBody className="gap-2">{content}</CardBody>
 		</Card>
 	);
 
 	const renderKeyValue = (key: string, value: React.ReactNode) => (
-		<div className="flex justify-between py-2">
+		<div className="flex justify-between">
 			<span className="font-medium">{key}:</span>
 			<span>{value}</span>
 		</div>
@@ -55,7 +56,7 @@ const ReviewCompetition = () => {
 		);
 
 	const renderDistribution = (distribution: { percent: number }[]) => (
-		<Table aria-label="Distribution table">
+		<Table aria-label="Distribution table" removeWrapper>
 			<TableHeader>
 				<TableColumn>Place</TableColumn>
 				<TableColumn>Percentage</TableColumn>
@@ -120,7 +121,7 @@ const ReviewCompetition = () => {
 							{values.rules.map((rule, index) => (
 								// biome-ignore lint/suspicious/noArrayIndexKey: No key
 								<li key={index} className="mb-1">
-									{rule.rule}
+									<MaybeLink content={rule.rule} />
 								</li>
 							))}
 						</ul>

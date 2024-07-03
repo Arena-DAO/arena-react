@@ -1,6 +1,6 @@
 "use client";
 
-import { Spinner } from "@nextui-org/react";
+import { Button, Spinner } from "@nextui-org/react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { ArenaCompetitionEnrollmentQueryClient } from "~/codegen/ArenaCompetitionEnrollment.client";
@@ -24,7 +24,7 @@ const CompetitionEnrollmentItems = ({
 
 	const fetchEnrollments = async ({ pageParam = undefined }) => {
 		if (!cosmWasmClient) {
-			return { items: [] };
+			throw Error("Could not get CosmWasm client");
 		}
 
 		const client = new ArenaCompetitionEnrollmentQueryClient(
@@ -56,23 +56,19 @@ const CompetitionEnrollmentItems = ({
 		};
 	};
 
-	const queryKey = useMemo(
-		() =>
-			arenaCompetitionEnrollmentQueryKeys.enrollments(
-				env?.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
-				{
-					filter: {
-						category: { category_id: category.category_id?.toString() },
-					},
-				},
-			),
-		[env.ARENA_COMPETITION_ENROLLMENT_ADDRESS, category.category_id],
-	);
-
 	const query = useInfiniteQuery({
-		queryKey,
+		queryKey: arenaCompetitionEnrollmentQueryKeys.enrollments(
+			env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+			{
+				filter: {
+					category: { category_id: category.category_id?.toString() },
+				},
+				limit: env.PAGINATION_LIMIT,
+			},
+		),
 		queryFn: fetchEnrollments,
 		getNextPageParam: (lastPage) => lastPage.nextCursor,
+		enabled: !!cosmWasmClient,
 	});
 
 	const enrollments = useMemo(
@@ -89,13 +85,25 @@ const CompetitionEnrollmentItems = ({
 	}
 
 	return (
-		<div className="grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-			{enrollments.map((enrollment) => (
-				<EnrollmentCard
-					key={enrollment.id.toString()}
-					enrollment={enrollment}
-				/>
-			))}
+		<div>
+			<div className="grid grid-cols-1 justify-items-center gap-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+				{enrollments.map((enrollment) => (
+					<EnrollmentCard
+						key={enrollment.id.toString()}
+						enrollment={enrollment}
+					/>
+				))}
+			</div>
+			{query.hasNextPage && (
+				<div className="mt-4 flex justify-center">
+					<Button
+						onClick={() => query.fetchNextPage()}
+						isLoading={query.isFetchingNextPage}
+					>
+						Load More
+					</Button>
+				</div>
+			)}
 		</div>
 	);
 };
