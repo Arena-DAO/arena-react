@@ -45,6 +45,12 @@ export default function WalletConnectToggle() {
 					>
 						View Profile
 					</DropdownItem>
+					<DropdownItem
+						key="competitions"
+						href={`/user/competitions?host=${chainContext.address}`}
+					>
+						Competitions
+					</DropdownItem>
 				</DropdownMenu>
 			</Dropdown>
 		);

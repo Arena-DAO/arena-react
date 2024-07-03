@@ -19,7 +19,7 @@ interface BalanceDisplayProps {
 const BalanceDisplay = ({ balance }: BalanceDisplayProps) => {
 	return (
 		<>
-			{balance.native.length > 0 && (
+			{balance.native && balance.native.length > 0 && (
 				<Table removeWrapper aria-label="Native Balance">
 					<TableHeader>
 						<TableColumn className="w-1/2">Native Token</TableColumn>
@@ -43,7 +43,7 @@ const BalanceDisplay = ({ balance }: BalanceDisplayProps) => {
 					</TableBody>
 				</Table>
 			)}
-			{balance.cw20.length > 0 && (
+			{balance.cw20 && balance.cw20.length > 0 && (
 				<Table removeWrapper aria-label="Cw20 Balance">
 					<TableHeader>
 						<TableColumn className="w-1/2">Cw20 Token</TableColumn>

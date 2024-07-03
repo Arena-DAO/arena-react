@@ -62,7 +62,10 @@ const EnrollmentCard: React.FC<EnrollmentCardProps> = ({ enrollment }) => {
 				</div>
 
 				<div className="mb-3">
-					<Profile address={enrollment.host} />
+					<Profile
+						address={enrollment.host}
+						categoryId={enrollment.category_id}
+					/>
 				</div>
 
 				<div className="mb-3 flex items-center justify-between text-sm">
