@@ -1,15 +1,15 @@
 "use client";
 
+import { Spinner } from "@nextui-org/react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { ArenaCompetitionEnrollmentQueryClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import { arenaCompetitionEnrollmentQueryKeys } from "~/codegen/ArenaCompetitionEnrollment.react-query";
+import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollment.types";
 import type { CategoryLeaf } from "~/hooks/useCategories";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import EnrollmentCard from "./EnrollmentCard";
-import { Spinner } from "@nextui-org/react";
-import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollment.types";
 
 interface CompetitionModuleSectionProps {
 	category: CategoryLeaf;

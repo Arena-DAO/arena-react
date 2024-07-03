@@ -33,6 +33,7 @@ export interface ProfileProps extends Omit<UserProps, "name"> {
 	justAvatar?: boolean;
 	isTooltipDisabled?: boolean;
 	isRatingDisabled?: boolean; // Should not be checked by the WalletConnectToggle
+	categoryId?: string | null;
 }
 
 const Profile = ({
@@ -41,11 +42,16 @@ const Profile = ({
 	justAvatar = false,
 	isTooltipDisabled = false,
 	isRatingDisabled = false,
+	categoryId: categoryOverride = null,
 	...props
 }: ProfileProps) => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { data: category } = useCategory();
+	const categoryId = useMemo(
+		() => categoryOverride ?? category?.category_id?.toString(),
+		[categoryOverride, category?.category_id?.toString],
+	);
 
 	const isValid = useMemo(
 		() => isValidBech32Address(address, env.BECH32_PREFIX),
@@ -61,15 +67,12 @@ const Profile = ({
 				rating: {
 					addr: address,
 					// biome-ignore lint/style/noNonNullAssertion: Checked by enabled query
-					category_id: category?.category_id?.toString()!,
+					category_id: categoryId!,
 				},
 			},
 		},
 		options: {
-			enabled:
-				isValid &&
-				!isRatingDisabled &&
-				typeof category?.category_id === "number",
+			enabled: isValid && !isRatingDisabled && !!categoryId,
 		},
 	});
 
@@ -82,7 +85,7 @@ const Profile = ({
 	const tooltipContent = (
 		<Card shadow="none" classNames={{ header: "pb-0", footer: "px-0 py-1" }}>
 			{data?.name && justAvatar && <CardHeader>{data.name}</CardHeader>}
-			{category?.category_id && (
+			{categoryId && (
 				<CardBody>
 					Rating {Number.parseFloat(rating ?? "1500").toFixed(2)}
 				</CardBody>
