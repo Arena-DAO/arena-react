@@ -22,10 +22,10 @@ import { useSearchParams } from "next/navigation";
 import { FiClock, FiUsers } from "react-icons/fi";
 import { ArenaCompetitionEnrollmentQueryClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import { useArenaCompetitionEnrollmentEnrollmentQuery } from "~/codegen/ArenaCompetitionEnrollment.react-query";
+import { formatExpiration } from "~/helpers/CompetitionHelpers";
 import {
 	calculateCurrentPool,
 	calculateMinMembers,
-	formatExpiration,
 	getCompetitionTypeDisplay,
 } from "~/helpers/EnrollmentHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
@@ -70,7 +70,7 @@ const EnrollmentView = () => {
 		: null;
 
 	return (
-		<div className="container mx-auto space-y-4 p-4">
+		<div className="container mx-auto space-y-4">
 			<h1 className="text-center font-bold text-3xl">
 				{enrollment.competition_info.name}
 			</h1>

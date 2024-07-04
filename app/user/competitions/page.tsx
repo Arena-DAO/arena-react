@@ -1,12 +1,12 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { Tabs, Tab } from "@nextui-org/react";
 import Profile from "@/components/Profile";
+import { Tab, Tabs } from "@nextui-org/react";
+import { useSearchParams } from "next/navigation";
 import EnrollmentsList from "./components/EnrollmentsList";
-// import WagersList from "./components/WagersList";
-// import LeaguesList from "./components/LeaguesList";
-// import TournamentsList from "./components/TournamentsList";
+import LeaguesList from "./components/LeaguesList";
+import TournamentsList from "./components/TournamentsList";
+import WagersList from "./components/WagersList";
 
 const UserCompetitionsView = () => {
 	const searchParams = useSearchParams();
@@ -25,11 +25,11 @@ const UserCompetitionsView = () => {
 					<Profile address={hostAddress} />
 				</div>
 			)}
-			<Tabs aria-label="Competition Types">
+			<Tabs aria-label="Competition Types" classNames={{ panel: "mt-4" }}>
 				<Tab key="enrollments" title="Enrollments">
 					<EnrollmentsList hostAddress={hostAddress} />
 				</Tab>
-				{/* <Tab key="wagers" title="Wagers">
+				<Tab key="wagers" title="Wagers">
 					<WagersList hostAddress={hostAddress} />
 				</Tab>
 				<Tab key="leagues" title="Leagues">
@@ -37,7 +37,7 @@ const UserCompetitionsView = () => {
 				</Tab>
 				<Tab key="tournaments" title="Tournaments">
 					<TournamentsList hostAddress={hostAddress} />
-				</Tab> */}
+				</Tab>
 			</Tabs>
 		</div>
 	);

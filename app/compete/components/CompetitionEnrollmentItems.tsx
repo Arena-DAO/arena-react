@@ -1,5 +1,6 @@
 "use client";
 
+import CompetitionCard from "@/components/competition/CompetitionCard";
 import { Button, Spinner } from "@nextui-org/react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -9,7 +10,6 @@ import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollme
 import type { CategoryLeaf } from "~/hooks/useCategories";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import EnrollmentCard from "./EnrollmentCard";
 
 interface CompetitionModuleSectionProps {
 	category: CategoryLeaf;
@@ -88,9 +88,9 @@ const CompetitionEnrollmentItems = ({
 		<div>
 			<div className="grid grid-cols-1 justify-items-center gap-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 				{enrollments.map((enrollment) => (
-					<EnrollmentCard
+					<CompetitionCard
 						key={enrollment.id.toString()}
-						enrollment={enrollment}
+						competition={enrollment}
 					/>
 				))}
 			</div>

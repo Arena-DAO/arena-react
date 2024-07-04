@@ -1,8 +1,10 @@
 import { arenaLeagueModuleQueryKeys } from "~/codegen/ArenaLeagueModule.react-query";
 import { arenaTournamentModuleQueryKeys } from "~/codegen/ArenaTournamentModule.react-query";
 import { arenaWagerModuleQueryKeys } from "~/codegen/ArenaWagerModule.react-query";
+import type { Expiration } from "~/codegen/ArenaWagerModule.types";
 import type { Env } from "~/hooks/useEnv";
 import type { CompetitionType } from "~/types/CompetitionType";
+import { formatTimestampToDisplay } from "./DateHelpers";
 
 export const getCompetitionQueryKey = (
 	env: Env,
@@ -34,4 +36,11 @@ export const getCompetitionQueryKey = (
 		default:
 			throw new Error("Invalid competition type");
 	}
+};
+
+export const formatExpiration = (expiration: Expiration): string => {
+	if ("at_height" in expiration) return `At height: ${expiration.at_height}`;
+	if ("at_time" in expiration)
+		return formatTimestampToDisplay(expiration.at_time);
+	return "Never";
 };

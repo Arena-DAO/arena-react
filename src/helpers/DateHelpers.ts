@@ -6,4 +6,4 @@ export const formatExpirationTime = (time: string) =>
 	);
 
 export const formatTimestampToDisplay = (time: string) =>
-	new Date(Number(BigInt(time) / BigInt(1e6))).toLocaleTimeString();
+	new Date(Number(BigInt(time) / BigInt(1e6))).toLocaleString();

@@ -1,7 +1,6 @@
 import type {
 	Coin,
 	CompetitionType,
-	Expiration,
 } from "~/codegen/ArenaCompetitionEnrollment.types";
 
 export const getCompetitionTypeDisplay = (type: CompetitionType): string => {
@@ -9,15 +8,6 @@ export const getCompetitionTypeDisplay = (type: CompetitionType): string => {
 	if ("league" in type) return "League";
 	if ("tournament" in type) return "Tournament";
 	return "Unknown";
-};
-
-export const formatExpiration = (expiration: Expiration): string => {
-	if ("at_height" in expiration) return `At height: ${expiration.at_height}`;
-	if ("at_time" in expiration) {
-		const date = new Date(Number.parseInt(expiration.at_time) / 1000000);
-		return date.toLocaleString();
-	}
-	return "Never";
 };
 
 export const calculateCurrentPool = (

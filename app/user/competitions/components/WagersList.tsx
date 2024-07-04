@@ -1,34 +1,37 @@
 import CompetitionCard from "@/components/competition/CompetitionCard";
 import { Button, Spinner } from "@nextui-org/react";
 import { useInfiniteQuery } from "@tanstack/react-query";
+// components/WagersList.tsx
 import type React from "react";
-import { ArenaCompetitionEnrollmentQueryClient } from "~/codegen/ArenaCompetitionEnrollment.client";
-import { arenaCompetitionEnrollmentQueryKeys } from "~/codegen/ArenaCompetitionEnrollment.react-query";
+import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
+import { arenaWagerModuleQueryKeys } from "~/codegen/ArenaWagerModule.react-query";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 
-interface EnrollmentsListProps {
+interface WagersListProps {
 	hostAddress: string;
 }
 
-const EnrollmentsList: React.FC<EnrollmentsListProps> = ({ hostAddress }) => {
+const WagersList: React.FC<WagersListProps> = ({ hostAddress }) => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 
-	const enrollmentQuery = useInfiniteQuery({
-		queryKey: arenaCompetitionEnrollmentQueryKeys.enrollments(
-			env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
-			{ filter: { host: hostAddress } },
+	const wagersQuery = useInfiniteQuery({
+		queryKey: arenaWagerModuleQueryKeys.competitions(
+			env.ARENA_WAGER_MODULE_ADDRESS,
+			{
+				filter: { host: hostAddress },
+			},
 		),
 		queryFn: async ({ pageParam = undefined }) => {
 			if (!cosmWasmClient) throw new Error("Could not get CosmWasm client");
 
-			const client = new ArenaCompetitionEnrollmentQueryClient(
+			const client = new ArenaWagerModuleQueryClient(
 				cosmWasmClient,
-				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+				env.ARENA_WAGER_MODULE_ADDRESS,
 			);
 
-			return client.enrollments({
+			return client.competitions({
 				filter: { host: hostAddress },
 				startAfter: pageParam,
 				limit: env.PAGINATION_LIMIT,
@@ -41,32 +44,32 @@ const EnrollmentsList: React.FC<EnrollmentsListProps> = ({ hostAddress }) => {
 		enabled: !!cosmWasmClient,
 	});
 
-	if (enrollmentQuery.isLoading) {
-		return <Spinner label="Loading enrollments..." />;
+	if (wagersQuery.isLoading) {
+		return <Spinner label="Loading wagers..." />;
 	}
 
 	return (
 		<div className="gap-4">
 			<div className="grid grid-cols-1 justify-items-center gap-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-				{enrollmentQuery.data?.pages.map((page) =>
+				{wagersQuery.data?.pages.map((page) =>
 					page.map((x) => (
 						<CompetitionCard key={x.id} competition={x} hideHost />
 					)),
 				)}
 			</div>
-			{enrollmentQuery.hasNextPage && (
+			{wagersQuery.hasNextPage && (
 				<Button
-					onClick={() => enrollmentQuery.fetchNextPage()}
-					disabled={enrollmentQuery.isFetchingNextPage}
+					onClick={() => wagersQuery.fetchNextPage()}
+					disabled={wagersQuery.isFetchingNextPage}
 				>
-					{enrollmentQuery.isFetchingNextPage ? "Loading more..." : "Load More"}
+					{wagersQuery.isFetchingNextPage ? "Loading more..." : "Load More"}
 				</Button>
 			)}
-			{(enrollmentQuery.data?.pages[0]?.length ?? 0) === 0 && (
-				<p>No enrollments found.</p>
+			{(wagersQuery.data?.pages[0]?.length ?? 0) === 0 && (
+				<p>No wagers found.</p>
 			)}
 		</div>
 	);
 };
 
-export default EnrollmentsList;
+export default WagersList;
