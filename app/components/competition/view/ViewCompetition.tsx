@@ -3,43 +3,38 @@
 import MaybeLink from "@/components/MaybeLink";
 import Profile from "@/components/Profile";
 import {
-	Accordion,
-	AccordionItem,
 	Badge,
 	Button,
 	Card,
 	CardBody,
-	CardFooter,
 	CardHeader,
 	Chip,
-	DatePicker,
-	Input,
+	Divider,
+	Image,
 	Link,
-	Progress,
 	Table,
 	TableBody,
 	TableCell,
 	TableColumn,
 	TableHeader,
 	TableRow,
-	Textarea,
 	Tooltip,
 } from "@nextui-org/react";
-import { useSearchParams } from "next/navigation";
-import type { PropsWithChildren } from "react";
-import { BsArrowLeft, BsHourglassBottom, BsYinYang } from "react-icons/bs";
+import NextImage from "next/image";
+import { BsHourglassBottom, BsYinYang } from "react-icons/bs";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { statusColors } from "~/helpers/ArenaHelpers";
-import { formatExpirationTime } from "~/helpers/DateHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import type { CompetitionResponse } from "~/types/CompetitionResponse";
 import type { CompetitionType } from "~/types/CompetitionType";
+import ExpirationDisplay from "../ExpirationDisplay";
 import EscrowSection from "./components/EscrowSection";
 import EvidenceSection from "./components/EvidenceSection";
 import PresetDistributionForm from "./components/PresetDistributionForm";
 import ProcessForm from "./components/ProcessForm";
 import ResultSection from "./components/ResultSection";
 import RulesetsSection from "./components/RulesetsSection";
+import type { PropsWithChildren } from "react";
 
 interface ViewCompetitionProps extends PropsWithChildren {
 	moduleAddr: string;
@@ -51,123 +46,121 @@ interface ViewCompetitionProps extends PropsWithChildren {
 const ViewCompetition = ({
 	moduleAddr,
 	competition,
-	children,
 	hideProcess = false,
 	competitionType,
+	children,
 }: ViewCompetitionProps) => {
 	const { data: env } = useEnv();
 
-	const searchParams = useSearchParams();
-
-	const category = searchParams?.get("category");
-
 	return (
-		<div className="space-y-4">
-			{category && (
-				<Tooltip content="Return to competitions">
-					<Button as={Link} isIconOnly href={`/compete?category=${category}`}>
-						<BsArrowLeft />
-					</Button>
-				</Tooltip>
-			)}
-			<Card>
-				<CardHeader className="flex justify-between">
-					<h2>Host</h2>
-					<Badge
-						isOneChar
-						content={<BsHourglassBottom />}
-						color="warning"
-						aria-label="Expired"
-						isInvisible={
-							!(
-								competition.is_expired &&
-								(competition.status === "active" ||
-									competition.status === "pending")
-							)
-						}
-					>
-						<Chip color={statusColors[competition.status]}>
-							{competition.status}
-						</Chip>
-					</Badge>
-				</CardHeader>
-				<CardBody>
-					<div className="flex justify-between">
-						<Profile address={competition.host} />
-						{isValidContractAddress(competition.host, env.BECH32_PREFIX) && (
-							<Tooltip content="View through DAO DAO">
-								<Button
-									isIconOnly
-									as={Link}
-									href={`${env.DAO_DAO_URL}/dao/${
-										competition.host
-									}/apps?url=${encodeURIComponent(window.location.href)}`}
-									isExternal
-								>
-									<BsYinYang />
-								</Button>
-							</Tooltip>
-						)}
-					</div>
-				</CardBody>
-				<CardFooter>
-					<p className="text-warning text-xs">
-						Please remind your players to track their gameplay to help resolve
-						any disputes quickly and fairly.
-					</p>
-				</CardFooter>
-			</Card>
-			<Input label="Name" value={competition.name} readOnly />
-			<Textarea label="Description" value={competition.description} readOnly />
-			<div className="grid grid-cols-12 gap-2">
-				<Input
-					className="col-span-12 sm:col-span-6 lg:col-span-4"
-					label="Expiration"
-					value={
-						"at_time" in competition.expiration
-							? "At Time"
-							: "at_height" in competition.expiration
-								? "At Height"
-								: "Never"
-					}
-					readOnly
+		<div className="space-y-6">
+			<h1 className="text-center font-bold text-4xl">{competition.name}</h1>
+
+			{competition.banner && (
+				<Image
+					as={NextImage}
+					src={competition.banner}
+					alt={competition.name}
+					width={1280}
+					height={720}
+					className="h-64 w-full rounded-lg object-cover"
+					removeWrapper
 				/>
-				{"at_height" in competition.expiration && (
-					<Input
-						className="col-span-12 sm:col-span-6 lg:col-span-4"
-						label="Height"
-						type="number"
-						value={competition.expiration.at_height.toString()}
-						readOnly
-					/>
-				)}
-				{"at_time" in competition.expiration && (
-					<DatePicker
-						className="col-span-12 sm:col-span-6 lg:col-span-4"
-						label="Time"
-						value={formatExpirationTime(competition.expiration.at_time)}
-						isReadOnly
-					/>
-				)}
-			</div>
-			{(competition.rulesets.length > 0 || competition.rules.length > 0) && (
-				<Card className="min-w-fit max-w-lg">
-					<CardHeader>Rules</CardHeader>
-					<CardBody className="space-y-4">
-						{competition.rulesets.map((rulesetId) => (
-							<RulesetsSection key={rulesetId} rulesetId={rulesetId} />
-						))}
-						<ul className="list-inside list-disc">
-							{competition.rules.map((item, i) => (
-								// biome-ignore lint/suspicious/noArrayIndexKey: Best option for now
-								<li key={i} className="break-all">
-									<MaybeLink content={item} />
-								</li>
-							))}
-						</ul>
+			)}
+
+			<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+				<Card>
+					<CardHeader className="flex items-center justify-between">
+						<h2 className="font-semibold text-xl">Host</h2>
+						<Badge
+							isOneChar
+							content={<BsHourglassBottom />}
+							color="warning"
+							aria-label="Expired"
+							isInvisible={
+								!(
+									competition.is_expired &&
+									(competition.status === "active" ||
+										competition.status === "pending")
+								)
+							}
+						>
+							<Chip color={statusColors[competition.status]}>
+								{competition.status}
+							</Chip>
+						</Badge>
+					</CardHeader>
+					<CardBody>
+						<div className="flex items-center justify-between">
+							<Profile
+								address={competition.host}
+								categoryId={competition.category_id}
+							/>
+							{isValidContractAddress(competition.host, env.BECH32_PREFIX) && (
+								<Tooltip content="View through DAO DAO">
+									<Button
+										isIconOnly
+										as={Link}
+										href={`${env.DAO_DAO_URL}/dao/${
+											competition.host
+										}/apps?url=${encodeURIComponent(window.location.href)}`}
+										isExternal
+									>
+										<BsYinYang />
+									</Button>
+								</Tooltip>
+							)}
+						</div>
 					</CardBody>
 				</Card>
-			)}
+
+				<Card>
+					<CardHeader>
+						<h2 className="font-semibold text-xl">Expiration</h2>
+					</CardHeader>
+					<CardBody>
+						<ExpirationDisplay expiration={competition.expiration} />
+					</CardBody>
+				</Card>
+			</div>
+
+			<Card>
+				<CardHeader>
+					<h2 className="font-semibold text-xl">Description</h2>
+				</CardHeader>
+				<CardBody>
+					<p>{competition.description}</p>
+				</CardBody>
+			</Card>
+
+			{competition.rules.length > 0 ||
+				(competition.rulesets.length > 0 && (
+					<Card>
+						<CardHeader>
+							<h2 className="font-semibold text-xl">Rules and Rulesets</h2>
+						</CardHeader>
+						<CardBody className="space-y-4">
+							{competition.rulesets.map((rulesetId) => (
+								<RulesetsSection key={rulesetId} rulesetId={rulesetId} />
+							))}
+							{competition.rules.length > 0 && (
+								<>
+									<Divider />
+									<h3 className="font-semibold text-lg">Additional Rules</h3>
+									<ul className="list-inside list-disc">
+										{competition.rules.map((item, i) => (
+											// biome-ignore lint/suspicious/noArrayIndexKey: best option
+											<li key={i} className="break-all">
+												<MaybeLink content={item} />
+											</li>
+										))}
+									</ul>
+								</>
+							)}
+						</CardBody>
+					</Card>
+				))}
+
 			{(competition.status === "jailed" ||
 				competition.status === "inactive") && (
 				<EvidenceSection
@@ -176,6 +169,54 @@ const ViewCompetition = ({
 					hideIfEmpty={competition.status === "inactive"}
 				/>
 			)}
+
+			{competition.fees && (
+				<Card>
+					<CardHeader>
+						<h2 className="font-semibold text-xl">Additional Layered Fees</h2>
+					</CardHeader>
+					<CardBody>
+						<Table aria-label="Additional Fees" removeWrapper>
+							<TableHeader>
+								<TableColumn>Recipient</TableColumn>
+								<TableColumn>Percentage</TableColumn>
+							</TableHeader>
+							<TableBody emptyContent="No additional fees">
+								{competition.fees.map((x, i) => (
+									// biome-ignore lint/suspicious/noArrayIndexKey: best option
+									<TableRow key={i}>
+										<TableCell>
+											<Profile
+												address={x.receiver}
+												categoryId={competition.category_id}
+											/>
+										</TableCell>
+										<TableCell>{Number.parseFloat(x.tax) * 100}%</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					</CardBody>
+				</Card>
+			)}
+
+			{competition.escrow && (
+				<EscrowSection
+					escrow={competition.escrow}
+					competitionStatus={competition.status}
+					competitionType={competitionType}
+					competitionId={competition.id}
+				/>
+			)}
+
+			{competition.status === "inactive" && (
+				<ResultSection
+					moduleAddr={moduleAddr}
+					competitionId={competition.id}
+					categoryId={competition.category_id}
+				/>
+			)}
+
 			<div className="flex gap-2 overflow-x-auto">
 				{!hideProcess && competition.status === "active" && (
 					<ProcessForm
@@ -201,54 +242,6 @@ const ViewCompetition = ({
 					<PresetDistributionForm escrow={competition.escrow} />
 				)}
 			</div>
-			{competition.escrow && (
-				<EscrowSection
-					escrow={competition.escrow}
-					competitionStatus={competition.status}
-					competitionType={competitionType}
-					competitionId={competition.id}
-				/>
-			)}
-			{competition.status === "inactive" && (
-				<ResultSection moduleAddr={moduleAddr} competitionId={competition.id} />
-			)}
-			{competition.fees && (
-				<Accordion variant="splitted">
-					<AccordionItem
-						key="1"
-						aria-label="Additional Layered Fees"
-						title="Additional Layered Fees"
-						subtitle="Set additional fees to be automatically sent when a competition is processed"
-						isCompact
-						className="gap-4 overflow-x-auto"
-					>
-						<Table aria-label="Distribution" removeWrapper>
-							<TableHeader>
-								<TableColumn>Recipient</TableColumn>
-								<TableColumn>Percentage</TableColumn>
-							</TableHeader>
-							<TableBody emptyContent="No additional fees">
-								{competition.fees.map((x, i) => (
-									// biome-ignore lint/suspicious/noArrayIndexKey: best option
-									<TableRow key={i}>
-										<TableCell>
-											<Profile address={x.receiver} />
-										</TableCell>
-										<TableCell>
-											<Progress
-												aria-label="Percentage"
-												value={Number.parseFloat(x.tax) * 100}
-												color="primary"
-												showValueLabel
-											/>
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
-					</AccordionItem>
-				</Accordion>
-			)}
 			{children}
 		</div>
 	);

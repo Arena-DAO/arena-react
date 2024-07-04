@@ -22,15 +22,21 @@ import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 interface ResultSectionProps {
 	competitionId: string;
 	moduleAddr: string;
+	categoryId?: string | null;
 }
 
-const ResultSection = ({ competitionId, moduleAddr }: ResultSectionProps) => {
+const ResultSection = ({
+	competitionId,
+	moduleAddr,
+	categoryId,
+}: ResultSectionProps) => {
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { data, isLoading, isError } = useArenaWagerModuleResultQuery({
 		client:
 			cosmWasmClient &&
 			new ArenaWagerModuleQueryClient(cosmWasmClient, moduleAddr),
 		args: { competitionId },
+		options: { enabled: !!cosmWasmClient },
 	});
 
 	if (isError)
@@ -48,11 +54,21 @@ const ResultSection = ({ competitionId, moduleAddr }: ResultSectionProps) => {
 					{!data && <p className="font-bold text-lg">Draw</p>}
 					{data && (
 						<>
-							<Input
-								label="Remainder Address"
-								value={data?.remainder_addr}
-								readOnly
-							/>
+							{data?.remainder_addr && (
+								<div className="mb-4 flex items-center space-x-2">
+									<Profile
+										address={data.remainder_addr}
+										justAvatar
+										className="min-w-max"
+										categoryId={categoryId}
+									/>
+									<Input
+										label="Remainder Address"
+										value={data.remainder_addr}
+										readOnly
+									/>
+								</div>
+							)}
 
 							<Table aria-label="Distribution" removeWrapper>
 								<TableHeader>
@@ -63,7 +79,7 @@ const ResultSection = ({ competitionId, moduleAddr }: ResultSectionProps) => {
 									{data.member_percentages.map((item) => (
 										<TableRow key={item.addr}>
 											<TableCell>
-												<Profile address={item.addr} />
+												<Profile address={item.addr} categoryId={categoryId} />
 											</TableCell>
 											<TableCell>
 												<Progress

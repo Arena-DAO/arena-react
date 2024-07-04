@@ -8,6 +8,7 @@ import {
 	CardHeader,
 	Input,
 	Progress,
+	Spinner,
 	Tab,
 	Table,
 	TableBody,
@@ -32,7 +33,7 @@ const ViewWager = () => {
 	const searchParams = useSearchParams();
 	const competitionId = searchParams?.get("competitionId");
 
-	const { data } = useArenaLeagueModuleCompetitionQuery({
+	const { data, isLoading } = useArenaLeagueModuleCompetitionQuery({
 		client:
 			cosmWasmClient &&
 			new ArenaLeagueModuleQueryClient(
@@ -40,11 +41,10 @@ const ViewWager = () => {
 				env.ARENA_LEAGUE_MODULE_ADDRESS,
 			),
 		args: {
-			// biome-ignore lint/style/noNonNullAssertion: Checked by enabled option
-			competitionId: competitionId!,
+			competitionId: competitionId || "",
 		},
 		options: {
-			enabled: !!competitionId,
+			enabled: !!competitionId && !!cosmWasmClient,
 		},
 	});
 
@@ -53,9 +53,15 @@ const ViewWager = () => {
 			<h1 className="title text-center text-5xl">League id not provided...</h1>
 		);
 	}
+	if (isLoading) {
+		return (
+			<div className="flex justify-center">
+				<Spinner label="Loading league..." />
+			</div>
+		);
+	}
 	return (
-		<div className="mx-auto w-full max-w-screen-xl justify-center space-y-4 px-10">
-			<h1 className="title text-center text-5xl">View League</h1>
+		<div className="container mx-auto space-y-4">
 			{data && (
 				<ViewCompetition
 					competition={data}
@@ -69,7 +75,7 @@ const ViewWager = () => {
 							title="Leaderboard"
 							className="text-xs md:text-lg"
 						>
-							<LeaderboardDisplay league={data} />
+							<LeaderboardDisplay league={data} categoryId={data.category_id} />
 						</Tab>
 						<Tab
 							key="basic"

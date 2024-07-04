@@ -78,9 +78,9 @@ const EnrollButton: React.FC<EnrollButtonProps> = ({
 					},
 				},
 				{
-					onSuccess: () => {
+					onSuccess: async () => {
 						toast.success("Successfully enrolled in the competition!");
-						invalidateQueries();
+						await invalidateQueries();
 						queryClient.setQueryData(
 							arenaCompetitionEnrollmentQueryKeys.isMember(
 								env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
@@ -120,9 +120,9 @@ const EnrollButton: React.FC<EnrollButtonProps> = ({
 					msg: { id: enrollmentId },
 				},
 				{
-					onSuccess: () => {
+					onSuccess: async () => {
 						toast.success("Successfully withdrawn from the competition!");
-						invalidateQueries();
+						await invalidateQueries();
 						queryClient.setQueryData(
 							arenaCompetitionEnrollmentQueryKeys.isMember(
 								env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
@@ -142,14 +142,14 @@ const EnrollButton: React.FC<EnrollButtonProps> = ({
 		}
 	};
 
-	const invalidateQueries = () => {
-		queryClient.invalidateQueries(
+	const invalidateQueries = async () => {
+		await queryClient.invalidateQueries(
 			arenaCompetitionEnrollmentQueryKeys.enrollment(
 				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
 				{ enrollmentId },
 			),
 		);
-		queryClient.invalidateQueries(
+		await queryClient.invalidateQueries(
 			arenaCompetitionEnrollmentQueryKeys.enrollmentMembers(
 				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
 				{ enrollmentId },

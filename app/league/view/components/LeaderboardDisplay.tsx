@@ -24,9 +24,14 @@ import { useEnv } from "~/hooks/useEnv";
 
 interface LeaderboardDisplayProps extends CardProps {
 	league: CompetitionResponseForLeagueExt;
+	categoryId?: string | null;
 }
 
-const LeaderboardDisplay = ({ league, ...props }: LeaderboardDisplayProps) => {
+const LeaderboardDisplay = ({
+	league,
+	categoryId,
+	...props
+}: LeaderboardDisplayProps) => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { data } = useArenaLeagueModuleQueryExtensionQuery({
@@ -75,7 +80,7 @@ const LeaderboardDisplay = ({ league, ...props }: LeaderboardDisplayProps) => {
 						{(x) => (
 							<TableRow key={x.member}>
 								<TableCell>
-									<Profile address={x.member} />
+									<Profile address={x.member} categoryId={categoryId} />
 								</TableCell>
 								<TableCell>{x.matches_played}</TableCell>
 								<TableCell>{x.points}</TableCell>

@@ -8,6 +8,7 @@ import {
 	CardHeader,
 	Input,
 	Progress,
+	Spinner,
 	Switch,
 	Tab,
 	Table,
@@ -33,7 +34,7 @@ const ViewWager = () => {
 	const searchParams = useSearchParams();
 	const competitionId = searchParams?.get("competitionId");
 
-	const { data } = useArenaTournamentModuleCompetitionQuery({
+	const { data, isLoading } = useArenaTournamentModuleCompetitionQuery({
 		client:
 			cosmWasmClient &&
 			new ArenaTournamentModuleQueryClient(
@@ -41,11 +42,10 @@ const ViewWager = () => {
 				env.ARENA_TOURNAMENT_MODULE_ADDRESS,
 			),
 		args: {
-			// biome-ignore lint/style/noNonNullAssertion: Checked by enabled option
-			competitionId: competitionId!,
+			competitionId: competitionId || "",
 		},
 		options: {
-			enabled: !!competitionId,
+			enabled: !!competitionId && !!cosmWasmClient,
 		},
 	});
 
@@ -56,9 +56,15 @@ const ViewWager = () => {
 			</h1>
 		);
 	}
+	if (isLoading) {
+		return (
+			<div className="flex justify-center">
+				<Spinner label="Loading tournament..." />
+			</div>
+		);
+	}
 	return (
-		<div className="mx-auto w-full max-w-screen-xl justify-center space-y-4 px-10">
-			<h1 className="title text-center text-5xl">View Tournament</h1>
+		<div className="container mx-auto space-y-4">
 			{data && (
 				<ViewCompetition
 					competition={data}

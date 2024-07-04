@@ -122,7 +122,7 @@ const RoundDisplay = ({
 					},
 				},
 				{
-					onSuccess(response) {
+					onSuccess: async (response) => {
 						toast.success("The results were submitted");
 
 						queryClient.setQueryData<string | undefined>(
@@ -154,7 +154,7 @@ const RoundDisplay = ({
 							},
 						);
 
-						queryClient.invalidateQueries(
+						await queryClient.invalidateQueries(
 							arenaLeagueModuleQueryKeys.queryExtension(
 								env.ARENA_LEAGUE_MODULE_ADDRESS,
 								{ msg: { leaderboard: { league_id: leagueId } } },
@@ -204,7 +204,7 @@ const RoundDisplay = ({
 							);
 
 							if (escrow) {
-								queryClient.invalidateQueries(
+								await queryClient.invalidateQueries(
 									arenaEscrowQueryKeys.balances(escrow),
 								);
 							}
@@ -214,10 +214,9 @@ const RoundDisplay = ({
 					},
 				},
 			);
-			// biome-ignore lint/suspicious/noExplicitAny: Try-catch
-		} catch (e: any) {
+		} catch (e) {
 			console.error(e);
-			toast.error(e.toString());
+			toast.error((e as Error).toString());
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -235,10 +234,10 @@ const RoundDisplay = ({
 					{(x) => (
 						<TableRow key={x.match_number}>
 							<TableCell>
-								<Profile address={x.team_1} />
+								<Profile address={x.team_1} categoryId={categoryId} />
 							</TableCell>
 							<TableCell>
-								<Profile address={x.team_2} />
+								<Profile address={x.team_2} categoryId={categoryId} />
 							</TableCell>
 							<TableCell>
 								<Select

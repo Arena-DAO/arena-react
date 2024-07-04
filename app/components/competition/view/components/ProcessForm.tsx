@@ -26,11 +26,12 @@ import {
 } from "@nextui-org/react";
 import { useQueryClient } from "@tanstack/react-query";
 import type {} from "react";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { BsPercent } from "react-icons/bs";
 import { FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { ZodIssueCode, z } from "zod";
+import { ArenaCoreQueryClient } from "~/codegen/ArenaCore.client";
 import { arenaCoreQueryKeys } from "~/codegen/ArenaCore.react-query";
 import { arenaEscrowQueryKeys } from "~/codegen/ArenaEscrow.react-query";
 import { ArenaWagerModuleClient } from "~/codegen/ArenaWagerModule.client";
@@ -98,45 +99,13 @@ const ProcessForm = ({
 	const { data: env } = useEnv();
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
 
-	const processMutation = useArenaWagerModuleProcessCompetitionMutation({
-		onMutate: async () => {
-			queryClient.setQueryData<CompetitionResponse | undefined>(
-				getCompetitionQueryKey(env, competitionType, competitionId),
-				(old) => {
-					if (old) {
-						return { ...old, status: "inactive" };
-					}
-					return old;
-				},
-			);
-
-			if ("escrow" in props && props.escrow) {
-				queryClient.invalidateQueries(
-					arenaEscrowQueryKeys.balances(props.escrow),
-				);
-			}
-		},
-	});
-	const jailMutation = useArenaWagerModuleJailCompetitionMutation({
-		onMutate: async () => {
-			queryClient.setQueryData<CompetitionResponse | undefined>(
-				getCompetitionQueryKey(env, competitionType, competitionId),
-				(old) => {
-					if (old) {
-						return { ...old, status: "jailed" };
-					}
-					return old;
-				},
-			);
-		},
-	});
+	const processMutation = useArenaWagerModuleProcessCompetitionMutation();
+	const jailMutation = useArenaWagerModuleJailCompetitionMutation();
 
 	const {
 		control,
 		formState: { errors, isSubmitting },
-		watch,
 		handleSubmit,
-		getValues,
 	} = useForm<ProcessFormValues>({
 		resolver: zodResolver(ProcessFormSchema),
 		defaultValues: {
@@ -152,8 +121,14 @@ const ProcessForm = ({
 		control,
 		name: "distribution.member_percentages",
 	});
-	const percentages = watch("distribution.member_percentages");
-	const remainderAddr = watch("distribution.remainder_addr");
+	const percentages = useWatch({
+		control,
+		name: "distribution.member_percentages",
+	});
+	const remainderAddr = useWatch({
+		control,
+		name: "distribution.remainder_addr",
+	});
 
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -168,24 +143,52 @@ const ProcessForm = ({
 				address,
 				moduleAddr,
 			);
+
 			const distribution = convertToDistribution(values.distribution);
 
 			if ("is_expired" in props) {
+				const arenaCoreClient = new ArenaCoreQueryClient(
+					client,
+					env.ARENA_CORE_ADDRESS,
+				);
+
+				// Should cache this locally
+				const config = await arenaCoreClient.config();
+
 				await jailMutation.mutateAsync(
 					{
 						client: competitionClient,
 						msg: {
-							proposeMessage: {
-								competition_id: competitionId,
-								distribution,
-								title: values.title,
-								description: values.description,
-							},
+							competitionId,
+							distribution,
+							title: values.title,
+							description: values.description,
+						},
+						args: {
+							funds:
+								config.deposit_info && "native" in config.deposit_info.denom
+									? [
+											{
+												denom: config.deposit_info.denom.native,
+												amount: config.deposit_info.amount,
+											},
+										]
+									: undefined,
 						},
 					},
 					{
 						onSuccess: () => {
 							toast.success("The competition has been jailed");
+
+							queryClient.setQueryData<CompetitionResponse | undefined>(
+								getCompetitionQueryKey(env, competitionType, competitionId),
+								(old) => {
+									if (old) {
+										return { ...old, status: "jailed" };
+									}
+									return old;
+								},
+							);
 						},
 					},
 				);
@@ -199,8 +202,24 @@ const ProcessForm = ({
 						},
 					},
 					{
-						onSuccess: (response) => {
+						onSuccess: async (response) => {
 							toast.success("The competition has been processed successfully");
+
+							queryClient.setQueryData<CompetitionResponse | undefined>(
+								getCompetitionQueryKey(env, competitionType, competitionId),
+								(old) => {
+									if (old) {
+										return { ...old, status: "inactive" };
+									}
+									return old;
+								},
+							);
+
+							if ("escrow" in props && props.escrow) {
+								await queryClient.invalidateQueries(
+									arenaEscrowQueryKeys.balances(props.escrow),
+								);
+							}
 
 							if (categoryId) {
 								const ratingAdjustmentsEvent = response.events.find((event) =>
@@ -231,10 +250,9 @@ const ProcessForm = ({
 					},
 				);
 			}
-			// biome-ignore lint/suspicious/noExplicitAny: try-catch
-		} catch (e: any) {
+		} catch (e) {
 			console.error(e);
-			toast.error(e.toString());
+			toast.error((e as Error).toString());
 		}
 	};
 	const tryOpen = () => {
@@ -298,13 +316,19 @@ const ProcessForm = ({
 							provide an address for receiving any remaining funds. If no
 							members are provided, then funds will be refunded.
 						</p>
-						<div className="block">
+						<div className="flex items-center space-x-2">
+							{remainderAddr && (
+								<Profile
+									address={remainderAddr}
+									justAvatar
+									className="min-w-max"
+								/>
+							)}
 							<Controller
 								control={control}
 								name="distribution.remainder_addr"
 								render={({ field }) => (
 									<Input
-										className="max-w-3xl"
 										label="Remainder Address"
 										autoFocus
 										isDisabled={isSubmitting}
@@ -314,13 +338,6 @@ const ProcessForm = ({
 									/>
 								)}
 							/>
-							{remainderAddr && (
-								<Profile
-									className="mt-2"
-									address={remainderAddr}
-									hideIfInvalid
-								/>
-							)}
 						</div>
 						<Card>
 							<CardBody>
@@ -334,33 +351,36 @@ const ProcessForm = ({
 										{fields?.map((memberPercentage, i) => (
 											<TableRow key={memberPercentage.id} className="align-top">
 												<TableCell>
-													<Controller
-														control={control}
-														name={`distribution.member_percentages.${i}.addr`}
-														render={({ field }) => (
-															<Input
-																label={`Member ${i + 1}`}
-																isDisabled={isSubmitting}
-																isInvalid={
-																	!!errors.distribution?.member_percentages?.[i]
-																		?.addr
-																}
-																errorMessage={
-																	errors.distribution?.member_percentages?.[i]
-																		?.addr?.message
-																}
-																{...field}
-																className="min-w-80"
+													<div className="flex items-center space-x-2">
+														{percentages[i] && (
+															<Profile
+																address={percentages[i]?.addr}
+																justAvatar
+																className="min-w-max"
 															/>
 														)}
-													/>
-													<Profile
-														className="mt-2"
-														address={getValues(
-															`distribution.member_percentages.${i}.addr`,
-														)}
-														hideIfInvalid
-													/>
+														<Controller
+															control={control}
+															name={`distribution.member_percentages.${i}.addr`}
+															render={({ field }) => (
+																<Input
+																	label={`Member ${i + 1}`}
+																	isDisabled={isSubmitting}
+																	isInvalid={
+																		!!errors.distribution?.member_percentages?.[
+																			i
+																		]?.addr
+																	}
+																	errorMessage={
+																		errors.distribution?.member_percentages?.[i]
+																			?.addr?.message
+																	}
+																	{...field}
+																	className="min-w-80"
+																/>
+															)}
+														/>
+													</div>
 												</TableCell>
 												<TableCell className="align-top">
 													<Controller

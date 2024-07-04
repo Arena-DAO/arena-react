@@ -1,6 +1,7 @@
 "use client";
 
 import ViewCompetition from "@/components/competition/view/ViewCompetition";
+import { Spinner } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { useArenaWagerModuleCompetitionQuery } from "~/codegen/ArenaWagerModule.react-query";
@@ -13,7 +14,7 @@ const ViewWager = () => {
 	const searchParams = useSearchParams();
 	const competitionId = searchParams?.get("competitionId");
 
-	const { data } = useArenaWagerModuleCompetitionQuery({
+	const { data, isLoading } = useArenaWagerModuleCompetitionQuery({
 		client:
 			cosmWasmClient &&
 			new ArenaWagerModuleQueryClient(
@@ -21,11 +22,10 @@ const ViewWager = () => {
 				env.ARENA_WAGER_MODULE_ADDRESS,
 			),
 		args: {
-			// biome-ignore lint/style/noNonNullAssertion: Checked by enabled option
-			competitionId: competitionId!,
+			competitionId: competitionId || "",
 		},
 		options: {
-			enabled: !!competitionId,
+			enabled: !!competitionId && !!cosmWasmClient,
 		},
 	});
 
@@ -34,9 +34,16 @@ const ViewWager = () => {
 			<h1 className="title text-center text-5xl">Wager id not provided...</h1>
 		);
 	}
+	if (isLoading) {
+		return (
+			<div className="flex justify-center">
+				<Spinner label="Loading wager..." />
+			</div>
+		);
+	}
+
 	return (
-		<div className="mx-auto w-full max-w-screen-xl justify-center space-y-4 px-10">
-			<h1 className="title text-center text-5xl">View Wager</h1>
+		<div className="container mx-auto space-y-4">
 			{data && (
 				<ViewCompetition
 					competition={data}

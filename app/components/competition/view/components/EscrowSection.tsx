@@ -59,27 +59,7 @@ const EscrowSection = ({
 			cosmWasmClient && new ArenaEscrowQueryClient(cosmWasmClient, escrow),
 		args: { addr: address },
 	});
-	const withdrawMutation = useArenaEscrowWithdrawMutation({
-		onMutate: async () => {
-			queryClient.setQueryData<DumpStateResponse | undefined>(
-				arenaEscrowQueryKeys.dumpState(escrow, { addr: address }),
-				(old) => {
-					if (old) {
-						return { ...old, balance: undefined };
-					}
-					return old;
-				},
-			);
-
-			await queryClient.cancelQueries(arenaEscrowQueryKeys.balances(escrow));
-			await queryClient.invalidateQueries(
-				arenaEscrowQueryKeys.balances(escrow),
-			);
-
-			await queryClient.cancelQueries(arenaEscrowQueryKeys.dues(escrow));
-			await queryClient.invalidateQueries(arenaEscrowQueryKeys.dues(escrow));
-		},
-	});
+	const withdrawMutation = useArenaEscrowWithdrawMutation();
 
 	const deposit = async () => {
 		try {
@@ -112,9 +92,8 @@ const EscrowSection = ({
 
 			const response = await client.executeMultiple(address, msgs, "auto");
 
-			toast.success("Funds have been sucessfully deposited");
+			toast.success("Funds have been successfully deposited");
 
-			// Check if the response contains the activate action, so we can mark the competition as active
 			if (
 				response.events.find((event) =>
 					event.attributes.find(
@@ -133,10 +112,9 @@ const EscrowSection = ({
 				);
 				toast.success("The competition is now active");
 			}
-			// biome-ignore lint/suspicious/noExplicitAny: try-catch
-		} catch (e: any) {
+		} catch (e) {
 			console.error(e);
-			toast.error(e.toString());
+			toast.error((e as Error).toString());
 		}
 	};
 
@@ -154,75 +132,101 @@ const EscrowSection = ({
 					msg: {},
 				},
 				{
-					onSuccess: () => {
+					onSuccess: async () => {
 						toast.success("Funds have been successfully withdrawn");
+
+						queryClient.setQueryData<DumpStateResponse | undefined>(
+							arenaEscrowQueryKeys.dumpState(escrow, { addr: address }),
+							(old) => {
+								if (old) {
+									return { ...old, balance: undefined };
+								}
+								return old;
+							},
+						);
+
+						await queryClient.invalidateQueries(
+							arenaEscrowQueryKeys.balances(escrow),
+						);
+						await queryClient.invalidateQueries(
+							arenaEscrowQueryKeys.dues(escrow),
+						);
 					},
 				},
 			);
-			// biome-ignore lint/suspicious/noExplicitAny: try-catch
-		} catch (e: any) {
+		} catch (e) {
 			console.error(e);
-			toast.error(e.toString());
+			toast.error((e as Error).toString());
 		}
 	};
 
 	if (isLoading || !data) {
 		return (
 			<div className="flex justify-center">
-				<Spinner />
+				<Spinner size="lg" />
 			</div>
 		);
 	}
+
 	return (
-		<>
-			<div className="grid grid-cols-12 gap-4">
+		<Card className="w-full">
+			<CardHeader>
+				<h2 className="font-semibold text-xl">Escrow Information</h2>
+			</CardHeader>
+			<CardBody className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 				{data.balance && (
-					<Card className="col-span-12 md:col-span-6 lg:col-span-4">
-						<CardHeader>User Balance</CardHeader>
+					<Card shadow="sm">
+						<CardHeader>
+							<h3 className="font-medium text-lg">User Balance</h3>
+						</CardHeader>
 						<CardBody>
 							<BalanceDisplay balance={data.balance} />
 						</CardBody>
 						{!data.is_locked && (
-							<CardFooter>
-								<Button color="primary" onClick={withdraw}>
+							<CardBody>
+								<Button color="primary" onClick={withdraw} fullWidth>
 									Withdraw
 								</Button>
-							</CardFooter>
+							</CardBody>
 						)}
 					</Card>
 				)}
 				{data.due && (
-					<Card className="col-span-12 md:col-span-6 lg:col-span-4">
-						<CardHeader>User Due</CardHeader>
+					<Card shadow="sm">
+						<CardHeader>
+							<h3 className="font-medium text-lg">User Due</h3>
+						</CardHeader>
 						<CardBody>
 							<BalanceDisplay balance={data.due} />
 						</CardBody>
 						{!data.is_locked && (
-							<CardFooter>
-								<Button color="primary" onClick={deposit}>
+							<CardBody>
+								<Button color="primary" onClick={deposit} fullWidth>
 									Deposit
 								</Button>
-							</CardFooter>
+							</CardBody>
 						)}
 					</Card>
 				)}
 				{data.total_balance && (
-					<Card className="col-span-12 md:col-span-6 lg:col-span-4">
-						<CardHeader>Total Balance</CardHeader>
+					<Card shadow="sm">
+						<CardHeader>
+							<h3 className="font-medium text-lg">Total Balance</h3>
+						</CardHeader>
 						<CardBody>
 							<BalanceDisplay balance={data.total_balance} />
 						</CardBody>
 					</Card>
 				)}
-			</div>
-			<div className="flex flex-col justify-center gap-2 overflow-x-auto md:flex-row md:justify-start">
+			</CardBody>
+			<CardFooter className="gap-4">
 				{competitionStatus === "pending" && <DuesModal escrow={escrow} />}
 				{competitionStatus !== "pending" && (
 					<InitialDuesModal escrow={escrow} />
 				)}
 				<BalancesModal escrow={escrow} />
-			</div>
-		</>
+			</CardFooter>
+		</Card>
 	);
 };
 
