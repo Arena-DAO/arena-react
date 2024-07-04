@@ -21,6 +21,7 @@ import {
 	Tooltip,
 } from "@nextui-org/react";
 import NextImage from "next/image";
+import type { PropsWithChildren } from "react";
 import { BsHourglassBottom, BsYinYang } from "react-icons/bs";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { statusColors } from "~/helpers/ArenaHelpers";
@@ -34,7 +35,6 @@ import PresetDistributionForm from "./components/PresetDistributionForm";
 import ProcessForm from "./components/ProcessForm";
 import ResultSection from "./components/ResultSection";
 import RulesetsSection from "./components/RulesetsSection";
-import type { PropsWithChildren } from "react";
 
 interface ViewCompetitionProps extends PropsWithChildren {
 	moduleAddr: string;
