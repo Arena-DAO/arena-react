@@ -205,6 +205,9 @@ const RoundDisplay = ({
 
 							if (escrow) {
 								await queryClient.invalidateQueries(
+									arenaEscrowQueryKeys.dumpState(escrow),
+								);
+								await queryClient.invalidateQueries(
 									arenaEscrowQueryKeys.balances(escrow),
 								);
 							}

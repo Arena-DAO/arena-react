@@ -25,9 +25,6 @@ type SelectItemType = {
 
 const MatchNode = memo(
 	({ data, targetPosition, sourcePosition }: MatchNodeProps) => {
-		const currentMatchResult = useMatchResultsStore((state) =>
-			state.get(data.match_number),
-		);
 		const removeMatchResult = useMatchResultsStore((state) => state.remove);
 		const setMatchResult = useMatchResultsStore((state) => state.add);
 
@@ -73,7 +70,7 @@ const MatchNode = memo(
 							labelPlacement="outside"
 							size="lg"
 							isDisabled={!data.team_1 || !data.team_2}
-							selectedKeys={currentMatchResult ? [currentMatchResult] : []}
+							defaultSelectedKeys={data.result ? [data.result] : []}
 							onChange={(e) => {
 								if (!e.target.value) {
 									removeMatchResult(data.match_number);

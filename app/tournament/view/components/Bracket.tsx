@@ -1,5 +1,4 @@
-import { useAsyncList } from "@react-stately/data";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import ReactFlow, {
 	Background,
 	Controls,
@@ -24,7 +23,7 @@ import "reactflow/dist/style.css";
 import { useChain } from "@cosmos-kit/react";
 import dagre from "@dagrejs/dagre";
 import { Button, ButtonGroup } from "@nextui-org/react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { create } from "zustand";
 import { arenaCoreQueryKeys } from "~/codegen/ArenaCore.react-query";
@@ -162,69 +161,73 @@ function Bracket({ tournamentId, escrow, categoryId }: BracketProps) {
 	const processMatchesMutation = useArenaTournamentModuleExtensionMutation();
 
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
-	const [hasMore, setHasMore] = useState(false);
 	const [nodes, setNodes, onNodesChange] = useNodesState([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 	const updates = useMatchResultsStore((state) => state.matchResults);
-	const addMatchResult = useMatchResultsStore((state) => state.add);
 
-	const { loadMore, loadingState } = useAsyncList<Match, string | undefined>({
-		async load({ cursor }) {
-			if (!cosmWasmClient) {
-				return { items: [] };
-			}
+	const fetchMatches = async ({ pageParam = undefined }) => {
+		if (!cosmWasmClient) {
+			throw new Error("CosmWasm client not available");
+		}
 
-			const client = new ArenaTournamentModuleQueryClient(
-				cosmWasmClient,
+		const client = new ArenaTournamentModuleQueryClient(
+			cosmWasmClient,
+			env.ARENA_TOURNAMENT_MODULE_ADDRESS,
+		);
+
+		const data = (await client.queryExtension({
+			msg: { bracket: { tournament_id: tournamentId, start_after: pageParam } },
+		})) as unknown as Match[];
+
+		return {
+			items: data,
+			nextCursor:
+				data.length === env.PAGINATION_LIMIT
+					? data[data.length - 1]?.match_number
+					: undefined,
+		};
+	};
+
+	const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+		useInfiniteQuery({
+			queryKey: arenaTournamentModuleQueryKeys.queryExtension(
 				env.ARENA_TOURNAMENT_MODULE_ADDRESS,
-			);
-
-			const data = (await client.queryExtension({
-				msg: { bracket: { tournament_id: tournamentId, start_after: cursor } },
-			})) as unknown as Match[];
-			setHasMore(data.length === env.PAGINATION_LIMIT);
-
-			// connect nodes
-			const { nodes: newNodes, edges: newEdges } =
-				convertMatchesToNodesEdges(data);
-			const { nodes: layoutedNodes, edges: layoutedEdges } =
-				getLayoutedElements([...nodes, ...newNodes], [...edges, ...newEdges], {
-					direction: "LR",
-				});
-			setNodes([...layoutedNodes]);
-			setEdges([...layoutedEdges]);
-
-			for (const match of data) {
-				if (match.result) {
-					addMatchResult({
-						match_number: match.match_number,
-						match_result: match.result,
-					});
-				}
-			}
-
-			return {
-				items: data,
-				cursor: data[data.length - 1]?.match_number,
-			};
-		},
-	});
+				{
+					msg: { bracket: { tournament_id: tournamentId } },
+				},
+			),
+			queryFn: fetchMatches,
+			getNextPageParam: (lastPage) => lastPage.nextCursor,
+			enabled: !!cosmWasmClient,
+		});
 
 	useEffect(() => {
-		if (hasMore && loadingState === "idle") {
-			loadMore();
+		if (hasNextPage && !isFetchingNextPage) {
+			fetchNextPage();
 		}
-	}, [hasMore, loadingState, loadMore]);
+	}, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+	useEffect(() => {
+		if (data) {
+			const allMatches = data.pages.flatMap((page) => page.items);
+			const { nodes: newNodes, edges: newEdges } =
+				convertMatchesToNodesEdges(allMatches);
+			const { nodes: layoutedNodes, edges: layoutedEdges } =
+				getLayoutedElements(newNodes, newEdges, { direction: "LR" });
+
+			setNodes(layoutedNodes);
+			setEdges(layoutedEdges);
+		}
+	}, [data, setNodes, setEdges]);
 
 	const onLayout = useCallback(
 		(direction: string) => {
 			const { nodes: layoutedNodes, edges: layoutedEdges } =
 				getLayoutedElements(nodes, edges, { direction });
-
 			setNodes([...layoutedNodes]);
 			setEdges([...layoutedEdges]);
 		},
-		[nodes, edges, setEdges, setNodes],
+		[nodes, edges, setNodes, setEdges],
 	);
 
 	const onSubmit = async () => {
@@ -255,18 +258,20 @@ function Bracket({ tournamentId, escrow, categoryId }: BracketProps) {
 					},
 				},
 				{
-					onSuccess(response) {
-						useMatchResultsStore.setState(() => ({ matchResults: new Map() }));
+					onSuccess: async (response) => {
 						toast.success("Matches were processed successfully");
 
-						queryClient.invalidateQueries(
+						// Update the query data
+						await queryClient.invalidateQueries(
 							arenaTournamentModuleQueryKeys.queryExtension(
-								env.ARENA_LEAGUE_MODULE_ADDRESS,
+								env.ARENA_TOURNAMENT_MODULE_ADDRESS,
 								{
 									msg: { bracket: { tournament_id: tournamentId } },
 								},
 							),
 						);
+
+						useMatchResultsStore.setState(() => ({ matchResults: new Map() }));
 
 						if (categoryId) {
 							const ratingAdjustmentsEvent = response.events.find((event) =>
@@ -311,7 +316,10 @@ function Bracket({ tournamentId, escrow, categoryId }: BracketProps) {
 							);
 
 							if (escrow) {
-								queryClient.invalidateQueries(
+								await queryClient.invalidateQueries(
+									arenaEscrowQueryKeys.dumpState(escrow),
+								);
+								await queryClient.invalidateQueries(
 									arenaEscrowQueryKeys.balances(escrow),
 								);
 							}
@@ -321,11 +329,9 @@ function Bracket({ tournamentId, escrow, categoryId }: BracketProps) {
 					},
 				},
 			);
-
-			// biome-ignore lint/suspicious/noExplicitAny: try-catch
-		} catch (e: any) {
+		} catch (e) {
 			console.error(e);
-			toast.error(e.toString());
+			toast.error((e as Error).toString());
 		}
 	};
 

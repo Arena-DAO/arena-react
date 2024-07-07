@@ -8,7 +8,7 @@ const Jailhouse = () => {
 	const { data: env } = useEnv();
 
 	return (
-		<div className="mx-auto max-w-screen-xl space-y-4 px-10">
+		<div className="container mx-auto space-y-4">
 			<h1 className="title text-center text-5xl">Jailhouse</h1>
 			<Tabs aria-label="Competition Modules">
 				<Tab key="wagers" title="Wagers">

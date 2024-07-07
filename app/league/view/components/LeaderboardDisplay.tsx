@@ -42,6 +42,7 @@ const LeaderboardDisplay = ({
 				env.ARENA_LEAGUE_MODULE_ADDRESS,
 			),
 		args: { msg: { leaderboard: { league_id: league.id } } },
+		options: { enabled: !!cosmWasmClient },
 	});
 
 	const parsedData = useMemo(() => {
