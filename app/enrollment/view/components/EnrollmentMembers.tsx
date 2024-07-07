@@ -61,7 +61,7 @@ const EnrollmentMembers: React.FC<EnrollmentMembersProps> = ({
 		fetchNextPage,
 		hasNextPage,
 		isFetchingNextPage,
-		isLoading,
+		isInitialLoading,
 		isError,
 	} = useInfiniteQuery({
 		queryKey: arenaCompetitionEnrollmentQueryKeys.enrollmentMembers(
@@ -84,7 +84,8 @@ const EnrollmentMembers: React.FC<EnrollmentMembersProps> = ({
 		[data],
 	);
 
-	if (isLoading) return <Spinner />;
+	if (!cosmWasmClient || isInitialLoading)
+		return <Spinner label="Loading members..." />;
 	if (isError) return <div>Error loading members</div>;
 
 	return (

@@ -41,7 +41,7 @@ const CompetitionEnrollmentItems = ({
 			queryClient.setQueryData<EnrollmentEntryResponse | undefined>(
 				arenaCompetitionEnrollmentQueryKeys.enrollment(
 					env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
-					{ id: enrollment.id },
+					{ enrollmentId: enrollment.id },
 				),
 				() => enrollment,
 			);
@@ -76,12 +76,16 @@ const CompetitionEnrollmentItems = ({
 		[query.data],
 	);
 
-	if (query.isInitialLoading) {
+	if (!cosmWasmClient || query.isInitialLoading) {
 		return (
 			<div className="flex justify-center">
 				<Spinner />
 			</div>
 		);
+	}
+
+	if (enrollments.length === 0) {
+		return <h3>No competitions yet...</h3>;
 	}
 
 	return (

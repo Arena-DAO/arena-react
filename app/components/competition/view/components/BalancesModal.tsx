@@ -1,6 +1,7 @@
 "use client";
 
 import Profile from "@/components/Profile";
+import { useChain } from "@cosmos-kit/react";
 import {
 	Button,
 	Modal,
@@ -16,10 +17,10 @@ import {
 	TableRow,
 	useDisclosure,
 } from "@nextui-org/react";
-import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
-import { useState } from "react";
-import { useAsyncList } from "react-stately";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { ArenaEscrowQueryClient } from "~/codegen/ArenaEscrow.client";
+import { arenaEscrowQueryKeys } from "~/codegen/ArenaEscrow.react-query";
 import type { MemberBalanceChecked } from "~/codegen/ArenaEscrow.types";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
@@ -32,30 +33,54 @@ interface BalancesModalProps {
 const BalancesModal = ({ escrow }: BalancesModalProps) => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const { address } = useChain(env.CHAIN);
+	const queryClient = useQueryClient();
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
-	const [hasMore, setHasMore] = useState(false);
-	const list = useAsyncList<MemberBalanceChecked, string | undefined>({
-		async load({ cursor }) {
-			if (!cosmWasmClient) {
-				return { items: [] };
-			}
 
-			const client = new ArenaEscrowQueryClient(cosmWasmClient, escrow);
+	const fetchBalances = async ({ pageParam = undefined }) => {
+		if (!cosmWasmClient) {
+			throw new Error("Could not get CosmWasm client");
+		}
 
-			const data = await client.balances({ startAfter: cursor });
+		const client = new ArenaEscrowQueryClient(cosmWasmClient, escrow);
+		const data = await client.balances({ startAfter: pageParam });
 
-			setHasMore(data.length === env.PAGINATION_LIMIT);
+		const userBalance = data.find((x) => x.addr === address);
+		if (userBalance) {
+			queryClient.setQueryData(
+				arenaEscrowQueryKeys.balance(escrow, { addr: address }),
+				() => userBalance,
+			);
+		}
 
-			return {
-				items: data,
-				cursor: data[data.length - 1]?.addr,
-			};
-		},
+		return {
+			items: data,
+			nextCursor:
+				data.length === env.PAGINATION_LIMIT
+					? data[data.length - 1]?.addr
+					: undefined,
+		};
+	};
+
+	const query = useInfiniteQuery({
+		queryKey: arenaEscrowQueryKeys.balances(escrow),
+		queryFn: fetchBalances,
+		getNextPageParam: (lastPage) => lastPage.nextCursor,
+		enabled: !!cosmWasmClient,
 	});
-	const [loaderRef, scrollerRef] = useInfiniteScroll({
-		hasMore,
-		onLoadMore: list.loadMore,
-	});
+
+	const balances = useMemo(
+		() => query.data?.pages.flatMap((page) => page.items) ?? [],
+		[query.data],
+	);
+
+	if (!cosmWasmClient || query.isInitialLoading) {
+		return (
+			<div className="flex justify-center">
+				<Spinner />
+			</div>
+		);
+	}
 
 	return (
 		<>
@@ -67,13 +92,17 @@ const BalancesModal = ({ escrow }: BalancesModalProps) => {
 						<Table
 							isHeaderSticky
 							aria-label="Balances"
-							baseRef={scrollerRef}
 							bottomContent={
-								hasMore ? (
+								query.hasNextPage && (
 									<div className="flex w-full justify-center">
-										<Spinner ref={loaderRef} color="white" />
+										<Button
+											onClick={() => query.fetchNextPage()}
+											isLoading={query.isFetchingNextPage}
+										>
+											Load More
+										</Button>
 									</div>
-								) : null
+								)
 							}
 							classNames={{
 								base: "max-h-xl overflow-auto table-auto",
@@ -85,8 +114,8 @@ const BalancesModal = ({ escrow }: BalancesModalProps) => {
 							</TableHeader>
 							<TableBody
 								emptyContent="No balances available"
-								items={list.items}
-								isLoading={list.isLoading}
+								items={balances}
+								isLoading={query.isLoading}
 								loadingContent={<Spinner color="white" />}
 							>
 								{(item: MemberBalanceChecked) => (

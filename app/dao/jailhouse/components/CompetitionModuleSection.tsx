@@ -11,10 +11,9 @@ import {
 	TableHeader,
 	TableRow,
 } from "@nextui-org/react";
-import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
-import { useState } from "react";
-import { useAsyncList } from "react-stately";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
+import { arenaWagerModuleQueryKeys } from "~/codegen/ArenaWagerModule.react-query";
 import type { CompetitionResponseForWagerExt } from "~/codegen/ArenaWagerModule.types";
 import { useCategoryMap } from "~/hooks/useCategories";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
@@ -33,48 +32,56 @@ const CompetitionModuleSection = ({
 }: CompetitionModuleSectionProps) => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
-	const [hasMore, setHasMore] = useState(true);
 	const { data: categoryMap } = useCategoryMap("id");
-	const list = useAsyncList<CompetitionResponse, string | undefined>({
-		async load({ cursor }) {
-			if (!cosmWasmClient) {
-				return { items: [] };
-			}
 
-			const client = new ArenaWagerModuleQueryClient(
-				cosmWasmClient,
-				module_addr,
-			);
+	const fetchCompetitions = async ({ pageParam = undefined }) => {
+		if (!cosmWasmClient) {
+			throw new Error("CosmWasm client not available");
+		}
 
-			const data = await client.competitions({
-				startAfter: cursor,
+		const client = new ArenaWagerModuleQueryClient(cosmWasmClient, module_addr);
+
+		const data = await client.competitions({
+			startAfter: pageParam,
+			filter: { competition_status: { status: "jailed" } },
+		});
+
+		return {
+			items: data,
+			nextCursor:
+				data.length === env.PAGINATION_LIMIT
+					? data[data.length - 1]?.id
+					: undefined,
+		};
+	};
+
+	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+		useInfiniteQuery({
+			queryKey: arenaWagerModuleQueryKeys.competitions(module_addr, {
 				filter: { competition_status: { status: "jailed" } },
-			});
+			}),
+			queryFn: fetchCompetitions,
+			getNextPageParam: (lastPage) => lastPage.nextCursor,
+			enabled: !!cosmWasmClient,
+		});
 
-			setHasMore(data.length === env.PAGINATION_LIMIT);
-
-			return {
-				items: data,
-				cursor: data[data.length - 1]?.id,
-			};
-		},
-	});
-	const [loaderRef, scrollerRef] = useInfiniteScroll({
-		hasMore,
-		onLoadMore: list.loadMore,
-	});
+	const allCompetitions = data?.pages.flatMap((page) => page.items) ?? [];
 
 	return (
 		<Table
 			isHeaderSticky
 			aria-label="Competitions"
-			baseRef={scrollerRef}
 			bottomContent={
-				hasMore ? (
+				hasNextPage && (
 					<div className="flex w-full justify-center">
-						<Spinner ref={loaderRef} color="white" />
+						<Button
+							isLoading={isFetchingNextPage}
+							onPress={() => fetchNextPage()}
+						>
+							Load More
+						</Button>
 					</div>
-				) : null
+				)
 			}
 			classNames={{
 				base: "max-h-2xl overflow-auto table-auto",
@@ -85,33 +92,10 @@ const CompetitionModuleSection = ({
 				<TableColumn>Description</TableColumn>
 				<TableColumn>Actions</TableColumn>
 			</TableHeader>
-			{/*<TableBody
-				emptyContent="No jailed competitions yet"
-				items={list.items}
-				isLoading={list.isLoading}
-				loadingContent={<Spinner color="white" />}
-			>
-				{(item: CompetitionResponseForEmpty) => (
-					<TableRow key={item.id}>
-						<TableCell>{item.name}</TableCell>
-						<TableCell>{item.description}</TableCell>
-						<TableCell>
-							<Button
-								as={Link}
-								href={`/${path}/view?category=${
-									categoryMap.get(item.category_id ?? "")?.url
-								}&competitionId=${item.id}`}
-							>
-								View
-							</Button>
-						</TableCell>
-					</TableRow>
-				)}
-			</TableBody>*/}
 			<TableBody
 				emptyContent="No jailed competitions yet"
-				items={list.items}
-				isLoading={list.isLoading}
+				items={allCompetitions}
+				isLoading={isLoading}
 				loadingContent={<Spinner color="white" />}
 			>
 				{(item: CompetitionResponse) => (

@@ -44,7 +44,7 @@ const LeaguesList: React.FC<LeaguesListProps> = ({ hostAddress }) => {
 		enabled: !!cosmWasmClient,
 	});
 
-	if (leaguesQuery.isLoading) {
+	if (!cosmWasmClient || leaguesQuery.isLoading) {
 		return <Spinner label="Loading leagues..." />;
 	}
 

@@ -116,7 +116,7 @@ const RulesetsSelection: React.FC<RulesetsSelectionProps> = ({
 				</TableHeader>
 				<TableBody
 					items={rulesets}
-					isLoading={query.isInitialLoading}
+					isLoading={!cosmWasmClient || query.isInitialLoading}
 					loadingContent={<Spinner color="white" />}
 					emptyContent={"No rulesets available"}
 				>

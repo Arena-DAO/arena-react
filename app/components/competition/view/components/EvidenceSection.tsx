@@ -26,17 +26,22 @@ import {
 	Tooltip,
 	useDisclosure,
 } from "@nextui-org/react";
-import { useInfiniteScroll } from "@nextui-org/use-infinite-scroll";
-import { useState } from "react";
+import {
+	type InfiniteData,
+	useInfiniteQuery,
+	useQueryClient,
+} from "@tanstack/react-query";
+import { chunk } from "lodash";
+import { useMemo } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { FiPlus, FiTrash } from "react-icons/fi";
-import { useAsyncList } from "react-stately";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import {
 	ArenaWagerModuleClient,
 	ArenaWagerModuleQueryClient,
 } from "~/codegen/ArenaWagerModule.client";
+import { arenaWagerModuleQueryKeys } from "~/codegen/ArenaWagerModule.react-query";
 import type { Evidence } from "~/codegen/ArenaWagerModule.types";
 import EvidenceSchema from "~/config/schemas/EvidenceSchema";
 import { formatTimestampToDisplay } from "~/helpers/DateHelpers";
@@ -55,6 +60,11 @@ const EvidenceFormSchema = z.object({
 
 type EvidenceFormValues = z.infer<typeof EvidenceFormSchema>;
 
+interface PageData {
+	items: Evidence[];
+	nextCursor?: string;
+}
+
 const EvidenceSection = ({
 	competitionId,
 	moduleAddr,
@@ -62,35 +72,37 @@ const EvidenceSection = ({
 }: EvidenceSectionProps) => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const queryClient = useQueryClient();
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
-	const [hasMore, setHasMore] = useState(false);
-	const list = useAsyncList<Evidence, string | undefined>({
-		async load({ cursor }) {
-			if (!cosmWasmClient) {
-				return { items: [] };
-			}
+	const fetchEvidence = async ({ pageParam = undefined }) => {
+		if (!cosmWasmClient) {
+			throw new Error("Could not get CosmWasm client");
+		}
 
-			const client = new ArenaWagerModuleQueryClient(
-				cosmWasmClient,
-				moduleAddr,
-			);
+		const client = new ArenaWagerModuleQueryClient(cosmWasmClient, moduleAddr);
+		const data = await client.evidence({
+			competitionId,
+			startAfter: pageParam,
+		});
 
-			const data = await client.evidence({ competitionId, startAfter: cursor });
+		return {
+			items: data,
+			nextCursor:
+				data.length === env.PAGINATION_LIMIT
+					? data[data.length - 1]?.id
+					: undefined,
+		};
+	};
 
-			setHasMore(data.length === env.PAGINATION_LIMIT);
-
-			return {
-				items: data,
-				cursor: data[data.length - 1]?.id,
-			};
-		},
+	const query = useInfiniteQuery({
+		queryKey: arenaWagerModuleQueryKeys.evidence(moduleAddr, {
+			competitionId,
+		}),
+		queryFn: fetchEvidence,
+		getNextPageParam: (lastPage) => lastPage.nextCursor,
+		enabled: !!cosmWasmClient,
 	});
-	const [loaderRef, scrollerRef] = useInfiniteScroll({
-		hasMore,
-		onLoadMore: list.loadMore,
-	});
 
-	// Form section
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
 	const {
 		control,
@@ -110,7 +122,6 @@ const EvidenceSection = ({
 			if (!address) throw "Could not get user address";
 
 			const client = await getSigningCosmWasmClient();
-
 			const competitionClient = new ArenaWagerModuleClient(
 				client,
 				address,
@@ -129,26 +140,53 @@ const EvidenceSection = ({
 				?.attributes.find((attr) => attr.key === "evidence_count")?.value;
 
 			if (evidence_id) {
-				list.append(
-					...values.evidence.map((x, i) => ({
-						id: (Number(evidence_id) - values.evidence.length + i).toString(),
-						content: x.content,
-						submit_time: new Date().toString(),
-						submit_user: address,
-					})),
+				queryClient.setQueryData<InfiniteData<Evidence[]> | undefined>(
+					arenaWagerModuleQueryKeys.evidence(moduleAddr, { competitionId }),
+					(oldData) => {
+						const newEvidence = values.evidence.map((x, i) => ({
+							id: (Number(evidence_id) - values.evidence.length + i).toString(),
+							content: x.content,
+							submit_time: new Date().toISOString(),
+							submit_user: address,
+						}));
+
+						if (!oldData || oldData.pages.length === 0) {
+							// If oldData is undefined, create a new InfiniteData structure
+							return {
+								pages: [newEvidence],
+								pageParams: [undefined],
+							};
+						}
+
+						// If there are existing pages, append to the last page
+						const newData = [...oldData.pages.flat(), ...newEvidence];
+
+						const newPages = chunk(newData, env.PAGINATION_LIMIT);
+
+						return {
+							pageParams: [
+								undefined,
+								...newPages.slice(0, -1).map((page) => page.at(-1)?.id),
+							],
+							pages: newPages,
+						};
+					},
 				);
 			} else {
-				list.reload();
+				query.refetch();
 			}
-
-			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-		} catch (e: any) {
+		} catch (e) {
 			console.error(e);
-			toast.error(e.toString());
+			toast.error((e as Error).toString());
 		}
 	};
 
-	if (list.items.length === 0 && hideIfEmpty) return null;
+	const evidence = useMemo(
+		() => query.data?.pages.flatMap((page) => page.items) ?? [],
+		[query.data],
+	);
+
+	if (evidence.length === 0 && hideIfEmpty) return null;
 
 	return (
 		<>
@@ -158,14 +196,17 @@ const EvidenceSection = ({
 					<Table
 						isHeaderSticky
 						aria-label="Evidence"
-						baseRef={scrollerRef}
-						removeWrapper
 						bottomContent={
-							hasMore ? (
+							query.hasNextPage && (
 								<div className="flex w-full justify-center">
-									<Spinner ref={loaderRef} color="white" />
+									<Button
+										onClick={() => query.fetchNextPage()}
+										isLoading={query.isFetchingNextPage}
+									>
+										Load More
+									</Button>
 								</div>
-							) : null
+							)
 						}
 						classNames={{
 							base: "max-h-xl overflow-auto table-auto",
@@ -178,8 +219,8 @@ const EvidenceSection = ({
 						</TableHeader>
 						<TableBody
 							emptyContent="No evidence available"
-							items={list.items}
-							isLoading={list.isLoading}
+							items={evidence}
+							isLoading={query.isLoading}
 							loadingContent={<Spinner color="white" />}
 						>
 							{(item: Evidence) => (

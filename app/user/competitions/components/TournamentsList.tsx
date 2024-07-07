@@ -44,7 +44,7 @@ const TournamentsList: React.FC<TournamentsListProps> = ({ hostAddress }) => {
 		enabled: !!cosmWasmClient,
 	});
 
-	if (tournamentsQuery.isLoading) {
+	if (!cosmWasmClient || tournamentsQuery.isLoading) {
 		return <Spinner label="Loading tournaments..." />;
 	}
 

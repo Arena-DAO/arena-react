@@ -41,7 +41,7 @@ const EnrollmentsList: React.FC<EnrollmentsListProps> = ({ hostAddress }) => {
 		enabled: !!cosmWasmClient,
 	});
 
-	if (enrollmentQuery.isLoading) {
+	if (!cosmWasmClient || enrollmentQuery.isLoading) {
 		return <Spinner label="Loading enrollments..." />;
 	}
 

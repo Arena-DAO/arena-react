@@ -44,7 +44,7 @@ const WagersList: React.FC<WagersListProps> = ({ hostAddress }) => {
 		enabled: !!cosmWasmClient,
 	});
 
-	if (wagersQuery.isLoading) {
+	if (!cosmWasmClient || wagersQuery.isLoading) {
 		return <Spinner label="Loading wagers..." />;
 	}
 
