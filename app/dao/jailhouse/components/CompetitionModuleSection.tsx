@@ -15,7 +15,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { arenaWagerModuleQueryKeys } from "~/codegen/ArenaWagerModule.react-query";
 import type { CompetitionResponseForWagerExt } from "~/codegen/ArenaWagerModule.types";
-import { useCategoryMap } from "~/hooks/useCategories";
+import { useCategoryMap } from "~/hooks/useCategoryMap";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 

@@ -13,7 +13,7 @@ import {
 	Tabs,
 } from "@nextui-org/react";
 import { addMonths, addWeeks } from "date-fns";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import {
@@ -35,10 +35,13 @@ import {
 	CreateCompetitionSchema,
 } from "~/config/schemas/CreateCompetitionSchema";
 import {
+	CategoryProvider,
+	useCategoryContext,
+} from "~/contexts/CategoryContext";
+import {
 	convertToEscrowInstantiate,
 	convertToExpiration,
 } from "~/helpers/SchemaHelpers";
-import { useCategory } from "~/hooks/useCategory";
 import { useEnv } from "~/hooks/useEnv";
 import BasicInformationForm from "./components/BasicInformationForm";
 import MembersAndDuesForm from "./components/DirectParticipationForm";
@@ -51,7 +54,8 @@ import TournamentInformationForm from "./components/TournamentInformationForm";
 const CreateCompetitionPage = () => {
 	const [activeTab, setActiveTab] = useState(0);
 	const { data: env } = useEnv();
-	const { data: category } = useCategory();
+	const params = useSearchParams();
+	const category = useCategoryContext(params.get("category"));
 	const router = useRouter();
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
 
@@ -400,103 +404,105 @@ const CreateCompetitionPage = () => {
 	);
 
 	return (
-		<div className="container mx-auto space-y-4 p-4">
-			<h1 className="pb-6 text-center text-5xl">Create a Competition</h1>
+		<CategoryProvider value={category?.url}>
+			<div className="container mx-auto space-y-4 p-4">
+				<h1 className="pb-6 text-center text-5xl">Create a Competition</h1>
 
-			<FormProvider {...formMethods}>
-				<form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-					<Tabs
-						aria-label="Competition Creation Tabs"
-						color="primary"
-						variant="bordered"
-						selectedKey={tabs[activeTab]?.key}
-						onSelectionChange={(key) =>
-							handleTabChange(tabs.findIndex((tab) => tab.key === key))
-						}
-					>
-						{tabs.map((tab) => (
-							<Tab
-								key={tab.key}
-								title={
-									<div className="flex items-center space-x-2">
-										<tab.icon />
-										<span>{tab.title}</span>
-									</div>
-								}
+				<FormProvider {...formMethods}>
+					<form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+						<Tabs
+							aria-label="Competition Creation Tabs"
+							color="primary"
+							variant="bordered"
+							selectedKey={tabs[activeTab]?.key}
+							onSelectionChange={(key) =>
+								handleTabChange(tabs.findIndex((tab) => tab.key === key))
+							}
+						>
+							{tabs.map((tab) => (
+								<Tab
+									key={tab.key}
+									title={
+										<div className="flex items-center space-x-2">
+											<tab.icon />
+											<span>{tab.title}</span>
+										</div>
+									}
+								>
+									{tab.key === "review" ? (
+										<ReviewCompetition />
+									) : (
+										<Card>
+											<CardBody>
+												{tab.key === "basics" && (
+													<>
+														<div className="flex flex-col items-start justify-between gap-2 pb-4 sm:flex-row sm:items-center sm:gap-0">
+															<h3>Competition Info</h3>
+															{category && <h3>Category: {category.title}</h3>}
+														</div>
+														<BasicInformationForm />
+														{competitionType === "league" && (
+															<>
+																<Divider className="my-6" />
+																<LeagueInformationForm />
+															</>
+														)}
+														{competitionType === "tournament" && (
+															<>
+																<Divider className="my-6" />
+																<TournamentInformationForm />
+															</>
+														)}
+													</>
+												)}
+												{tab.key === "rules" && <RulesAndRulesetsForm />}
+												{tab.key === "participants" && (
+													<>
+														<div className="flex flex-col items-start justify-between gap-2 pb-4 sm:flex-row sm:items-center sm:gap-0">
+															<h3>Participation Details</h3>
+															<Switch
+																isSelected={useCrowdfunding}
+																onValueChange={(checked) =>
+																	setValue("useCrowdfunding", checked)
+																}
+															>
+																Use Crowdfunding
+															</Switch>
+														</div>
+														{useCrowdfunding ? (
+															<EnrollmentInformationForm />
+														) : (
+															<MembersAndDuesForm />
+														)}
+													</>
+												)}
+											</CardBody>
+										</Card>
+									)}
+								</Tab>
+							))}
+						</Tabs>
+
+						<div className="mt-8 flex justify-between">
+							<Button
+								onClick={handlePrevious}
+								isDisabled={activeTab === 0}
+								startContent={<FiChevronLeft />}
 							>
-								{tab.key === "review" ? (
-									<ReviewCompetition />
-								) : (
-									<Card>
-										<CardBody>
-											{tab.key === "basics" && (
-												<>
-													<div className="flex flex-col items-start justify-between gap-2 pb-4 sm:flex-row sm:items-center sm:gap-0">
-														<h3>Competition Info</h3>
-														{category && <h3>Category: {category.title}</h3>}
-													</div>
-													<BasicInformationForm />
-													{competitionType === "league" && (
-														<>
-															<Divider className="my-6" />
-															<LeagueInformationForm />
-														</>
-													)}
-													{competitionType === "tournament" && (
-														<>
-															<Divider className="my-6" />
-															<TournamentInformationForm />
-														</>
-													)}
-												</>
-											)}
-											{tab.key === "rules" && <RulesAndRulesetsForm />}
-											{tab.key === "participants" && (
-												<>
-													<div className="flex flex-col items-start justify-between gap-2 pb-4 sm:flex-row sm:items-center sm:gap-0">
-														<h3>Participation Details</h3>
-														<Switch
-															isSelected={useCrowdfunding}
-															onValueChange={(checked) =>
-																setValue("useCrowdfunding", checked)
-															}
-														>
-															Use Crowdfunding
-														</Switch>
-													</div>
-													{useCrowdfunding ? (
-														<EnrollmentInformationForm />
-													) : (
-														<MembersAndDuesForm />
-													)}
-												</>
-											)}
-										</CardBody>
-									</Card>
-								)}
-							</Tab>
-						))}
-					</Tabs>
-
-					<div className="mt-8 flex justify-between">
-						<Button
-							onClick={handlePrevious}
-							isDisabled={activeTab === 0}
-							startContent={<FiChevronLeft />}
-						>
-							Previous
-						</Button>
-						<Button
-							onClick={handleNext}
-							isDisabled={activeTab === tabs.length - 1}
-							endContent={<FiChevronRight />}
-						>
-							Next
-						</Button>
-					</div>
-				</form>
-			</FormProvider>
-		</div>
+								Previous
+							</Button>
+							<Button
+								onClick={handleNext}
+								isDisabled={activeTab === tabs.length - 1}
+								endContent={<FiChevronRight />}
+							>
+								Next
+							</Button>
+						</div>
+					</form>
+				</FormProvider>
+			</div>
+		</CategoryProvider>
 	);
 };
 

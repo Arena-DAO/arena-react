@@ -4,7 +4,7 @@ import { Card, CardFooter, type CardProps } from "@nextui-org/react";
 import { Image } from "@nextui-org/react";
 import NextImage from "next/image";
 import { useRouter } from "next/navigation";
-import type { SubCategory } from "~/hooks/useCategories";
+import type { SubCategory } from "~/hooks/useCategoryMap";
 import { useEnv } from "~/hooks/useEnv";
 
 interface CompetitionCategoryCardProps extends CardProps {

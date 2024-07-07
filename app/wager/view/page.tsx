@@ -5,6 +5,7 @@ import { Spinner } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { useArenaWagerModuleCompetitionQuery } from "~/codegen/ArenaWagerModule.react-query";
+import { CategoryProvider } from "~/contexts/CategoryContext";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 
@@ -43,15 +44,17 @@ const ViewWager = () => {
 	}
 
 	return (
-		<div className="container mx-auto space-y-4">
-			{data && (
-				<ViewCompetition
-					competition={data}
-					moduleAddr={env.ARENA_WAGER_MODULE_ADDRESS}
-					competitionType="wager"
-				/>
-			)}
-		</div>
+		<CategoryProvider value={data?.category_id}>
+			<div className="container mx-auto space-y-4">
+				{data && (
+					<ViewCompetition
+						competition={data}
+						moduleAddr={env.ARENA_WAGER_MODULE_ADDRESS}
+						competitionType="wager"
+					/>
+				)}
+			</div>
+		</CategoryProvider>
 	);
 };
 

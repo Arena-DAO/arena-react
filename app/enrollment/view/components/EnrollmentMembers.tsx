@@ -23,12 +23,10 @@ import { useEnv } from "~/hooks/useEnv";
 
 interface EnrollmentMembersProps {
 	enrollmentId: string;
-	categoryId?: string | null;
 }
 
 const EnrollmentMembers: React.FC<EnrollmentMembersProps> = ({
 	enrollmentId,
-	categoryId,
 }) => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
@@ -102,7 +100,7 @@ const EnrollmentMembers: React.FC<EnrollmentMembersProps> = ({
 						{members.map((member) => (
 							<TableRow key={member}>
 								<TableCell>
-									<Profile address={member} categoryId={categoryId} />
+									<Profile address={member} />
 								</TableCell>
 							</TableRow>
 						))}

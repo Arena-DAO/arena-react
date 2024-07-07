@@ -1,12 +1,12 @@
 import { Button, Input, Tooltip } from "@nextui-org/react";
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 import { FiInfo, FiMinus, FiPlus } from "react-icons/fi";
-import { useCategory } from "~/hooks/useCategory";
+import { useCategoryContext } from "~/contexts/CategoryContext";
 import RulesetsSelection from "./RulesetsSelection";
 
 const RulesAndRulesetsForm = () => {
 	const { control } = useFormContext();
-	const { data: category } = useCategory();
+	const category = useCategoryContext();
 	const {
 		fields: ruleFields,
 		append: appendRule,

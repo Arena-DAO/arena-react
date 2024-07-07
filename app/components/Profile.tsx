@@ -17,11 +17,12 @@ import { useMemo } from "react";
 import { BsYinYang } from "react-icons/bs";
 import { ArenaCoreQueryClient } from "~/codegen/ArenaCore.client";
 import { useArenaCoreQueryExtensionQuery } from "~/codegen/ArenaCore.react-query";
+import type { Rating } from "~/codegen/ArenaCore.types";
+import { useCategoryContext } from "~/contexts/CategoryContext";
 import {
 	isValidBech32Address,
 	isValidContractAddress,
 } from "~/helpers/AddressHelpers";
-import { useCategory } from "~/hooks/useCategory";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import { useProfileData } from "~/hooks/useProfile";
@@ -33,7 +34,6 @@ export interface ProfileProps extends Omit<UserProps, "name"> {
 	justAvatar?: boolean;
 	isTooltipDisabled?: boolean;
 	isRatingDisabled?: boolean; // Should not be checked by the WalletConnectToggle
-	categoryId?: string | null;
 }
 
 const Profile = ({
@@ -42,16 +42,11 @@ const Profile = ({
 	justAvatar = false,
 	isTooltipDisabled = false,
 	isRatingDisabled = false,
-	categoryId: categoryOverride = null,
 	...props
 }: ProfileProps) => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
-	const { data: category } = useCategory();
-	const categoryId = useMemo(
-		() => categoryOverride ?? category?.category_id?.toString(),
-		[categoryOverride, category?.category_id?.toString],
-	);
+	const category = useCategoryContext();
 
 	const isValid = useMemo(
 		() => isValidBech32Address(address, env.BECH32_PREFIX),
@@ -66,13 +61,16 @@ const Profile = ({
 			msg: {
 				rating: {
 					addr: address,
-					// biome-ignore lint/style/noNonNullAssertion: Checked by enabled query
-					category_id: categoryId!,
+					category_id: category?.category_id?.toString() || "",
 				},
 			},
 		},
 		options: {
-			enabled: isValid && !isRatingDisabled && !!categoryId,
+			enabled:
+				isValid &&
+				!!cosmWasmClient &&
+				!isRatingDisabled &&
+				!!category?.category_id,
 		},
 	});
 
@@ -82,13 +80,17 @@ const Profile = ({
 
 	if (isLoading) return <Skeleton />;
 
+	const parsedRating = category
+		? rating
+			? (rating as unknown as Rating).value
+			: "1500"
+		: undefined;
+
 	const tooltipContent = (
 		<Card shadow="none" classNames={{ header: "pb-0", footer: "px-0 py-1" }}>
 			{data?.name && justAvatar && <CardHeader>{data.name}</CardHeader>}
-			{categoryId && (
-				<CardBody>
-					Rating {Number.parseFloat(rating ?? "1500").toFixed(2)}
-				</CardBody>
+			{parsedRating && (
+				<CardBody>Rating {Number.parseFloat(parsedRating).toFixed(2)}</CardBody>
 			)}
 			<CardFooter className="gap-2">
 				<CopyAddressButton address={data?.address ?? ""} />

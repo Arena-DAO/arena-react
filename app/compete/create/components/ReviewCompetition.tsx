@@ -22,11 +22,11 @@ import { BsInfinity } from "react-icons/bs";
 import { FiCheck, FiClock, FiHash, FiX } from "react-icons/fi";
 import type { Expiration } from "~/codegen/ArenaWagerModule.types";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
+import { useCategoryContext } from "~/contexts/CategoryContext";
 import { getNumberWithOrdinal } from "~/helpers/UIHelpers";
-import { useCategory } from "~/hooks/useCategory";
 
 const ReviewCompetition = () => {
-	const { data: category } = useCategory();
+	const category = useCategoryContext();
 	const {
 		watch,
 		formState: { errors, isSubmitting },

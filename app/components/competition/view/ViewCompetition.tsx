@@ -92,10 +92,7 @@ const ViewCompetition = ({
 					</CardHeader>
 					<CardBody>
 						<div className="flex items-center justify-between">
-							<Profile
-								address={competition.host}
-								categoryId={competition.category_id}
-							/>
+							<Profile address={competition.host} />
 							{isValidContractAddress(competition.host, env.BECH32_PREFIX) && (
 								<Tooltip content="View through DAO DAO">
 									<Button
@@ -186,10 +183,7 @@ const ViewCompetition = ({
 									// biome-ignore lint/suspicious/noArrayIndexKey: best option
 									<TableRow key={i}>
 										<TableCell>
-											<Profile
-												address={x.receiver}
-												categoryId={competition.category_id}
-											/>
+											<Profile address={x.receiver} />
 										</TableCell>
 										<TableCell>{Number.parseFloat(x.tax) * 100}%</TableCell>
 									</TableRow>

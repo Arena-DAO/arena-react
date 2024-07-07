@@ -7,7 +7,7 @@ import { useMemo } from "react";
 import { ArenaCompetitionEnrollmentQueryClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import { arenaCompetitionEnrollmentQueryKeys } from "~/codegen/ArenaCompetitionEnrollment.react-query";
 import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollment.types";
-import type { CategoryLeaf } from "~/hooks/useCategories";
+import type { CategoryLeaf } from "~/hooks/useCategoryMap";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 

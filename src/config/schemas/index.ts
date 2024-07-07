@@ -1,7 +1,7 @@
 import AddressSchema from "./AddressSchema";
 import Uint128Schema from "./AmountSchema";
 import BalanceSchema from "./BalanceSchema";
-import CreateCompetitionSchema from "./CreateCompetitionSchema";
+import { CreateCompetitionSchema } from "./CreateCompetitionSchema";
 import DecimalSchema from "./DecimalSchema";
 import DistributionSchema from "./DistributionSchema";
 import DueSchema from "./DueSchema";

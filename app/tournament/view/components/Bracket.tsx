@@ -32,6 +32,7 @@ import {
 	arenaTournamentModuleQueryKeys,
 	useArenaTournamentModuleExtensionMutation,
 } from "~/codegen/ArenaTournamentModule.react-query";
+import { useCategoryContext } from "~/contexts/CategoryContext";
 import { getCompetitionQueryKey } from "~/helpers/CompetitionHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import type { CompetitionResponse } from "~/types/CompetitionResponse";
@@ -40,7 +41,6 @@ import MatchNode from "./MatchNode";
 interface BracketProps {
 	tournamentId: string;
 	escrow?: string | null;
-	categoryId?: string | null;
 }
 
 const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
@@ -153,10 +153,11 @@ function convertMatchesToNodesEdges(matches: Match[]) {
 	return { nodes, edges };
 }
 
-function Bracket({ tournamentId, escrow, categoryId }: BracketProps) {
+function Bracket({ tournamentId, escrow }: BracketProps) {
 	const queryClient = useQueryClient();
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const category = useCategoryContext();
 
 	const processMatchesMutation = useArenaTournamentModuleExtensionMutation();
 
@@ -273,7 +274,7 @@ function Bracket({ tournamentId, escrow, categoryId }: BracketProps) {
 
 						useMatchResultsStore.setState(() => ({ matchResults: new Map() }));
 
-						if (categoryId) {
+						if (category?.category_id) {
 							const ratingAdjustmentsEvent = response.events.find((event) =>
 								event.attributes.find(
 									(attr) =>
@@ -287,7 +288,10 @@ function Bracket({ tournamentId, escrow, categoryId }: BracketProps) {
 									queryClient.setQueryData<string | undefined>(
 										arenaCoreQueryKeys.queryExtension(env.ARENA_CORE_ADDRESS, {
 											msg: {
-												rating: { addr: attr.key, category_id: categoryId },
+												rating: {
+													addr: attr.key,
+													category_id: category.category_id.toString(),
+												},
 											},
 										}),
 										() => attr.value,

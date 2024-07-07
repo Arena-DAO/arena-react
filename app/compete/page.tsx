@@ -4,11 +4,12 @@ import { BreadcrumbItem, Breadcrumbs, Button, Link } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import { BsPlus } from "react-icons/bs";
+import { CategoryProvider } from "~/contexts/CategoryContext";
 import {
 	type CategoryItem,
 	type SubCategory,
 	useCategoryMap,
-} from "~/hooks/useCategories";
+} from "~/hooks/useCategoryMap";
 import CompetitionCategoryCard from "./components/CompetitionCategoryCard";
 import CompetitionEnrollmentItems from "./components/CompetitionEnrollmentItems";
 
@@ -82,7 +83,9 @@ const Compete = () => {
 							Create
 						</Button>
 					</div>
-					<CompetitionEnrollmentItems category={categoryItem} />
+					<CategoryProvider value={categoryItem.url}>
+						<CompetitionEnrollmentItems category={categoryItem} />
+					</CategoryProvider>
 				</>
 			)}
 		</div>

@@ -237,10 +237,10 @@ const RoundDisplay = ({
 					{(x) => (
 						<TableRow key={x.match_number}>
 							<TableCell>
-								<Profile address={x.team_1} categoryId={categoryId} />
+								<Profile address={x.team_1} />
 							</TableCell>
 							<TableCell>
-								<Profile address={x.team_2} categoryId={categoryId} />
+								<Profile address={x.team_2} />
 							</TableCell>
 							<TableCell>
 								<Select
