@@ -15,7 +15,6 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { arenaWagerModuleQueryKeys } from "~/codegen/ArenaWagerModule.react-query";
 import type { CompetitionResponseForWagerExt } from "~/codegen/ArenaWagerModule.types";
-import { useCategoryMap } from "~/hooks/useCategoryMap";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 
@@ -32,7 +31,6 @@ const CompetitionModuleSection = ({
 }: CompetitionModuleSectionProps) => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
-	const { data: categoryMap } = useCategoryMap("id");
 
 	const fetchCompetitions = async ({ pageParam = undefined }) => {
 		if (!cosmWasmClient) {
@@ -103,12 +101,7 @@ const CompetitionModuleSection = ({
 						<TableCell>{item.name}</TableCell>
 						<TableCell>{item.description}</TableCell>
 						<TableCell>
-							<Button
-								as={Link}
-								href={`/${path}/view?category=${
-									categoryMap.get(item.category_id ?? "")?.url
-								}&competitionId=${item.id}`}
-							>
+							<Button as={Link} href={`/${path}/view?competitionId=${item.id}`}>
 								View
 							</Button>
 						</TableCell>
