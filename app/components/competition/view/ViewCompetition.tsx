@@ -2,6 +2,7 @@
 
 import MaybeLink from "@/components/MaybeLink";
 import Profile from "@/components/Profile";
+import { useChain } from "@cosmos-kit/react";
 import {
 	Badge,
 	Button,
@@ -20,11 +21,16 @@ import {
 	TableRow,
 	Tooltip,
 } from "@nextui-org/react";
+import { useQueryClient } from "@tanstack/react-query";
 import NextImage from "next/image";
 import type { PropsWithChildren } from "react";
 import { BsHourglassBottom, BsYinYang } from "react-icons/bs";
+import { toast } from "react-toastify";
+import { ArenaWagerModuleClient } from "~/codegen/ArenaWagerModule.client";
+import { useArenaWagerModuleActivateCompetitionManuallyMutation } from "~/codegen/ArenaWagerModule.react-query";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { statusColors } from "~/helpers/ArenaHelpers";
+import { getCompetitionQueryKey } from "~/helpers/CompetitionHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import type { CompetitionResponse } from "~/types/CompetitionResponse";
 import type { CompetitionType } from "~/types/CompetitionType";
@@ -51,6 +57,45 @@ const ViewCompetition = ({
 	children,
 }: ViewCompetitionProps) => {
 	const { data: env } = useEnv();
+	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
+	const queryClient = useQueryClient();
+
+	const manualActivationMutation =
+		useArenaWagerModuleActivateCompetitionManuallyMutation();
+
+	const handleActivate = async () => {
+		if (!address) {
+			toast.error("Please connect your wallet");
+			return;
+		}
+
+		const client = await getSigningCosmWasmClient();
+
+		try {
+			await manualActivationMutation.mutateAsync(
+				{
+					client: new ArenaWagerModuleClient(client, address, moduleAddr),
+					msg: { id: competition.id },
+				},
+				{
+					onSuccess: () => {
+						toast.success("Competition activated successfully");
+						queryClient.setQueryData<CompetitionResponse | undefined>(
+							getCompetitionQueryKey(env, competitionType, competition.id),
+							(oldData) => {
+								if (!oldData) return oldData;
+
+								return { ...oldData, status: "active" };
+							},
+						);
+					},
+				},
+			);
+		} catch (e) {
+			console.error(e);
+			toast.error((e as Error).toString());
+		}
+	};
 
 	return (
 		<div className="space-y-6">
@@ -204,11 +249,7 @@ const ViewCompetition = ({
 			)}
 
 			{competition.status === "inactive" && (
-				<ResultSection
-					moduleAddr={moduleAddr}
-					competitionId={competition.id}
-					categoryId={competition.category_id}
-				/>
+				<ResultSection moduleAddr={moduleAddr} competitionId={competition.id} />
 			)}
 
 			<div className="flex gap-2 overflow-x-auto">
@@ -219,7 +260,6 @@ const ViewCompetition = ({
 						host={competition.host}
 						competitionType={competitionType}
 						escrow={competition.escrow}
-						categoryId={competition.category_id}
 					/>
 				)}
 				{competition.is_expired &&
@@ -234,6 +274,18 @@ const ViewCompetition = ({
 					)}
 				{competition.status !== "inactive" && competition.escrow && (
 					<PresetDistributionForm escrow={competition.escrow} />
+				)}
+				{competition.status === "pending" && (
+					<Button
+						color="primary"
+						onClick={handleActivate}
+						isLoading={manualActivationMutation.isLoading}
+						isDisabled={
+							manualActivationMutation.isLoading || address !== competition.host
+						}
+					>
+						Activate Competition
+					</Button>
 				)}
 			</div>
 			{children}

@@ -239,9 +239,7 @@ const CreateCompetitionPage = () => {
 
 					// Redirect to the appropriate page
 					if (enrollmentId) {
-						router.push(
-							`/enrollment/view?${category?.url ? `category=${category.url}&` : ""}enrollmentId=${enrollmentId}`,
-						);
+						router.push(`/enrollment/view?enrollmentId=${enrollmentId}`);
 					} else {
 						console.warn("Enrollment created but ID not found in the result");
 					}
@@ -359,35 +357,33 @@ const CreateCompetitionPage = () => {
 									teams: members,
 								},
 							});
-
-							// Extract competition ID from the result
-							let competitionId: string | undefined;
-							for (const event of result.events) {
-								for (const attribute of event.attributes) {
-									if (attribute.key === "competition_id") {
-										competitionId = attribute.value;
-										break;
-									}
-								}
-								if (competitionId) break;
-							}
-
-							// Redirect to the appropriate page
-							if (competitionId) {
-								router.push(
-									`/${competitionType}/view?${category?.url ? `category=${category.url}&` : ""}competitionId=${competitionId}`,
-								);
-							} else {
-								console.warn(
-									"Competition created but ID not found in the result",
-								);
-							}
 							break;
 						}
 						default:
 							throw new Error(
 								`Invalid competition type: ${values.competitionType}`,
 							);
+					}
+
+					// Extract competition ID from the result
+					let competitionId: string | undefined;
+					for (const event of result.events) {
+						for (const attribute of event.attributes) {
+							if (attribute.key === "competition_id") {
+								competitionId = attribute.value;
+								break;
+							}
+						}
+						if (competitionId) break;
+					}
+
+					// Redirect to the appropriate page
+					if (competitionId) {
+						router.push(
+							`/${competitionType}/view?competitionId=${competitionId}`,
+						);
+					} else {
+						console.warn("Competition created but ID not found in the result");
 					}
 				}
 

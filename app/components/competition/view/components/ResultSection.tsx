@@ -22,14 +22,9 @@ import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 interface ResultSectionProps {
 	competitionId: string;
 	moduleAddr: string;
-	categoryId?: string | null;
 }
 
-const ResultSection = ({
-	competitionId,
-	moduleAddr,
-	categoryId,
-}: ResultSectionProps) => {
+const ResultSection = ({ competitionId, moduleAddr }: ResultSectionProps) => {
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { data, isLoading, isError } = useArenaWagerModuleResultQuery({
 		client:
@@ -60,7 +55,6 @@ const ResultSection = ({
 										address={data.remainder_addr}
 										justAvatar
 										className="min-w-max"
-										categoryId={categoryId}
 									/>
 									<Input
 										label="Remainder Address"
@@ -79,7 +73,7 @@ const ResultSection = ({
 									{data.member_percentages.map((item) => (
 										<TableRow key={item.addr}>
 											<TableCell>
-												<Profile address={item.addr} categoryId={categoryId} />
+												<Profile address={item.addr} />
 											</TableCell>
 											<TableCell>
 												<Progress

@@ -40,6 +40,7 @@ import {
 	useArenaWagerModuleProcessCompetitionMutation,
 } from "~/codegen/ArenaWagerModule.react-query";
 import { DistributionSchema } from "~/config/schemas";
+import { useCategoryContext } from "~/contexts/CategoryContext";
 import { getCompetitionQueryKey } from "~/helpers/CompetitionHelpers";
 import { convertToDistribution } from "~/helpers/SchemaHelpers";
 import { useEnv } from "~/hooks/useEnv";
@@ -50,7 +51,6 @@ type ProcessFormProps = {
 	competitionType: CompetitionType;
 	competitionId: string;
 	moduleAddr: string;
-	categoryId?: string | null;
 } & (
 	| {
 			host: string;
@@ -65,7 +65,6 @@ const ProcessForm = ({
 	competitionType,
 	moduleAddr,
 	competitionId,
-	categoryId,
 	...props
 }: ProcessFormProps) => {
 	const ProcessFormSchema = z
@@ -98,6 +97,7 @@ const ProcessForm = ({
 	const queryClient = useQueryClient();
 	const { data: env } = useEnv();
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
+	const category = useCategoryContext();
 
 	const processMutation = useArenaWagerModuleProcessCompetitionMutation();
 	const jailMutation = useArenaWagerModuleJailCompetitionMutation();
@@ -224,7 +224,7 @@ const ProcessForm = ({
 								);
 							}
 
-							if (categoryId) {
+							if (category?.category_id) {
 								const ratingAdjustmentsEvent = response.events.find((event) =>
 									event.attributes.find(
 										(attr) =>
@@ -240,7 +240,10 @@ const ProcessForm = ({
 												env.ARENA_CORE_ADDRESS,
 												{
 													msg: {
-														rating: { addr: attr.key, category_id: categoryId },
+														rating: {
+															addr: attr.key,
+															category_id: category.category_id.toString(),
+														},
 													},
 												},
 											),
