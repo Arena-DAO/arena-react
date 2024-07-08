@@ -4,7 +4,6 @@ import {
 	Button,
 	ButtonGroup,
 	DateInput,
-	Divider,
 	Input,
 	useDisclosure,
 } from "@nextui-org/react";
@@ -63,9 +62,6 @@ const EnrollmentInformationForm = () => {
 						)}
 					/>
 				</div>
-
-				<Divider />
-
 				<div>
 					<h3 className="mb-2 font-medium text-md">Entry Fee</h3>
 					{entryFee ? (
@@ -88,8 +84,6 @@ const EnrollmentInformationForm = () => {
 						<Button onPress={onOpen}>Set Entry Fee</Button>
 					)}
 				</div>
-
-				<Divider />
 
 				<div>
 					<Controller

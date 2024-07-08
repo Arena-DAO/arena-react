@@ -136,7 +136,6 @@ export interface ArenaCompetitionEnrollmentInterface extends ArenaCompetitionEnr
     competitionType,
     entryFee,
     expiration,
-    isCreatorMember,
     maxMembers,
     minMembers
   }: {
@@ -145,7 +144,6 @@ export interface ArenaCompetitionEnrollmentInterface extends ArenaCompetitionEnr
     competitionType: CompetitionType;
     entryFee?: Coin;
     expiration: Expiration;
-    isCreatorMember?: boolean;
     maxMembers: Uint64;
     minMembers?: Uint64;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
@@ -191,7 +189,6 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
     competitionType,
     entryFee,
     expiration,
-    isCreatorMember,
     maxMembers,
     minMembers
   }: {
@@ -200,7 +197,6 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
     competitionType: CompetitionType;
     entryFee?: Coin;
     expiration: Expiration;
-    isCreatorMember?: boolean;
     maxMembers: Uint64;
     minMembers?: Uint64;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
@@ -211,7 +207,6 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
         competition_type: competitionType,
         entry_fee: entryFee,
         expiration,
-        is_creator_member: isCreatorMember,
         max_members: maxMembers,
         min_members: minMembers
       }

@@ -14,7 +14,6 @@ export type ExecuteMsg = {
     competition_type: CompetitionType;
     entry_fee?: Coin | null;
     expiration: Expiration;
-    is_creator_member?: boolean | null;
     max_members: Uint64;
     min_members?: Uint64 | null;
   };

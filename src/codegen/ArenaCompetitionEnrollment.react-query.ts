@@ -307,7 +307,6 @@ export interface ArenaCompetitionEnrollmentCreateEnrollmentMutation {
     competitionType: CompetitionType;
     entryFee?: Coin;
     expiration: Expiration;
-    isCreatorMember?: boolean;
     maxMembers: Uint64;
     minMembers?: Uint64;
   };

@@ -90,7 +90,6 @@ const CreateCompetitionPage = () => {
 				enrollment_expiration: {
 					at_time: addWeeks(new Date(), 1).toISOString(),
 				},
-				isCreatorMember: false,
 			},
 		},
 	});
@@ -224,7 +223,6 @@ const CreateCompetitionPage = () => {
 						expiration: convertToExpiration(
 							values.enrollmentInfo.enrollment_expiration,
 						),
-						isCreatorMember: values.enrollmentInfo.isCreatorMember,
 					});
 
 					// Extract competition ID from the result
@@ -394,10 +392,9 @@ const CreateCompetitionPage = () => {
 				}
 
 				toast.success(`The ${values.competitionType} was created successfully`);
-				// biome-ignore lint/suspicious/noExplicitAny: try-catch
-			} catch (e: any) {
+			} catch (e) {
 				console.error(e);
-				toast.error(e.toString());
+				toast.error((e as Error).toString());
 			}
 		},
 		[getSigningCosmWasmClient, address, category, env, router, competitionType],
