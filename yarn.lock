@@ -177,10 +177,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.45.18":
-  version: 0.45.18
-  resolution: "@chain-registry/types@npm:0.45.18"
-  checksum: 10c0/df6e34c259fdad3eb18d4fd435bb5f781739dcb51699b134e9b04871b6f1afab31296bb376266c5053489d5b7ba28a2ab871ade9d1868ec528d44504a3e92e52
+"@chain-registry/types@npm:^0.45.19":
+  version: 0.45.19
+  resolution: "@chain-registry/types@npm:0.45.19"
+  checksum: 10c0/cbfeb50d36d9ad613a1c7b917f9e5baafdbdf79d3518cf0b5fca699bcd8de30bbaf3a8e8cef06d1daf215efb5aa6b93cf51f5fc8941392c63b947f0ee13f9563
   languageName: node
   linkType: hard
 
@@ -1124,7 +1124,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@floating-ui/core@npm:^1.0.0, @floating-ui/core@npm:^1.6.2":
+"@floating-ui/core@npm:^1.0.0":
   version: 1.6.3
   resolution: "@floating-ui/core@npm:1.6.3"
   dependencies:
@@ -1133,7 +1133,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@floating-ui/dom@npm:^1.0.0, @floating-ui/dom@npm:^1.6.5":
+"@floating-ui/core@npm:^1.6.0, @floating-ui/core@npm:^1.6.4":
+  version: 1.6.4
+  resolution: "@floating-ui/core@npm:1.6.4"
+  dependencies:
+    "@floating-ui/utils": "npm:^0.2.4"
+  checksum: 10c0/545684b6f76cda7579b6049bafb9903542d3f9c177300192fe83db19d99b1df285bc33aba3b8ec2978d021151c4168356876e8181002dd2ff4fb93d9e4b7bf71
+  languageName: node
+  linkType: hard
+
+"@floating-ui/dom@npm:^1.0.0":
   version: 1.6.6
   resolution: "@floating-ui/dom@npm:1.6.6"
   dependencies:
@@ -1143,7 +1152,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@floating-ui/react-dom@npm:^2.1.0":
+"@floating-ui/dom@npm:^1.6.7":
+  version: 1.6.7
+  resolution: "@floating-ui/dom@npm:1.6.7"
+  dependencies:
+    "@floating-ui/core": "npm:^1.6.0"
+    "@floating-ui/utils": "npm:^0.2.4"
+  checksum: 10c0/5255f522534e0022b554c366b969fa26951677a1cf39ddd58614071a909a340c5e1ffe645501037b221808f01bfac4e7edba14728978ee7e2438e8432c1a163f
+  languageName: node
+  linkType: hard
+
+"@floating-ui/react-dom@npm:^2.1.1":
   version: 2.1.1
   resolution: "@floating-ui/react-dom@npm:2.1.1"
   dependencies:
@@ -1155,24 +1174,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@floating-ui/react@npm:^0.26.17":
-  version: 0.26.18
-  resolution: "@floating-ui/react@npm:0.26.18"
+"@floating-ui/react@npm:^0.26.19":
+  version: 0.26.19
+  resolution: "@floating-ui/react@npm:0.26.19"
   dependencies:
-    "@floating-ui/react-dom": "npm:^2.1.0"
-    "@floating-ui/utils": "npm:^0.2.3"
+    "@floating-ui/react-dom": "npm:^2.1.1"
+    "@floating-ui/utils": "npm:^0.2.4"
     tabbable: "npm:^6.0.0"
   peerDependencies:
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
-  checksum: 10c0/d7f47fa9edbabcea2d699218d468643eacdd936dba227c86e5389b5f5806d20ed19bfb503772247d8ac616e14755a44987ff59d2d0a816357185d9e27adce842
+  checksum: 10c0/c87483e088a48be40cc0e7a33f332f1f1cda43005a53ee506f36d7714383f555a22f2e4222b2ca515086c156fccb8853566adcf98168a6015fa9bc10dbf938b1
   languageName: node
   linkType: hard
 
-"@floating-ui/utils@npm:^0.2.2, @floating-ui/utils@npm:^0.2.3":
+"@floating-ui/utils@npm:^0.2.3":
   version: 0.2.3
   resolution: "@floating-ui/utils@npm:0.2.3"
   checksum: 10c0/7a2dac793cd99f05fde2d597cb434f1caa8b59563618453e1b8ac0ebb811e3627aaded16f3efd6d6e535f7448d590d38f9993be37adea258f3b9f826a6c96b2b
+  languageName: node
+  linkType: hard
+
+"@floating-ui/utils@npm:^0.2.4":
+  version: 0.2.4
+  resolution: "@floating-ui/utils@npm:0.2.4"
+  checksum: 10c0/154924b01157cb45cf305f4835d7f603e931dda8b00bbe52666729bccc5e7b99630e8b951333725e526d4e53d9b342976434ad5750b8b1da58728e3698bdcc2b
   languageName: node
   linkType: hard
 
@@ -1252,15 +1278,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@interchain-ui/react@npm:1.23.24":
-  version: 1.23.24
-  resolution: "@interchain-ui/react@npm:1.23.24"
+"@interchain-ui/react@npm:1.23.25":
+  version: 1.23.25
+  resolution: "@interchain-ui/react@npm:1.23.25"
   dependencies:
-    "@floating-ui/core": "npm:^1.6.2"
-    "@floating-ui/dom": "npm:^1.6.5"
-    "@floating-ui/react": "npm:^0.26.17"
-    "@floating-ui/react-dom": "npm:^2.1.0"
-    "@floating-ui/utils": "npm:^0.2.2"
+    "@floating-ui/core": "npm:^1.6.4"
+    "@floating-ui/dom": "npm:^1.6.7"
+    "@floating-ui/react": "npm:^0.26.19"
+    "@floating-ui/react-dom": "npm:^2.1.1"
+    "@floating-ui/utils": "npm:^0.2.4"
     "@formkit/auto-animate": "npm:^0.8.2"
     "@react-aria/listbox": "npm:^3.12.1"
     "@react-aria/overlays": "npm:^3.22.1"
@@ -1278,11 +1304,11 @@ __metadata:
     rainbow-sprinkles: "npm:^0.17.2"
     react-aria: "npm:^3.33.1"
     react-stately: "npm:^3.31.1"
-    zustand: "npm:^4.5.2"
+    zustand: "npm:^4.5.4"
   peerDependencies:
     react: ^16.14.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/1f811d0998bd00bf3f4f3af52105cb01d6f187b730d69c44deea660f9152405e295c2158468865fcfb95aea5dfa8d8ccbc75c84933d45f784bd3c0efe829446e
+  checksum: 10c0/5af2c283c85098fc187e8049fc90c35800d1a81d6727bce4c3426d6e18ea0080fdffdba31e3a58a729b60bc3ce6ce4a2950ef39aa6c96e02c341b6bfa7b9f862
   languageName: node
   linkType: hard
 
@@ -5968,7 +5994,7 @@ __metadata:
   resolution: "arena-react@workspace:."
   dependencies:
     "@biomejs/biome": "npm:1.8.3"
-    "@chain-registry/types": "npm:^0.45.18"
+    "@chain-registry/types": "npm:^0.45.19"
     "@cosmjs/amino": "npm:^0.32.4"
     "@cosmjs/cosmwasm-stargate": "npm:0.32.4"
     "@cosmjs/encoding": "npm:^0.32.4"
@@ -5984,7 +6010,7 @@ __metadata:
     "@cosmos-kit/station": "npm:^2.10.2"
     "@dagrejs/dagre": "npm:^1.1.3"
     "@hookform/resolvers": "npm:^3.9.0"
-    "@interchain-ui/react": "npm:1.23.24"
+    "@interchain-ui/react": "npm:1.23.25"
     "@internationalized/date": "npm:^3.5.4"
     "@nextui-org/react": "npm:0.0.0-canary-20240616172522"
     "@nextui-org/theme": "npm:^2.2.6"
@@ -5994,7 +6020,7 @@ __metadata:
     "@types/react": "npm:18.3.3"
     "@types/react-dom": "npm:^18.3.0"
     autoprefixer: "npm:^10.4.19"
-    chain-registry: "npm:1.63.21"
+    chain-registry: "npm:1.63.23"
     clsx: "npm:^2.1.1"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^7.0.4"
@@ -6485,12 +6511,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.63.21":
-  version: 1.63.21
-  resolution: "chain-registry@npm:1.63.21"
+"chain-registry@npm:1.63.23":
+  version: 1.63.23
+  resolution: "chain-registry@npm:1.63.23"
   dependencies:
-    "@chain-registry/types": "npm:^0.45.18"
-  checksum: 10c0/91fe665db4d5afc0f5e2d728c3f063da292e00a67c6cf03b3c6508f0858d881f5504e0212f0dd79e35cef50ea454b9d0a428e125cdac442cb5d481fb568c1acb
+    "@chain-registry/types": "npm:^0.45.19"
+  checksum: 10c0/5af697dc63ae4d9957f8d7c6ed653b673f5e7350ab7a7db3e713a0dbce74bd38cb6e65027a4a5f4da3bf2fabf32aad3347352b06f8d9a60060a26dce85f20b09
   languageName: node
   linkType: hard
 
@@ -11524,7 +11550,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zustand@npm:^4.4.1, zustand@npm:^4.5.2, zustand@npm:^4.5.4":
+"zustand@npm:^4.4.1, zustand@npm:^4.5.4":
   version: 4.5.4
   resolution: "zustand@npm:4.5.4"
   dependencies:

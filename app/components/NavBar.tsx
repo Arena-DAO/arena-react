@@ -189,12 +189,12 @@ export default function AppNavbar() {
 						<DropdownMenu
 							aria-label={`${menu.label} Menu`}
 							itemClasses={{ title: "text-primary font-semibold" }}
+							onAction={() => setIsMenuOpen(false)}
 						>
 							{menu.items.map((item) => (
 								<DropdownItem
 									key={item.key}
 									href={item.href}
-									onPress={() => setIsMenuOpen(false)}
 									description={item.description}
 									startContent={item.startContent}
 									target={item.target}
@@ -217,6 +217,7 @@ export default function AppNavbar() {
 					<Link
 						className="ml-4 flex cursor-pointer items-center py-1 font-semibold text-xl"
 						href="/compete"
+						onPress={() => setIsMenuOpen(false)}
 					>
 						Compete
 					</Link>
@@ -238,12 +239,12 @@ export default function AppNavbar() {
 						<DropdownMenu
 							aria-label={`${menu.label} Menu`}
 							itemClasses={{ title: "text-primary font-semibold" }}
+							onAction={() => setIsMenuOpen(false)}
 						>
 							{menu.items.map((item) => (
 								<DropdownItem
 									key={item.key}
 									href={item.href}
-									onPress={() => setIsMenuOpen(false)}
 									description={item.description}
 									startContent={item.startContent}
 									target={item.target}

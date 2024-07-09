@@ -8,6 +8,7 @@ import {
 	Button,
 	Card,
 	CardBody,
+	CardFooter,
 	CardHeader,
 	Chip,
 	Divider,
@@ -173,6 +174,11 @@ const ViewCompetition = ({
 				<CardBody>
 					<p>{competition.description}</p>
 				</CardBody>
+				<CardFooter>
+					<div className="text-warning text-xs">
+						Make sure to track results for evidence!
+					</div>
+				</CardFooter>
 			</Card>
 
 			{competition.rules.length > 0 ||

@@ -11,7 +11,8 @@ export default function Footer() {
 					className="w-full text-center text-small md:w-1/2 md:text-left"
 					translate="no"
 				>
-					"Fortune favours the bold" - Terence
+					"I found Rome a city of bricks and left it a city of marble." -
+					Augustus
 				</div>
 				<div>
 					<ButtonGroup variant="light">
