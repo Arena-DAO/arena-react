@@ -31,6 +31,7 @@ import type {
 	MatchResult,
 	RoundResponse,
 } from "~/codegen/ArenaLeagueModule.types";
+import { useCategoryContext } from "~/contexts/CategoryContext";
 import { LeagueResultValues } from "~/helpers/ArenaHelpers";
 import { getCompetitionQueryKey } from "~/helpers/CompetitionHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
@@ -42,7 +43,6 @@ interface RoundDisplayProps {
 	moduleAddr: string;
 	roundNumber: string;
 	escrow?: string | null;
-	categoryId?: string | null;
 }
 
 const RoundDisplay = ({
@@ -50,12 +50,12 @@ const RoundDisplay = ({
 	leagueId,
 	roundNumber,
 	escrow,
-	categoryId,
 }: RoundDisplayProps) => {
 	const queryClient = useQueryClient();
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
+	const category = useCategoryContext();
 	const { data } = useArenaLeagueModuleQueryExtensionQuery({
 		client:
 			cosmWasmClient &&
@@ -161,7 +161,7 @@ const RoundDisplay = ({
 							),
 						);
 
-						if (categoryId) {
+						if (category?.category_id) {
 							const ratingAdjustmentsEvent = response.events.find((event) =>
 								event.attributes.find(
 									(attr) =>
@@ -175,7 +175,10 @@ const RoundDisplay = ({
 									queryClient.setQueryData<string | undefined>(
 										arenaCoreQueryKeys.queryExtension(env.ARENA_CORE_ADDRESS, {
 											msg: {
-												rating: { addr: attr.key, category_id: categoryId },
+												rating: {
+													addr: attr.key,
+													category_id: category.category_id,
+												},
 											},
 										}),
 										() => attr.value,

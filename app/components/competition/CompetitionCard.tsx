@@ -115,10 +115,7 @@ const Competition: React.FC<CompetitionProps> = ({
 				<p className="mb-3 text-sm">{description}</p>
 				{!hideHost && (
 					<div className="mb-3">
-						<Profile
-							address={competition.host}
-							categoryId={competition.category_id}
-						/>
+						<Profile address={competition.host} />
 					</div>
 				)}
 				{renderCompetitionInfo()}

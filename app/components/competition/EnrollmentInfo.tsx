@@ -1,5 +1,5 @@
 import TokenInfo from "@/components/TokenInfo";
-import { Slider } from "@nextui-org/react";
+import { Slider, Tooltip } from "@nextui-org/react";
 import type React from "react";
 import { useMemo } from "react";
 import { FiUsers } from "react-icons/fi";
@@ -54,28 +54,43 @@ const EnrollmentInfo: React.FC<EnrollmentInfoProps> = ({ enrollment }) => {
 				)}
 			</div>
 
-			<Slider
-				label="Enrollment Progress"
-				step={1}
-				maxValue={maxMembers}
-				minValue={0}
-				value={currentMembers}
-				color="primary"
-				showTooltip={true}
-				startContent={<FiUsers />}
-				endContent={<FiUsers />}
-				isDisabled
-				marks={[
-					{
-						value: minMembers,
-						label: "Min",
-					},
-					{
-						value: maxMembers,
-						label: "Max",
-					},
-				]}
-			/>
+			<div>
+				<Slider
+					label="Enrollment Progress"
+					step={1}
+					maxValue={maxMembers}
+					minValue={0}
+					value={currentMembers}
+					color="primary"
+					showTooltip={true}
+					startContent={<FiUsers />}
+					endContent={<FiUsers />}
+					isDisabled
+					marks={[
+						{
+							value: minMembers,
+							label: "Min",
+						},
+						{
+							value: maxMembers,
+							label: "Max",
+						},
+					]}
+				/>
+				<div className="mt-2 flex justify-between text-sm">
+					<Tooltip content="Minimum required members">
+						<span className="flex items-center">
+							<FiUsers className="mr-1" /> Min: {minMembers}
+						</span>
+					</Tooltip>
+					<span>Current: {currentMembers}</span>
+					<Tooltip content="Maximum allowed members">
+						<span className="flex items-center">
+							<FiUsers className="mr-1" /> Max: {maxMembers}
+						</span>
+					</Tooltip>
+				</div>
+			</div>
 		</div>
 	);
 };
