@@ -60,11 +60,6 @@ const EvidenceFormSchema = z.object({
 
 type EvidenceFormValues = z.infer<typeof EvidenceFormSchema>;
 
-interface PageData {
-	items: Evidence[];
-	nextCursor?: string;
-}
-
 const EvidenceSection = ({
 	competitionId,
 	moduleAddr,
