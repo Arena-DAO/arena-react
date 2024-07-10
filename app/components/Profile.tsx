@@ -95,18 +95,26 @@ const Profile = ({
 			{data?.address && (
 				<CardFooter className="gap-2">
 					<CopyAddressButton address={data.address} />
-					<Button as={Link} href={`/user/competitions?host=${data.address}`}>
-						Competitions
-					</Button>
-					{isValidContractAddress(data.address, env.BECH32_PREFIX) && (
-						<Button
-							as={Link}
-							href={`${env.DAO_DAO_URL}/dao/${data.address}`}
-							isExternal
-							startContent={<BsYinYang />}
-						>
-							View on DAO DAO
-						</Button>
+					{data.address !== env.ARENA_COMPETITION_ENROLLMENT_ADDRESS && (
+						<>
+							<Button
+								as={Link}
+								href={`/user/competitions?host=${data.address}`}
+							>
+								Competitions
+							</Button>
+
+							{isValidContractAddress(data.address, env.BECH32_PREFIX) && (
+								<Button
+									as={Link}
+									href={`${env.DAO_DAO_URL}/dao/${data.address}`}
+									isExternal
+									startContent={<BsYinYang />}
+								>
+									View on DAO DAO
+								</Button>
+							)}
+						</>
 					)}
 				</CardFooter>
 			)}

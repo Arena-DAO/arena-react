@@ -59,6 +59,9 @@ export const useProfileData = (address: string, isValid: boolean) => {
 
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const isEnrollmentContract = isWallet
+		? false
+		: address === env.ARENA_COMPETITION_ENROLLMENT_ADDRESS;
 
 	const walletQuery = useQuery(
 		["profile", address],
@@ -80,7 +83,7 @@ export const useProfileData = (address: string, isValid: boolean) => {
 			cosmWasmClient && new DaoDaoCoreQueryClient(cosmWasmClient, address),
 		options: {
 			staleTime: Number.POSITIVE_INFINITY,
-			enabled: !isWallet && isValid,
+			enabled: !isWallet && isValid && !isEnrollmentContract,
 			select: (data) => {
 				return {
 					address,
@@ -90,6 +93,20 @@ export const useProfileData = (address: string, isValid: boolean) => {
 			},
 		},
 	});
+	const enrollmentQuery = useQuery(
+		["profile", address],
+		() => {
+			return { address, name: "Competition Enrollment", imageUrl: "/logo.svg" };
+		},
+		{
+			staleTime: Number.POSITIVE_INFINITY,
+			enabled: isEnrollmentContract,
+		},
+	);
 
-	return isWallet ? walletQuery : daoQuery;
+	return isWallet
+		? walletQuery
+		: isEnrollmentContract
+			? enrollmentQuery
+			: daoQuery;
 };
