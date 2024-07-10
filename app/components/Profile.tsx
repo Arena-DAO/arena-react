@@ -92,10 +92,13 @@ const Profile = ({
 			{parsedRating && (
 				<CardBody>Rating {Number.parseFloat(parsedRating).toFixed(2)}</CardBody>
 			)}
-			<CardFooter className="gap-2">
-				<CopyAddressButton address={data?.address ?? ""} />
-				{data?.address &&
-					isValidContractAddress(data.address, env.BECH32_PREFIX) && (
+			{data?.address && (
+				<CardFooter className="gap-2">
+					<CopyAddressButton address={data.address} />
+					<Button as={Link} href={`/user/competitions?host=${data.address}`}>
+						Competitions
+					</Button>
+					{isValidContractAddress(data.address, env.BECH32_PREFIX) && (
 						<Button
 							as={Link}
 							href={`${env.DAO_DAO_URL}/dao/${data.address}`}
@@ -105,7 +108,8 @@ const Profile = ({
 							View on DAO DAO
 						</Button>
 					)}
-			</CardFooter>
+				</CardFooter>
+			)}
 		</Card>
 	);
 

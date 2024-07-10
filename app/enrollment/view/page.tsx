@@ -2,13 +2,19 @@
 
 import Profile from "@/components/Profile";
 import TokenInfo from "@/components/TokenInfo";
+import CompetitionTypeDisplay from "@/components/competition/CompetitionTypeDisplay";
+import EnrollmentStatusDisplay from "@/components/competition/EnrollmentStatusDisplay";
+import ExpirationDisplay from "@/components/competition/ExpirationDisplay";
 import {
+	Button,
 	Card,
 	CardBody,
 	CardHeader,
 	Chip,
 	Image,
+	Link,
 	Slider,
+	Spinner,
 	Table,
 	TableBody,
 	TableCell,
@@ -19,22 +25,22 @@ import {
 } from "@nextui-org/react";
 import NextImage from "next/image";
 import { useSearchParams } from "next/navigation";
-import { FiClock, FiUsers } from "react-icons/fi";
+import { FiUsers } from "react-icons/fi";
 import { ArenaCompetitionEnrollmentQueryClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import { useArenaCompetitionEnrollmentEnrollmentQuery } from "~/codegen/ArenaCompetitionEnrollment.react-query";
 import { CategoryProvider } from "~/contexts/CategoryContext";
-import { formatExpiration } from "~/helpers/CompetitionHelpers";
 import {
 	calculateCurrentPool,
 	calculateMinMembers,
-	getCompetitionTypeDisplay,
 } from "~/helpers/EnrollmentHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
+import CategoryDisplay from "./components/CategoryDisplay";
 import DistributionDisplay from "./components/DistributionDisplay";
 import EnrollButton from "./components/EnrollButton";
 import EnrollmentMembers from "./components/EnrollmentMembers";
 import RulesSection from "./components/RulesSection";
+import TriggerButton from "./components/TriggerButton";
 
 const EnrollmentView = () => {
 	const { data: env } = useEnv();
@@ -42,23 +48,24 @@ const EnrollmentView = () => {
 	const searchParams = useSearchParams();
 	const enrollmentId = searchParams?.get("enrollmentId");
 
-	const {
-		data: enrollment,
-		isLoading,
-		isError,
-	} = useArenaCompetitionEnrollmentEnrollmentQuery({
-		client:
-			cosmWasmClient &&
-			new ArenaCompetitionEnrollmentQueryClient(
-				cosmWasmClient,
-				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
-			),
-		args: { enrollmentId: enrollmentId || "" },
-		options: { enabled: !!enrollmentId && !!cosmWasmClient },
-	});
+	const { data: enrollment, isLoading } =
+		useArenaCompetitionEnrollmentEnrollmentQuery({
+			client:
+				cosmWasmClient &&
+				new ArenaCompetitionEnrollmentQueryClient(
+					cosmWasmClient,
+					env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+				),
+			args: { enrollmentId: enrollmentId || "" },
+			options: { enabled: !!enrollmentId && !!cosmWasmClient },
+		});
 
-	if (isLoading) return <div>Loading...</div>;
-	if (isError) return <div>Error loading enrollment details</div>;
+	if (isLoading)
+		return (
+			<div className="flex justify-center">
+				<Spinner label="Loading enrollment..." />
+			</div>
+		);
 	if (!enrollment) return <div>No enrollment found</div>;
 
 	const currentMembers = Number(enrollment.current_members);
@@ -69,6 +76,12 @@ const EnrollmentView = () => {
 	const currentPool = enrollment.entry_fee
 		? calculateCurrentPool(enrollment.entry_fee, enrollment.current_members)
 		: null;
+	const path =
+		"wager" in enrollment.competition_type
+			? "wager"
+			: "tournament" in enrollment.competition_type
+				? "tournament"
+				: "league";
 
 	return (
 		<CategoryProvider value={enrollment.category_id}>
@@ -104,9 +117,15 @@ const EnrollmentView = () => {
 							<h2>Expiration</h2>
 						</CardHeader>
 						<CardBody>
-							<div className="flex items-center">
-								<FiClock className="mr-2" />
-								{formatExpiration(enrollment.expiration)}
+							<div className="flex items-center justify-between">
+								<ExpirationDisplay expiration={enrollment.expiration} />
+								<EnrollmentStatusDisplay
+									hasTriggeredExpiration={enrollment.has_triggered_expiration}
+									isExpired={enrollment.is_expired}
+									currentMembers={Number(enrollment.current_members)}
+									maxMembers={Number(enrollment.max_members)}
+									competitionId={enrollment.competition_info.competition_id}
+								/>
 							</div>
 						</CardBody>
 					</Card>
@@ -116,21 +135,13 @@ const EnrollmentView = () => {
 					<CardHeader>
 						<h2>Description</h2>
 					</CardHeader>
-					<CardBody>
-						<p>{enrollment.competition_info.description}</p>
-					</CardBody>
-				</Card>
-
-				<Card>
-					<CardHeader className="flex items-center justify-between">
-						<h2>Competition Type</h2>
-						<Chip color="primary" variant="flat">
-							{getCompetitionTypeDisplay(enrollment.competition_type)}
-						</Chip>
-					</CardHeader>
-					<CardBody>
+					<CardBody className="gap-4">
+						<div className="flex items-center justify-between">
+							<CategoryDisplay />
+							<CompetitionTypeDisplay type={enrollment.competition_type} />
+						</div>
 						{"league" in enrollment.competition_type && (
-							<div className="flex flex-col gap-4">
+							<div className="flex flex-col gap-2">
 								<h3>League Information</h3>
 								<div className="flex flex-wrap gap-2 pb-2">
 									<Tooltip content="Number of points awarded for a win">
@@ -158,7 +169,7 @@ const EnrollmentView = () => {
 							</div>
 						)}
 						{"tournament" in enrollment.competition_type && (
-							<div className="flex flex-col gap-4">
+							<div className="flex flex-col gap-2">
 								<h3>Tournament Information</h3>
 								<p>
 									Elimination Type:{" "}
@@ -179,21 +190,25 @@ const EnrollmentView = () => {
 								/>
 							</div>
 						)}
+						<p>{enrollment.competition_info.description}</p>
 					</CardBody>
 				</Card>
 
-				<Card>
-					<CardHeader>
-						<h2>Rules and Rulesets</h2>
-					</CardHeader>
-					<CardBody>
-						<RulesSection
-							rules={enrollment.competition_info.rules}
-							rulesets={enrollment.competition_info.rulesets}
-							category_id={enrollment.category_id}
-						/>
-					</CardBody>
-				</Card>
+				{(enrollment.competition_info.rules.length > 0 ||
+					enrollment.competition_info.rulesets.length > 0) && (
+					<Card>
+						<CardHeader>
+							<h2>Rules and Rulesets</h2>
+						</CardHeader>
+						<CardBody>
+							<RulesSection
+								rules={enrollment.competition_info.rules}
+								rulesets={enrollment.competition_info.rulesets}
+								category_id={enrollment.category_id}
+							/>
+						</CardBody>
+					</Card>
+				)}
 
 				<Card>
 					<CardHeader>
@@ -240,36 +255,37 @@ const EnrollmentView = () => {
 
 				<EnrollmentMembers enrollmentId={enrollment.id} />
 
-				{enrollment.competition_info.additional_layered_fees && (
-					<Card>
-						<CardHeader>
-							<h2>Additional Fees</h2>
-						</CardHeader>
-						<CardBody>
-							<Table aria-label="Additional Fees" removeWrapper>
-								<TableHeader>
-									<TableColumn>Receiver</TableColumn>
-									<TableColumn>Tax</TableColumn>
-								</TableHeader>
-								<TableBody>
-									{enrollment.competition_info.additional_layered_fees.map(
-										(fee, index) => (
-											// biome-ignore lint/suspicious/noArrayIndexKey: best option
-											<TableRow key={index}>
-												<TableCell>
-													<Profile address={fee.receiver} />
-												</TableCell>
-												<TableCell>
-													{Number.parseFloat(fee.tax) * 100}%
-												</TableCell>
-											</TableRow>
-										),
-									)}
-								</TableBody>
-							</Table>
-						</CardBody>
-					</Card>
-				)}
+				{enrollment.competition_info.additional_layered_fees &&
+					enrollment.competition_info.additional_layered_fees.length > 0 && (
+						<Card>
+							<CardHeader>
+								<h2>Additional Fees</h2>
+							</CardHeader>
+							<CardBody>
+								<Table aria-label="Additional Fees" removeWrapper>
+									<TableHeader>
+										<TableColumn>Receiver</TableColumn>
+										<TableColumn>Tax</TableColumn>
+									</TableHeader>
+									<TableBody>
+										{enrollment.competition_info.additional_layered_fees.map(
+											(fee, index) => (
+												// biome-ignore lint/suspicious/noArrayIndexKey: best option
+												<TableRow key={index}>
+													<TableCell>
+														<Profile address={fee.receiver} />
+													</TableCell>
+													<TableCell>
+														{Number.parseFloat(fee.tax) * 100}%
+													</TableCell>
+												</TableRow>
+											),
+										)}
+									</TableBody>
+								</Table>
+							</CardBody>
+						</Card>
+					)}
 
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 					<Card>
@@ -306,12 +322,28 @@ const EnrollmentView = () => {
 				</div>
 
 				<div className="flex justify-end">
-					<EnrollButton
-						enrollmentId={enrollment.id}
-						isExpired={enrollment.has_triggered_expiration}
-						isFull={currentMembers >= maxMembers}
-						entryFee={enrollment.entry_fee}
-					/>
+					{enrollment.has_triggered_expiration ? (
+						<Button
+							color="primary"
+							as={Link}
+							href={`/${path}/view?competitionId=${enrollment.competition_info.competition_id}`}
+						>
+							View
+						</Button>
+					) : (
+						<div className="flex gap-2">
+							<TriggerButton
+								enrollmentId={enrollment.id}
+								isExpired={enrollment.is_expired}
+								isFull={currentMembers >= maxMembers}
+							/>
+							<EnrollButton
+								enrollmentId={enrollment.id}
+								isFull={currentMembers >= maxMembers}
+								entryFee={enrollment.entry_fee}
+							/>
+						</div>
+					)}
 				</div>
 			</div>
 		</CategoryProvider>

@@ -2,15 +2,14 @@
 
 import MaybeLink from "@/components/MaybeLink";
 import Profile from "@/components/Profile";
+import CategoryDisplay from "@/enrollment/view/components/CategoryDisplay";
 import { useChain } from "@cosmos-kit/react";
 import {
-	Badge,
 	Button,
 	Card,
 	CardBody,
 	CardFooter,
 	CardHeader,
-	Chip,
 	Divider,
 	Image,
 	Link,
@@ -25,16 +24,16 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import NextImage from "next/image";
 import type { PropsWithChildren } from "react";
-import { BsHourglassBottom, BsYinYang } from "react-icons/bs";
+import { BsYinYang } from "react-icons/bs";
 import { toast } from "react-toastify";
 import { ArenaWagerModuleClient } from "~/codegen/ArenaWagerModule.client";
 import { useArenaWagerModuleActivateCompetitionManuallyMutation } from "~/codegen/ArenaWagerModule.react-query";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
-import { statusColors } from "~/helpers/ArenaHelpers";
 import { getCompetitionQueryKey } from "~/helpers/CompetitionHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import type { CompetitionResponse } from "~/types/CompetitionResponse";
 import type { CompetitionType } from "~/types/CompetitionType";
+import CompetitionStatusDisplay from "../CompetitionStatusDisplay";
 import ExpirationDisplay from "../ExpirationDisplay";
 import EscrowSection from "./components/EscrowSection";
 import EvidenceSection from "./components/EvidenceSection";
@@ -116,25 +115,8 @@ const ViewCompetition = ({
 
 			<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 				<Card>
-					<CardHeader className="flex items-center justify-between">
+					<CardHeader>
 						<h2 className="font-semibold text-xl">Host</h2>
-						<Badge
-							isOneChar
-							content={<BsHourglassBottom />}
-							color="warning"
-							aria-label="Expired"
-							isInvisible={
-								!(
-									competition.is_expired &&
-									(competition.status === "active" ||
-										competition.status === "pending")
-								)
-							}
-						>
-							<Chip color={statusColors[competition.status]}>
-								{competition.status}
-							</Chip>
-						</Badge>
 					</CardHeader>
 					<CardBody>
 						<div className="flex items-center justify-between">
@@ -162,7 +144,13 @@ const ViewCompetition = ({
 						<h2 className="font-semibold text-xl">Expiration</h2>
 					</CardHeader>
 					<CardBody>
-						<ExpirationDisplay expiration={competition.expiration} />
+						<div className="flex items-center justify-between">
+							<ExpirationDisplay expiration={competition.expiration} />
+							<CompetitionStatusDisplay
+								status={competition.status}
+								isExpired={competition.is_expired}
+							/>
+						</div>
 					</CardBody>
 				</Card>
 			</div>
@@ -171,7 +159,8 @@ const ViewCompetition = ({
 				<CardHeader>
 					<h2 className="font-semibold text-xl">Description</h2>
 				</CardHeader>
-				<CardBody>
+				<CardBody className="gap-2">
+					<CategoryDisplay />
 					<p>{competition.description}</p>
 				</CardBody>
 				<CardFooter>
@@ -258,7 +247,7 @@ const ViewCompetition = ({
 				<ResultSection moduleAddr={moduleAddr} competitionId={competition.id} />
 			)}
 
-			<div className="flex gap-2 overflow-x-auto">
+			<div className="flex justify-end gap-2 overflow-x-auto">
 				{!hideProcess && competition.status === "active" && (
 					<ProcessForm
 						moduleAddr={moduleAddr}
@@ -282,16 +271,19 @@ const ViewCompetition = ({
 					<PresetDistributionForm escrow={competition.escrow} />
 				)}
 				{competition.status === "pending" && (
-					<Button
-						color="primary"
-						onClick={handleActivate}
-						isLoading={manualActivationMutation.isLoading}
-						isDisabled={
-							manualActivationMutation.isLoading || address !== competition.host
-						}
-					>
-						Activate Competition
-					</Button>
+					<Tooltip content="Once activated, users cannot make changes to the escrow's state">
+						<Button
+							color="primary"
+							onClick={handleActivate}
+							isLoading={manualActivationMutation.isLoading}
+							isDisabled={
+								manualActivationMutation.isLoading ||
+								address !== competition.host
+							}
+						>
+							Activate
+						</Button>
+					</Tooltip>
 				)}
 			</div>
 			{children}

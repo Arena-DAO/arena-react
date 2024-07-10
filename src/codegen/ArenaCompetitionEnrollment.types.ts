@@ -134,6 +134,7 @@ export interface SudoMsg {
 export interface EnrollmentEntryResponse {
   category_id?: Uint128 | null;
   competition_info: CompetitionInfoResponse;
+  competition_module: Addr;
   competition_type: CompetitionType;
   current_members: Uint64;
   entry_fee?: Coin | null;
@@ -141,12 +142,14 @@ export interface EnrollmentEntryResponse {
   has_triggered_expiration: boolean;
   host: Addr;
   id: Uint128;
+  is_expired: boolean;
   max_members: Uint64;
   min_members?: Uint64 | null;
 }
 export interface CompetitionInfoResponse {
   additional_layered_fees?: FeeInformationForString[] | null;
   banner?: string | null;
+  competition_id?: Uint128 | null;
   description: string;
   expiration: Expiration;
   name: string;

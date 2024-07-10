@@ -1,4 +1,4 @@
-import { Card, CardBody, Chip, Image } from "@nextui-org/react";
+import { Card, CardBody, Image } from "@nextui-org/react";
 import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import type React from "react";
@@ -6,10 +6,11 @@ import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollme
 import type { CompetitionResponseForLeagueExt } from "~/codegen/ArenaLeagueModule.types";
 import type { CompetitionResponseForTournamentExt } from "~/codegen/ArenaTournamentModule.types";
 import type { CompetitionResponseForWagerExt } from "~/codegen/ArenaWagerModule.types";
-import { statusColors } from "~/helpers/ArenaHelpers";
-import { getCompetitionTypeDisplay } from "~/helpers/EnrollmentHelpers";
 import Profile from "../Profile";
+import CompetitionStatusDisplay from "./CompetitionStatusDisplay";
+import CompetitionTypeDisplay from "./CompetitionTypeDisplay";
 import EnrollmentInfo from "./EnrollmentInfo";
+import EnrollmentStatusDisplay from "./EnrollmentStatusDisplay";
 import ExpirationDisplay from "./ExpirationDisplay";
 import LeagueInfo from "./LeagueInfo";
 import TournamentInfo from "./TournamentInfo";
@@ -98,19 +99,9 @@ const Competition: React.FC<CompetitionProps> = ({
 			<CardBody className="p-3">
 				<div className="mt-auto mb-3 flex items-center justify-between">
 					<h2 className="truncate font-bold text-lg">{name}</h2>
-					<Chip
-						color={
-							isEnrollment(competition)
-								? "warning"
-								: statusColors[competition.status]
-						}
-						variant="flat"
-						size="sm"
-					>
-						{isEnrollment(competition)
-							? getCompetitionTypeDisplay(competition.competition_type)
-							: competition.status}
-					</Chip>
+					{isEnrollment(competition) && (
+						<CompetitionTypeDisplay type={competition.competition_type} />
+					)}
 				</div>
 				<p className="mb-3 text-sm">{description}</p>
 				{!hideHost && (
@@ -120,9 +111,22 @@ const Competition: React.FC<CompetitionProps> = ({
 				)}
 				{renderCompetitionInfo()}
 
-				<div className="mt-3 flex items-center justify-between text-sm">
-					Expires
+				<div className="mt-3 flex items-center justify-between">
 					<ExpirationDisplay expiration={competition.expiration} />
+					{isEnrollment(competition) ? (
+						<EnrollmentStatusDisplay
+							hasTriggeredExpiration={competition.has_triggered_expiration}
+							isExpired={competition.is_expired}
+							currentMembers={Number(competition.current_members)}
+							maxMembers={Number(competition.max_members)}
+							competitionId={competition.competition_info.competition_id}
+						/>
+					) : (
+						<CompetitionStatusDisplay
+							status={competition.status}
+							isExpired={competition.is_expired}
+						/>
+					)}
 				</div>
 			</CardBody>
 		</Card>

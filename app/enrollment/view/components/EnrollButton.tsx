@@ -20,13 +20,11 @@ import { useEnv } from "~/hooks/useEnv";
 interface EnrollButtonProps {
 	entryFee?: Coin | null;
 	enrollmentId: string;
-	isExpired: boolean;
 	isFull: boolean;
 }
 
 const EnrollButton: React.FC<EnrollButtonProps> = ({
 	enrollmentId,
-	isExpired,
 	isFull,
 	entryFee,
 }) => {
@@ -168,34 +166,27 @@ const EnrollButton: React.FC<EnrollButtonProps> = ({
 	if (isMember) {
 		return (
 			<Tooltip content="Withdraw from the competition">
-				<Button
-					onPress={handleWithdraw}
-					isDisabled={isExpired}
-					isLoading={withdrawMutation.isLoading}
-				>
+				<Button onPress={handleWithdraw} isLoading={withdrawMutation.isLoading}>
 					Withdraw
 				</Button>
 			</Tooltip>
 		);
 	}
 
-	const isDisabled = isExpired || isFull;
-	const buttonText = isExpired ? "Expired" : isFull ? "Full" : "Enroll";
+	const buttonText = isFull ? "Full" : "Enroll";
 
 	return (
 		<Tooltip
 			content={
-				isExpired
-					? "This competition enrollment has expired"
-					: isFull
-						? "This competition enrollment is full"
-						: "Enroll in this competition"
+				isFull
+					? "This competition enrollment is full"
+					: "Enroll in this competition"
 			}
 		>
 			<Button
 				color="primary"
 				onPress={handleEnroll}
-				isDisabled={isDisabled}
+				isDisabled={isFull}
 				isLoading={enrollMutation.isLoading}
 			>
 				{buttonText}

@@ -3,13 +3,6 @@ import type {
 	CompetitionType,
 } from "~/codegen/ArenaCompetitionEnrollment.types";
 
-export const getCompetitionTypeDisplay = (type: CompetitionType): string => {
-	if ("wager" in type) return "Wager";
-	if ("league" in type) return "League";
-	if ("tournament" in type) return "Tournament";
-	return "Unknown";
-};
-
 export const calculateCurrentPool = (
 	entryFee: Coin,
 	currentMembers: string,
