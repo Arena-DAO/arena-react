@@ -27,10 +27,12 @@ import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import LeaderboardDisplay from "./components/LeaderboardDisplay";
 import RoundsDisplay from "./components/RoundsDisplay";
+import { useChain } from "@cosmos-kit/react";
 
 const ViewWager = () => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
+	const { address } = useChain(env.CHAIN);
 	const searchParams = useSearchParams();
 	const competitionId = searchParams?.get("competitionId");
 
@@ -68,7 +70,7 @@ const ViewWager = () => {
 					<ViewCompetition
 						competition={data}
 						moduleAddr={env.ARENA_LEAGUE_MODULE_ADDRESS}
-						hideProcess
+						hideProcess={address !== env.ARENA_DAO_ADDRESS}
 						competitionType="league"
 					>
 						<Tabs aria-label="League Info" color="primary">

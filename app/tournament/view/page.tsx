@@ -28,10 +28,12 @@ import { getNumberWithOrdinal } from "~/helpers/UIHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import Bracket from "./components/Bracket";
+import { useChain } from "@cosmos-kit/react-lite";
 
 const ViewWager = () => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
+	const { address } = useChain(env.CHAIN);
 	const searchParams = useSearchParams();
 	const competitionId = searchParams?.get("competitionId");
 
@@ -72,7 +74,7 @@ const ViewWager = () => {
 					<ViewCompetition
 						competition={data}
 						moduleAddr={env.ARENA_TOURNAMENT_MODULE_ADDRESS}
-						hideProcess
+						hideProcess={address !== env.ARENA_DAO_ADDRESS}
 						competitionType="tournament"
 					>
 						<Tabs aria-label="Tournament Info" color="primary">
