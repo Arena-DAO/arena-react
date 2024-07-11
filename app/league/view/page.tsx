@@ -1,6 +1,7 @@
 "use client";
 
 import ViewCompetition from "@/components/competition/view/ViewCompetition";
+import { useChain } from "@cosmos-kit/react";
 import {
 	Card,
 	CardBody,
@@ -27,7 +28,6 @@ import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import LeaderboardDisplay from "./components/LeaderboardDisplay";
 import RoundsDisplay from "./components/RoundsDisplay";
-import { useChain } from "@cosmos-kit/react";
 
 const ViewWager = () => {
 	const { data: env } = useEnv();

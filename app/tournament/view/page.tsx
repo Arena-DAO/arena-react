@@ -1,6 +1,7 @@
 "use client";
 
 import ViewCompetition from "@/components/competition/view/ViewCompetition";
+import { useChain } from "@cosmos-kit/react-lite";
 import {
 	Card,
 	CardBody,
@@ -28,7 +29,6 @@ import { getNumberWithOrdinal } from "~/helpers/UIHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import Bracket from "./components/Bracket";
-import { useChain } from "@cosmos-kit/react-lite";
 
 const ViewWager = () => {
 	const { data: env } = useEnv();
