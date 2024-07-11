@@ -7,6 +7,7 @@ import {
 	Card,
 	CardBody,
 	CardFooter,
+	CardHeader,
 	Input,
 	Modal,
 	ModalBody,
@@ -45,6 +46,7 @@ import { useEnv } from "~/hooks/useEnv";
 
 type PresetDistributionFormProps = {
 	escrow: string;
+	isMutable: boolean;
 };
 
 const PresetDistributionFormSchema = z.object({
@@ -55,7 +57,10 @@ type PresetDistributionFormValues = z.infer<
 	typeof PresetDistributionFormSchema
 >;
 
-const PresetDistributionForm = ({ escrow }: PresetDistributionFormProps) => {
+const PresetDistributionForm = ({
+	escrow,
+	isMutable,
+}: PresetDistributionFormProps) => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
@@ -134,7 +139,7 @@ const PresetDistributionForm = ({ escrow }: PresetDistributionFormProps) => {
 
 	return (
 		<>
-			<Button onClick={onOpen}>Set Preset</Button>
+			<Button onClick={onOpen}>Preset Distribution</Button>
 			<Modal
 				isOpen={isOpen}
 				onOpenChange={onOpenChange}
@@ -142,19 +147,26 @@ const PresetDistributionForm = ({ escrow }: PresetDistributionFormProps) => {
 				scrollBehavior="outside"
 			>
 				<ModalContent>
-					<ModalHeader>Set Preset Distribution</ModalHeader>
+					<ModalHeader>Preset Distribution</ModalHeader>
 					<ModalBody className="space-y-4">
 						<ModalBody className="space-y-4">
 							<p>
-								Establish a preset distribution. List the addresses and share
-								percentages of all members, and provide an address for
-								distributing any remaining funds. If no members are provided,
-								then the preset distribution will be cleared out.
+								Establish a preset distribution for any incoming funds to this
+								address. List the addresses and share percentages of all
+								members, and provide an address for distributing any remaining
+								funds. If no members are provided, then the preset distribution
+								will be cleared out.
 							</p>
 							{data && (
 								<Card>
+									<CardHeader>
+										<h2>Current Distribution</h2>
+									</CardHeader>
 									<CardBody className="space-y-2">
-										<Profile address={data.remainder_addr} />
+										<div className="flex items-center gap-2">
+											<div className="font-semibold">Remainder Address:</div>
+											<Profile address={data.remainder_addr} />
+										</div>
 										<Table aria-label="Distribution" removeWrapper>
 											<TableHeader>
 												<TableColumn>Member</TableColumn>
@@ -181,33 +193,34 @@ const PresetDistributionForm = ({ escrow }: PresetDistributionFormProps) => {
 									</CardBody>
 								</Card>
 							)}
-							<div className="flex items-center space-x-2">
-								{remainderAddr && (
-									<Profile
-										address={remainderAddr}
-										justAvatar
-										className="min-w-max"
-									/>
-								)}
-								<Controller
-									control={control}
-									name="distribution.remainder_addr"
-									render={({ field }) => (
-										<Input
-											label="Remainder Address"
-											autoFocus
-											isDisabled={isSubmitting}
-											isInvalid={!!errors.distribution?.remainder_addr}
-											errorMessage={
-												errors.distribution?.remainder_addr?.message
-											}
-											{...field}
-										/>
-									)}
-								/>
-							</div>
 							<Card>
-								<CardBody>
+								<CardHeader>New Preset</CardHeader>
+								<CardBody className="space-y-2">
+									<div className="flex items-center space-x-2">
+										{remainderAddr && (
+											<Profile
+												address={remainderAddr}
+												justAvatar
+												className="min-w-max"
+											/>
+										)}
+										<Controller
+											control={control}
+											name="distribution.remainder_addr"
+											render={({ field }) => (
+												<Input
+													label="Remainder Address"
+													autoFocus
+													isDisabled={isSubmitting}
+													isInvalid={!!errors.distribution?.remainder_addr}
+													errorMessage={
+														errors.distribution?.remainder_addr?.message
+													}
+													{...field}
+												/>
+											)}
+										/>
+									</div>
 									<Table aria-label="Distribution" removeWrapper>
 										<TableHeader>
 											<TableColumn>Member</TableColumn>
@@ -309,6 +322,15 @@ const PresetDistributionForm = ({ escrow }: PresetDistributionFormProps) => {
 											{errors.distribution?.member_percentages?.root?.message}
 										</p>
 									</div>
+									<Progress
+										aria-label="Total Percentage"
+										value={percentages.reduce(
+											(acc, x) => acc + x.percentage,
+											0,
+										)}
+										color="primary"
+										showValueLabel
+									/>
 								</CardBody>
 								<CardFooter>
 									<Button
@@ -321,19 +343,15 @@ const PresetDistributionForm = ({ escrow }: PresetDistributionFormProps) => {
 									</Button>
 								</CardFooter>
 							</Card>
-							<Progress
-								aria-label="Total Percentage"
-								value={percentages.reduce((acc, x) => acc + x.percentage, 0)}
-								color="primary"
-								showValueLabel
-							/>
 						</ModalBody>
 					</ModalBody>
-					<ModalFooter>
-						<Button onClick={handleSubmit(onSubmit)} isLoading={isSubmitting}>
-							Submit
-						</Button>
-					</ModalFooter>
+					{isMutable && (
+						<ModalFooter>
+							<Button onClick={handleSubmit(onSubmit)} isLoading={isSubmitting}>
+								Submit
+							</Button>
+						</ModalFooter>
+					)}
 				</ModalContent>
 			</Modal>
 		</>

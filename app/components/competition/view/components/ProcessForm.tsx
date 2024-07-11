@@ -329,31 +329,33 @@ const ProcessForm = ({
 							provide an address for receiving any remaining funds. If no
 							members are provided, then funds will be refunded.
 						</p>
-						<div className="flex items-center space-x-2">
-							{remainderAddr && (
-								<Profile
-									address={remainderAddr}
-									justAvatar
-									className="min-w-max"
-								/>
-							)}
-							<Controller
-								control={control}
-								name="distribution.remainder_addr"
-								render={({ field }) => (
-									<Input
-										label="Remainder Address"
-										autoFocus
-										isDisabled={isSubmitting}
-										isInvalid={!!errors.distribution?.remainder_addr}
-										errorMessage={errors.distribution?.remainder_addr?.message}
-										{...field}
-									/>
-								)}
-							/>
-						</div>
 						<Card>
-							<CardBody>
+							<CardBody className="space-y-2">
+								<div className="flex items-center space-x-2">
+									{remainderAddr && (
+										<Profile
+											address={remainderAddr}
+											justAvatar
+											className="min-w-max"
+										/>
+									)}
+									<Controller
+										control={control}
+										name="distribution.remainder_addr"
+										render={({ field }) => (
+											<Input
+												label="Remainder Address"
+												autoFocus
+												isDisabled={isSubmitting}
+												isInvalid={!!errors.distribution?.remainder_addr}
+												errorMessage={
+													errors.distribution?.remainder_addr?.message
+												}
+												{...field}
+											/>
+										)}
+									/>
+								</div>
 								<Table aria-label="Distribution" removeWrapper>
 									<TableHeader>
 										<TableColumn>Member</TableColumn>
@@ -451,6 +453,12 @@ const ProcessForm = ({
 										{errors.distribution?.member_percentages?.root?.message}
 									</p>
 								</div>
+								<Progress
+									aria-label="Total Percentage"
+									value={percentages.reduce((acc, x) => acc + x.percentage, 0)}
+									color="primary"
+									showValueLabel
+								/>
 							</CardBody>
 							<CardFooter>
 								<Button
@@ -463,12 +471,6 @@ const ProcessForm = ({
 								</Button>
 							</CardFooter>
 						</Card>
-						<Progress
-							aria-label="Total Percentage"
-							value={percentages.reduce((acc, x) => acc + x.percentage, 0)}
-							color="primary"
-							showValueLabel
-						/>
 					</ModalBody>
 					<ModalFooter>
 						<Button onClick={handleSubmit(onSubmit)} isLoading={isSubmitting}>

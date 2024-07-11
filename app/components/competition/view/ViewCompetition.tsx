@@ -233,7 +233,10 @@ const ViewCompetition = ({
 
 			<div className="flex justify-end gap-2 overflow-x-auto">
 				{competition.status !== "inactive" && competition.escrow && (
-					<PresetDistributionForm escrow={competition.escrow} />
+					<PresetDistributionForm
+						escrow={competition.escrow}
+						isMutable={competition.status === "pending"}
+					/>
 				)}
 				{!hideProcess && competition.status === "active" && (
 					<ProcessForm
