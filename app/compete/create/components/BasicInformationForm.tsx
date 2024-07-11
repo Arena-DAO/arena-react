@@ -1,4 +1,8 @@
-import { parseAbsoluteToLocal } from "@internationalized/date";
+import {
+	getLocalTimeZone,
+	now,
+	parseAbsoluteToLocal,
+} from "@internationalized/date";
 import {
 	Accordion,
 	AccordionItem,
@@ -177,6 +181,9 @@ const BasicInformationForm = () => {
 							isInvalid={!!error}
 							errorMessage={error?.message}
 							isRequired
+							minValue={parseAbsoluteToLocal(
+								now(getLocalTimeZone()).toAbsoluteString(),
+							)}
 							{...field}
 							value={parseAbsoluteToLocal(field.value)}
 							onChange={(x) => field.onChange(x.toAbsoluteString())}

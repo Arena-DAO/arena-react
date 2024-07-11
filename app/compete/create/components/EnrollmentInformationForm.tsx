@@ -3,7 +3,7 @@ import { parseAbsoluteToLocal } from "@internationalized/date";
 import {
 	Button,
 	ButtonGroup,
-	DateInput,
+	DatePicker,
 	Input,
 	useDisclosure,
 } from "@nextui-org/react";
@@ -16,6 +16,10 @@ const EnrollmentInformationForm = () => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
 	const entryFee = useWatch({ control, name: "enrollmentInfo.entryFee" });
+	const competitionExpiration = useWatch({
+		control,
+		name: "expiration.at_time",
+	});
 
 	return (
 		<div className="space-y-6">
@@ -90,10 +94,12 @@ const EnrollmentInformationForm = () => {
 						name="enrollmentInfo.enrollment_expiration.at_time"
 						control={control}
 						render={({ field, fieldState: { error } }) => (
-							<DateInput
+							<DatePicker
+								showMonthAndYearPickers
 								label="Enrollment Expiration"
 								value={parseAbsoluteToLocal(field.value)}
 								onChange={(x) => field.onChange(x.toAbsoluteString())}
+								minValue={parseAbsoluteToLocal(competitionExpiration)}
 								isInvalid={!!error}
 								errorMessage={error?.message}
 								isRequired
