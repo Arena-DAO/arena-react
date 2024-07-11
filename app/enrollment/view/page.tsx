@@ -35,11 +35,11 @@ import {
 } from "~/helpers/EnrollmentHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
+import RulesDisplay from "../../components/competition/RulesDisplay";
 import CategoryDisplay from "./components/CategoryDisplay";
 import DistributionDisplay from "./components/DistributionDisplay";
 import EnrollButton from "./components/EnrollButton";
 import EnrollmentMembers from "./components/EnrollmentMembers";
-import RulesSection from "./components/RulesSection";
 import TriggerButton from "./components/TriggerButton";
 
 const EnrollmentView = () => {
@@ -194,17 +194,18 @@ const EnrollmentView = () => {
 					</CardBody>
 				</Card>
 
-				{(enrollment.competition_info.rules.length > 0 ||
-					enrollment.competition_info.rulesets.length > 0) && (
+				{((enrollment.competition_info.rules &&
+					enrollment.competition_info.rules.length > 0) ||
+					(enrollment.competition_info.rulesets &&
+						enrollment.competition_info.rulesets.length > 0)) && (
 					<Card>
 						<CardHeader>
 							<h2>Rules and Rulesets</h2>
 						</CardHeader>
 						<CardBody>
-							<RulesSection
+							<RulesDisplay
 								rules={enrollment.competition_info.rules}
 								rulesets={enrollment.competition_info.rulesets}
-								category_id={enrollment.category_id}
 							/>
 						</CardBody>
 					</Card>
@@ -322,15 +323,17 @@ const EnrollmentView = () => {
 				</div>
 
 				<div className="flex justify-end">
-					{enrollment.has_triggered_expiration ? (
-						<Button
-							color="primary"
-							as={Link}
-							href={`/${path}/view?competitionId=${enrollment.competition_info.competition_id}`}
-						>
-							View
-						</Button>
-					) : (
+					{enrollment.has_triggered_expiration &&
+						enrollment.competition_info.competition_id && (
+							<Button
+								color="primary"
+								as={Link}
+								href={`/${path}/view?competitionId=${enrollment.competition_info.competition_id}`}
+							>
+								View
+							</Button>
+						)}
+					{!enrollment.has_triggered_expiration && (
 						<div className="flex gap-2">
 							<TriggerButton
 								enrollmentId={enrollment.id}

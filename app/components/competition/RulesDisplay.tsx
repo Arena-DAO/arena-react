@@ -5,22 +5,19 @@ import { useMemo } from "react";
 import { ArenaCoreQueryClient } from "~/codegen/ArenaCore.client";
 import { useArenaCoreQueryExtensionQuery } from "~/codegen/ArenaCore.react-query";
 import type { Ruleset } from "~/codegen/ArenaCore.types";
+import { useCategoryContext } from "~/contexts/CategoryContext";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 
 interface RulesSectionProps {
-	rules: string[];
-	rulesets: string[];
-	category_id?: string | null;
+	rules?: string[] | null;
+	rulesets?: string[] | null;
 }
 
-const RulesSection: React.FC<RulesSectionProps> = ({
-	rules,
-	rulesets,
-	category_id,
-}) => {
+const RulesDisplay: React.FC<RulesSectionProps> = ({ rules, rulesets }) => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const category = useCategoryContext();
 
 	const { data } = useArenaCoreQueryExtensionQuery({
 		client:
@@ -29,16 +26,15 @@ const RulesSection: React.FC<RulesSectionProps> = ({
 		args: {
 			msg: {
 				rulesets: {
-					// biome-ignore lint/style/noNonNullAssertion: Checked by options
-					category_id: category_id!,
+					category_id: category?.category_id?.toString() || "",
 					include_disabled: false,
-					limit: rulesets.length,
 					start_after: null,
 				},
 			},
 		},
 		options: {
-			enabled: !!cosmWasmClient && rulesets.length > 0 && !!category_id,
+			enabled:
+				!!cosmWasmClient && !!rulesets && rulesets.length > 0 && !!category,
 		},
 	});
 
@@ -52,7 +48,7 @@ const RulesSection: React.FC<RulesSectionProps> = ({
 				description: ruleset.description as string | undefined,
 			})) ?? [];
 
-		if (rules.length > 0) {
+		if (rules && rules.length > 0) {
 			allRules.push({ title: "Rules", rules: rules, description: undefined });
 		}
 
@@ -84,4 +80,4 @@ const RulesSection: React.FC<RulesSectionProps> = ({
 	);
 };
 
-export default RulesSection;
+export default RulesDisplay;

@@ -52,6 +52,8 @@ const Profile = ({
 		() => isValidBech32Address(address, env.BECH32_PREFIX),
 		[address, env.BECH32_PREFIX],
 	);
+	const isEnrollmentContract =
+		address === env.ARENA_COMPETITION_ENROLLMENT_ADDRESS;
 	const { data, isLoading } = useProfileData(address, isValid);
 	const { data: rating } = useArenaCoreQueryExtensionQuery({
 		client:
@@ -70,7 +72,8 @@ const Profile = ({
 				isValid &&
 				!!cosmWasmClient &&
 				!isRatingDisabled &&
-				!!category?.category_id,
+				!!category?.category_id &&
+				!isEnrollmentContract,
 		},
 	});
 
@@ -89,13 +92,13 @@ const Profile = ({
 	const tooltipContent = (
 		<Card shadow="none" classNames={{ header: "pb-0", footer: "px-0 py-1" }}>
 			{data?.name && justAvatar && <CardHeader>{data.name}</CardHeader>}
-			{parsedRating && (
+			{!isEnrollmentContract && parsedRating && (
 				<CardBody>Rating {Number.parseFloat(parsedRating).toFixed(2)}</CardBody>
 			)}
 			{data?.address && (
 				<CardFooter className="gap-2">
 					<CopyAddressButton address={data.address} />
-					{data.address !== env.ARENA_COMPETITION_ENROLLMENT_ADDRESS && (
+					{!isEnrollmentContract && (
 						<>
 							<Button
 								as={Link}

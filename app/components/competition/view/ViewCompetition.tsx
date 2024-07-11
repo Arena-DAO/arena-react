@@ -1,7 +1,6 @@
 "use client";
-
-import MaybeLink from "@/components/MaybeLink";
 import Profile from "@/components/Profile";
+import RulesDisplay from "@/components/competition/RulesDisplay";
 import CategoryDisplay from "@/enrollment/view/components/CategoryDisplay";
 import { useChain } from "@cosmos-kit/react";
 import {
@@ -10,7 +9,6 @@ import {
 	CardBody,
 	CardFooter,
 	CardHeader,
-	Divider,
 	Image,
 	Link,
 	Table,
@@ -40,7 +38,6 @@ import EvidenceSection from "./components/EvidenceSection";
 import PresetDistributionForm from "./components/PresetDistributionForm";
 import ProcessForm from "./components/ProcessForm";
 import ResultSection from "./components/ResultSection";
-import RulesetsSection from "./components/RulesetsSection";
 
 interface ViewCompetitionProps extends PropsWithChildren {
 	moduleAddr: string;
@@ -170,33 +167,20 @@ const ViewCompetition = ({
 				</CardFooter>
 			</Card>
 
-			{competition.rules.length > 0 ||
-				(competition.rulesets.length > 0 && (
-					<Card>
-						<CardHeader>
-							<h2 className="font-semibold text-xl">Rules and Rulesets</h2>
-						</CardHeader>
-						<CardBody className="space-y-4">
-							{competition.rulesets.map((rulesetId) => (
-								<RulesetsSection key={rulesetId} rulesetId={rulesetId} />
-							))}
-							{competition.rules.length > 0 && (
-								<>
-									<Divider />
-									<h3 className="font-semibold text-lg">Additional Rules</h3>
-									<ul className="list-inside list-disc">
-										{competition.rules.map((item, i) => (
-											// biome-ignore lint/suspicious/noArrayIndexKey: best option
-											<li key={i} className="break-all">
-												<MaybeLink content={item} />
-											</li>
-										))}
-									</ul>
-								</>
-							)}
-						</CardBody>
-					</Card>
-				))}
+			{((competition.rules && competition.rules.length > 0) ||
+				(competition.rulesets && competition.rulesets.length > 0)) && (
+				<Card>
+					<CardHeader>
+						<h2>Rules and Rulesets</h2>
+					</CardHeader>
+					<CardBody>
+						<RulesDisplay
+							rules={competition.rules}
+							rulesets={competition.rulesets}
+						/>
+					</CardBody>
+				</Card>
+			)}
 
 			{(competition.status === "jailed" ||
 				competition.status === "inactive") && (
@@ -207,7 +191,7 @@ const ViewCompetition = ({
 				/>
 			)}
 
-			{competition.fees && (
+			{competition.fees && competition.fees.length > 0 && (
 				<Card>
 					<CardHeader>
 						<h2 className="font-semibold text-xl">Additional Layered Fees</h2>
@@ -248,6 +232,9 @@ const ViewCompetition = ({
 			)}
 
 			<div className="flex justify-end gap-2 overflow-x-auto">
+				{competition.status !== "inactive" && competition.escrow && (
+					<PresetDistributionForm escrow={competition.escrow} />
+				)}
 				{!hideProcess && competition.status === "active" && (
 					<ProcessForm
 						moduleAddr={moduleAddr}
@@ -267,9 +254,6 @@ const ViewCompetition = ({
 							competitionType={competitionType}
 						/>
 					)}
-				{competition.status !== "inactive" && competition.escrow && (
-					<PresetDistributionForm escrow={competition.escrow} />
-				)}
 				{competition.status === "pending" && (
 					<Tooltip content="Once activated, users cannot make changes to the escrow's state">
 						<Button

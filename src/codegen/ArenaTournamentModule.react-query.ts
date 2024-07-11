@@ -432,8 +432,8 @@ export interface ArenaTournamentModuleCreateCompetitionMutation {
     host?: string;
     instantiateExtension: TournamentInstantiateExt;
     name: string;
-    rules: string[];
-    rulesets: Uint128[];
+    rules?: string[];
+    rulesets?: Uint128[];
     shouldActivateOnFunded?: boolean;
   };
   args?: {

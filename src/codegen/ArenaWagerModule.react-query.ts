@@ -432,8 +432,8 @@ export interface ArenaWagerModuleCreateCompetitionMutation {
     host?: string;
     instantiateExtension: WagerInstantiateExt;
     name: string;
-    rules: string[];
-    rulesets: Uint128[];
+    rules?: string[];
+    rulesets?: Uint128[];
     shouldActivateOnFunded?: boolean;
   };
   args?: {

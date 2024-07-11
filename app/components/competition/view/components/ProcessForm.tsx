@@ -217,7 +217,9 @@ const ProcessForm = ({
 
 							if ("escrow" in props && props.escrow) {
 								await queryClient.invalidateQueries(
-									arenaEscrowQueryKeys.dumpState(props.escrow),
+									arenaEscrowQueryKeys.dumpState(props.escrow, {
+										addr: address,
+									}),
 								);
 								await queryClient.invalidateQueries(
 									arenaEscrowQueryKeys.balances(props.escrow),

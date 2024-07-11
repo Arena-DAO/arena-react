@@ -45,8 +45,8 @@ export type ExecuteMsg = {
     host?: string | null;
     instantiate_extension: WagerInstantiateExt;
     name: string;
-    rules: string[];
-    rulesets: Uint128[];
+    rules?: string[] | null;
+    rulesets?: Uint128[] | null;
     should_activate_on_funded?: boolean | null;
   };
 } | {
@@ -181,8 +181,8 @@ export interface CompetitionResponseForWagerExt {
   id: Uint128;
   is_expired: boolean;
   name: string;
-  rules: string[];
-  rulesets: Uint128[];
+  rules?: string[] | null;
+  rulesets?: Uint128[] | null;
   start_height: number;
   status: CompetitionStatus;
 }

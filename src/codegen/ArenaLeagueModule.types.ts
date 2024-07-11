@@ -45,8 +45,8 @@ export type ExecuteMsg = {
     host?: string | null;
     instantiate_extension: LeagueInstantiateExt;
     name: string;
-    rules: string[];
-    rulesets: Uint128[];
+    rules?: string[] | null;
+    rulesets?: Uint128[] | null;
     should_activate_on_funded?: boolean | null;
   };
 } | {
@@ -254,8 +254,8 @@ export interface CompetitionResponseForLeagueExt {
   id: Uint128;
   is_expired: boolean;
   name: string;
-  rules: string[];
-  rulesets: Uint128[];
+  rules?: string[] | null;
+  rulesets?: Uint128[] | null;
   start_height: number;
   status: CompetitionStatus;
 }

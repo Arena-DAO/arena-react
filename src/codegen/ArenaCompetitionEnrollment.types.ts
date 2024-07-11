@@ -77,8 +77,8 @@ export interface CompetitionInfoMsg {
   description: string;
   expiration: Expiration;
   name: string;
-  rules: string[];
-  rulesets: Uint128[];
+  rules?: string[] | null;
+  rulesets?: Uint128[] | null;
 }
 export interface FeeInformationForString {
   cw20_msg?: Binary | null;
@@ -153,8 +153,8 @@ export interface CompetitionInfoResponse {
   description: string;
   expiration: Expiration;
   name: string;
-  rules: string[];
-  rulesets: Uint128[];
+  rules?: string[] | null;
+  rulesets?: Uint128[] | null;
 }
 export type ArrayOfAddr = Addr[];
 export type ArrayOfEnrollmentEntryResponse = EnrollmentEntryResponse[];

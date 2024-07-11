@@ -183,11 +183,11 @@ const EscrowSection = ({
 							<BalanceDisplay balance={data.balance} />
 						</CardBody>
 						{!data.is_locked && (
-							<CardBody>
-								<Button color="primary" onClick={withdraw} fullWidth>
+							<CardFooter>
+								<Button color="primary" onClick={withdraw}>
 									Withdraw
 								</Button>
-							</CardBody>
+							</CardFooter>
 						)}
 					</Card>
 				)}

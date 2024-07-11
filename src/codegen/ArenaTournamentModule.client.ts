@@ -208,8 +208,8 @@ export interface ArenaTournamentModuleInterface extends ArenaTournamentModuleRea
     host?: string;
     instantiateExtension: TournamentInstantiateExt;
     name: string;
-    rules: string[];
-    rulesets: Uint128[];
+    rules?: string[];
+    rulesets?: Uint128[];
     shouldActivateOnFunded?: boolean;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   submitEvidence: ({
@@ -360,8 +360,8 @@ export class ArenaTournamentModuleClient extends ArenaTournamentModuleQueryClien
     host?: string;
     instantiateExtension: TournamentInstantiateExt;
     name: string;
-    rules: string[];
-    rulesets: Uint128[];
+    rules?: string[];
+    rulesets?: Uint128[];
     shouldActivateOnFunded?: boolean;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
