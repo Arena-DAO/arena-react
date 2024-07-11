@@ -22,7 +22,7 @@ import {
 	useArenaEscrowWithdrawMutation,
 } from "~/codegen/ArenaEscrow.react-query";
 import type {
-	DumpStateResponse,
+	ArrayOfMemberBalanceChecked,
 	ExecuteMsg as EscrowExecuteMsg,
 } from "~/codegen/ArenaEscrow.types";
 import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
@@ -112,6 +112,23 @@ const EscrowSection = ({
 				);
 				toast.success("The competition is now active");
 			}
+
+			await queryClient.invalidateQueries(
+				arenaEscrowQueryKeys.dumpState(escrow, { addr: address }),
+			);
+
+			queryClient.setQueryData<ArrayOfMemberBalanceChecked | undefined>(
+				arenaEscrowQueryKeys.dues(escrow),
+				(old) => {
+					if (old) {
+						return old.filter((due) => due.addr !== address);
+					}
+					return old;
+				},
+			);
+			await queryClient.invalidateQueries(
+				arenaEscrowQueryKeys.balances(escrow),
+			);
 		} catch (e) {
 			console.error(e);
 			toast.error((e as Error).toString());
@@ -135,18 +152,18 @@ const EscrowSection = ({
 					onSuccess: async () => {
 						toast.success("Funds have been successfully withdrawn");
 
-						queryClient.setQueryData<DumpStateResponse | undefined>(
+						await queryClient.invalidateQueries(
 							arenaEscrowQueryKeys.dumpState(escrow, { addr: address }),
+						);
+
+						queryClient.setQueryData<ArrayOfMemberBalanceChecked | undefined>(
+							arenaEscrowQueryKeys.balances(escrow),
 							(old) => {
 								if (old) {
-									return { ...old, balance: undefined };
+									return old.filter((balance) => balance.addr !== address);
 								}
 								return old;
 							},
-						);
-
-						await queryClient.invalidateQueries(
-							arenaEscrowQueryKeys.balances(escrow),
 						);
 						await queryClient.invalidateQueries(
 							arenaEscrowQueryKeys.dues(escrow),
