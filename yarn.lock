@@ -177,10 +177,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.45.20":
-  version: 0.45.20
-  resolution: "@chain-registry/types@npm:0.45.20"
-  checksum: 10c0/1eff5d1468e05ebad86ee1428ce883c2caf9f9954b8f0816f1daee8d0c27a5930fd98f48fcdea666b952158e65c321919fac56daba90dae36ad5537f82e4f89b
+"@chain-registry/types@npm:^0.45.22":
+  version: 0.45.22
+  resolution: "@chain-registry/types@npm:0.45.22"
+  checksum: 10c0/4f9ea14ade411ef2956f0bcd9ff57e72a2e51cfc6f7ae50f0169da131806231de33d8845cbe52b404d25358b0c7336fd3ad6df9a09fd7f928ddf1f07221e4cac
   languageName: node
   linkType: hard
 
@@ -592,9 +592,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmos-kit/react-lite@npm:^2.12.2":
-  version: 2.12.2
-  resolution: "@cosmos-kit/react-lite@npm:2.12.2"
+"@cosmos-kit/react-lite@npm:^2.13.0":
+  version: 2.13.0
+  resolution: "@cosmos-kit/react-lite@npm:2.13.0"
   dependencies:
     "@chain-registry/types": "npm:^0.45.1"
     "@cosmos-kit/core": "npm:^2.13.1"
@@ -604,17 +604,17 @@ __metadata:
     "@types/react-dom": ">= 17"
     react: ^18
     react-dom: ^18
-  checksum: 10c0/0a46b7c3efad5c675e2dd5a362929a57a58116c2ef5fafcd5f2700ffa30682370b0172359994040cc04b44240dedce42598df9d9448885dc2165b36c00ca3886
+  checksum: 10c0/8eae200d14fdd74cfad691a56ae3cd87e4d84f3b0483669adc4cc0228782bd630959b13e0cd1276ad3b297aa21b56bbd93867e9644daa25bd4ea95cbafa682a6
   languageName: node
   linkType: hard
 
-"@cosmos-kit/react@npm:2.17.2":
-  version: 2.17.2
-  resolution: "@cosmos-kit/react@npm:2.17.2"
+"@cosmos-kit/react@npm:2.18.0":
+  version: 2.18.0
+  resolution: "@cosmos-kit/react@npm:2.18.0"
   dependencies:
     "@chain-registry/types": "npm:^0.45.1"
     "@cosmos-kit/core": "npm:^2.13.1"
-    "@cosmos-kit/react-lite": "npm:^2.12.2"
+    "@cosmos-kit/react-lite": "npm:^2.13.0"
     "@react-icons/all-files": "npm:^4.1.0"
   peerDependencies:
     "@interchain-ui/react": ^1.23.9
@@ -622,7 +622,7 @@ __metadata:
     "@types/react-dom": ">= 17"
     react: ^18
     react-dom: ^18
-  checksum: 10c0/fb20ed553652f980bf58434082f3ea75d62d1cba280b65192f2df60743272f18da447d837d3e03e68b7a61d2345e10eb15364087e92a0dc4d64b680755ff2578
+  checksum: 10c0/b23e43a79e8c616e2c245a5637f904a7efc7b46358415963e0a6879846061a26964416afde4d2275175a3777291b985d25e433429bf198c52f148ea47aa08da8
   languageName: node
   linkType: hard
 
@@ -5994,7 +5994,7 @@ __metadata:
   resolution: "arena-react@workspace:."
   dependencies:
     "@biomejs/biome": "npm:1.8.3"
-    "@chain-registry/types": "npm:^0.45.20"
+    "@chain-registry/types": "npm:^0.45.22"
     "@cosmjs/amino": "npm:^0.32.4"
     "@cosmjs/cosmwasm-stargate": "npm:0.32.4"
     "@cosmjs/encoding": "npm:^0.32.4"
@@ -6006,7 +6006,7 @@ __metadata:
     "@cosmos-kit/keplr": "npm:2.12.2"
     "@cosmos-kit/leap": "npm:^2.12.2"
     "@cosmos-kit/ledger": "npm:^2.11.2"
-    "@cosmos-kit/react": "npm:2.17.2"
+    "@cosmos-kit/react": "npm:2.18.0"
     "@cosmos-kit/station": "npm:^2.10.2"
     "@dagrejs/dagre": "npm:^1.1.3"
     "@hookform/resolvers": "npm:^3.9.0"
@@ -6020,12 +6020,12 @@ __metadata:
     "@types/react": "npm:18.3.3"
     "@types/react-dom": "npm:^18.3.0"
     autoprefixer: "npm:^10.4.19"
-    chain-registry: "npm:1.63.24"
+    chain-registry: "npm:1.63.26"
     clsx: "npm:^2.1.1"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^7.0.4"
     date-fns: "npm:^3.6.0"
-    framer-motion: "npm:^11.3.0"
+    framer-motion: "npm:^11.3.2"
     http-proxy-middleware: "npm:^3.0.0"
     keen-slider: "npm:^6.8.6"
     lodash: "npm:^4.17.21"
@@ -6511,12 +6511,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.63.24":
-  version: 1.63.24
-  resolution: "chain-registry@npm:1.63.24"
+"chain-registry@npm:1.63.26":
+  version: 1.63.26
+  resolution: "chain-registry@npm:1.63.26"
   dependencies:
-    "@chain-registry/types": "npm:^0.45.20"
-  checksum: 10c0/e167ddd8e12038972e01bc3dd332dc7b67e0f682ff76b128106fc74971a03786425d6fe249e6a160b4221d182b8b5043c2e41d28bbe1caf0ca70d21af1862a17
+    "@chain-registry/types": "npm:^0.45.22"
+  checksum: 10c0/7d2cb1d1a6a7c57c66b7f04b3e1261b208a398f70e4ad0a4b0aae0e31252160a49d6dd604166a37d191c3d64ffe296c83d458857ba857131124cced16d19884d
   languageName: node
   linkType: hard
 
@@ -7666,9 +7666,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^11.3.0":
-  version: 11.3.0
-  resolution: "framer-motion@npm:11.3.0"
+"framer-motion@npm:^11.3.2":
+  version: 11.3.2
+  resolution: "framer-motion@npm:11.3.2"
   dependencies:
     tslib: "npm:^2.4.0"
   peerDependencies:
@@ -7682,7 +7682,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/1765b07161a533f140579cb157c521a0820b5212c02220481803fbf9b4dc1d82bf44c26273bc96d37feb0025d736165ae2246b6d0529f9ad1602bb65050a5e1e
+  checksum: 10c0/c79f6fa94d33579b4e7ed994d01aedd6888a9057488b4848ee42c9ad2ae3c4f69428a5f5cf7d2869d71b94c5eda1a19a5593b3035e8a518fae2878a7138db2cc
   languageName: node
   linkType: hard
 

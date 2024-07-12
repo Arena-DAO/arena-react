@@ -85,6 +85,54 @@
 					"title": "Madden 24",
 					"img": "madden-24.jpg",
 					"category_id": 19
+				},
+				{
+					"url": "xdefiant",
+					"title": "XDefiant",
+					"img": "xdefiant.jpg",
+					"category_id": 20
+				},
+				{
+					"url": "halo-infinite",
+					"title": "Halo Infinite",
+					"img": "halo-infinite.webp",
+					"category_id": 21
+				},
+				{
+					"url": "topspin",
+					"title": "TopSpin 2K25",
+					"img": "topspin-25.jpg",
+					"category_id": 22
+				},
+				{
+					"url": "brawl-stars",
+					"title": "Brawl Stars",
+					"img": "brawl-stars.avif",
+					"category_id": 23
+				},
+				{
+					"url": "brawlhalla",
+					"title": "Brawlhalla",
+					"img": "brawlhalla.jpg",
+					"category_id": 24
+				},
+				{
+					"url": "ufc-5",
+					"title": "UFC 5",
+					"img": "ufc-5.jpg",
+					"category_id": 25
+				},
+				{
+					"url": "pga-tour",
+					"title": "PGA Tour",
+					"img": "pga-tour.jpg",
+					"category_id": 26
+				},
+				{
+					"url": "nhl-24",
+					"title": "NHL 24",
+					"img": "nhl-24.jpg",
+					"category_id": 27
 				}
 			]
 		},
@@ -128,6 +176,25 @@
 					"title": "Football",
 					"img": "football.jpg",
 					"category_id": 15
+				},
+				{
+					"url": "hockey",
+					"title": "Hockey",
+					"img": "hockey.avif",
+					"category_id": 29
+				}
+			]
+		},
+		{
+			"url": "strategy",
+			"title": "Strategy",
+			"img": "strategy.avif",
+			"children": [
+				{
+					"url": "chess",
+					"title": "Chess",
+					"img": "chess.avif",
+					"category_id": 28
 				}
 			]
 		},
