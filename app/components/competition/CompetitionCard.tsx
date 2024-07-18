@@ -1,5 +1,4 @@
 import { Card, CardBody, Image } from "@nextui-org/react";
-import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import type React from "react";
 import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollment.types";
@@ -88,12 +87,9 @@ const Competition: React.FC<CompetitionProps> = ({
 		>
 			{banner && (
 				<Image
-					as={NextImage}
 					src={banner}
 					alt="Competition Banner"
 					className="z-0 h-full w-full object-cover"
-					width="1920"
-					height="1080"
 				/>
 			)}
 			<CardBody className="p-3">

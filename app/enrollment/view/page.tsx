@@ -23,7 +23,6 @@ import {
 	TableRow,
 	Tooltip,
 } from "@nextui-org/react";
-import NextImage from "next/image";
 import { useSearchParams } from "next/navigation";
 import { FiUsers } from "react-icons/fi";
 import { ArenaCompetitionEnrollmentQueryClient } from "~/codegen/ArenaCompetitionEnrollment.client";
@@ -91,11 +90,8 @@ const EnrollmentView = () => {
 				</h1>
 				{enrollment.competition_info.banner && (
 					<Image
-						as={NextImage}
 						src={enrollment.competition_info.banner}
 						alt={enrollment.competition_info.name}
-						width={1280}
-						height={720}
 						className="z-0 h-full w-full"
 						removeWrapper
 					/>

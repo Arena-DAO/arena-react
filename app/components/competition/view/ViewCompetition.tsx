@@ -20,7 +20,6 @@ import {
 	Tooltip,
 } from "@nextui-org/react";
 import { useQueryClient } from "@tanstack/react-query";
-import NextImage from "next/image";
 import type { PropsWithChildren } from "react";
 import { BsYinYang } from "react-icons/bs";
 import { toast } from "react-toastify";
@@ -100,11 +99,8 @@ const ViewCompetition = ({
 
 			{competition.banner && (
 				<Image
-					as={NextImage}
 					src={competition.banner}
 					alt={competition.name}
-					width={1280}
-					height={720}
 					className="h-64 w-full rounded-lg object-cover"
 					removeWrapper
 				/>
