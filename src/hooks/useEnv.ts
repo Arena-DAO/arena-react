@@ -27,6 +27,7 @@ export interface Env {
 	ARENA_LEAGUE_MODULE_ADDRESS: string;
 	ARENA_TOURNAMENT_MODULE_ADDRESS: string;
 	ARENA_COMPETITION_ENROLLMENT_ADDRESS: string;
+	ARENA_ABC_ADDRESS: string;
 	DAO_DAO_URL: string;
 	DOCS_URL: string;
 	RPC_URL: string;
@@ -100,6 +101,7 @@ function getEnv(): Env {
 		ARENA_COMPETITION_ENROLLMENT_ADDRESS: checkEnv(
 			process.env.NEXT_PUBLIC_ARENA_COMPETITION_ENROLLMENT_ADDRESS,
 		),
+		ARENA_ABC_ADDRESS: checkEnv(process.env.NEXT_PUBLIC_ARENA_ABC_ADDRESS),
 		DAO_DAO_URL: checkEnv(process.env.NEXT_PUBLIC_DAO_DAO_URL),
 		DOCS_URL: checkEnv(process.env.NEXT_PUBLIC_DOCS_URL),
 		RPC_URL: checkEnv(process.env.NEXT_PUBLIC_RPC_URL),
