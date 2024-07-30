@@ -105,7 +105,7 @@ function HomePage() {
 						<span className="whitespace-nowrap text-primary">The Arena</span>
 					</div>
 					<div className="text-center text-[100%] sm:text-[120%] md:text-left md:text-[150%]">
-						The next iteration of competition infrastructure
+						The Future of Competition, Decentralized
 					</div>
 					<div className="mt-2 flex justify-center gap-4 md:justify-normal">
 						<Button as={Link} href="/compete" color="primary">
