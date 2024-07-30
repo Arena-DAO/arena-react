@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee, Coin } from "@cosmjs/amino";
-import { CurveType, Uint128, HatcherAllowlistConfigType, Uint64, Decimal, InstantiateMsg, HatcherAllowlistEntryMsg, HatcherAllowlistConfigMsg, MinMax, CommonsPhaseConfig, ClosedConfig, HatchConfig, OpenConfig, ReserveToken, SupplyToken, NewDenomMetadata, DenomUnit, ExecuteMsg, UpdatePhaseConfigMsg, Action, Expiration, Timestamp, QueryMsg, QuoteResponse, CurveInfoResponse, DenomResponse, Addr, DonationsResponse, NullableAddr, HatcherAllowlistResponse, HatcherAllowlistEntry, HatcherAllowlistConfig, HatchersResponse, Boolean, OwnershipForString, CommonsPhase, CommonsPhaseConfigResponse } from "./CwAbc.types";
+import { CurveType, Uint128, HatcherAllowlistConfigType, Uint64, Decimal, InstantiateMsg, HatcherAllowlistEntryMsg, HatcherAllowlistConfigMsg, MinMax, CommonsPhaseConfig, ClosedConfig, HatchConfig, OpenConfig, ReserveToken, SupplyToken, NewDenomMetadata, DenomUnit, ExecuteMsg, UpdatePhaseConfigMsg, Action, Expiration, Timestamp, QueryMsg, QuoteResponse, CurveInfoResponse, DenomResponse, Addr, DonationsResponse, CommonsPhase, DumpStateResponse, CommonsPhaseConfigResponse, NullableAddr, HatcherAllowlistResponse, HatcherAllowlistEntry, HatcherAllowlistConfig, HatchersResponse, Boolean, NullableUint128, OwnershipForString, String } from "./CwAbc.types";
 import { CwAbcQueryClient, CwAbcClient } from "./CwAbc.client";
 export const cwAbcQueryKeys = {
   contract: ([{
@@ -92,6 +92,16 @@ export const cwAbcQueryKeys = {
     method: "token_contract",
     args
   }] as const),
+  supplyDenom: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
+    ...cwAbcQueryKeys.address(contractAddress)[0],
+    method: "supply_denom",
+    args
+  }] as const),
+  dumpState: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
+    ...cwAbcQueryKeys.address(contractAddress)[0],
+    method: "dump_state",
+    args
+  }] as const),
   ownership: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
     ...cwAbcQueryKeys.address(contractAddress)[0],
     method: "ownership",
@@ -110,6 +120,26 @@ export function useCwAbcOwnershipQuery<TData = OwnershipForString>({
   options
 }: CwAbcOwnershipQuery<TData>) {
   return useQuery<OwnershipForString, Error, TData>(cwAbcQueryKeys.ownership(client?.contractAddress), () => client ? client.ownership() : Promise.reject(new Error("Invalid client")), {
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
+}
+export interface CwAbcDumpStateQuery<TData> extends CwAbcReactQuery<DumpStateResponse, TData> {}
+export function useCwAbcDumpStateQuery<TData = DumpStateResponse>({
+  client,
+  options
+}: CwAbcDumpStateQuery<TData>) {
+  return useQuery<DumpStateResponse, Error, TData>(cwAbcQueryKeys.dumpState(client?.contractAddress), () => client ? client.dumpState() : Promise.reject(new Error("Invalid client")), {
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
+}
+export interface CwAbcSupplyDenomQuery<TData> extends CwAbcReactQuery<String, TData> {}
+export function useCwAbcSupplyDenomQuery<TData = String>({
+  client,
+  options
+}: CwAbcSupplyDenomQuery<TData>) {
+  return useQuery<String, Error, TData>(cwAbcQueryKeys.supplyDenom(client?.contractAddress), () => client ? client.supplyDenom() : Promise.reject(new Error("Invalid client")), {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
@@ -178,12 +208,12 @@ export function useCwAbcBuyQuoteQuery<TData = QuoteResponse>({
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
-export interface CwAbcMaxSupplyQuery<TData> extends CwAbcReactQuery<Uint128, TData> {}
-export function useCwAbcMaxSupplyQuery<TData = Uint128>({
+export interface CwAbcMaxSupplyQuery<TData> extends CwAbcReactQuery<NullableUint128, TData> {}
+export function useCwAbcMaxSupplyQuery<TData = NullableUint128>({
   client,
   options
 }: CwAbcMaxSupplyQuery<TData>) {
-  return useQuery<Uint128, Error, TData>(cwAbcQueryKeys.maxSupply(client?.contractAddress), () => client ? client.maxSupply() : Promise.reject(new Error("Invalid client")), {
+  return useQuery<NullableUint128, Error, TData>(cwAbcQueryKeys.maxSupply(client?.contractAddress), () => client ? client.maxSupply() : Promise.reject(new Error("Invalid client")), {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });

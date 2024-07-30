@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { CurveType, Uint128, HatcherAllowlistConfigType, Uint64, Decimal, InstantiateMsg, HatcherAllowlistEntryMsg, HatcherAllowlistConfigMsg, MinMax, CommonsPhaseConfig, ClosedConfig, HatchConfig, OpenConfig, ReserveToken, SupplyToken, NewDenomMetadata, DenomUnit, ExecuteMsg, UpdatePhaseConfigMsg, Action, Expiration, Timestamp, QueryMsg, QuoteResponse, CurveInfoResponse, DenomResponse, Addr, DonationsResponse, NullableAddr, HatcherAllowlistResponse, HatcherAllowlistEntry, HatcherAllowlistConfig, HatchersResponse, Boolean, OwnershipForString, CommonsPhase, CommonsPhaseConfigResponse } from "./CwAbc.types";
+import { CurveType, Uint128, HatcherAllowlistConfigType, Uint64, Decimal, InstantiateMsg, HatcherAllowlistEntryMsg, HatcherAllowlistConfigMsg, MinMax, CommonsPhaseConfig, ClosedConfig, HatchConfig, OpenConfig, ReserveToken, SupplyToken, NewDenomMetadata, DenomUnit, ExecuteMsg, UpdatePhaseConfigMsg, Action, Expiration, Timestamp, QueryMsg, QuoteResponse, CurveInfoResponse, DenomResponse, Addr, DonationsResponse, CommonsPhase, DumpStateResponse, CommonsPhaseConfigResponse, NullableAddr, HatcherAllowlistResponse, HatcherAllowlistEntry, HatcherAllowlistConfig, HatchersResponse, Boolean, NullableUint128, OwnershipForString, String } from "./CwAbc.types";
 export interface CwAbcReadOnlyInterface {
   contractAddress: string;
   curveInfo: () => Promise<CurveInfoResponse>;
@@ -42,7 +42,7 @@ export interface CwAbcReadOnlyInterface {
     limit?: number;
     startAfter?: string;
   }) => Promise<HatcherAllowlistResponse>;
-  maxSupply: () => Promise<Uint128>;
+  maxSupply: () => Promise<NullableUint128>;
   buyQuote: ({
     payment
   }: {
@@ -56,6 +56,8 @@ export interface CwAbcReadOnlyInterface {
   phase: () => Promise<CommonsPhase>;
   phaseConfig: () => Promise<CommonsPhaseConfigResponse>;
   tokenContract: () => Promise<Addr>;
+  supplyDenom: () => Promise<String>;
+  dumpState: () => Promise<DumpStateResponse>;
   ownership: () => Promise<OwnershipForString>;
 }
 export class CwAbcQueryClient implements CwAbcReadOnlyInterface {
@@ -79,6 +81,8 @@ export class CwAbcQueryClient implements CwAbcReadOnlyInterface {
     this.phase = this.phase.bind(this);
     this.phaseConfig = this.phaseConfig.bind(this);
     this.tokenContract = this.tokenContract.bind(this);
+    this.supplyDenom = this.supplyDenom.bind(this);
+    this.dumpState = this.dumpState.bind(this);
     this.ownership = this.ownership.bind(this);
   }
   curveInfo = async (): Promise<CurveInfoResponse> => {
@@ -162,7 +166,7 @@ export class CwAbcQueryClient implements CwAbcReadOnlyInterface {
       }
     });
   };
-  maxSupply = async (): Promise<Uint128> => {
+  maxSupply = async (): Promise<NullableUint128> => {
     return this.client.queryContractSmart(this.contractAddress, {
       max_supply: {}
     });
@@ -202,6 +206,16 @@ export class CwAbcQueryClient implements CwAbcReadOnlyInterface {
   tokenContract = async (): Promise<Addr> => {
     return this.client.queryContractSmart(this.contractAddress, {
       token_contract: {}
+    });
+  };
+  supplyDenom = async (): Promise<String> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      supply_denom: {}
+    });
+  };
+  dumpState = async (): Promise<DumpStateResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      dump_state: {}
     });
   };
   ownership = async (): Promise<OwnershipForString> => {

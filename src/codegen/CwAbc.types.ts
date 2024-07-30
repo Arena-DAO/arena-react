@@ -200,6 +200,10 @@ export type QueryMsg = {
 } | {
   token_contract: {};
 } | {
+  supply_denom: {};
+} | {
+  dump_state: {};
+} | {
   ownership: {};
 };
 export interface QuoteResponse {
@@ -222,6 +226,20 @@ export type Addr = string;
 export interface DonationsResponse {
   donations: [Addr, Uint128][];
 }
+export type CommonsPhase = "hatch" | "open" | "closed";
+export interface DumpStateResponse {
+  curve_info: CurveInfoResponse;
+  curve_type: CurveType;
+  is_paused: boolean;
+  max_supply?: Uint128 | null;
+  phase: CommonsPhase;
+  phase_config: CommonsPhaseConfigResponse;
+  supply_denom: string;
+}
+export interface CommonsPhaseConfigResponse {
+  phase: CommonsPhase;
+  phase_config: CommonsPhaseConfig;
+}
 export type NullableAddr = Addr | null;
 export interface HatcherAllowlistResponse {
   allowlist?: HatcherAllowlistEntry[] | null;
@@ -239,13 +257,10 @@ export interface HatchersResponse {
   hatchers: [Addr, Uint128][];
 }
 export type Boolean = boolean;
+export type NullableUint128 = Uint128 | null;
 export interface OwnershipForString {
   owner?: string | null;
   pending_expiry?: Expiration | null;
   pending_owner?: string | null;
 }
-export type CommonsPhase = "hatch" | "open" | "closed";
-export interface CommonsPhaseConfigResponse {
-  phase: CommonsPhase;
-  phase_config: CommonsPhaseConfig;
-}
+export type String = string;
