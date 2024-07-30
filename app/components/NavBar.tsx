@@ -30,6 +30,7 @@ import {
 	BsCurrencyExchange,
 	BsDiscord,
 	BsGithub,
+	BsTrophyFill,
 	BsTwitterX,
 	BsYinYang,
 } from "react-icons/bs";
@@ -48,6 +49,13 @@ const menuConfig = (env: Env) => [
 				description: "View the Arena DAO on DAO DAO",
 				startContent: <BsYinYang />,
 				target: "_blank",
+			},
+			{
+				key: "token",
+				label: "Token",
+				href: "/dao/token",
+				description: "Become a member of the DAO",
+				startContent: <BsTrophyFill />,
 			},
 			{
 				key: "jailhouse",
