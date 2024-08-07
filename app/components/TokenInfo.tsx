@@ -7,7 +7,7 @@ import { useToken } from "~/hooks/useToken";
 interface TokenCardProps extends Omit<UserProps, "name"> {
 	denomOrAddress: string;
 	isNative?: boolean;
-	amount?: bigint;
+	amount?: bigint | string;
 }
 
 const TokenInfo = ({
@@ -32,7 +32,7 @@ const TokenInfo = ({
 			{ denom: denomOrAddress, amount: amount.toString() },
 			token,
 		);
-		displayName = `${displayAmount.amount} ${displayAmount.denom}`;
+		displayName = `${Number(displayAmount.amount).toLocaleString()} ${token.symbol}`;
 	}
 
 	if (isError) {
