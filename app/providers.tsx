@@ -1,6 +1,6 @@
 "use client";
 
-import type { Chain } from "@chain-registry/types";
+import type { Asset, AssetList, Chain } from "@chain-registry/types";
 import { GasPrice } from "@cosmjs/stargate";
 import { wallets as cosmosExtensionMetamaskWallets } from "@cosmos-kit/cosmos-extension-metamask";
 import { wallets as cosmostationWallets } from "@cosmos-kit/cosmostation";
@@ -48,10 +48,44 @@ function InnerProviders({ children }: PropsWithChildren) {
 		() => (env.ENV === "development" ? [testnetChain] : [mainnetChain]),
 		[env.ENV],
 	);
-	const assetsMemo = useMemo(
-		() => (env.ENV === "development" ? [testnetAssets] : [mainnetAssets]),
-		[env.ENV],
-	);
+	const assetsMemo = useMemo(() => {
+		if (env.ENV === "development") {
+			// Create a new testnet asset for Arena DAO token
+			const arenaTestnetAsset: Asset = {
+				description: "The governance token of the Arena DAO",
+				address:
+					"factory/neutron1r3slyjlf7g76mz3na6gh7c8ek62rhssrzf60uh0emyw3x94rppyqfcs0pk/uarena",
+				denom_units: [
+					{
+						denom:
+							"factory/neutron1r3slyjlf7g76mz3na6gh7c8ek62rhssrzf60uh0emyw3x94rppyqfcs0pk/uarena",
+						exponent: 0,
+					},
+					{
+						denom: "arena",
+						exponent: 6,
+					},
+				],
+				base: "factory/neutron1r3slyjlf7g76mz3na6gh7c8ek62rhssrzf60uh0emyw3x94rppyqfcs0pk/uarena",
+				name: "Arena Token",
+				display: "arena",
+				symbol: "ARENA",
+				logo_URIs: {
+					svg: "/logo.svg",
+				},
+			};
+
+			// Create a new array with the existing testnet assets
+			const updatedTestnetAssets: AssetList = {
+				...testnetAssets,
+				assets: [...testnetAssets.assets, arenaTestnetAsset],
+			};
+
+			return [updatedTestnetAssets];
+		}
+		// For mainnet, return the original mainnet assets
+		return [mainnetAssets];
+	}, [env.ENV]);
 
 	return (
 		<ChainProvider

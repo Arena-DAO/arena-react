@@ -16,7 +16,7 @@ class ErrorBoundary extends Component<PropsWithChildren> {
 	}
 	componentDidCatch(error: Error, errorInfo: ErrorInfo) {
 		toast.error(error.message);
-		console.log({ error, errorInfo });
+		console.error({ error, errorInfo });
 	}
 	render() {
 		return this.props.children;
