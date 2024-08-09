@@ -91,7 +91,9 @@ const TokenPage: React.FC = () => {
 							<TableBody>
 								<TableRow key="phase">
 									<TableCell>Current Phase</TableCell>
-									<TableCell>{dumpState.phase.toUpperCase()}</TableCell>
+									<TableCell>
+										{dumpState.phase_config.phase.toUpperCase()}
+									</TableCell>
 								</TableRow>
 								<TableRow key="supply">
 									<TableCell>Current Supply</TableCell>

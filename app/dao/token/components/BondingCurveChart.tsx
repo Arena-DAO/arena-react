@@ -1,5 +1,7 @@
-import { useMemo } from "react";
+import TokenInfo from "@/components/TokenInfo";
 import type { Asset } from "@chain-registry/types";
+import { Card, CardBody } from "@nextui-org/react";
+import { useMemo } from "react";
 import {
 	CartesianGrid,
 	Line,
@@ -10,8 +12,6 @@ import {
 	XAxis,
 	YAxis,
 } from "recharts";
-import TokenInfo from "@/components/TokenInfo";
-import { Card, CardBody } from "@nextui-org/react";
 import { getDisplayToken } from "~/helpers/TokenHelpers";
 
 interface CurveDataPoint {
@@ -159,11 +159,7 @@ const BondingCurveChart = ({
 							name="Bonding Curve"
 							animationDuration={2000}
 						/>
-						<ReferenceDot
-							x={displayReserve}
-							y={displaySupply}
-							label={{ value: "Current Status", position: "top" }}
-						/>
+						<ReferenceDot x={displayReserve} y={displaySupply} />
 					</LineChart>
 				</ResponsiveContainer>
 			</CardBody>

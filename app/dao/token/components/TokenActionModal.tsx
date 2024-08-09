@@ -9,10 +9,12 @@ import {
 	ModalFooter,
 	ModalHeader,
 } from "@nextui-org/react";
+import { useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { toast } from "react-toastify";
 import { CwAbcClient, CwAbcQueryClient } from "~/codegen/CwAbc.client";
 import {
+	cwAbcQueryKeys,
 	useCwAbcBuyMutation,
 	useCwAbcBuyQuoteQuery,
 	useCwAbcSellMutation,
@@ -42,6 +44,7 @@ const TokenActionModal: React.FC<TokenActionModalProps> = ({
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
+	const queryClient = useQueryClient();
 
 	const client = React.useMemo(
 		() =>
@@ -95,35 +98,53 @@ const TokenActionModal: React.FC<TokenActionModalProps> = ({
 				env.ARENA_ABC_ADDRESS,
 			);
 			if (actionType === "buy") {
-				await buyMutation.mutateAsync({
-					client,
-					args: {
-						funds: [
-							{
-								amount: getBaseToken(
-									{ amount, denom: reserveToken.display },
-									reserveToken,
-								).amount,
-								denom: reserveToken.base,
-							},
-						],
+				await buyMutation.mutateAsync(
+					{
+						client,
+						args: {
+							funds: [
+								{
+									amount: getBaseToken(
+										{ amount, denom: reserveToken.display },
+										reserveToken,
+									).amount,
+									denom: reserveToken.base,
+								},
+							],
+						},
 					},
-				});
+					{
+						onSuccess: () => {
+							queryClient.invalidateQueries(
+								cwAbcQueryKeys.dumpState(env.ARENA_ABC_ADDRESS),
+							);
+						},
+					},
+				);
 			} else if (actionType === "sell") {
-				await sellMutation.mutateAsync({
-					client,
-					args: {
-						funds: [
-							{
-								amount: getBaseToken(
-									{ amount, denom: supplyToken.display },
-									supplyToken,
-								).amount,
-								denom: supplyToken.base,
-							},
-						],
+				await sellMutation.mutateAsync(
+					{
+						client,
+						args: {
+							funds: [
+								{
+									amount: getBaseToken(
+										{ amount, denom: supplyToken.display },
+										supplyToken,
+									).amount,
+									denom: supplyToken.base,
+								},
+							],
+						},
 					},
-				});
+					{
+						onSuccess: () => {
+							queryClient.invalidateQueries(
+								cwAbcQueryKeys.dumpState(env.ARENA_ABC_ADDRESS),
+							);
+						},
+					},
+				);
 			}
 			onClose();
 		} catch (e) {
