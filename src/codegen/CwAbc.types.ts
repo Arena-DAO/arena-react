@@ -232,7 +232,6 @@ export interface DumpStateResponse {
   curve_type: CurveType;
   is_paused: boolean;
   max_supply?: Uint128 | null;
-  phase: CommonsPhase;
   phase_config: CommonsPhaseConfigResponse;
   supply_denom: string;
 }
