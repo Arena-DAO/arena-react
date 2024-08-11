@@ -7,6 +7,7 @@ import {
 	CardBody,
 	CardHeader,
 	Input,
+	Spinner,
 	Tab,
 	Table,
 	TableBody,
@@ -19,6 +20,8 @@ import {
 } from "@nextui-org/react";
 import type React from "react";
 import { useCallback, useMemo, useState } from "react";
+import { BsCart3 } from "react-icons/bs";
+import { FiDollarSign } from "react-icons/fi";
 import { CwAbcQueryClient } from "~/codegen/CwAbc.client";
 import { useCwAbcDumpStateQuery } from "~/codegen/CwAbc.react-query";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
@@ -67,7 +70,11 @@ const TokenPage: React.FC = () => {
 	);
 
 	if (isDumpStateLoading) {
-		return <div>Loading...</div>;
+		return (
+			<div className="flex justify-center">
+				<Spinner label="Loading ABC..." />
+			</div>
+		);
 	}
 
 	if (!dumpState) {
@@ -114,8 +121,8 @@ const TokenPage: React.FC = () => {
 										/>
 									</TableCell>
 								</TableRow>
-								<TableRow key="spotPrice">
-									<TableCell>Spot Price</TableCell>
+								<TableRow key="effectiveMintPrice">
+									<TableCell>Effective Mint Price</TableCell>
 									<TableCell>
 										<TokenInfo
 											denomOrAddress={dumpState.curve_info.reserve_denom}
@@ -154,56 +161,44 @@ const TokenPage: React.FC = () => {
 						<h2 className="text-2xl">Token Actions</h2>
 					</CardHeader>
 					<CardBody>
-						<Tabs aria-label="Token Actions" color="primary" variant="bordered">
+						<Tabs aria-label="Token Actions" variant="bordered">
 							<Tab
 								key="buy"
 								title={
 									<div className="flex items-center space-x-2">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="24"
-											height="24"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											strokeWidth="2"
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											className="lucide lucide-shopping-cart"
-										>
-											<title>Shopping Cart</title>
-											<circle cx="8" cy="21" r="1" />
-											<circle cx="19" cy="21" r="1" />
-											<path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-										</svg>
-										<span>Buy</span>
+										<BsCart3 size={20} />
+										<span className="font-semibold">Buy</span>
 									</div>
 								}
 							>
-								<div className="flex flex-col gap-4 pt-4">
+								<div className="flex flex-col gap-6 pt-6">
 									<Input
 										label="Buy Amount"
 										placeholder="Enter amount to buy"
 										value={amount}
 										onChange={(e) => setAmount(e.target.value)}
 										type="number"
+										labelPlacement="outside"
 										endContent={
-											<div className="my-auto">
+											<div className="flex items-center">
 												<TokenInfo
 													denomOrAddress={dumpState.curve_info.reserve_denom}
 													isNative
 												/>
 											</div>
 										}
-										classNames={{ input: "text-right" }}
+										size="lg"
 									/>
 									<div className="flex justify-end">
 										<Button
 											color="success"
+											variant="shadow"
 											onClick={() => openConfirmModal("buy")}
 											isDisabled={dumpState.is_paused}
+											className="font-semibold"
+											startContent={<BsCart3 size={18} />}
 										>
-											Buy
+											Buy Tokens
 										</Button>
 									</div>
 								</div>
@@ -212,51 +207,39 @@ const TokenPage: React.FC = () => {
 								key="sell"
 								title={
 									<div className="flex items-center space-x-2">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											width="24"
-											height="24"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											strokeWidth="2"
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											className="lucide lucide-receipt"
-										>
-											<title>Receipt</title>
-											<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1Z" />
-											<path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8" />
-											<path d="M12 17V7" />
-										</svg>
-										<span>Sell</span>
+										<FiDollarSign size={20} />
+										<span className="font-semibold">Sell</span>
 									</div>
 								}
 							>
-								<div className="flex flex-col gap-4 pt-4">
+								<div className="flex flex-col gap-6 pt-6">
 									<Input
 										label="Sell Amount"
 										placeholder="Enter amount to sell"
 										value={amount}
 										onChange={(e) => setAmount(e.target.value)}
 										type="number"
+										labelPlacement="outside"
 										endContent={
-											<div className="my-auto">
+											<div className="flex items-center">
 												<TokenInfo
 													denomOrAddress={dumpState.supply_denom}
 													isNative
 												/>
 											</div>
 										}
-										classNames={{ input: "text-right" }}
+										size="lg"
 									/>
 									<div className="flex justify-end">
 										<Button
 											color="danger"
+											variant="shadow"
 											onClick={() => openConfirmModal("sell")}
 											isDisabled={dumpState.is_paused}
+											className="font-semibold"
+											startContent={<FiDollarSign size={18} />}
 										>
-											Sell
+											Sell Tokens
 										</Button>
 									</div>
 								</div>

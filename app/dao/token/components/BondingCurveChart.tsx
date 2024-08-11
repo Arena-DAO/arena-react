@@ -2,6 +2,7 @@ import TokenInfo from "@/components/TokenInfo";
 import type { Asset } from "@chain-registry/types";
 import { Card, CardBody } from "@nextui-org/react";
 import { useMemo } from "react";
+import { BsTrophyFill } from "react-icons/bs";
 import {
 	CartesianGrid,
 	Line,
@@ -32,6 +33,29 @@ interface CustomTooltipProps {
 		payload: CurveDataPoint;
 	}>;
 }
+
+const CustomDot = ({ cx, cy }: { cx: number; cy: number }) => {
+	return (
+		<g>
+			<defs>
+				<filter id="glow">
+					<feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+					<feMerge>
+						<feMergeNode in="coloredBlur" />
+						<feMergeNode in="SourceGraphic" />
+					</feMerge>
+				</filter>
+			</defs>
+			<BsTrophyFill
+				x={cx - 6}
+				y={cy - 6}
+				size={12}
+				color="gold"
+				filter="url(#glow)"
+			/>
+		</g>
+	);
+};
 
 const MAX_SUPPLY = 1_000_000;
 const MAX_RESERVE = 200;
@@ -125,7 +149,27 @@ const BondingCurveChart = ({
 						data={curveData}
 						margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
 					>
-						<CartesianGrid strokeDasharray="3 3" opacity={0.5} />
+						<defs>
+							<filter id="glow">
+								<feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+								<feMerge>
+									<feMergeNode in="coloredBlur" />
+									<feMergeNode in="SourceGraphic" />
+								</feMerge>
+							</filter>
+							<filter id="dotGlow">
+								<feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
+								<feMerge>
+									<feMergeNode in="coloredBlur" />
+									<feMergeNode in="SourceGraphic" />
+								</feMerge>
+							</filter>
+							<linearGradient id="lineColor" x1="0" y1="0" x2="0" y2="1">
+								<stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+								<stop offset="95%" stopColor="#82ca9d" stopOpacity={0.8} />
+							</linearGradient>
+						</defs>
+						<CartesianGrid strokeDasharray="3 3" opacity={0.2} />
 						<XAxis
 							dataKey="reserve"
 							type="number"
@@ -136,6 +180,7 @@ const BondingCurveChart = ({
 								value: `Reserve (${reserveToken?.symbol})`,
 								position: "insideBottom",
 								offset: -10,
+								fill: "#a0aec0",
 							}}
 						/>
 						<YAxis
@@ -148,18 +193,26 @@ const BondingCurveChart = ({
 								value: `Supply (${supplyToken?.symbol})`,
 								angle: -90,
 								position: "left",
+								fill: "#a0aec0",
 							}}
 						/>
 						<Tooltip content={<CustomTooltip />} />
 						<Line
 							type="monotone"
 							dataKey="supply"
-							strokeWidth={2}
+							strokeWidth={3}
+							stroke="url(#lineColor)"
 							dot={false}
 							name="Bonding Curve"
 							animationDuration={2000}
+							filter="url(#glow)"
 						/>
-						<ReferenceDot x={displayReserve} y={displaySupply} />
+						<ReferenceDot
+							x={displayReserve}
+							y={displaySupply}
+							shape={CustomDot}
+							isFront
+						/>
 					</LineChart>
 				</ResponsiveContainer>
 			</CardBody>
