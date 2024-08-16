@@ -329,20 +329,20 @@ const EnrollmentView = () => {
 								View
 							</Button>
 						)}
-					{!enrollment.has_triggered_expiration && (
-						<div className="flex gap-2">
+					<div className="flex gap-2">
+						{!enrollment.has_triggered_expiration && (
 							<TriggerButton
 								enrollmentId={enrollment.id}
 								isExpired={enrollment.is_expired}
 								isFull={currentMembers >= maxMembers}
 							/>
-							<EnrollButton
-								enrollmentId={enrollment.id}
-								isFull={currentMembers >= maxMembers}
-								entryFee={enrollment.entry_fee}
-							/>
-						</div>
-					)}
+						)}
+						<EnrollButton
+							enrollmentId={enrollment.id}
+							isFull={currentMembers >= maxMembers}
+							entryFee={enrollment.entry_fee}
+						/>
+					</div>
 				</div>
 			</div>
 		</CategoryProvider>
