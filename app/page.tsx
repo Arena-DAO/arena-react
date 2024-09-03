@@ -189,7 +189,6 @@ function HomePage() {
 					</div>
 					<div className="w-[80%] md:mx-auto md:w-1/2">
 						<Image
-							isZoomed
 							fallbackSrc={`${env.JACKAL_PATH}helmet.png`}
 							src={"/images/landing_helmet.png"}
 							alt="Helmet"
