@@ -25,7 +25,8 @@ export default function CompetitionCategoryCard({
 		>
 			<Image
 				alt={category.title}
-				src={env.JACKAL_PATH + category.img}
+				fallbackSrc={env.JACKAL_PATH + category.img}
+				src={`/images/${category.img}`}
 				className="z-0 h-full w-full object-cover"
 				removeWrapper
 			/>

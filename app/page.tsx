@@ -93,7 +93,7 @@ function HomePage() {
 						<div
 							className="absolute inset-0 z-[-1] bg-center bg-cover bg-no-repeat"
 							style={{
-								backgroundImage: `url('${env.JACKAL_PATH}landing_${id}.jpg')`,
+								backgroundImage: `url('${env.JACKAL_PATH}landing_${id}.jpg'), url('/images/landing_${id}.jpg')`,
 								opacity: 0.5, // Set the opacity value (0 to 1)
 							}}
 						/>
@@ -188,7 +188,12 @@ function HomePage() {
 						</p>
 					</div>
 					<div className="w-[80%] md:mx-auto md:w-1/2">
-						<Image src={`${env.JACKAL_PATH}helmet.png`} alt="Helmet" />
+						<Image
+							isZoomed
+							fallbackSrc={`${env.JACKAL_PATH}helmet.png`}
+							src={"/images/landing_helmet.png"}
+							alt="Helmet"
+						/>
 					</div>
 				</section>
 				<section className="m-y-1 mx-auto mt-8 flex w-full max-w-screen-xl flex-col-reverse items-center gap-[10%] px-10 md:flex-row">
@@ -215,7 +220,11 @@ function HomePage() {
 						</p>
 					</div>
 					<div className="w-[80%] md:mx-auto md:w-1/2">
-						<Image src={`${env.JACKAL_PATH}colosseum.png`} alt="Colosseum" />
+						<Image
+							fallbackSrc={`${env.JACKAL_PATH}colosseum.png`}
+							src={"/images/landing_colosseum.png"}
+							alt="Colosseum"
+						/>
 					</div>
 				</section>
 			</section>
