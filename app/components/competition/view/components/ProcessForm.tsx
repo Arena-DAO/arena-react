@@ -184,7 +184,10 @@ const ProcessForm = ({
 								getCompetitionQueryKey(env, competitionType, competitionId),
 								(old) => {
 									if (old) {
-										return { ...old, status: "jailed" };
+										return {
+											...old,
+											status: { jailed: { activation_height: 0 } },
+										};
 									}
 									return old;
 								},

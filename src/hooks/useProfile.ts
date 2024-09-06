@@ -73,7 +73,7 @@ export const useProfileData = (address: string, isValid: boolean) => {
 				return {
 					address,
 					name: data.name,
-					imageUrl: withIpfsSupport(env.IPFS_GATEWAY, data.imageUrl),
+					imageUrl: withIpfsSupport(data.imageUrl),
 				} as Profile;
 			},
 		},
@@ -88,7 +88,7 @@ export const useProfileData = (address: string, isValid: boolean) => {
 				return {
 					address,
 					name: data.name,
-					imageUrl: withIpfsSupport(env.IPFS_GATEWAY, data.image_url),
+					imageUrl: withIpfsSupport(data.image_url),
 				} as Profile;
 			},
 		},

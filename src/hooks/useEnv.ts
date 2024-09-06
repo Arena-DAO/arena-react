@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 export interface Env {
 	BECH32_PREFIX: string;
 	PFPK_URL: string;
-	IPFS_GATEWAY: string;
 	WALLETCONNECT_PROJECT_ID: string;
 	BECH32_WALLET_LENGTH: number;
 	BECH32_CONTRACT_LENGTH: number;
@@ -28,6 +27,10 @@ export interface Env {
 	ARENA_TOURNAMENT_MODULE_ADDRESS: string;
 	ARENA_COMPETITION_ENROLLMENT_ADDRESS: string;
 	ARENA_ABC_ADDRESS: string;
+	ARENA_ABC_SUPPLY_DENOM: string;
+	ARENA_ABC_RESERVE_DENOM: string;
+	ARENA_PAYMENT_REGISTRY_ADDRESS: string;
+	ARENA_TOKEN_GATEWAY_ADDRESS: string;
 	DAO_DAO_URL: string;
 	DOCS_URL: string;
 	RPC_URL: string;
@@ -55,7 +58,6 @@ function getEnv(): Env {
 		IBC_FUN: checkEnv(process.env.NEXT_PUBLIC_IBC_FUN),
 		BECH32_PREFIX: checkEnv(process.env.NEXT_PUBLIC_BECH32_PREFIX),
 		PFPK_URL: checkEnv(process.env.NEXT_PUBLIC_PFPK_URL),
-		IPFS_GATEWAY: checkEnv(process.env.NEXT_PUBLIC_IPFS_GATEWAY),
 		WALLETCONNECT_PROJECT_ID: checkEnv(
 			process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
 		),
@@ -102,6 +104,18 @@ function getEnv(): Env {
 			process.env.NEXT_PUBLIC_ARENA_COMPETITION_ENROLLMENT_ADDRESS,
 		),
 		ARENA_ABC_ADDRESS: checkEnv(process.env.NEXT_PUBLIC_ARENA_ABC_ADDRESS),
+		ARENA_ABC_SUPPLY_DENOM: checkEnv(
+			process.env.NEXT_PUBLIC_ARENA_ABC_SUPPLY_DENOM,
+		),
+		ARENA_ABC_RESERVE_DENOM: checkEnv(
+			process.env.NEXT_PUBLIC_ARENA_ABC_RESERVE_DENOM,
+		),
+		ARENA_PAYMENT_REGISTRY_ADDRESS: checkEnv(
+			process.env.NEXT_PUBLIC_ARENA_PAYMENT_REGISTRY_ADDRESS,
+		),
+		ARENA_TOKEN_GATEWAY_ADDRESS: checkEnv(
+			process.env.NEXT_PUBLIC_ARENA_TOKEN_GATEWAY_ADDRESS,
+		),
 		DAO_DAO_URL: checkEnv(process.env.NEXT_PUBLIC_DAO_DAO_URL),
 		DOCS_URL: checkEnv(process.env.NEXT_PUBLIC_DOCS_URL),
 		RPC_URL: checkEnv(process.env.NEXT_PUBLIC_RPC_URL),

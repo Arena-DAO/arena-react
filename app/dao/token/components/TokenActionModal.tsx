@@ -27,7 +27,7 @@ import { useEnv } from "~/hooks/useEnv";
 interface TokenActionModalProps {
 	isOpen: boolean;
 	onClose: () => void;
-	actionType: "buy" | "sell" | null;
+	actionType: "mint" | "burn" | null;
 	amount: string;
 	supplyToken: Asset;
 	reserveToken: Asset;
@@ -67,7 +67,7 @@ const TokenActionModal: React.FC<TokenActionModalProps> = ({
 			).amount,
 		},
 		options: {
-			enabled: isOpen && actionType === "buy" && !!reserveToken,
+			enabled: isOpen && actionType === "mint" && !!reserveToken,
 		},
 	});
 
@@ -82,7 +82,7 @@ const TokenActionModal: React.FC<TokenActionModalProps> = ({
 				.amount,
 		},
 		options: {
-			enabled: isOpen && actionType === "sell" && !!supplyToken,
+			enabled: isOpen && actionType === "burn" && !!supplyToken,
 		},
 	});
 
@@ -97,7 +97,7 @@ const TokenActionModal: React.FC<TokenActionModalProps> = ({
 				address,
 				env.ARENA_ABC_ADDRESS,
 			);
-			if (actionType === "buy") {
+			if (actionType === "mint") {
 				await buyMutation.mutateAsync(
 					{
 						client,
@@ -121,7 +121,7 @@ const TokenActionModal: React.FC<TokenActionModalProps> = ({
 						},
 					},
 				);
-			} else if (actionType === "sell") {
+			} else if (actionType === "burn") {
 				await sellMutation.mutateAsync(
 					{
 						client,
@@ -154,14 +154,14 @@ const TokenActionModal: React.FC<TokenActionModalProps> = ({
 	};
 
 	const renderError = () => {
-		if (actionType === "buy" && (buyQuoteError || buyMutation.error)) {
+		if (actionType === "mint" && (buyQuoteError || buyMutation.error)) {
 			return (
 				<div className="mb-4 text-red-500">
 					{buyQuoteError?.message || buyMutation.error?.message}
 				</div>
 			);
 		}
-		if (actionType === "sell" && (sellQuoteError || sellMutation.error)) {
+		if (actionType === "burn" && (sellQuoteError || sellMutation.error)) {
 			return (
 				<div className="mb-4 text-red-500">
 					{sellQuoteError?.message || sellMutation.error?.message}
@@ -172,8 +172,8 @@ const TokenActionModal: React.FC<TokenActionModalProps> = ({
 	};
 
 	const isLoading =
-		(isBuyQuoteLoading && actionType === "buy") ||
-		(isSellQuoteLoading && actionType === "sell");
+		(isBuyQuoteLoading && actionType === "mint") ||
+		(isSellQuoteLoading && actionType === "burn");
 
 	return (
 		<Modal isOpen={isOpen} onClose={onClose}>
@@ -186,9 +186,9 @@ const TokenActionModal: React.FC<TokenActionModalProps> = ({
 					<p>Are you sure you want to {actionType} tokens?</p>
 					<p>
 						Amount: {amount}{" "}
-						{actionType === "buy" ? reserveToken?.symbol : supplyToken?.symbol}
+						{actionType === "mint" ? reserveToken?.symbol : supplyToken?.symbol}
 					</p>
-					{actionType === "buy" && buyQuote && (
+					{actionType === "mint" && buyQuote && (
 						<p>
 							You will receive:{" "}
 							<TokenInfo
@@ -198,7 +198,7 @@ const TokenActionModal: React.FC<TokenActionModalProps> = ({
 							/>
 						</p>
 					)}
-					{actionType === "sell" && sellQuote && (
+					{actionType === "burn" && sellQuote && (
 						<p>
 							You will receive:{" "}
 							<TokenInfo

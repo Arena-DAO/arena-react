@@ -1,4 +1,5 @@
 "use client";
+
 import Profile from "@/components/Profile";
 import RulesDisplay from "@/components/competition/RulesDisplay";
 import CategoryDisplay from "@/enrollment/view/components/CategoryDisplay";
@@ -19,14 +20,10 @@ import {
 	TableRow,
 	Tooltip,
 } from "@nextui-org/react";
-import { useQueryClient } from "@tanstack/react-query";
 import type { PropsWithChildren } from "react";
 import { BsYinYang } from "react-icons/bs";
-import { toast } from "react-toastify";
-import { ArenaWagerModuleClient } from "~/codegen/ArenaWagerModule.client";
-import { useArenaWagerModuleActivateCompetitionManuallyMutation } from "~/codegen/ArenaWagerModule.react-query";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
-import { getCompetitionQueryKey } from "~/helpers/CompetitionHelpers";
+import { isActive, isJailed } from "~/helpers/ArenaHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import type { CompetitionResponse } from "~/types/CompetitionResponse";
 import type { CompetitionType } from "~/types/CompetitionType";
@@ -34,7 +31,6 @@ import CompetitionStatusDisplay from "../CompetitionStatusDisplay";
 import ExpirationDisplay from "../ExpirationDisplay";
 import EscrowSection from "./components/EscrowSection";
 import EvidenceSection from "./components/EvidenceSection";
-import PresetDistributionForm from "./components/PresetDistributionForm";
 import ProcessForm from "./components/ProcessForm";
 import ResultSection from "./components/ResultSection";
 
@@ -53,45 +49,7 @@ const ViewCompetition = ({
 	children,
 }: ViewCompetitionProps) => {
 	const { data: env } = useEnv();
-	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
-	const queryClient = useQueryClient();
-
-	const manualActivationMutation =
-		useArenaWagerModuleActivateCompetitionManuallyMutation();
-
-	const handleActivate = async () => {
-		if (!address) {
-			toast.error("Please connect your wallet");
-			return;
-		}
-
-		const client = await getSigningCosmWasmClient();
-
-		try {
-			await manualActivationMutation.mutateAsync(
-				{
-					client: new ArenaWagerModuleClient(client, address, moduleAddr),
-					msg: { id: competition.id },
-				},
-				{
-					onSuccess: () => {
-						toast.success("Competition activated successfully");
-						queryClient.setQueryData<CompetitionResponse | undefined>(
-							getCompetitionQueryKey(env, competitionType, competition.id),
-							(oldData) => {
-								if (!oldData) return oldData;
-
-								return { ...oldData, status: "active" };
-							},
-						);
-					},
-				},
-			);
-		} catch (e) {
-			console.error(e);
-			toast.error((e as Error).toString());
-		}
-	};
+	const { address } = useChain(env.CHAIN);
 
 	return (
 		<div className="space-y-6">
@@ -178,8 +136,7 @@ const ViewCompetition = ({
 				</Card>
 			)}
 
-			{(competition.status === "jailed" ||
-				competition.status === "inactive") && (
+			{(isJailed(competition.status) || competition.status === "inactive") && (
 				<EvidenceSection
 					moduleAddr={moduleAddr}
 					competitionId={competition.id}
@@ -228,13 +185,7 @@ const ViewCompetition = ({
 			)}
 
 			<div className="flex justify-end gap-2 overflow-x-auto">
-				{competition.status !== "inactive" && competition.escrow && (
-					<PresetDistributionForm
-						escrow={competition.escrow}
-						isMutable={competition.status === "pending"}
-					/>
-				)}
-				{!hideProcess && competition.status === "active" && (
+				{!hideProcess && isActive(competition.status) && (
 					<ProcessForm
 						moduleAddr={moduleAddr}
 						competitionId={competition.id}
@@ -253,21 +204,6 @@ const ViewCompetition = ({
 							competitionType={competitionType}
 						/>
 					)}
-				{competition.status === "pending" && (
-					<Tooltip content="Once activated, users cannot make changes to the escrow's state">
-						<Button
-							color="primary"
-							onClick={handleActivate}
-							isLoading={manualActivationMutation.isLoading}
-							isDisabled={
-								manualActivationMutation.isLoading ||
-								address !== competition.host
-							}
-						>
-							Activate
-						</Button>
-					</Tooltip>
-				)}
 			</div>
 			{children}
 		</div>

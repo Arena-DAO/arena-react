@@ -7,6 +7,7 @@ import {
 	CardBody,
 	CardHeader,
 	Input,
+	Link,
 	Spinner,
 	Tab,
 	Table,
@@ -16,12 +17,13 @@ import {
 	TableHeader,
 	TableRow,
 	Tabs,
+	Tooltip,
 	useDisclosure,
 } from "@nextui-org/react";
 import type React from "react";
 import { useCallback, useMemo, useState } from "react";
-import { BsCart3 } from "react-icons/bs";
-import { FiDollarSign } from "react-icons/fi";
+import { BsCart3, BsFillPersonPlusFill, BsFire } from "react-icons/bs";
+import { FiDollarSign, FiUsers } from "react-icons/fi";
 import { CwAbcQueryClient } from "~/codegen/CwAbc.client";
 import { useCwAbcDumpStateQuery } from "~/codegen/CwAbc.react-query";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
@@ -30,7 +32,7 @@ import { useToken } from "~/hooks/useToken";
 import BondingCurveChart from "./components/BondingCurveChart";
 import TokenActionModal from "./components/TokenActionModal";
 
-type ActionType = "buy" | "sell" | null;
+type ActionType = "mint" | "burn" | null;
 
 const TokenPage: React.FC = () => {
 	const { data: env } = useEnv();
@@ -51,12 +53,12 @@ const TokenPage: React.FC = () => {
 		useCwAbcDumpStateQuery({ client });
 
 	const { data: supplyToken } = useToken(
-		dumpState?.supply_denom || "",
+		env.ARENA_ABC_SUPPLY_DENOM,
 		true,
 		env.CHAIN,
 	);
 	const { data: reserveToken } = useToken(
-		dumpState?.curve_info.reserve_denom || "",
+		env.ARENA_ABC_RESERVE_DENOM,
 		true,
 		env.CHAIN,
 	);
@@ -105,7 +107,7 @@ const TokenPage: React.FC = () => {
 									<TableCell>Current Supply</TableCell>
 									<TableCell>
 										<TokenInfo
-											denomOrAddress={dumpState.supply_denom}
+											denomOrAddress={env.ARENA_ABC_SUPPLY_DENOM}
 											isNative
 											amount={BigInt(dumpState.curve_info.supply)}
 										/>
@@ -115,7 +117,7 @@ const TokenPage: React.FC = () => {
 									<TableCell>Current Reserve</TableCell>
 									<TableCell>
 										<TokenInfo
-											denomOrAddress={dumpState.curve_info.reserve_denom}
+											denomOrAddress={env.ARENA_ABC_RESERVE_DENOM}
 											isNative
 											amount={BigInt(dumpState.curve_info.reserve)}
 										/>
@@ -125,7 +127,7 @@ const TokenPage: React.FC = () => {
 									<TableCell>Effective Mint Price</TableCell>
 									<TableCell>
 										<TokenInfo
-											denomOrAddress={dumpState.curve_info.reserve_denom}
+											denomOrAddress={env.ARENA_ABC_RESERVE_DENOM}
 											isNative
 											amount={(
 												(Number(dumpState.curve_info.spot_price) * 10e5) /
@@ -142,7 +144,7 @@ const TokenPage: React.FC = () => {
 									<TableCell>
 										{dumpState.max_supply ? (
 											<TokenInfo
-												denomOrAddress={dumpState.supply_denom}
+												denomOrAddress={env.ARENA_ABC_SUPPLY_DENOM}
 												isNative
 												amount={BigInt(dumpState.max_supply)}
 											/>
@@ -157,35 +159,45 @@ const TokenPage: React.FC = () => {
 				</Card>
 
 				<Card>
-					<CardHeader>
+					<CardHeader className="flex justify-between">
 						<h2 className="text-2xl">Token Actions</h2>
+						<Tooltip content="Start the team onboarding process">
+							<Button
+								as={Link}
+								href="/dao/token/gateway"
+								color="secondary"
+								startContent={<FiUsers />}
+								aria-label="Go to team onboarding page"
+							>
+								Team Onboarding
+							</Button>
+						</Tooltip>
 					</CardHeader>
 					<CardBody>
 						<Tabs aria-label="Token Actions" variant="bordered">
 							<Tab
-								key="buy"
+								key="mint"
 								title={
 									<div className="flex items-center space-x-2">
-										<BsCart3 size={20} />
-										<span className="font-semibold">Buy</span>
+										<BsFillPersonPlusFill size={20} />
+										<span className="font-semibold">Mint</span>
 									</div>
 								}
 							>
 								<div className="flex flex-col gap-6 pt-6">
 									<Input
-										label="Buy Amount"
-										placeholder="Enter amount to buy"
+										label="Mint Amount"
+										placeholder="Enter amount to mint"
 										value={amount}
 										onChange={(e) => setAmount(e.target.value)}
 										type="number"
 										labelPlacement="outside"
 										endContent={
-											<div className="flex items-center">
-												<TokenInfo
-													denomOrAddress={dumpState.curve_info.reserve_denom}
-													isNative
-												/>
-											</div>
+											<TokenInfo
+												denomOrAddress={env.ARENA_ABC_RESERVE_DENOM}
+												isNative
+												className="align-middle"
+											/>
 										}
 										size="lg"
 									/>
@@ -193,40 +205,39 @@ const TokenPage: React.FC = () => {
 										<Button
 											color="success"
 											variant="shadow"
-											onClick={() => openConfirmModal("buy")}
+											onClick={() => openConfirmModal("mint")}
 											isDisabled={dumpState.is_paused}
 											className="font-semibold"
 											startContent={<BsCart3 size={18} />}
 										>
-											Buy Tokens
+											Mint Tokens
 										</Button>
 									</div>
 								</div>
 							</Tab>
 							<Tab
-								key="sell"
+								key="burn"
 								title={
 									<div className="flex items-center space-x-2">
-										<FiDollarSign size={20} />
-										<span className="font-semibold">Sell</span>
+										<BsFire size={20} />
+										<span className="font-semibold">Burn</span>
 									</div>
 								}
 							>
 								<div className="flex flex-col gap-6 pt-6">
 									<Input
-										label="Sell Amount"
-										placeholder="Enter amount to sell"
+										label="Burn Amount"
+										placeholder="Enter amount to burn"
 										value={amount}
 										onChange={(e) => setAmount(e.target.value)}
 										type="number"
 										labelPlacement="outside"
 										endContent={
-											<div className="flex items-center">
-												<TokenInfo
-													denomOrAddress={dumpState.supply_denom}
-													isNative
-												/>
-											</div>
+											<TokenInfo
+												denomOrAddress={env.ARENA_ABC_SUPPLY_DENOM}
+												isNative
+												className="align-middle"
+											/>
 										}
 										size="lg"
 									/>
@@ -234,12 +245,12 @@ const TokenPage: React.FC = () => {
 										<Button
 											color="danger"
 											variant="shadow"
-											onClick={() => openConfirmModal("sell")}
+											onClick={() => openConfirmModal("burn")}
 											isDisabled={dumpState.is_paused}
 											className="font-semibold"
 											startContent={<FiDollarSign size={18} />}
 										>
-											Sell Tokens
+											Burn Tokens
 										</Button>
 									</div>
 								</div>

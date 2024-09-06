@@ -105,7 +105,7 @@ const EscrowSection = ({
 					getCompetitionQueryKey(env, competitionType, competitionId),
 					(old) => {
 						if (old) {
-							return { ...old, status: "active" };
+							return { ...old, status: { active: { activation_height: 0 } } };
 						}
 						return old;
 					},

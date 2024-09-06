@@ -178,7 +178,6 @@ const AddDueForm: React.FC<AddDueFormProps> = ({
 		const cw20 = await getCw20Asset(
 			cosmWasmClient,
 			values.denomOrAddress,
-			env.IPFS_GATEWAY,
 			assets?.assets,
 			env.BECH32_PREFIX,
 		);

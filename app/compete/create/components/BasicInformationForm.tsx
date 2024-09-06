@@ -25,11 +25,9 @@ import {
 import { FiInfo, FiPlus } from "react-icons/fi";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 import { withIpfsSupport } from "~/helpers/IPFSHelpers";
-import { useEnv } from "~/hooks/useEnv";
 import AdditionalLayeredFeeItem from "./AdditionalLayeredFee";
 
 const BasicInformationForm = () => {
-	const { data: env } = useEnv();
 	const {
 		control,
 		formState: { isSubmitting },
@@ -68,7 +66,7 @@ const BasicInformationForm = () => {
 								height="180"
 								alt="Competition Banner"
 								// biome-ignore lint/style/noNonNullAssertion: not null
-								src={withIpfsSupport(env.IPFS_GATEWAY, bannerUrl)!}
+								src={withIpfsSupport(bannerUrl)!}
 							/>
 						)}
 					</div>

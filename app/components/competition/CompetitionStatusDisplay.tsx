@@ -2,7 +2,11 @@ import { Badge, Chip } from "@nextui-org/react";
 import type React from "react";
 import { BsHourglassBottom } from "react-icons/bs";
 import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
-import { statusColors } from "~/helpers/ArenaHelpers";
+import {
+	getStatusColor,
+	getStatusName,
+	isActive,
+} from "~/helpers/ArenaHelpers";
 
 interface CompetitionStatusDisplayProps {
 	status: CompetitionStatus;
@@ -19,11 +23,9 @@ const CompetitionStatusDisplay: React.FC<CompetitionStatusDisplayProps> = ({
 			content={<BsHourglassBottom />}
 			color="warning"
 			aria-label="Expired"
-			isInvisible={
-				!(isExpired && (status === "active" || status === "pending"))
-			}
+			isInvisible={!(isExpired && (isActive(status) || status === "pending"))}
 		>
-			<Chip color={statusColors[status]}>{status}</Chip>
+			<Chip color={getStatusColor(status)}>{getStatusName(status)}</Chip>
 		</Badge>
 	);
 };

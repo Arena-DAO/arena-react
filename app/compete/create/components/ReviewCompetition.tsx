@@ -233,12 +233,6 @@ const ReviewCompetition = () => {
 					) : values.directParticipation ? (
 						<>
 							{renderKeyValue(
-								"Should Activate on Funded",
-								renderBooleanValue(
-									values.directParticipation.shouldActivateOnFunded ?? true,
-								),
-							)}
-							{renderKeyValue(
 								"Members from Dues",
 								renderBooleanValue(values.directParticipation.membersFromDues),
 							)}

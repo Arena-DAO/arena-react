@@ -38,7 +38,6 @@ const DirectParticipationSchema = z.object({
 	dues: z.array(DueSchema).optional(),
 	membersFromDues: z.boolean(),
 	members: z.array(z.object({ address: AddressSchema })),
-	shouldActivateOnFunded: z.boolean().optional(),
 });
 
 const BaseCreateCompetitionSchema = z.object({

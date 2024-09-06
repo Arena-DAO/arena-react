@@ -1,7 +1,9 @@
+"use client";
+
 import TokenInfo from "@/components/TokenInfo";
 import type { Asset } from "@chain-registry/types";
 import { Card, CardBody } from "@nextui-org/react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BsTrophyFill } from "react-icons/bs";
 import {
 	CartesianGrid,
@@ -35,6 +37,13 @@ interface CustomTooltipProps {
 }
 
 const CustomDot = ({ cx, cy }: { cx: number; cy: number }) => {
+	const [visible, setVisible] = useState(false);
+
+	useEffect(() => {
+		const timer = setTimeout(() => setVisible(true), 100);
+		return () => clearTimeout(timer);
+	}, []);
+
 	return (
 		<g>
 			<defs>
@@ -52,6 +61,10 @@ const CustomDot = ({ cx, cy }: { cx: number; cy: number }) => {
 				size={12}
 				color="gold"
 				filter="url(#glow)"
+				opacity={visible ? 1 : 0}
+				style={{
+					transition: "opacity 2s ease-in-out",
+				}}
 			/>
 		</g>
 	);
@@ -118,22 +131,22 @@ const BondingCurveChart = ({
 			return (
 				<Card>
 					<CardBody>
-						<p>
+						<div>
 							Reserve:{" "}
 							<TokenInfo
 								denomOrAddress={reserveToken.display}
 								isNative
 								amount={payload[0].payload.reserve.toString()}
 							/>
-						</p>
-						<p>
+						</div>
+						<div>
 							Supply:{" "}
 							<TokenInfo
 								denomOrAddress={supplyToken.display}
 								isNative
 								amount={payload[0].payload.supply.toString()}
 							/>
-						</p>
+						</div>
 					</CardBody>
 				</Card>
 			);
@@ -148,6 +161,7 @@ const BondingCurveChart = ({
 					<LineChart
 						data={curveData}
 						margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
+						aria-label="Line chart"
 					>
 						<defs>
 							<filter id="glow">
@@ -169,7 +183,11 @@ const BondingCurveChart = ({
 								<stop offset="95%" stopColor="#82ca9d" stopOpacity={0.8} />
 							</linearGradient>
 						</defs>
-						<CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+						<CartesianGrid
+							strokeDasharray="3 3"
+							opacity={0.2}
+							aria-label="ABC Chart"
+						/>
 						<XAxis
 							dataKey="reserve"
 							type="number"
@@ -182,6 +200,7 @@ const BondingCurveChart = ({
 								offset: -10,
 								fill: "#a0aec0",
 							}}
+							aria-label="Reserve"
 						/>
 						<YAxis
 							dataKey="supply"
@@ -195,6 +214,7 @@ const BondingCurveChart = ({
 								position: "left",
 								fill: "#a0aec0",
 							}}
+							aria-label="Supply"
 						/>
 						<Tooltip content={<CustomTooltip />} />
 						<Line
@@ -206,12 +226,14 @@ const BondingCurveChart = ({
 							name="Bonding Curve"
 							animationDuration={2000}
 							filter="url(#glow)"
+							aria-label="Bonding curve"
 						/>
 						<ReferenceDot
 							x={displayReserve}
 							y={displaySupply}
 							shape={CustomDot}
 							isFront
+							aria-label="Current Values"
 						/>
 					</LineChart>
 				</ResponsiveContainer>

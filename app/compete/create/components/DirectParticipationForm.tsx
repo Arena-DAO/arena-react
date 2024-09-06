@@ -106,27 +106,6 @@ const MembersAndDuesForm = () => {
 					/>
 					<Button onClick={() => handleBulkAdd("due")}>Add Bulk Dues</Button>
 				</div>
-				<Controller
-					name="directParticipation.shouldActivateOnFunded"
-					control={control}
-					render={({ field }) => (
-						<Switch
-							{...field}
-							value={field?.value?.toString()}
-							isSelected={field.value}
-							onValueChange={field.onChange}
-						>
-							<div className="flex items-center">
-								Should Activate on Funded{" "}
-								<Tooltip content="When activated, the escrow's state cannot be mutated anymore">
-									<span className="ml-2 cursor-help">
-										<FiInfo />
-									</span>
-								</Tooltip>
-							</div>
-						</Switch>
-					)}
-				/>
 			</div>
 
 			<Controller

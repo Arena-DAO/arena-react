@@ -1,3 +1,4 @@
+import type { ApplicationStatus } from "~/codegen/ArenaTokenGateway.types";
 import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 
 type Colors =
@@ -9,11 +10,22 @@ type Colors =
 	| "danger"
 	| undefined;
 
-export const statusColors: { [key in CompetitionStatus]: Colors } = {
-	pending: "warning",
-	active: "success",
-	inactive: "default",
-	jailed: "danger",
+export const getStatusColor = (status: CompetitionStatus): Colors => {
+	if (status === "pending") {
+		return "warning";
+	}
+	if (status === "inactive") {
+		return "default";
+	}
+	if (isActive(status)) {
+		return "success";
+	}
+	if (isJailed(status)) {
+		return "danger";
+	}
+
+	// Default case if somehow an unsupported status is provided
+	return "default";
 };
 
 export const LeagueResultValues = [
@@ -21,3 +33,39 @@ export const LeagueResultValues = [
 	{ value: "team2", display: "Team 2" },
 	{ value: "draw", display: "Draw" },
 ] as const;
+
+export function isJailed(status: CompetitionStatus): boolean {
+	if (typeof status === "object" && "jailed" in status) {
+		return true;
+	}
+	return false;
+}
+
+export function isActive(status: CompetitionStatus): boolean {
+	if (typeof status === "object" && "active" in status) {
+		return true;
+	}
+	return false;
+}
+
+export function getStatusName(status: CompetitionStatus): string {
+	if (status === "pending" || status === "inactive") {
+		return status;
+	}
+	if ("active" in status) {
+		return "active";
+	}
+	if ("jailed" in status) {
+		return "jailed";
+	}
+
+	throw new Error("Unknown status");
+}
+
+export function getApplicationStatusName(status: ApplicationStatus): string {
+	if ("pending" in status) return "Pending";
+	if ("accepted" in status) return "Accepted";
+	if ("rejected" in status) return "Rejected";
+
+	throw new Error("Unknown status");
+}

@@ -1,4 +1,6 @@
-export function withIpfsSupport(gateway: string, url?: string | null) {
+const IPFS_GATEWAYS = ["https://ipfs.daodao.zone/ipfs/"];
+
+export function withIpfsSupport(url?: string | null) {
 	if (!url) {
 		return url;
 	}
@@ -7,7 +9,7 @@ export function withIpfsSupport(gateway: string, url?: string | null) {
 	const ipfsRegex = /^ipfs:\/\/(.*)/;
 	const match = url.match(ipfsRegex);
 	if (match) {
-		return `${gateway}${match[1]}`;
+		return `${IPFS_GATEWAYS[0]}${match[1]}`;
 	}
 
 	// Otherwise return the URL as it is

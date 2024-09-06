@@ -45,6 +45,9 @@ export default function WalletConnectToggle() {
 					>
 						View Profile
 					</DropdownItem>
+					<DropdownItem key="registry" href={"/user/payment-registry"}>
+						Payment Registry
+					</DropdownItem>
 					<DropdownItem
 						key="competitions"
 						href={`/user/competitions?host=${chainContext.address}`}

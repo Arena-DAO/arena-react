@@ -72,7 +72,6 @@ const CreateCompetitionPage = () => {
 			additionalLayeredFees: [],
 			directParticipation: {
 				membersFromDues: true,
-				shouldActivateOnFunded: true,
 			},
 			leagueInfo: {
 				matchWinPoints: 3,
@@ -283,8 +282,6 @@ const CreateCompetitionPage = () => {
 								...commonMsg,
 								categoryId,
 								escrow,
-								shouldActivateOnFunded:
-									values.directParticipation.shouldActivateOnFunded,
 								instantiateExtension: {
 									registered_members:
 										members.length === 2 ? members : undefined,
@@ -307,8 +304,6 @@ const CreateCompetitionPage = () => {
 								...commonMsg,
 								categoryId,
 								escrow,
-								shouldActivateOnFunded:
-									values.directParticipation.shouldActivateOnFunded,
 								instantiateExtension: {
 									distribution: values.leagueInfo.distribution.map((mp) =>
 										mp.percent.toString(),
@@ -339,8 +334,6 @@ const CreateCompetitionPage = () => {
 								...commonMsg,
 								escrow,
 								categoryId,
-								shouldActivateOnFunded:
-									values.directParticipation.shouldActivateOnFunded,
 								instantiateExtension: {
 									distribution: values.tournamentInfo.distribution.map((mp) =>
 										mp.percent.toString(),

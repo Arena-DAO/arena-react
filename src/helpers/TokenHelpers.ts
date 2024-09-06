@@ -79,7 +79,6 @@ function findAssetInAssets(
 export async function getCw20Asset(
 	cosmWasmClient: CosmWasmClient,
 	denomOrAddress: string,
-	ipfsGateway: string,
 	assets?: Asset[],
 	prefix?: string,
 ): Promise<Asset> {
@@ -123,7 +122,7 @@ export async function getCw20Asset(
 						? logo
 							? `data:${logo.mime_type};base64,${logo.data}`
 							: undefined
-						: withIpfsSupport(ipfsGateway, marketingInfo?.logo?.url),
+						: withIpfsSupport(marketingInfo?.logo?.url),
 			},
 		} as Asset;
 	}

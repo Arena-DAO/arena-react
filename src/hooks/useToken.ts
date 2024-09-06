@@ -22,7 +22,6 @@ export const useToken = (
 						// biome-ignore lint/style/noNonNullAssertion: Handled by enabled option
 						cosmWasmClient!,
 						denomOrAddress,
-						env.IPFS_GATEWAY,
 						assets?.assets,
 						env.BECH32_PREFIX,
 					),
