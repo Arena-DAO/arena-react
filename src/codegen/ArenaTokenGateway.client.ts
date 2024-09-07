@@ -6,24 +6,25 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { Decimal, InstantiateMsg, VestingConfiguration, ExecuteMsg, Uint128, Action, Expiration, Timestamp, Uint64, ApplyMsg, ProjectLink, QueryMsg, ApplicationStatus, MigrateMsg, ApplicationResponse, ApplicationInfo, ArrayOfApplicationResponse, OwnershipForString } from "./ArenaTokenGateway.types";
+import { Decimal, InstantiateMsg, VestingConfiguration, ExecuteMsg, Uint128, Action, Expiration, Timestamp, Uint64, ApplyMsg, ProjectLink, QueryMsg, ApplicationsFilter, ApplicationStatus, MigrateMsg, Addr, ApplicationResponse, ApplicationInfo, ArrayOfApplicationResponse, OwnershipForString } from "./ArenaTokenGateway.types";
 export interface ArenaTokenGatewayReadOnlyInterface {
   contractAddress: string;
   vestingConfiguration: () => Promise<VestingConfiguration>;
   application: ({
-    applicant
+    applicationId
   }: {
-    applicant: string;
+    applicationId: Uint128;
   }) => Promise<ApplicationResponse>;
   applications: ({
+    filter,
     limit,
-    startAfter,
-    status
+    startAfter
   }: {
+    filter?: ApplicationsFilter;
     limit?: number;
-    startAfter?: string;
-    status?: ApplicationStatus;
+    startAfter?: Uint128;
   }) => Promise<ArrayOfApplicationResponse>;
+  payrollAddress: () => Promise<Addr>;
   ownership: () => Promise<OwnershipForString>;
 }
 export class ArenaTokenGatewayQueryClient implements ArenaTokenGatewayReadOnlyInterface {
@@ -35,6 +36,7 @@ export class ArenaTokenGatewayQueryClient implements ArenaTokenGatewayReadOnlyIn
     this.vestingConfiguration = this.vestingConfiguration.bind(this);
     this.application = this.application.bind(this);
     this.applications = this.applications.bind(this);
+    this.payrollAddress = this.payrollAddress.bind(this);
     this.ownership = this.ownership.bind(this);
   }
   vestingConfiguration = async (): Promise<VestingConfiguration> => {
@@ -43,31 +45,36 @@ export class ArenaTokenGatewayQueryClient implements ArenaTokenGatewayReadOnlyIn
     });
   };
   application = async ({
-    applicant
+    applicationId
   }: {
-    applicant: string;
+    applicationId: Uint128;
   }): Promise<ApplicationResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
       application: {
-        applicant
+        application_id: applicationId
       }
     });
   };
   applications = async ({
+    filter,
     limit,
-    startAfter,
-    status
+    startAfter
   }: {
+    filter?: ApplicationsFilter;
     limit?: number;
-    startAfter?: string;
-    status?: ApplicationStatus;
+    startAfter?: Uint128;
   }): Promise<ArrayOfApplicationResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
       applications: {
+        filter,
         limit,
-        start_after: startAfter,
-        status
+        start_after: startAfter
       }
+    });
+  };
+  payrollAddress = async (): Promise<Addr> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      payroll_address: {}
     });
   };
   ownership = async (): Promise<OwnershipForString> => {
@@ -81,37 +88,37 @@ export interface ArenaTokenGatewayInterface extends ArenaTokenGatewayReadOnlyInt
   sender: string;
   apply: ({
     description,
-    projectLinks,
-    requestedAmount,
+    project_links,
+    requested_amount,
     title
   }: {
     description: string;
-    projectLinks: ProjectLink[];
-    requestedAmount: Uint128;
+    project_links: ProjectLink[];
+    requested_amount: Uint128;
     title: string;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   update: ({
-    description,
-    projectLinks,
-    requestedAmount,
-    title
+    applicationId,
+    applicationInfo
   }: {
-    description: string;
-    projectLinks: ProjectLink[];
-    requestedAmount: Uint128;
-    title: string;
+    applicationId: Uint128;
+    applicationInfo: ApplyMsg;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
-  withdraw: (fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
-  acceptApplication: ({
-    applicant
+  withdraw: ({
+    applicationId
   }: {
-    applicant: string;
+    applicationId: Uint128;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  acceptApplication: ({
+    applicationId
+  }: {
+    applicationId: Uint128;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   rejectApplication: ({
-    applicant,
+    applicationId,
     reason
   }: {
-    applicant: string;
+    applicationId: Uint128;
     reason?: string;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   updateVestingConfiguration: ({
@@ -140,70 +147,70 @@ export class ArenaTokenGatewayClient extends ArenaTokenGatewayQueryClient implem
   }
   apply = async ({
     description,
-    projectLinks,
-    requestedAmount,
+    project_links,
+    requested_amount,
     title
   }: {
     description: string;
-    projectLinks: ProjectLink[];
-    requestedAmount: Uint128;
+    project_links: ProjectLink[];
+    requested_amount: Uint128;
     title: string;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       apply: {
         description,
-        project_links: projectLinks,
-        requested_amount: requestedAmount,
+        project_links,
+        requested_amount,
         title
       }
     }, fee, memo, _funds);
   };
   update = async ({
-    description,
-    projectLinks,
-    requestedAmount,
-    title
+    applicationId,
+    applicationInfo
   }: {
-    description: string;
-    projectLinks: ProjectLink[];
-    requestedAmount: Uint128;
-    title: string;
+    applicationId: Uint128;
+    applicationInfo: ApplyMsg;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       update: {
-        description,
-        project_links: projectLinks,
-        requested_amount: requestedAmount,
-        title
+        application_id: applicationId,
+        application_info: applicationInfo
       }
     }, fee, memo, _funds);
   };
-  withdraw = async (fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+  withdraw = async ({
+    applicationId
+  }: {
+    applicationId: Uint128;
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      withdraw: {}
+      withdraw: {
+        application_id: applicationId
+      }
     }, fee, memo, _funds);
   };
   acceptApplication = async ({
-    applicant
+    applicationId
   }: {
-    applicant: string;
+    applicationId: Uint128;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       accept_application: {
-        applicant
+        application_id: applicationId
       }
     }, fee, memo, _funds);
   };
   rejectApplication = async ({
-    applicant,
+    applicationId,
     reason
   }: {
-    applicant: string;
+    applicationId: Uint128;
     reason?: string;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       reject_application: {
-        applicant,
+        application_id: applicationId,
         reason
       }
     }, fee, memo, _funds);

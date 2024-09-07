@@ -17,16 +17,21 @@ export interface VestingConfiguration {
 export type ExecuteMsg = {
   apply: ApplyMsg;
 } | {
-  update: ApplyMsg;
+  update: {
+    application_id: Uint128;
+    application_info: ApplyMsg;
+  };
 } | {
-  withdraw: {};
+  withdraw: {
+    application_id: Uint128;
+  };
 } | {
   accept_application: {
-    applicant: string;
+    application_id: Uint128;
   };
 } | {
   reject_application: {
-    applicant: string;
+    application_id: Uint128;
     reason?: string | null;
   };
 } | {
@@ -66,16 +71,23 @@ export type QueryMsg = {
   vesting_configuration: {};
 } | {
   application: {
-    applicant: string;
+    application_id: Uint128;
   };
 } | {
   applications: {
+    filter?: ApplicationsFilter | null;
     limit?: number | null;
-    start_after?: string | null;
-    status?: ApplicationStatus | null;
+    start_after?: Uint128 | null;
   };
 } | {
+  payroll_address: {};
+} | {
   ownership: {};
+};
+export type ApplicationsFilter = {
+  status: ApplicationStatus;
+} | {
+  applicant: string;
 };
 export type ApplicationStatus = {
   pending: {};
@@ -89,11 +101,13 @@ export type ApplicationStatus = {
 export type MigrateMsg = {
   from_compatible: {};
 };
+export type Addr = string;
 export interface ApplicationResponse {
-  applicant: string;
   application: ApplicationInfo;
+  application_id: Uint128;
 }
 export interface ApplicationInfo {
+  applicant: Addr;
   description: string;
   project_links: ProjectLink[];
   requested_amount: Uint128;

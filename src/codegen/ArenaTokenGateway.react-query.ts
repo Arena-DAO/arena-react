@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee, Coin } from "@cosmjs/amino";
-import { Decimal, InstantiateMsg, VestingConfiguration, ExecuteMsg, Uint128, Action, Expiration, Timestamp, Uint64, ApplyMsg, ProjectLink, QueryMsg, ApplicationStatus, MigrateMsg, ApplicationResponse, ApplicationInfo, ArrayOfApplicationResponse, OwnershipForString } from "./ArenaTokenGateway.types";
+import { Decimal, InstantiateMsg, VestingConfiguration, ExecuteMsg, Uint128, Action, Expiration, Timestamp, Uint64, ApplyMsg, ProjectLink, QueryMsg, ApplicationsFilter, ApplicationStatus, MigrateMsg, Addr, ApplicationResponse, ApplicationInfo, ArrayOfApplicationResponse, OwnershipForString } from "./ArenaTokenGateway.types";
 import { ArenaTokenGatewayQueryClient, ArenaTokenGatewayClient } from "./ArenaTokenGateway.client";
 export const arenaTokenGatewayQueryKeys = {
   contract: ([{
@@ -30,6 +30,11 @@ export const arenaTokenGatewayQueryKeys = {
   applications: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
     ...arenaTokenGatewayQueryKeys.address(contractAddress)[0],
     method: "applications",
+    args
+  }] as const),
+  payrollAddress: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
+    ...arenaTokenGatewayQueryKeys.address(contractAddress)[0],
+    method: "payroll_address",
     args
   }] as const),
   ownership: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
@@ -55,7 +60,7 @@ export const arenaTokenGatewayQueries = {
   }: ArenaTokenGatewayApplicationQuery<TData>): UseQueryOptions<ApplicationResponse, Error, TData> => ({
     queryKey: arenaTokenGatewayQueryKeys.application(client?.contractAddress, args),
     queryFn: () => client ? client.application({
-      applicant: args.applicant
+      applicationId: args.applicationId
     }) : Promise.reject(new Error("Invalid client")),
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
@@ -67,10 +72,19 @@ export const arenaTokenGatewayQueries = {
   }: ArenaTokenGatewayApplicationsQuery<TData>): UseQueryOptions<ArrayOfApplicationResponse, Error, TData> => ({
     queryKey: arenaTokenGatewayQueryKeys.applications(client?.contractAddress, args),
     queryFn: () => client ? client.applications({
+      filter: args.filter,
       limit: args.limit,
-      startAfter: args.startAfter,
-      status: args.status
+      startAfter: args.startAfter
     }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  payrollAddress: <TData = Addr,>({
+    client,
+    options
+  }: ArenaTokenGatewayPayrollAddressQuery<TData>): UseQueryOptions<Addr, Error, TData> => ({
+    queryKey: arenaTokenGatewayQueryKeys.payrollAddress(client?.contractAddress),
+    queryFn: () => client ? client.payrollAddress() : Promise.reject(new Error("Invalid client")),
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   }),
@@ -100,11 +114,21 @@ export function useArenaTokenGatewayOwnershipQuery<TData = OwnershipForString>({
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
+export interface ArenaTokenGatewayPayrollAddressQuery<TData> extends ArenaTokenGatewayReactQuery<Addr, TData> {}
+export function useArenaTokenGatewayPayrollAddressQuery<TData = Addr>({
+  client,
+  options
+}: ArenaTokenGatewayPayrollAddressQuery<TData>) {
+  return useQuery<Addr, Error, TData>(arenaTokenGatewayQueryKeys.payrollAddress(client?.contractAddress), () => client ? client.payrollAddress() : Promise.reject(new Error("Invalid client")), {
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
+}
 export interface ArenaTokenGatewayApplicationsQuery<TData> extends ArenaTokenGatewayReactQuery<ArrayOfApplicationResponse, TData> {
   args: {
+    filter?: ApplicationsFilter;
     limit?: number;
-    startAfter?: string;
-    status?: ApplicationStatus;
+    startAfter?: Uint128;
   };
 }
 export function useArenaTokenGatewayApplicationsQuery<TData = ArrayOfApplicationResponse>({
@@ -113,9 +137,9 @@ export function useArenaTokenGatewayApplicationsQuery<TData = ArrayOfApplication
   options
 }: ArenaTokenGatewayApplicationsQuery<TData>) {
   return useQuery<ArrayOfApplicationResponse, Error, TData>(arenaTokenGatewayQueryKeys.applications(client?.contractAddress, args), () => client ? client.applications({
+    filter: args.filter,
     limit: args.limit,
-    startAfter: args.startAfter,
-    status: args.status
+    startAfter: args.startAfter
   }) : Promise.reject(new Error("Invalid client")), {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
@@ -123,7 +147,7 @@ export function useArenaTokenGatewayApplicationsQuery<TData = ArrayOfApplication
 }
 export interface ArenaTokenGatewayApplicationQuery<TData> extends ArenaTokenGatewayReactQuery<ApplicationResponse, TData> {
   args: {
-    applicant: string;
+    applicationId: Uint128;
   };
 }
 export function useArenaTokenGatewayApplicationQuery<TData = ApplicationResponse>({
@@ -132,7 +156,7 @@ export function useArenaTokenGatewayApplicationQuery<TData = ApplicationResponse
   options
 }: ArenaTokenGatewayApplicationQuery<TData>) {
   return useQuery<ApplicationResponse, Error, TData>(arenaTokenGatewayQueryKeys.application(client?.contractAddress, args), () => client ? client.application({
-    applicant: args.applicant
+    applicationId: args.applicationId
   }) : Promise.reject(new Error("Invalid client")), {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
@@ -193,7 +217,7 @@ export function useArenaTokenGatewayUpdateVestingConfigurationMutation(options?:
 export interface ArenaTokenGatewayRejectApplicationMutation {
   client: ArenaTokenGatewayClient;
   msg: {
-    applicant: string;
+    applicationId: Uint128;
     reason?: string;
   };
   args?: {
@@ -216,7 +240,7 @@ export function useArenaTokenGatewayRejectApplicationMutation(options?: Omit<Use
 export interface ArenaTokenGatewayAcceptApplicationMutation {
   client: ArenaTokenGatewayClient;
   msg: {
-    applicant: string;
+    applicationId: Uint128;
   };
   args?: {
     fee?: number | StdFee | "auto";
@@ -237,6 +261,9 @@ export function useArenaTokenGatewayAcceptApplicationMutation(options?: Omit<Use
 }
 export interface ArenaTokenGatewayWithdrawMutation {
   client: ArenaTokenGatewayClient;
+  msg: {
+    applicationId: Uint128;
+  };
   args?: {
     fee?: number | StdFee | "auto";
     memo?: string;
@@ -246,20 +273,19 @@ export interface ArenaTokenGatewayWithdrawMutation {
 export function useArenaTokenGatewayWithdrawMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTokenGatewayWithdrawMutation>, "mutationFn">) {
   return useMutation<ExecuteResult, Error, ArenaTokenGatewayWithdrawMutation>(({
     client,
+    msg,
     args: {
       fee,
       memo,
       funds
     } = {}
-  }) => client.withdraw(fee, memo, funds), options);
+  }) => client.withdraw(msg, fee, memo, funds), options);
 }
 export interface ArenaTokenGatewayUpdateMutation {
   client: ArenaTokenGatewayClient;
   msg: {
-    description: string;
-    projectLinks: ProjectLink[];
-    requestedAmount: Uint128;
-    title: string;
+    applicationId: Uint128;
+    applicationInfo: ApplyMsg;
   };
   args?: {
     fee?: number | StdFee | "auto";
@@ -282,8 +308,8 @@ export interface ArenaTokenGatewayApplyMutation {
   client: ArenaTokenGatewayClient;
   msg: {
     description: string;
-    projectLinks: ProjectLink[];
-    requestedAmount: Uint128;
+    project_links: ProjectLink[];
+    requested_amount: Uint128;
     title: string;
   };
   args?: {

@@ -47,7 +47,7 @@ import {
 	useArenaTokenGatewayWithdrawMutation,
 } from "~/codegen/ArenaTokenGateway.react-query";
 import type {
-	ApplicationInfo,
+	ApplicationResponse,
 	ApplicationStatus,
 	ArrayOfApplicationResponse,
 } from "~/codegen/ArenaTokenGateway.types";
@@ -83,7 +83,7 @@ const ArenaTokenGatewayPage: React.FC = () => {
 	});
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [selectedApplication, setSelectedApplication] =
-		useState<ApplicationInfo | null>(null);
+		useState<ApplicationResponse | null>(null);
 	const [isViewMode, setIsViewMode] = useState(false);
 	const { data: govToken } = useToken(
 		env.ARENA_ABC_SUPPLY_DENOM,
@@ -98,8 +98,19 @@ const ArenaTokenGatewayPage: React.FC = () => {
 				cosmWasmClient,
 				env.ARENA_TOKEN_GATEWAY_ADDRESS,
 			),
-		args: { status: selectedStatus },
+		args: { filter: { status: selectedStatus } },
 		options: { enabled: !!cosmWasmClient },
+	});
+
+	const { data: userApplications } = useArenaTokenGatewayApplicationsQuery({
+		client:
+			cosmWasmClient &&
+			new ArenaTokenGatewayQueryClient(
+				cosmWasmClient,
+				env.ARENA_TOKEN_GATEWAY_ADDRESS,
+			),
+		args: { filter: { applicant: address || "" } },
+		options: { enabled: !!cosmWasmClient && !!address },
 	});
 
 	const applyMutation = useArenaTokenGatewayApplyMutation();
@@ -144,23 +155,63 @@ const ArenaTokenGatewayPage: React.FC = () => {
 				govToken,
 			).amount;
 
-			const msg = {
+			const applicationInfo = {
 				title: data.title,
 				description: data.description,
-				requestedAmount,
-				projectLinks: data.projectLinks,
+				requested_amount: requestedAmount,
+				project_links: data.projectLinks,
 			};
 
 			if (selectedApplication) {
 				await updateMutation.mutateAsync(
-					{ client: tokenGatewayClient, msg },
 					{
-						onSuccess: async () => {
-							await queryClient.invalidateQueries(
+						client: tokenGatewayClient,
+						msg: {
+							applicationId: selectedApplication.application_id,
+							applicationInfo,
+						},
+					},
+					{
+						onSuccess: () => {
+							queryClient.setQueryData<ArrayOfApplicationResponse | undefined>(
 								arenaTokenGatewayQueryKeys.applications(
 									env.ARENA_TOKEN_GATEWAY_ADDRESS,
-									{ status: { pending: {} } },
+									{ filter: { status: selectedStatus } },
 								),
+								(oldData) => {
+									if (!oldData) return oldData;
+									return oldData.map((app) =>
+										app.application_id === selectedApplication.application_id
+											? {
+													...app,
+													application: {
+														...app.application,
+														...applicationInfo,
+													},
+												}
+											: app,
+									);
+								},
+							);
+							queryClient.setQueryData<ArrayOfApplicationResponse | undefined>(
+								arenaTokenGatewayQueryKeys.applications(
+									env.ARENA_TOKEN_GATEWAY_ADDRESS,
+									{ filter: { applicant: address } },
+								),
+								(oldData) => {
+									if (!oldData) return oldData;
+									return oldData.map((app) =>
+										app.application_id === selectedApplication.application_id
+											? {
+													...app,
+													application: {
+														...app.application,
+														...applicationInfo,
+													},
+												}
+											: app,
+									);
+								},
 							);
 							toast.success("Application updated successfully");
 						},
@@ -168,14 +219,48 @@ const ArenaTokenGatewayPage: React.FC = () => {
 				);
 			} else {
 				await applyMutation.mutateAsync(
-					{ client: tokenGatewayClient, msg },
+					{ client: tokenGatewayClient, msg: applicationInfo },
 					{
-						onSuccess: async () => {
-							await queryClient.invalidateQueries(
+						onSuccess: (result) => {
+							const applicationId = result.events
+								.find((event) => event.type === "wasm")
+								?.attributes.find(
+									(attr) => attr.key === "application_id",
+								)?.value;
+
+							if (!applicationId) {
+								console.error("Could not find application_id in response");
+								return;
+							}
+
+							const newApplication: ApplicationResponse = {
+								application_id: applicationId,
+								application: {
+									...applicationInfo,
+									applicant: address,
+									status: { pending: {} },
+								},
+							};
+
+							queryClient.setQueryData<ArrayOfApplicationResponse | undefined>(
 								arenaTokenGatewayQueryKeys.applications(
 									env.ARENA_TOKEN_GATEWAY_ADDRESS,
-									{ status: { pending: {} } },
+									{ filter: { status: { pending: {} } } },
 								),
+								(oldData) => {
+									if (!oldData) return [newApplication];
+									return [...oldData, newApplication];
+								},
+							);
+							queryClient.setQueryData<ArrayOfApplicationResponse | undefined>(
+								arenaTokenGatewayQueryKeys.applications(
+									env.ARENA_TOKEN_GATEWAY_ADDRESS,
+									{ filter: { applicant: address } },
+								),
+								(oldData) => {
+									if (!oldData) return [newApplication];
+									return [...oldData, newApplication];
+								},
 							);
 							toast.success("Application submitted successfully");
 						},
@@ -191,21 +276,27 @@ const ArenaTokenGatewayPage: React.FC = () => {
 		}
 	};
 
-	const handleOpenModal = (application?: ApplicationInfo, viewMode = false) => {
+	const handleOpenModal = (
+		application?: ApplicationResponse,
+		viewMode = false,
+	) => {
 		setIsViewMode(viewMode);
 		if (application) {
 			if (!govToken) throw new Error("Governance token not found");
 
 			const requestedAmount = getDisplayToken(
-				{ denom: govToken.base, amount: application.requested_amount },
+				{
+					denom: govToken.base,
+					amount: application.application.requested_amount,
+				},
 				govToken,
 			).amount;
 
 			setSelectedApplication(application);
-			setValue("title", application.title);
-			setValue("description", application.description);
+			setValue("title", application.application.title);
+			setValue("description", application.application.description);
 			setValue("requestedAmount", requestedAmount);
-			setValue("projectLinks", application.project_links);
+			setValue("projectLinks", application.application.project_links);
 		} else {
 			setSelectedApplication(null);
 			reset();
@@ -213,7 +304,7 @@ const ArenaTokenGatewayPage: React.FC = () => {
 		onOpen();
 	};
 
-	const handleWithdraw = async () => {
+	const handleWithdraw = async (applicationId: string) => {
 		try {
 			if (!address) throw new Error("Address not found");
 			const client = await getSigningCosmWasmClient();
@@ -226,19 +317,47 @@ const ArenaTokenGatewayPage: React.FC = () => {
 			await withdrawMutation.mutateAsync(
 				{
 					client: tokenGatewayClient,
+					msg: { applicationId },
 				},
 				{
-					onSuccess: async () => {
+					onSuccess: () => {
 						queryClient.setQueryData<ArrayOfApplicationResponse | undefined>(
 							arenaTokenGatewayQueryKeys.applications(
 								env.ARENA_TOKEN_GATEWAY_ADDRESS,
-								{ status: selectedStatus },
+								{ filter: { applicant: address } },
 							),
 							(oldData) => {
 								if (!oldData) return oldData;
-								return oldData.filter((app) => app.applicant !== address);
+								return oldData.filter(
+									(app) => app.application_id !== applicationId,
+								);
 							},
 						);
+						queryClient.setQueryData<ArrayOfApplicationResponse | undefined>(
+							arenaTokenGatewayQueryKeys.applications(
+								env.ARENA_TOKEN_GATEWAY_ADDRESS,
+								{ filter: { status: { pending: {} } } },
+							),
+							(oldData) => {
+								if (!oldData) return oldData;
+								return oldData.filter(
+									(app) => app.application_id !== applicationId,
+								);
+							},
+						);
+						queryClient.setQueryData<ArrayOfApplicationResponse | undefined>(
+							arenaTokenGatewayQueryKeys.applications(
+								env.ARENA_TOKEN_GATEWAY_ADDRESS,
+								{ filter: { status: { rejected: {} } } },
+							),
+							(oldData) => {
+								if (!oldData) return oldData;
+								return oldData.filter(
+									(app) => app.application_id !== applicationId,
+								);
+							},
+						);
+
 						toast.success("Application withdrawn successfully");
 						onClose();
 						setSelectedApplication(null);
@@ -251,7 +370,10 @@ const ArenaTokenGatewayPage: React.FC = () => {
 		}
 	};
 
-	const handleAccept = async (applicant: string, requestedAmount: string) => {
+	const handleAccept = async (
+		applicationId: string,
+		requestedAmount: string,
+	) => {
 		try {
 			if (!address) throw new Error("Address not found");
 
@@ -265,48 +387,33 @@ const ArenaTokenGatewayPage: React.FC = () => {
 			await acceptMutation.mutateAsync(
 				{
 					client: tokenGatewayClient,
-					msg: { applicant },
+					msg: { applicationId },
 					args: {
 						funds: coins(requestedAmount, env.ARENA_ABC_SUPPLY_DENOM),
 					},
 				},
 				{
 					onSuccess: () => {
-						// Update the cache to move the application from pending to accepted
 						queryClient.setQueryData<ArrayOfApplicationResponse | undefined>(
 							arenaTokenGatewayQueryKeys.applications(
 								env.ARENA_TOKEN_GATEWAY_ADDRESS,
-								{ status: { pending: {} } },
-							),
-							(oldData) =>
-								oldData?.filter((app) => app.applicant !== applicant),
-						);
-
-						queryClient.setQueryData<ArrayOfApplicationResponse | undefined>(
-							arenaTokenGatewayQueryKeys.applications(
-								env.ARENA_TOKEN_GATEWAY_ADDRESS,
-								{ status: { accepted: {} } },
+								{ filter: { status: { pending: {} } } },
 							),
 							(oldData) => {
-								const acceptedApp = oldData?.find(
-									(app) => app.applicant === applicant,
+								if (!oldData) return oldData;
+								return oldData.map((app) =>
+									app.application_id === applicationId
+										? {
+												...app,
+												application: {
+													...app.application,
+													status: { accepted: {} },
+												},
+											}
+										: app,
 								);
-								if (acceptedApp) {
-									return [
-										...(oldData || []),
-										{
-											...acceptedApp,
-											application: {
-												...acceptedApp.application,
-												status: { accepted: {} },
-											},
-										},
-									];
-								}
-								return oldData;
 							},
 						);
-
 						toast.success("Application accepted successfully");
 					},
 				},
@@ -317,119 +424,129 @@ const ArenaTokenGatewayPage: React.FC = () => {
 		}
 	};
 
+	const renderApplicationTable = (
+		apps: ArrayOfApplicationResponse | undefined,
+	) => (
+		<Table aria-label="Applications table" removeWrapper>
+			<TableHeader>
+				<TableColumn>Title</TableColumn>
+				<TableColumn>Applicant</TableColumn>
+				<TableColumn>Requested Amount</TableColumn>
+				<TableColumn>Status</TableColumn>
+				<TableColumn>Actions</TableColumn>
+			</TableHeader>
+			<TableBody items={apps || []} emptyContent={"No applications found"}>
+				{(app) => (
+					<TableRow key={app.application_id}>
+						<TableCell>{app.application.title}</TableCell>
+						<TableCell>{app.application.applicant}</TableCell>
+						<TableCell>
+							<TokenInfo
+								denomOrAddress={env.ARENA_ABC_SUPPLY_DENOM}
+								isNative
+								amount={app.application.requested_amount}
+							/>
+						</TableCell>
+						<TableCell>
+							{getApplicationStatusName(app.application.status)}
+						</TableCell>
+						<TableCell>
+							<div className="flex gap-2">
+								<Tooltip content="View">
+									<Button
+										isIconOnly
+										size="sm"
+										variant="light"
+										onPress={() => handleOpenModal(app, true)}
+									>
+										<FiEye />
+									</Button>
+								</Tooltip>
+								{app.application.applicant === address && (
+									<Tooltip content="Edit">
+										<Button
+											isIconOnly
+											size="sm"
+											variant="light"
+											onPress={() => handleOpenModal(app, false)}
+										>
+											<FiEdit />
+										</Button>
+									</Tooltip>
+								)}
+								{isDAOAddress && "pending" in app.application.status && (
+									<Tooltip content="Accept">
+										<Button
+											isIconOnly
+											size="sm"
+											color="success"
+											variant="flat"
+											onPress={() =>
+												handleAccept(
+													app.application_id,
+													app.application.requested_amount,
+												)
+											}
+										>
+											<FiCheck />
+										</Button>
+									</Tooltip>
+								)}
+							</div>
+						</TableCell>
+					</TableRow>
+				)}
+			</TableBody>
+		</Table>
+	);
+
 	return (
-		<div className="container mx-auto p-4">
-			<h1 className="mb-6 font-bold text-3xl">Arena Token Gateway</h1>
-			<p className="mb-6 text-lg">
+		<div className="container mx-auto space-y-6 p-4">
+			<h1 className="font-bold text-3xl">Arena Token Gateway</h1>
+			<p className="text-lg">
 				This area is designed for managing applications for DAO membership.
 				Successful applicants will receive 20% of their tokens upfront, with the
 				remaining 80% vested linearly over a period of 1 year.
 			</p>
-			<Tabs
-				aria-label="Application Status"
-				selectedKey={getApplicationStatusName(selectedStatus)}
-				onSelectionChange={(key) => {
-					setSelectedStatus(
-						key === "Pending"
-							? { pending: {} }
-							: key === "Accepted"
-								? { accepted: {} }
-								: { rejected: {} },
-					);
-				}}
-			>
-				<Tab key="Pending" title="Pending" />
-				<Tab key="Accepted" title="Accepted" />
-				<Tab key="Rejected" title="Rejected" />
-			</Tabs>
 
-			<Card className="mt-6">
-				<CardHeader className="flex items-center justify-between">
-					<h2 className="text-2xl">Applications</h2>
-					<Button
-						color="primary"
-						onPress={() => handleOpenModal()}
-						startContent={<FiPlus />}
-					>
-						New Application
-					</Button>
-				</CardHeader>
-				<CardBody>
-					<Table aria-label="Applications table" removeWrapper>
-						<TableHeader>
-							<TableColumn>Title</TableColumn>
-							<TableColumn>Requested Amount</TableColumn>
-							<TableColumn>Status</TableColumn>
-							<TableColumn>Actions</TableColumn>
-						</TableHeader>
-						<TableBody
-							items={applications || []}
-							emptyContent={"No applications found"}
+			{address && (
+				<Card>
+					<CardHeader className="flex items-center justify-between">
+						<h2 className="text-2xl">Your Applications</h2>
+						<Button
+							color="primary"
+							onPress={() => handleOpenModal()}
+							startContent={<FiPlus />}
 						>
-							{(app) => (
-								<TableRow key={app.applicant}>
-									<TableCell>{app.application.title}</TableCell>
-									<TableCell>
-										<TokenInfo
-											denomOrAddress={env.ARENA_ABC_SUPPLY_DENOM}
-											isNative
-											amount={app.application.requested_amount}
-										/>
-									</TableCell>
-									<TableCell>
-										{getApplicationStatusName(app.application.status)}
-									</TableCell>
-									<TableCell>
-										<div className="flex gap-2">
-											<Tooltip content="View">
-												<Button
-													isIconOnly
-													size="sm"
-													variant="light"
-													onPress={() => handleOpenModal(app.application, true)}
-												>
-													<FiEye />
-												</Button>
-											</Tooltip>
-											{app.applicant === address && (
-												<Tooltip content="Edit">
-													<Button
-														isIconOnly
-														size="sm"
-														variant="light"
-														onPress={() =>
-															handleOpenModal(app.application, false)
-														}
-													>
-														<FiEdit />
-													</Button>
-												</Tooltip>
-											)}
-											{isDAOAddress && "pending" in app.application.status && (
-												<Tooltip content="Accept">
-													<Button
-														isIconOnly
-														size="sm"
-														color="success"
-														variant="flat"
-														onPress={() =>
-															handleAccept(
-																app.applicant,
-																app.application.requested_amount,
-															)
-														}
-													>
-														<FiCheck />
-													</Button>
-												</Tooltip>
-											)}
-										</div>
-									</TableCell>
-								</TableRow>
-							)}
-						</TableBody>
-					</Table>
-				</CardBody>
+							New Application
+						</Button>
+					</CardHeader>
+					<CardBody>{renderApplicationTable(userApplications)}</CardBody>
+				</Card>
+			)}
+
+			<Card>
+				<CardHeader className="flex items-center justify-between">
+					<h2 className="text-2xl">All Applications</h2>
+					<Tabs
+						aria-label="Application Status"
+						selectedKey={getApplicationStatusName(selectedStatus)}
+						onSelectionChange={(key) => {
+							setSelectedStatus(
+								key === "Pending"
+									? { pending: {} }
+									: key === "Accepted"
+										? { accepted: {} }
+										: { rejected: {} },
+							);
+						}}
+					>
+						<Tab key="Pending" title="Pending" />
+						<Tab key="Accepted" title="Accepted" />
+						<Tab key="Rejected" title="Rejected" />
+					</Tabs>
+				</CardHeader>
+				<CardBody>{renderApplicationTable(applications)}</CardBody>
 			</Card>
 
 			<Modal isOpen={isOpen} onClose={onClose} size="2xl">
@@ -552,7 +669,13 @@ const ArenaTokenGatewayPage: React.FC = () => {
 								{isViewMode ? "Close" : "Cancel"}
 							</Button>
 							{!isViewMode && selectedApplication && (
-								<Button color="warning" variant="flat" onPress={handleWithdraw}>
+								<Button
+									color="warning"
+									variant="flat"
+									onPress={() =>
+										handleWithdraw(selectedApplication.application_id)
+									}
+								>
 									Withdraw
 								</Button>
 							)}
