@@ -3,7 +3,6 @@
 import Profile from "@/components/Profile";
 import RulesDisplay from "@/components/competition/RulesDisplay";
 import CategoryDisplay from "@/enrollment/view/components/CategoryDisplay";
-import { useChain } from "@cosmos-kit/react";
 import {
 	Button,
 	Card,
@@ -49,7 +48,6 @@ const ViewCompetition = ({
 	children,
 }: ViewCompetitionProps) => {
 	const { data: env } = useEnv();
-	const { address } = useChain(env.CHAIN);
 
 	return (
 		<div className="space-y-6">
