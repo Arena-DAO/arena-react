@@ -44,6 +44,7 @@ import {
 	useArenaTokenGatewayApplicationsQuery,
 	useArenaTokenGatewayApplyMutation,
 	useArenaTokenGatewayUpdateMutation,
+	useArenaTokenGatewayVestingConfigurationQuery,
 	useArenaTokenGatewayWithdrawMutation,
 } from "~/codegen/ArenaTokenGateway.react-query";
 import type {
@@ -112,6 +113,18 @@ const ArenaTokenGatewayPage: React.FC = () => {
 		args: { filter: { applicant: address || "" } },
 		options: { enabled: !!cosmWasmClient && !!address },
 	});
+
+	const { data: vestingConfig } = useArenaTokenGatewayVestingConfigurationQuery(
+		{
+			client:
+				cosmWasmClient &&
+				new ArenaTokenGatewayQueryClient(
+					cosmWasmClient,
+					env.ARENA_TOKEN_GATEWAY_ADDRESS,
+				),
+			options: { enabled: !!cosmWasmClient },
+		},
+	);
 
 	const applyMutation = useArenaTokenGatewayApplyMutation();
 	const updateMutation = useArenaTokenGatewayUpdateMutation();
@@ -376,6 +389,7 @@ const ArenaTokenGatewayPage: React.FC = () => {
 	) => {
 		try {
 			if (!address) throw new Error("Address not found");
+			if (!vestingConfig) throw new Error("Vesting configuration not found");
 
 			const client = await getSigningCosmWasmClient();
 			const tokenGatewayClient = new ArenaTokenGatewayClient(
@@ -384,12 +398,17 @@ const ArenaTokenGatewayPage: React.FC = () => {
 				env.ARENA_TOKEN_GATEWAY_ADDRESS,
 			);
 
+			// Calculate the upfront amount
+			const upfrontAmount = Math.floor(
+				Number(requestedAmount) * Number(vestingConfig.upfront_ratio),
+			).toString();
+
 			await acceptMutation.mutateAsync(
 				{
 					client: tokenGatewayClient,
 					msg: { applicationId },
 					args: {
-						funds: coins(requestedAmount, env.ARENA_ABC_SUPPLY_DENOM),
+						funds: coins(upfrontAmount, env.ARENA_ABC_SUPPLY_DENOM),
 					},
 				},
 				{
@@ -503,11 +522,16 @@ const ArenaTokenGatewayPage: React.FC = () => {
 	return (
 		<div className="container mx-auto space-y-6 p-4">
 			<h1 className="font-bold text-3xl">Arena Token Gateway</h1>
-			<p className="text-lg">
-				This area is designed for managing applications for DAO membership.
-				Successful applicants will receive 20% of their tokens upfront, with the
-				remaining 80% vested linearly over a period of 1 year.
-			</p>
+			{vestingConfig && (
+				<p className="text-lg">
+					This area is designed for managing applications for DAO membership.
+					Successful applicants will receive{" "}
+					{Number(vestingConfig.upfront_ratio) * 100}% of their tokens upfront,
+					with the remaining {(1 - Number(vestingConfig.upfront_ratio)) * 100}%
+					vested linearly over a period of{" "}
+					{vestingConfig.vesting_time / (24 * 60 * 60)} days.
+				</p>
+			)}
 
 			{address && (
 				<Card>
