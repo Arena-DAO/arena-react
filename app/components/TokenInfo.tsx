@@ -29,10 +29,13 @@ const TokenInfo = ({
 
 	if (amount !== undefined && token) {
 		const displayAmount = getDisplayToken(
-			{ denom: denomOrAddress, amount: amount.toString() },
+			{
+				denom: denomOrAddress,
+				amount: amount.toLocaleString(),
+			},
 			token,
 		);
-		displayName = `${Number(displayAmount.amount).toLocaleString()} ${token.symbol}`;
+		displayName = `${displayAmount.amount} ${token.symbol}`;
 	}
 
 	if (isError) {

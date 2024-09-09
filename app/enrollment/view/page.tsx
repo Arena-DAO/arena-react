@@ -318,7 +318,7 @@ const EnrollmentView = () => {
 					)}
 				</div>
 
-				<div className="flex justify-end">
+				<div className="flex justify-end gap-2">
 					{enrollment.has_triggered_expiration &&
 						enrollment.competition_info.competition_id && (
 							<Button
@@ -329,20 +329,20 @@ const EnrollmentView = () => {
 								View
 							</Button>
 						)}
-					<div className="flex gap-2">
-						{!enrollment.has_triggered_expiration && (
+					{!enrollment.has_triggered_expiration && (
+						<>
 							<TriggerButton
 								enrollmentId={enrollment.id}
 								isExpired={enrollment.is_expired}
 								isFull={currentMembers >= maxMembers}
 							/>
-						)}
-						<EnrollButton
-							enrollmentId={enrollment.id}
-							isFull={currentMembers >= maxMembers}
-							entryFee={enrollment.entry_fee}
-						/>
-					</div>
+							<EnrollButton
+								enrollmentId={enrollment.id}
+								isFull={currentMembers >= maxMembers}
+								entryFee={enrollment.entry_fee}
+							/>
+						</>
+					)}
 				</div>
 			</div>
 		</CategoryProvider>

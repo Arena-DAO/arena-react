@@ -83,6 +83,26 @@ const TokenPage: React.FC = () => {
 		return <div>Error loading data</div>;
 	}
 
+	const spotPrice = Number(dumpState.curve_info.spot_price) * 1e6;
+
+	const getMintPrice = () => {
+		if (dumpState.phase_config.phase === "open") {
+			const entryFee = Number(
+				dumpState.phase_config.phase_config.open.entry_fee,
+			);
+			return (spotPrice / (1 - entryFee)).toString();
+		}
+		return spotPrice.toString();
+	};
+
+	const getBurnPrice = () => {
+		if (dumpState.phase_config.phase === "open") {
+			const exitFee = Number(dumpState.phase_config.phase_config.open.exit_fee);
+			return (spotPrice / (1 - exitFee)).toFixed(6);
+		}
+		return spotPrice.toFixed(6);
+	};
+
 	return (
 		<div className="container mx-auto px-4 py-8">
 			<div className="grid grid-cols-1 gap-8 md:grid-cols-2">
@@ -124,18 +144,43 @@ const TokenPage: React.FC = () => {
 									</TableCell>
 								</TableRow>
 								<TableRow key="effectiveMintPrice">
-									<TableCell>Effective Mint Price</TableCell>
+									<TableCell>
+										<Tooltip
+											content={
+												dumpState.phase_config.phase === "open"
+													? `Includes ${Number(dumpState.phase_config.phase_config.open.entry_fee) * 100}% entry fee`
+													: "No entry fee in current phase"
+											}
+										>
+											Effective Mint Price
+										</Tooltip>
+									</TableCell>
 									<TableCell>
 										<TokenInfo
 											denomOrAddress={env.ARENA_ABC_RESERVE_DENOM}
 											isNative
-											amount={(
-												(Number(dumpState.curve_info.spot_price) * 10e5) /
-												(1 -
-													Number(
-														dumpState.phase_config.phase_config.open.entry_fee,
-													))
-											).toString()}
+											amount={getMintPrice()}
+										/>
+									</TableCell>
+								</TableRow>
+
+								<TableRow key="effectiveBurnPrice">
+									<TableCell>
+										<Tooltip
+											content={
+												dumpState.phase_config.phase === "open"
+													? `Includes ${Number(dumpState.phase_config.phase_config.open.exit_fee) * 100}% exit fee`
+													: "No exit fee in current phase"
+											}
+										>
+											Effective Burn Price
+										</Tooltip>
+									</TableCell>
+									<TableCell>
+										<TokenInfo
+											denomOrAddress={env.ARENA_ABC_SUPPLY_DENOM}
+											isNative
+											amount={getBurnPrice()}
 										/>
 									</TableCell>
 								</TableRow>
