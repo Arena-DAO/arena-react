@@ -32,7 +32,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import type React from "react";
 import { useMemo, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { FiCheck, FiEdit, FiEye, FiPlus, FiTrash } from "react-icons/fi";
+import { FiCheck, FiEdit, FiEye, FiPlus, FiTrash, FiX } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import {
@@ -44,6 +44,7 @@ import {
 	useArenaTokenGatewayAcceptApplicationMutation,
 	useArenaTokenGatewayApplicationsQuery,
 	useArenaTokenGatewayApplyMutation,
+	useArenaTokenGatewayRejectApplicationMutation,
 	useArenaTokenGatewayUpdateMutation,
 	useArenaTokenGatewayVestingConfigurationQuery,
 	useArenaTokenGatewayWithdrawMutation,
@@ -131,6 +132,7 @@ const ArenaTokenGatewayPage: React.FC = () => {
 	const updateMutation = useArenaTokenGatewayUpdateMutation();
 	const withdrawMutation = useArenaTokenGatewayWithdrawMutation();
 	const acceptMutation = useArenaTokenGatewayAcceptApplicationMutation();
+	const rejectMutation = useArenaTokenGatewayRejectApplicationMutation();
 
 	const isDAOAddress = useMemo(
 		() => address === env.ARENA_DAO_ADDRESS,
@@ -444,6 +446,75 @@ const ArenaTokenGatewayPage: React.FC = () => {
 		}
 	};
 
+	const [rejectReason, setRejectReason] = useState("");
+	const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+	const [applicationToReject, setApplicationToReject] = useState<string | null>(
+		null,
+	);
+
+	const handleReject = async (applicationId: string) => {
+		try {
+			if (!address) throw new Error("Address not found");
+
+			const client = await getSigningCosmWasmClient();
+			const tokenGatewayClient = new ArenaTokenGatewayClient(
+				client,
+				address,
+				env.ARENA_TOKEN_GATEWAY_ADDRESS,
+			);
+
+			await rejectMutation.mutateAsync(
+				{
+					client: tokenGatewayClient,
+					msg: { applicationId, reason: rejectReason },
+				},
+				{
+					onSuccess: () => {
+						queryClient.setQueryData<ArrayOfApplicationResponse | undefined>(
+							arenaTokenGatewayQueryKeys.applications(
+								env.ARENA_TOKEN_GATEWAY_ADDRESS,
+								{ filter: { status: { pending: {} } } },
+							),
+							(oldData) => {
+								if (!oldData) return oldData;
+								return oldData.filter(
+									(app) => app.application_id !== applicationId,
+								);
+							},
+						);
+						queryClient.setQueryData<ArrayOfApplicationResponse | undefined>(
+							arenaTokenGatewayQueryKeys.applications(
+								env.ARENA_TOKEN_GATEWAY_ADDRESS,
+								{ filter: { status: { rejected: {} } } },
+							),
+							(oldData) => {
+								if (!oldData) return oldData;
+								return oldData.map((app) =>
+									app.application_id === applicationId
+										? {
+												...app,
+												application: {
+													...app.application,
+													status: { rejected: { reason: rejectReason } },
+												},
+											}
+										: app,
+								);
+							},
+						);
+						toast.success("Application rejected successfully");
+						setIsRejectModalOpen(false);
+						setRejectReason("");
+						setApplicationToReject(null);
+					},
+				},
+			);
+		} catch (e) {
+			console.error(e);
+			toast.error((e as Error).toString());
+		}
+	};
+
 	const renderApplicationTable = (
 		apps: ArrayOfApplicationResponse | undefined,
 	) => (
@@ -497,22 +568,40 @@ const ArenaTokenGatewayPage: React.FC = () => {
 									</Tooltip>
 								)}
 								{isDAOAddress && "pending" in app.application.status && (
-									<Tooltip content="Accept">
-										<Button
-											isIconOnly
-											size="sm"
-											color="success"
-											variant="flat"
-											onPress={() =>
-												handleAccept(
-													app.application_id,
-													app.application.requested_amount,
-												)
-											}
-										>
-											<FiCheck />
-										</Button>
-									</Tooltip>
+									<>
+										<Tooltip content="Accept">
+											<Button
+												isIconOnly
+												size="sm"
+												color="success"
+												variant="flat"
+												onPress={() =>
+													handleAccept(
+														app.application_id,
+														app.application.requested_amount,
+													)
+												}
+												isLoading={acceptMutation.isLoading}
+											>
+												<FiCheck />
+											</Button>
+										</Tooltip>
+										<Tooltip content="Reject">
+											<Button
+												isIconOnly
+												size="sm"
+												color="danger"
+												variant="flat"
+												onPress={() => {
+													setApplicationToReject(app.application_id);
+													setIsRejectModalOpen(true);
+												}}
+												isLoading={rejectMutation.isLoading}
+											>
+												<FiX />
+											</Button>
+										</Tooltip>
+									</>
 								)}
 							</div>
 						</TableCell>
@@ -536,7 +625,7 @@ const ArenaTokenGatewayPage: React.FC = () => {
 				</p>
 			)}
 
-			{address && (
+			{address && !isDAOAddress && (
 				<Card>
 					<CardHeader className="flex items-center justify-between">
 						<h2 className="text-2xl">Your Applications</h2>
@@ -690,6 +779,17 @@ const ArenaTokenGatewayPage: React.FC = () => {
 									</Button>
 								)}
 							</div>
+							{isViewMode &&
+								selectedApplication &&
+								"rejected" in selectedApplication.application.status && (
+									<div className="mt-4">
+										<h3 className="font-semibold text-lg">Rejection Reason</h3>
+										<p className="mt-1">
+											{selectedApplication.application.status.rejected.reason ||
+												"No reason provided"}
+										</p>
+									</div>
+								)}
 						</ModalBody>
 						<ModalFooter>
 							<Button color="danger" variant="light" onPress={onClose}>
@@ -707,12 +807,52 @@ const ArenaTokenGatewayPage: React.FC = () => {
 								</Button>
 							)}
 							{!isViewMode && (
-								<Button color="primary" type="submit">
+								<Button
+									color="primary"
+									type="submit"
+									isLoading={
+										updateMutation.isLoading || applyMutation.isLoading
+									}
+								>
 									{selectedApplication ? "Update" : "Submit"}
 								</Button>
 							)}
 						</ModalFooter>
 					</form>
+				</ModalContent>
+			</Modal>
+			<Modal
+				isOpen={isRejectModalOpen}
+				onClose={() => setIsRejectModalOpen(false)}
+			>
+				<ModalContent>
+					<ModalHeader>Reject Application</ModalHeader>
+					<ModalBody>
+						<Textarea
+							label="Rejection Reason"
+							placeholder="Enter the reason for rejection"
+							value={rejectReason}
+							onChange={(e) => setRejectReason(e.target.value)}
+						/>
+					</ModalBody>
+					<ModalFooter>
+						<Button
+							color="danger"
+							variant="light"
+							onPress={() => setIsRejectModalOpen(false)}
+						>
+							Cancel
+						</Button>
+						<Button
+							color="danger"
+							onPress={() =>
+								applicationToReject && handleReject(applicationToReject)
+							}
+							isLoading={rejectMutation.isLoading}
+						>
+							Reject
+						</Button>
+					</ModalFooter>
 				</ModalContent>
 			</Modal>
 		</div>
