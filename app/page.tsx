@@ -2,9 +2,10 @@
 
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
-import { Button, Image, Link } from "@nextui-org/react";
+import { Button, Link } from "@nextui-org/react";
 import { useState } from "react";
 import { useEnv } from "~/hooks/useEnv";
+import LandingPageSections from "./components/LandingPageSections";
 
 function Arrow(props: {
 	disabled: boolean;
@@ -160,73 +161,7 @@ function HomePage() {
 					</div>
 				)}
 			</div>
-			<section className="container mx-auto">
-				<section className="m-y-1 mx-auto mt-8 flex w-full max-w-screen-xl flex-col-reverse items-center gap-[10%] px-10 md:flex-row-reverse">
-					<div className="text-center md:mx-auto md:w-1/2 md:text-left">
-						<h1 className="text-primary md:text-6xl">
-							Empowering Management at All Levels
-						</h1>
-						<p>
-							The Arena DAO revolutionizes team management and organizational
-							transparency within competitive communities by providing
-							competition infrastructure built around the best DAO tooling
-							available: DAO DAO.
-							<br />
-							<br />
-							Users can leverage DAO DAO to create their own teams in a fully
-							customizable and interactive way. Our platform allows teams to
-							become more than just a group chat; they can set up unique
-							governance structures, grow a treasury together, and compete with
-							complete representation.
-							<br />
-							<br />
-							Our platform enables teams to configure preset reward
-							distributions, automating and ensuring fair payouts directly to
-							team members' accounts. This automation eliminates manual
-							calculation, hassles, and delays, providing peace of mind for both
-							managers and players.
-						</p>
-					</div>
-					<div className="w-[80%] md:mx-auto md:w-1/2">
-						<Image
-							fallbackSrc={`${env.JACKAL_PATH}helmet.png`}
-							src={"/images/landing_helmet.png"}
-							alt="Helmet"
-						/>
-					</div>
-				</section>
-				<section className="m-y-1 mx-auto mt-8 flex w-full max-w-screen-xl flex-col-reverse items-center gap-[10%] px-10 md:flex-row">
-					<div className="text-center md:mx-auto md:w-1/2 md:text-left">
-						<h1 className="text-primary md:text-6xl">
-							Decentralized Competition Infrastructure
-						</h1>
-						<p>
-							The Arena DAO provides the best competitive platform by reducing
-							the reliance on trust and centralized credit systems. Utilizing
-							blockchain technology, the Arena DAO guarantees secure
-							transactions, with funds always under the user's control unless in
-							an active escrow.
-							<br /> <br />
-							This not only enhances security but also lowers costs, leveraging
-							Neutron's minimal gas fees to provide a seamless and efficient
-							experience for competitors.
-							<br />
-							<br />
-							By embracing open-source principles, the Arena DAO fosters an
-							ecosystem of continuous innovation, allowing users to craft custom
-							rules and unique competition formats, ultimately driving a
-							dynamic, inclusive, and forward-thinking competitive environment.
-						</p>
-					</div>
-					<div className="w-[80%] md:mx-auto md:w-1/2">
-						<Image
-							fallbackSrc={`${env.JACKAL_PATH}colosseum.png`}
-							src={"/images/landing_colosseum.png"}
-							alt="Colosseum"
-						/>
-					</div>
-				</section>
-			</section>
+			<LandingPageSections />
 		</div>
 	);
 }
