@@ -14,11 +14,6 @@ export interface Env {
 	CHAIN: string;
 	DEFAULT_NATIVE: string;
 	ENV: string;
-	CODE_ID_DAO_PROPOSAL_SINGLE: number;
-	CODE_ID_DAO_PREPROPOSE_SINGLE: number;
-	CODE_ID_DAO_CORE: number;
-	CODE_ID_DAO_VOTING_CW4: number;
-	CODE_ID_CW4_GROUP: number;
 	CODE_ID_ESCROW: number;
 	ARENA_DAO_ADDRESS: string;
 	ARENA_CORE_ADDRESS: string;
@@ -75,19 +70,6 @@ function getEnv(): Env {
 		DEFAULT_NATIVE: checkEnv(process.env.NEXT_PUBLIC_DEFAULT_NATIVE),
 		ENV: checkEnv(process.env.NEXT_PUBLIC_ENV),
 		JACKAL_PATH: checkEnv(process.env.NEXT_PUBLIC_JACKAL_PATH),
-		CODE_ID_DAO_PROPOSAL_SINGLE: checkEnvNumber(
-			process.env.NEXT_PUBLIC_CODE_ID_DAO_PROPOSAL_SINGLE,
-		),
-		CODE_ID_DAO_PREPROPOSE_SINGLE: checkEnvNumber(
-			process.env.NEXT_PUBLIC_CODE_ID_DAO_PREPROPOSE_SINGLE,
-		),
-		CODE_ID_DAO_CORE: checkEnvNumber(process.env.NEXT_PUBLIC_CODE_ID_DAO_CORE),
-		CODE_ID_DAO_VOTING_CW4: checkEnvNumber(
-			process.env.NEXT_PUBLIC_CODE_ID_DAO_VOTING_CW4,
-		),
-		CODE_ID_CW4_GROUP: checkEnvNumber(
-			process.env.NEXT_PUBLIC_CODE_ID_CW4_GROUP,
-		),
 		CODE_ID_ESCROW: checkEnvNumber(process.env.NEXT_PUBLIC_CODE_ID_ESCROW),
 		ARENA_DAO_ADDRESS: checkEnv(process.env.NEXT_PUBLIC_ARENA_DAO_ADDRESS),
 		ARENA_CORE_ADDRESS: checkEnv(process.env.NEXT_PUBLIC_ARENA_CORE_ADDRESS),
