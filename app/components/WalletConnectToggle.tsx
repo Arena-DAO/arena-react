@@ -52,7 +52,7 @@ export default function WalletConnectToggle() {
 						key="competitions"
 						href={`/user/competitions?host=${chainContext.address}`}
 					>
-						Competitions
+						My Competitions
 					</DropdownItem>
 				</DropdownMenu>
 			</Dropdown>

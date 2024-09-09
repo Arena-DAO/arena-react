@@ -37,6 +37,10 @@ import BalancesModal from "./BalancesModal";
 import DuesModal from "./DuesModal";
 import InitialDuesModal from "./InitialDuesModal";
 
+interface PageData {
+	items: ArrayOfMemberBalanceChecked;
+}
+
 interface EscrowSectionProps {
 	escrow: string;
 	competitionStatus: CompetitionStatus;
@@ -117,19 +121,20 @@ const EscrowSection = ({
 				arenaEscrowQueryKeys.dumpState(escrow, { addr: address }),
 			);
 
-			queryClient.setQueryData<
-				InfiniteData<ArrayOfMemberBalanceChecked> | undefined
-			>(arenaEscrowQueryKeys.dues(escrow), (old) => {
-				if (!old) return old;
+			queryClient.setQueryData<InfiniteData<PageData> | undefined>(
+				arenaEscrowQueryKeys.dues(escrow),
+				(old) => {
+					if (!old) return old;
 
-				return {
-					...old,
-					pages: old.pages.map((page) => ({
-						...page,
-						data: page.filter((due) => due.addr !== address),
-					})),
-				};
-			});
+					return {
+						...old,
+						pages: old.pages.map((page) => ({
+							...page,
+							items: page.items.filter((due) => due.addr !== address),
+						})),
+					};
+				},
+			);
 			await queryClient.invalidateQueries(
 				arenaEscrowQueryKeys.balances(escrow),
 			);
@@ -160,19 +165,20 @@ const EscrowSection = ({
 							arenaEscrowQueryKeys.dumpState(escrow, { addr: address }),
 						);
 
-						queryClient.setQueryData<
-							InfiniteData<ArrayOfMemberBalanceChecked> | undefined
-						>(arenaEscrowQueryKeys.balances(escrow), (old) => {
-							if (!old) return old;
+						queryClient.setQueryData<InfiniteData<PageData> | undefined>(
+							arenaEscrowQueryKeys.balances(escrow),
+							(old) => {
+								if (!old) return old;
 
-							return {
-								...old,
-								pages: old.pages.map((page) => ({
-									...page,
-									data: page.filter((due) => due.addr !== address),
-								})),
-							};
-						});
+								return {
+									...old,
+									pages: old.pages.map((page) => ({
+										...page,
+										items: page.items.filter((due) => due.addr !== address),
+									})),
+								};
+							},
+						);
 						await queryClient.invalidateQueries(
 							arenaEscrowQueryKeys.dues(escrow),
 						);
