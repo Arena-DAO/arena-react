@@ -41,7 +41,9 @@ const CompetitionModuleSection = ({
 
 		const data = await client.competitions({
 			startAfter: pageParam,
-			filter: { competition_status: { status: "jailed" } },
+			filter: {
+				competition_status: { status: { jailed: { activation_height: 0 } } },
+			},
 		});
 
 		return {
@@ -56,7 +58,9 @@ const CompetitionModuleSection = ({
 	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
 		useInfiniteQuery({
 			queryKey: arenaWagerModuleQueryKeys.competitions(module_addr, {
-				filter: { competition_status: { status: "jailed" } },
+				filter: {
+					competition_status: { status: { jailed: { activation_height: 0 } } },
+				},
 			}),
 			queryFn: fetchCompetitions,
 			getNextPageParam: (lastPage) => lastPage.nextCursor,

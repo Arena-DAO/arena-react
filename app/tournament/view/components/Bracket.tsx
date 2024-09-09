@@ -328,7 +328,7 @@ function Bracket({ tournamentId, escrow }: BracketProps) {
 								);
 							}
 
-							toast.success("The league is now fully processed");
+							toast.success("The tournament is now fully processed");
 						}
 					},
 				},

@@ -10,7 +10,7 @@ import {
 	CardHeader,
 	Spinner,
 } from "@nextui-org/react";
-import { useQueryClient } from "@tanstack/react-query";
+import { type InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import {
 	ArenaEscrowClient,
@@ -117,15 +117,19 @@ const EscrowSection = ({
 				arenaEscrowQueryKeys.dumpState(escrow, { addr: address }),
 			);
 
-			queryClient.setQueryData<ArrayOfMemberBalanceChecked | undefined>(
-				arenaEscrowQueryKeys.dues(escrow),
-				(old) => {
-					if (old) {
-						return old.filter((due) => due.addr !== address);
-					}
-					return old;
-				},
-			);
+			queryClient.setQueryData<
+				InfiniteData<ArrayOfMemberBalanceChecked> | undefined
+			>(arenaEscrowQueryKeys.dues(escrow), (old) => {
+				if (!old) return old;
+
+				return {
+					...old,
+					pages: old.pages.map((page) => ({
+						...page,
+						data: page.filter((due) => due.addr !== address),
+					})),
+				};
+			});
 			await queryClient.invalidateQueries(
 				arenaEscrowQueryKeys.balances(escrow),
 			);
@@ -156,15 +160,19 @@ const EscrowSection = ({
 							arenaEscrowQueryKeys.dumpState(escrow, { addr: address }),
 						);
 
-						queryClient.setQueryData<ArrayOfMemberBalanceChecked | undefined>(
-							arenaEscrowQueryKeys.balances(escrow),
-							(old) => {
-								if (old) {
-									return old.filter((balance) => balance.addr !== address);
-								}
-								return old;
-							},
-						);
+						queryClient.setQueryData<
+							InfiniteData<ArrayOfMemberBalanceChecked> | undefined
+						>(arenaEscrowQueryKeys.balances(escrow), (old) => {
+							if (!old) return old;
+
+							return {
+								...old,
+								pages: old.pages.map((page) => ({
+									...page,
+									data: page.filter((due) => due.addr !== address),
+								})),
+							};
+						});
 						await queryClient.invalidateQueries(
 							arenaEscrowQueryKeys.dues(escrow),
 						);
