@@ -1,5 +1,6 @@
 "use client";
 
+import Profile from "@/components/Profile";
 import TokenInfo from "@/components/TokenInfo";
 import { coins } from "@cosmjs/amino";
 import { useChain } from "@cosmos-kit/react";
@@ -458,7 +459,9 @@ const ArenaTokenGatewayPage: React.FC = () => {
 				{(app) => (
 					<TableRow key={app.application_id}>
 						<TableCell>{app.application.title}</TableCell>
-						<TableCell>{app.application.applicant}</TableCell>
+						<TableCell>
+							<Profile address={app.application.applicant} />
+						</TableCell>
 						<TableCell>
 							<TokenInfo
 								denomOrAddress={env.ARENA_ABC_SUPPLY_DENOM}
