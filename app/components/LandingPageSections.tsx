@@ -1,6 +1,6 @@
-import type React from "react";
 import Image from "next/image";
-import { BsShieldCheck, BsPeople, BsLightning } from "react-icons/bs";
+import type React from "react";
+import { BsLightning, BsPeople, BsShieldCheck } from "react-icons/bs";
 import { FiUsers } from "react-icons/fi";
 
 interface FeatureProps {

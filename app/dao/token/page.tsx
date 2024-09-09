@@ -23,7 +23,7 @@ import {
 import type React from "react";
 import { useCallback, useMemo, useState } from "react";
 import { BsCart3, BsFillPersonPlusFill, BsFire } from "react-icons/bs";
-import { FiDollarSign, FiUsers } from "react-icons/fi";
+import { FiDollarSign } from "react-icons/fi";
 import { CwAbcQueryClient } from "~/codegen/CwAbc.client";
 import { useCwAbcDumpStateQuery } from "~/codegen/CwAbc.react-query";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
@@ -111,7 +111,7 @@ const TokenPage: React.FC = () => {
 						<h2 className="text-2xl">Token Information</h2>
 					</CardHeader>
 					<CardBody>
-						<Table hideHeader removeWrapper>
+						<Table hideHeader removeWrapper aria-label="Token Information">
 							<TableHeader>
 								<TableColumn>Property</TableColumn>
 								<TableColumn>Value</TableColumn>
@@ -144,17 +144,7 @@ const TokenPage: React.FC = () => {
 									</TableCell>
 								</TableRow>
 								<TableRow key="effectiveMintPrice">
-									<TableCell>
-										<Tooltip
-											content={
-												dumpState.phase_config.phase === "open"
-													? `Includes ${Number(dumpState.phase_config.phase_config.open.entry_fee) * 100}% entry fee`
-													: "No entry fee in current phase"
-											}
-										>
-											Effective Mint Price
-										</Tooltip>
-									</TableCell>
+									<TableCell>Effective Mint Price</TableCell>
 									<TableCell>
 										<TokenInfo
 											denomOrAddress={env.ARENA_ABC_RESERVE_DENOM}
@@ -165,17 +155,7 @@ const TokenPage: React.FC = () => {
 								</TableRow>
 
 								<TableRow key="effectiveBurnPrice">
-									<TableCell>
-										<Tooltip
-											content={
-												dumpState.phase_config.phase === "open"
-													? `Includes ${Number(dumpState.phase_config.phase_config.open.exit_fee) * 100}% exit fee`
-													: "No exit fee in current phase"
-											}
-										>
-											Effective Burn Price
-										</Tooltip>
-									</TableCell>
+									<TableCell>Effective Burn Price</TableCell>
 									<TableCell>
 										<TokenInfo
 											denomOrAddress={env.ARENA_ABC_SUPPLY_DENOM}
@@ -211,8 +191,9 @@ const TokenPage: React.FC = () => {
 								as={Link}
 								href="/dao/token/gateway"
 								color="secondary"
-								startContent={<FiUsers />}
 								aria-label="Go to team onboarding page"
+								variant="shadow"
+								showAnchorIcon
 							>
 								Team Onboarding
 							</Button>

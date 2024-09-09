@@ -642,7 +642,7 @@ const ArenaTokenGatewayPage: React.FC = () => {
 			)}
 
 			<Card>
-				<CardHeader className="flex items-center justify-between">
+				<CardHeader className="block items-center justify-between sm:flex">
 					<h2 className="text-2xl">All Applications</h2>
 					<Tabs
 						aria-label="Application Status"
