@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee, Coin } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ExecuteExt, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatValue, Int128, StatValueType, Action, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, WagerInstantiateExt, MemberStatUpdate, StatMsg, StatType, QueryMsg, QueryExt, Null, Addr, CompetitionResponseForWagerExt, WagerExt, FeeInformationForAddr, ArrayOfCompetitionResponseForWagerExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, NullableArrayOfStatMsg } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ExecuteExt, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatValue, StatAggregationType, StatValueType, Action, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, WagerInstantiateExt, MemberStatsMsg, StatMsg, MemberStatsRemoveMsg, StatsRemoveMsg, StatType, QueryMsg, QueryExt, Null, Addr, CompetitionResponseForWagerExt, WagerExt, FeeInformationForAddr, ArrayOfCompetitionResponseForWagerExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatMsg, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaWagerModule.types";
 import { ArenaWagerModuleQueryClient, ArenaWagerModuleClient } from "./ArenaWagerModule.client";
 export const arenaWagerModuleQueryKeys = {
   contract: ([{
@@ -70,6 +70,16 @@ export const arenaWagerModuleQueryKeys = {
   stats: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
     ...arenaWagerModuleQueryKeys.address(contractAddress)[0],
     method: "stats",
+    args
+  }] as const),
+  statsTable: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
+    ...arenaWagerModuleQueryKeys.address(contractAddress)[0],
+    method: "stats_table",
+    args
+  }] as const),
+  stat: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
+    ...arenaWagerModuleQueryKeys.address(contractAddress)[0],
+    method: "stat",
     args
   }] as const),
   ownership: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
@@ -191,15 +201,44 @@ export const arenaWagerModuleQueries = {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   }),
-  stats: <TData = NullableArrayOfStatMsg,>({
+  stats: <TData = ArrayOfStatMsg,>({
     client,
     args,
     options
-  }: ArenaWagerModuleStatsQuery<TData>): UseQueryOptions<NullableArrayOfStatMsg, Error, TData> => ({
+  }: ArenaWagerModuleStatsQuery<TData>): UseQueryOptions<ArrayOfStatMsg, Error, TData> => ({
     queryKey: arenaWagerModuleQueryKeys.stats(client?.contractAddress, args),
     queryFn: () => client ? client.stats({
       addr: args.addr,
       competitionId: args.competitionId
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  statsTable: <TData = ArrayOfStatTableEntry,>({
+    client,
+    args,
+    options
+  }: ArenaWagerModuleStatsTableQuery<TData>): UseQueryOptions<ArrayOfStatTableEntry, Error, TData> => ({
+    queryKey: arenaWagerModuleQueryKeys.statsTable(client?.contractAddress, args),
+    queryFn: () => client ? client.statsTable({
+      competitionId: args.competitionId,
+      limit: args.limit,
+      startAfter: args.startAfter
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  stat: <TData = StatMsg,>({
+    client,
+    args,
+    options
+  }: ArenaWagerModuleStatQuery<TData>): UseQueryOptions<StatMsg, Error, TData> => ({
+    queryKey: arenaWagerModuleQueryKeys.stat(client?.contractAddress, args),
+    queryFn: () => client ? client.stat({
+      addr: args.addr,
+      competitionId: args.competitionId,
+      height: args.height,
+      statName: args.statName
     }) : Promise.reject(new Error("Invalid client")),
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
@@ -230,18 +269,62 @@ export function useArenaWagerModuleOwnershipQuery<TData = OwnershipForString>({
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
-export interface ArenaWagerModuleStatsQuery<TData> extends ArenaWagerModuleReactQuery<NullableArrayOfStatMsg, TData> {
+export interface ArenaWagerModuleStatQuery<TData> extends ArenaWagerModuleReactQuery<StatMsg, TData> {
+  args: {
+    addr: string;
+    competitionId: Uint128;
+    height?: number;
+    statName: string;
+  };
+}
+export function useArenaWagerModuleStatQuery<TData = StatMsg>({
+  client,
+  args,
+  options
+}: ArenaWagerModuleStatQuery<TData>) {
+  return useQuery<StatMsg, Error, TData>(arenaWagerModuleQueryKeys.stat(client?.contractAddress, args), () => client ? client.stat({
+    addr: args.addr,
+    competitionId: args.competitionId,
+    height: args.height,
+    statName: args.statName
+  }) : Promise.reject(new Error("Invalid client")), {
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
+}
+export interface ArenaWagerModuleStatsTableQuery<TData> extends ArenaWagerModuleReactQuery<ArrayOfStatTableEntry, TData> {
+  args: {
+    competitionId: Uint128;
+    limit?: number;
+    startAfter?: string[][];
+  };
+}
+export function useArenaWagerModuleStatsTableQuery<TData = ArrayOfStatTableEntry>({
+  client,
+  args,
+  options
+}: ArenaWagerModuleStatsTableQuery<TData>) {
+  return useQuery<ArrayOfStatTableEntry, Error, TData>(arenaWagerModuleQueryKeys.statsTable(client?.contractAddress, args), () => client ? client.statsTable({
+    competitionId: args.competitionId,
+    limit: args.limit,
+    startAfter: args.startAfter
+  }) : Promise.reject(new Error("Invalid client")), {
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
+}
+export interface ArenaWagerModuleStatsQuery<TData> extends ArenaWagerModuleReactQuery<ArrayOfStatMsg, TData> {
   args: {
     addr: string;
     competitionId: Uint128;
   };
 }
-export function useArenaWagerModuleStatsQuery<TData = NullableArrayOfStatMsg>({
+export function useArenaWagerModuleStatsQuery<TData = ArrayOfStatMsg>({
   client,
   args,
   options
 }: ArenaWagerModuleStatsQuery<TData>) {
-  return useQuery<NullableArrayOfStatMsg, Error, TData>(arenaWagerModuleQueryKeys.stats(client?.contractAddress, args), () => client ? client.stats({
+  return useQuery<ArrayOfStatMsg, Error, TData>(arenaWagerModuleQueryKeys.stats(client?.contractAddress, args), () => client ? client.stats({
     addr: args.addr,
     competitionId: args.competitionId
   }) : Promise.reject(new Error("Invalid client")), {
@@ -443,11 +526,11 @@ export function useArenaWagerModuleUpdateStatTypesMutation(options?: Omit<UseMut
     } = {}
   }) => client.updateStatTypes(msg, fee, memo, funds), options);
 }
-export interface ArenaWagerModuleUpdateStatsMutation {
+export interface ArenaWagerModuleRemoveStatsMutation {
   client: ArenaWagerModuleClient;
   msg: {
     competitionId: Uint128;
-    updates: MemberStatUpdate[];
+    stats: MemberStatsRemoveMsg[];
   };
   args?: {
     fee?: number | StdFee | "auto";
@@ -455,8 +538,8 @@ export interface ArenaWagerModuleUpdateStatsMutation {
     funds?: Coin[];
   };
 }
-export function useArenaWagerModuleUpdateStatsMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleUpdateStatsMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaWagerModuleUpdateStatsMutation>(({
+export function useArenaWagerModuleRemoveStatsMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleRemoveStatsMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaWagerModuleRemoveStatsMutation>(({
     client,
     msg,
     args: {
@@ -464,7 +547,30 @@ export function useArenaWagerModuleUpdateStatsMutation(options?: Omit<UseMutatio
       memo,
       funds
     } = {}
-  }) => client.updateStats(msg, fee, memo, funds), options);
+  }) => client.removeStats(msg, fee, memo, funds), options);
+}
+export interface ArenaWagerModuleInputStatsMutation {
+  client: ArenaWagerModuleClient;
+  msg: {
+    competitionId: Uint128;
+    stats: MemberStatsMsg[];
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaWagerModuleInputStatsMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleInputStatsMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaWagerModuleInputStatsMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.inputStats(msg, fee, memo, funds), options);
 }
 export interface ArenaWagerModuleMigrateEscrowsMutation {
   client: ArenaWagerModuleClient;

@@ -3,6 +3,7 @@
 import Profile from "@/components/Profile";
 import RulesDisplay from "@/components/competition/RulesDisplay";
 import CategoryDisplay from "@/enrollment/view/components/CategoryDisplay";
+import { useChain } from "@cosmos-kit/react";
 import {
 	Button,
 	Card,
@@ -22,16 +23,17 @@ import {
 import type { PropsWithChildren } from "react";
 import { BsYinYang } from "react-icons/bs";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
-import { isActive, isJailed } from "~/helpers/ArenaHelpers";
+import { isJailed } from "~/helpers/ArenaHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import type { CompetitionResponse } from "~/types/CompetitionResponse";
 import type { CompetitionType } from "~/types/CompetitionType";
 import CompetitionStatusDisplay from "../CompetitionStatusDisplay";
 import ExpirationDisplay from "../ExpirationDisplay";
+import CompetitionActions from "./components/CompetitionActions";
 import EscrowSection from "./components/EscrowSection";
 import EvidenceSection from "./components/EvidenceSection";
-import ProcessForm from "./components/ProcessForm";
 import ResultSection from "./components/ResultSection";
+import StatsTable from "./components/StatsTable";
 
 interface ViewCompetitionProps extends PropsWithChildren {
 	moduleAddr: string;
@@ -48,6 +50,7 @@ const ViewCompetition = ({
 	children,
 }: ViewCompetitionProps) => {
 	const { data: env } = useEnv();
+	const { address } = useChain(env.CHAIN);
 
 	return (
 		<div className="space-y-6">
@@ -134,6 +137,15 @@ const ViewCompetition = ({
 				</Card>
 			)}
 
+			<Card>
+				<CardHeader>
+					<h2 className="font-semibold text-xl">Competition Stats</h2>
+				</CardHeader>
+				<CardBody>
+					<StatsTable moduleAddr={moduleAddr} competitionId={competition.id} />
+				</CardBody>
+			</Card>
+
 			{(isJailed(competition.status) || competition.status === "inactive") && (
 				<EvidenceSection
 					moduleAddr={moduleAddr}
@@ -182,27 +194,12 @@ const ViewCompetition = ({
 				<ResultSection moduleAddr={moduleAddr} competitionId={competition.id} />
 			)}
 
-			<div className="flex justify-end gap-2 overflow-x-auto">
-				{!hideProcess && isActive(competition.status) && (
-					<ProcessForm
-						moduleAddr={moduleAddr}
-						competitionId={competition.id}
-						host={competition.host}
-						competitionType={competitionType}
-						escrow={competition.escrow}
-					/>
-				)}
-				{competition.is_expired &&
-					competition.status !== "inactive" &&
-					competition.status !== "pending" && (
-						<ProcessForm
-							moduleAddr={moduleAddr}
-							competitionId={competition.id}
-							is_expired
-							competitionType={competitionType}
-						/>
-					)}
-			</div>
+			<CompetitionActions
+				competition={competition}
+				hideProcess={hideProcess}
+				competitionType={competitionType}
+				moduleAddr={moduleAddr}
+			/>
 			{children}
 		</div>
 	);

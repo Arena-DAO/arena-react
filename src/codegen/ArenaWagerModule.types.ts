@@ -71,9 +71,14 @@ export type ExecuteMsg = {
     start_after?: Uint128 | null;
   };
 } | {
-  update_stats: {
+  input_stats: {
     competition_id: Uint128;
-    updates: MemberStatUpdate[];
+    stats: MemberStatsMsg[];
+  };
+} | {
+  remove_stats: {
+    competition_id: Uint128;
+    stats: MemberStatsRemoveMsg[];
   };
 } | {
   update_stat_types: {
@@ -125,10 +130,10 @@ export type StatValue = {
 } | {
   decimal: Decimal;
 } | {
-  int: Int128;
+  uint: Uint128;
 };
-export type Int128 = string;
-export type StatValueType = "bool" | "decimal" | "int";
+export type StatAggregationType = "average" | "cumulative";
+export type StatValueType = "bool" | "decimal" | "uint";
 export type Action = {
   transfer_ownership: {
     expiry?: Expiration | null;
@@ -158,7 +163,7 @@ export interface EscrowInstantiateInfo {
 export interface WagerInstantiateExt {
   registered_members?: string[] | null;
 }
-export interface MemberStatUpdate {
+export interface MemberStatsMsg {
   addr: string;
   stats: StatMsg[];
 }
@@ -166,7 +171,16 @@ export interface StatMsg {
   name: string;
   value: StatValue;
 }
+export interface MemberStatsRemoveMsg {
+  addr: string;
+  stats: StatsRemoveMsg[];
+}
+export interface StatsRemoveMsg {
+  height: number;
+  name: string;
+}
 export interface StatType {
+  aggregation_type?: StatAggregationType | null;
   is_beneficial: boolean;
   name: string;
   tie_breaker_priority?: number | null;
@@ -212,6 +226,19 @@ export type QueryMsg = {
   stats: {
     addr: string;
     competition_id: Uint128;
+  };
+} | {
+  stats_table: {
+    competition_id: Uint128;
+    limit?: number | null;
+    start_after?: [string, string] | null;
+  };
+} | {
+  stat: {
+    addr: string;
+    competition_id: Uint128;
+    height?: number | null;
+    stat_name: string;
   };
 } | {
   ownership: {};
@@ -267,4 +294,9 @@ export interface OwnershipForString {
 export type NullableString = string | null;
 export type NullableDistributionForString = DistributionForString | null;
 export type NullableArrayOfStatType = StatType[] | null;
-export type NullableArrayOfStatMsg = StatMsg[] | null;
+export type ArrayOfStatMsg = StatMsg[];
+export type ArrayOfStatTableEntry = StatTableEntry[];
+export interface StatTableEntry {
+  addr: Addr;
+  stats: StatMsg[];
+}

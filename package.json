@@ -35,12 +35,12 @@
 		"@nextui-org/react": "2.4.6",
 		"@nextui-org/theme": "^2.2.9",
 		"@tanstack/react-query": "4.36.1",
-		"chain-registry": "1.63.82",
+		"chain-registry": "1.63.87",
 		"date-fns": "^3.6.0",
 		"framer-motion": "^11.5.4",
 		"keen-slider": "^6.8.6",
 		"lodash": "^4.17.21",
-		"next": "14.2.8",
+		"next": "14.2.9",
 		"next-themes": "^0.3.0",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
@@ -55,7 +55,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.8.3",
-		"@chain-registry/types": "^0.45.65",
+		"@chain-registry/types": "^0.45.70",
 		"@types/lodash": "^4.17.7",
 		"@types/node": "^22.5.4",
 		"@types/react": "18.3.5",
@@ -69,8 +69,8 @@
 		"postcss": "^8.4.45",
 		"postcss-import": "^16.1.0",
 		"shx": "^0.3.4",
-		"tailwindcss": "^3.4.10",
-		"typescript": "^5.5.4"
+		"tailwindcss": "^3.4.11",
+		"typescript": "^5.6.2"
 	},
 	"packageManager": "yarn@4.3.1"
 }

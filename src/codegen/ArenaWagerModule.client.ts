@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ExecuteExt, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatValue, Int128, StatValueType, Action, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, WagerInstantiateExt, MemberStatUpdate, StatMsg, StatType, QueryMsg, QueryExt, Null, Addr, CompetitionResponseForWagerExt, WagerExt, FeeInformationForAddr, ArrayOfCompetitionResponseForWagerExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, NullableArrayOfStatMsg } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ExecuteExt, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatValue, StatAggregationType, StatValueType, Action, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, WagerInstantiateExt, MemberStatsMsg, StatMsg, MemberStatsRemoveMsg, StatsRemoveMsg, StatType, QueryMsg, QueryExt, Null, Addr, CompetitionResponseForWagerExt, WagerExt, FeeInformationForAddr, ArrayOfCompetitionResponseForWagerExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatMsg, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaWagerModule.types";
 export interface ArenaWagerModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForEmpty>;
@@ -57,7 +57,27 @@ export interface ArenaWagerModuleReadOnlyInterface {
   }: {
     addr: string;
     competitionId: Uint128;
-  }) => Promise<NullableArrayOfStatMsg>;
+  }) => Promise<ArrayOfStatMsg>;
+  statsTable: ({
+    competitionId,
+    limit,
+    startAfter
+  }: {
+    competitionId: Uint128;
+    limit?: number;
+    startAfter?: string[][];
+  }) => Promise<ArrayOfStatTableEntry>;
+  stat: ({
+    addr,
+    competitionId,
+    height,
+    statName
+  }: {
+    addr: string;
+    competitionId: Uint128;
+    height?: number;
+    statName: string;
+  }) => Promise<StatMsg>;
   ownership: () => Promise<OwnershipForString>;
 }
 export class ArenaWagerModuleQueryClient implements ArenaWagerModuleReadOnlyInterface {
@@ -77,6 +97,8 @@ export class ArenaWagerModuleQueryClient implements ArenaWagerModuleReadOnlyInte
     this.paymentRegistry = this.paymentRegistry.bind(this);
     this.statTypes = this.statTypes.bind(this);
     this.stats = this.stats.bind(this);
+    this.statsTable = this.statsTable.bind(this);
+    this.stat = this.stat.bind(this);
     this.ownership = this.ownership.bind(this);
   }
   config = async (): Promise<ConfigForEmpty> => {
@@ -183,11 +205,48 @@ export class ArenaWagerModuleQueryClient implements ArenaWagerModuleReadOnlyInte
   }: {
     addr: string;
     competitionId: Uint128;
-  }): Promise<NullableArrayOfStatMsg> => {
+  }): Promise<ArrayOfStatMsg> => {
     return this.client.queryContractSmart(this.contractAddress, {
       stats: {
         addr,
         competition_id: competitionId
+      }
+    });
+  };
+  statsTable = async ({
+    competitionId,
+    limit,
+    startAfter
+  }: {
+    competitionId: Uint128;
+    limit?: number;
+    startAfter?: string[][];
+  }): Promise<ArrayOfStatTableEntry> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      stats_table: {
+        competition_id: competitionId,
+        limit,
+        start_after: startAfter
+      }
+    });
+  };
+  stat = async ({
+    addr,
+    competitionId,
+    height,
+    statName
+  }: {
+    addr: string;
+    competitionId: Uint128;
+    height?: number;
+    statName: string;
+  }): Promise<StatMsg> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      stat: {
+        addr,
+        competition_id: competitionId,
+        height,
+        stat_name: statName
       }
     });
   };
@@ -286,12 +345,19 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
     limit?: number;
     startAfter?: Uint128;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
-  updateStats: ({
+  inputStats: ({
     competitionId,
-    updates
+    stats
   }: {
     competitionId: Uint128;
-    updates: MemberStatUpdate[];
+    stats: MemberStatsMsg[];
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  removeStats: ({
+    competitionId,
+    stats
+  }: {
+    competitionId: Uint128;
+    stats: MemberStatsRemoveMsg[];
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   updateStatTypes: ({
     competitionId,
@@ -323,7 +389,8 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
     this.processCompetition = this.processCompetition.bind(this);
     this.extension = this.extension.bind(this);
     this.migrateEscrows = this.migrateEscrows.bind(this);
-    this.updateStats = this.updateStats.bind(this);
+    this.inputStats = this.inputStats.bind(this);
+    this.removeStats = this.removeStats.bind(this);
     this.updateStatTypes = this.updateStatTypes.bind(this);
     this.updateOwnership = this.updateOwnership.bind(this);
   }
@@ -491,17 +558,31 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
       }
     }, fee, memo, _funds);
   };
-  updateStats = async ({
+  inputStats = async ({
     competitionId,
-    updates
+    stats
   }: {
     competitionId: Uint128;
-    updates: MemberStatUpdate[];
+    stats: MemberStatsMsg[];
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      update_stats: {
+      input_stats: {
         competition_id: competitionId,
-        updates
+        stats
+      }
+    }, fee, memo, _funds);
+  };
+  removeStats = async ({
+    competitionId,
+    stats
+  }: {
+    competitionId: Uint128;
+    stats: MemberStatsRemoveMsg[];
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      remove_stats: {
+        competition_id: competitionId,
+        stats
       }
     }, fee, memo, _funds);
   };
