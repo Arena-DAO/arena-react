@@ -727,7 +727,9 @@ const ArenaTokenGatewayPage: React.FC = () => {
 								)}
 							/>
 							<div className="space-y-2">
-								<label className="font-medium text-sm">Project Links</label>
+								<label className="font-medium text-sm" htmlFor="projectLinks">
+									Project Links
+								</label>
 								{fields.map((field, index) => (
 									<div key={field.id} className="flex gap-2">
 										<Controller
