@@ -50,7 +50,7 @@ const StatsTable: React.FC<StatsTableProps> = ({
 
 		const renderStatValue = (value: StatValue) => {
 			if ("bool" in value) return value.bool.toString();
-			if ("decimal" in value) return `${Number(value.decimal)}%`;
+			if ("decimal" in value) return `${Number(value.decimal) * 100}%`;
 			if ("uint" in value) return value.uint;
 			return "N/A";
 		};

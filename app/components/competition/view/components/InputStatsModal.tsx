@@ -14,6 +14,7 @@ import {
 } from "@nextui-org/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
+import { BsPercent } from "react-icons/bs";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import {
@@ -26,6 +27,8 @@ import {
 	useArenaWagerModuleStatTypesQuery,
 } from "~/codegen/ArenaWagerModule.react-query";
 import type { StatType, StatValue } from "~/codegen/ArenaWagerModule.types";
+import { DecimalSchema } from "~/config/schemas";
+import Uint128Schema from "~/config/schemas/AmountSchema";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 
@@ -66,13 +69,13 @@ const InputStatsModal: React.FC<InputStatsModalProps> = ({
 		for (const statType of statTypes) {
 			switch (statType.value_type) {
 				case "bool":
-					schemaObject[statType.name] = z.boolean();
+					schemaObject[statType.name] = z.boolean().optional();
 					break;
 				case "decimal":
-					schemaObject[statType.name] = z.number();
+					schemaObject[statType.name] = DecimalSchema;
 					break;
 				case "uint":
-					schemaObject[statType.name] = z.number().int();
+					schemaObject[statType.name] = Uint128Schema;
 					break;
 			}
 		}
@@ -81,7 +84,13 @@ const InputStatsModal: React.FC<InputStatsModalProps> = ({
 	};
 
 	const schema = statTypes ? generateSchema(statTypes) : z.object({});
-	const { control, handleSubmit, reset, watch, formState } = useForm({
+	const {
+		control,
+		handleSubmit,
+		reset,
+		watch,
+		formState: { errors },
+	} = useForm({
 		resolver: zodResolver(schema),
 	});
 
@@ -98,7 +107,7 @@ const InputStatsModal: React.FC<InputStatsModalProps> = ({
 				value: {
 					[statType.value_type]:
 						statType.value_type === "bool"
-							? data[statType.name]
+							? (data[statType.name] ?? false)
 							: statType.value_type === "decimal"
 								? data[statType.name].toString()
 								: statType.value_type === "uint"
@@ -155,7 +164,7 @@ const InputStatsModal: React.FC<InputStatsModalProps> = ({
 							Input Stats
 						</ModalHeader>
 						<ModalBody>
-							<div className="mb-2 flex items-center space-x-2">
+							<div className="flex items-center space-x-2">
 								<Profile
 									address={addr}
 									justAvatar
@@ -181,7 +190,7 @@ const InputStatsModal: React.FC<InputStatsModalProps> = ({
 									key={statType.name}
 									name={statType.name}
 									control={control}
-									render={({ field }) => {
+									render={({ field, fieldState: { error } }) => {
 										switch (statType.value_type) {
 											case "bool":
 												return (
@@ -191,12 +200,12 @@ const InputStatsModal: React.FC<InputStatsModalProps> = ({
 														value={field?.value?.toString()}
 														isSelected={field.value}
 														onValueChange={field.onChange}
+														defaultSelected={false}
 													>
 														{statType.name}
 													</Switch>
 												);
 											case "decimal":
-											case "uint":
 												return (
 													<Input
 														{...field}
@@ -204,6 +213,22 @@ const InputStatsModal: React.FC<InputStatsModalProps> = ({
 														value={field.value?.toString() || ""}
 														onChange={(e) =>
 															field.onChange(e.target.valueAsNumber)
+														}
+														label={statType.name}
+														placeholder={`Enter ${statType.name}`}
+														errorMessage={error?.message}
+														isInvalid={!!error}
+														endContent={<BsPercent />}
+													/>
+												);
+											case "uint":
+												return (
+													<Input
+														{...field}
+														type="number"
+														value={field.value?.toString() || ""}
+														onChange={(e) =>
+															field.onChange(BigInt(e.target.value))
 														}
 														label={statType.name}
 														placeholder={`Enter ${statType.name}`}
