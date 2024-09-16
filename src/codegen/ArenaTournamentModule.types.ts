@@ -76,11 +76,6 @@ export type ExecuteMsg = {
     stats: MemberStatsMsg[];
   };
 } | {
-  remove_stats: {
-    competition_id: Uint128;
-    stats: MemberStatsRemoveMsg[];
-  };
-} | {
   update_stat_types: {
     competition_id: Uint128;
     to_add: StatType[];
@@ -136,6 +131,18 @@ export type CompetitionStatus = ("pending" | "inactive") | {
     activation_height: number;
   };
 };
+export type StatMsg = {
+  name: string;
+  value: StatValue;
+} | {
+  height?: number | null;
+  name: string;
+  value: StatValue;
+} | {
+  aggregation_type?: StatAggregationType | null;
+  name: string;
+  value: StatValue;
+};
 export type StatValue = {
   bool: boolean;
 } | {
@@ -184,18 +191,6 @@ export interface MemberStatsMsg {
   addr: string;
   stats: StatMsg[];
 }
-export interface StatMsg {
-  name: string;
-  value: StatValue;
-}
-export interface MemberStatsRemoveMsg {
-  addr: string;
-  stats: StatsRemoveMsg[];
-}
-export interface StatsRemoveMsg {
-  height: number;
-  name: string;
-}
 export interface StatType {
   aggregation_type?: StatAggregationType | null;
   is_beneficial: boolean;
@@ -240,7 +235,7 @@ export type QueryMsg = {
     competition_id: Uint128;
   };
 } | {
-  stats: {
+  historical_stats: {
     addr: string;
     competition_id: Uint128;
   };
@@ -328,6 +323,7 @@ export interface Evidence {
   submit_time: Timestamp;
   submit_user: Addr;
 }
+export type ArrayOfArrayOfStatMsg = StatMsg[][];
 export interface OwnershipForString {
   owner?: string | null;
   pending_expiry?: Expiration | null;
@@ -336,7 +332,6 @@ export interface OwnershipForString {
 export type NullableString = string | null;
 export type NullableDistributionForString = DistributionForString | null;
 export type NullableArrayOfStatType = StatType[] | null;
-export type ArrayOfStatMsg = StatMsg[];
 export type ArrayOfStatTableEntry = StatTableEntry[];
 export interface StatTableEntry {
   addr: Addr;

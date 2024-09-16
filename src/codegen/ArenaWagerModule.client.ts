@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ExecuteExt, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatValue, StatAggregationType, StatValueType, Action, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, WagerInstantiateExt, MemberStatsMsg, StatMsg, MemberStatsRemoveMsg, StatsRemoveMsg, StatType, QueryMsg, QueryExt, Null, Addr, CompetitionResponseForWagerExt, WagerExt, FeeInformationForAddr, ArrayOfCompetitionResponseForWagerExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatMsg, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ExecuteExt, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatMsg, StatValue, StatAggregationType, StatValueType, Action, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, WagerInstantiateExt, MemberStatsMsg, StatType, QueryMsg, QueryExt, Null, Addr, CompetitionResponseForWagerExt, WagerExt, FeeInformationForAddr, ArrayOfCompetitionResponseForWagerExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, ArrayOfArrayOfStatMsg, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaWagerModule.types";
 export interface ArenaWagerModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForEmpty>;
@@ -51,13 +51,13 @@ export interface ArenaWagerModuleReadOnlyInterface {
   }: {
     competitionId: Uint128;
   }) => Promise<NullableArrayOfStatType>;
-  stats: ({
+  historicalStats: ({
     addr,
     competitionId
   }: {
     addr: string;
     competitionId: Uint128;
-  }) => Promise<ArrayOfStatMsg>;
+  }) => Promise<ArrayOfArrayOfStatMsg>;
   statsTable: ({
     competitionId,
     limit,
@@ -96,7 +96,7 @@ export class ArenaWagerModuleQueryClient implements ArenaWagerModuleReadOnlyInte
     this.queryExtension = this.queryExtension.bind(this);
     this.paymentRegistry = this.paymentRegistry.bind(this);
     this.statTypes = this.statTypes.bind(this);
-    this.stats = this.stats.bind(this);
+    this.historicalStats = this.historicalStats.bind(this);
     this.statsTable = this.statsTable.bind(this);
     this.stat = this.stat.bind(this);
     this.ownership = this.ownership.bind(this);
@@ -199,15 +199,15 @@ export class ArenaWagerModuleQueryClient implements ArenaWagerModuleReadOnlyInte
       }
     });
   };
-  stats = async ({
+  historicalStats = async ({
     addr,
     competitionId
   }: {
     addr: string;
     competitionId: Uint128;
-  }): Promise<ArrayOfStatMsg> => {
+  }): Promise<ArrayOfArrayOfStatMsg> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      stats: {
+      historical_stats: {
         addr,
         competition_id: competitionId
       }
@@ -352,13 +352,6 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
     competitionId: Uint128;
     stats: MemberStatsMsg[];
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
-  removeStats: ({
-    competitionId,
-    stats
-  }: {
-    competitionId: Uint128;
-    stats: MemberStatsRemoveMsg[];
-  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   updateStatTypes: ({
     competitionId,
     toAdd,
@@ -390,7 +383,6 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
     this.extension = this.extension.bind(this);
     this.migrateEscrows = this.migrateEscrows.bind(this);
     this.inputStats = this.inputStats.bind(this);
-    this.removeStats = this.removeStats.bind(this);
     this.updateStatTypes = this.updateStatTypes.bind(this);
     this.updateOwnership = this.updateOwnership.bind(this);
   }
@@ -567,20 +559,6 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       input_stats: {
-        competition_id: competitionId,
-        stats
-      }
-    }, fee, memo, _funds);
-  };
-  removeStats = async ({
-    competitionId,
-    stats
-  }: {
-    competitionId: Uint128;
-    stats: MemberStatsRemoveMsg[];
-  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
-    return await this.client.execute(this.sender, this.contractAddress, {
-      remove_stats: {
         competition_id: competitionId,
         stats
       }

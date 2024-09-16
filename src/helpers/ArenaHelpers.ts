@@ -1,5 +1,8 @@
 import type { ApplicationStatus } from "~/codegen/ArenaTokenGateway.types";
-import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
+import type {
+	CompetitionStatus,
+	StatValue,
+} from "~/codegen/ArenaWagerModule.types";
 
 type Colors =
 	| "default"
@@ -69,3 +72,16 @@ export function getApplicationStatusName(status: ApplicationStatus): string {
 
 	throw new Error("Unknown status");
 }
+
+export const percentFormatter = new Intl.NumberFormat("en-US", {
+	style: "percent",
+	minimumFractionDigits: 0,
+	maximumFractionDigits: 2,
+});
+
+export const renderStatValue = (value: StatValue) => {
+	if ("bool" in value) return value.bool.toString();
+	if ("decimal" in value) return percentFormatter.format(Number(value.decimal));
+	if ("uint" in value) return value.uint;
+	return "N/A";
+};

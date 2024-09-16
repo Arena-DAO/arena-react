@@ -27,6 +27,12 @@ import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import { useProfileData } from "~/hooks/useProfile";
 import { CopyAddressButton } from "./CopyAddressButton";
+import UserStatsModal from "./competition/view/components/UserStatsModal";
+
+interface StatProps {
+	moduleAddr: string;
+	competitionId: string;
+}
 
 export interface ProfileProps extends Omit<UserProps, "name"> {
 	address: string;
@@ -34,6 +40,7 @@ export interface ProfileProps extends Omit<UserProps, "name"> {
 	justAvatar?: boolean;
 	isTooltipDisabled?: boolean;
 	isRatingDisabled?: boolean; // Should not be checked by the WalletConnectToggle
+	statProps?: StatProps;
 }
 
 const Profile = ({
@@ -42,6 +49,7 @@ const Profile = ({
 	justAvatar = false,
 	isTooltipDisabled = false,
 	isRatingDisabled = false,
+	statProps,
 	...props
 }: ProfileProps) => {
 	const { data: env } = useEnv();
@@ -116,6 +124,10 @@ const Profile = ({
 								>
 									View on DAO DAO
 								</Button>
+							)}
+
+							{statProps && (
+								<UserStatsModal userAddress={data.address} {...statProps} />
 							)}
 						</>
 					)}

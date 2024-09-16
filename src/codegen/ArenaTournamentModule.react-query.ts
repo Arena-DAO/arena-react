@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee, Coin } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, EliminationType, ExecuteExt, MatchResult, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatValue, StatAggregationType, StatValueType, Action, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, TournamentInstantiateExt, MatchResultMsg, MemberStatsMsg, StatMsg, MemberStatsRemoveMsg, StatsRemoveMsg, StatType, QueryMsg, QueryExt, Addr, SudoMsg, Match, Null, CompetitionResponseForTournamentExt, TournamentExt, FeeInformationForAddr, ArrayOfCompetitionResponseForTournamentExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatMsg, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaTournamentModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, EliminationType, ExecuteExt, MatchResult, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatMsg, StatValue, StatAggregationType, StatValueType, Action, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, TournamentInstantiateExt, MatchResultMsg, MemberStatsMsg, StatType, QueryMsg, QueryExt, Addr, SudoMsg, Match, Null, CompetitionResponseForTournamentExt, TournamentExt, FeeInformationForAddr, ArrayOfCompetitionResponseForTournamentExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, ArrayOfArrayOfStatMsg, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaTournamentModule.types";
 import { ArenaTournamentModuleQueryClient, ArenaTournamentModuleClient } from "./ArenaTournamentModule.client";
 export const arenaTournamentModuleQueryKeys = {
   contract: ([{
@@ -67,9 +67,9 @@ export const arenaTournamentModuleQueryKeys = {
     method: "stat_types",
     args
   }] as const),
-  stats: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
+  historicalStats: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
     ...arenaTournamentModuleQueryKeys.address(contractAddress)[0],
-    method: "stats",
+    method: "historical_stats",
     args
   }] as const),
   statsTable: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
@@ -201,13 +201,13 @@ export const arenaTournamentModuleQueries = {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   }),
-  stats: <TData = ArrayOfStatMsg,>({
+  historicalStats: <TData = ArrayOfArrayOfStatMsg,>({
     client,
     args,
     options
-  }: ArenaTournamentModuleStatsQuery<TData>): UseQueryOptions<ArrayOfStatMsg, Error, TData> => ({
-    queryKey: arenaTournamentModuleQueryKeys.stats(client?.contractAddress, args),
-    queryFn: () => client ? client.stats({
+  }: ArenaTournamentModuleHistoricalStatsQuery<TData>): UseQueryOptions<ArrayOfArrayOfStatMsg, Error, TData> => ({
+    queryKey: arenaTournamentModuleQueryKeys.historicalStats(client?.contractAddress, args),
+    queryFn: () => client ? client.historicalStats({
       addr: args.addr,
       competitionId: args.competitionId
     }) : Promise.reject(new Error("Invalid client")),
@@ -313,18 +313,18 @@ export function useArenaTournamentModuleStatsTableQuery<TData = ArrayOfStatTable
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
-export interface ArenaTournamentModuleStatsQuery<TData> extends ArenaTournamentModuleReactQuery<ArrayOfStatMsg, TData> {
+export interface ArenaTournamentModuleHistoricalStatsQuery<TData> extends ArenaTournamentModuleReactQuery<ArrayOfArrayOfStatMsg, TData> {
   args: {
     addr: string;
     competitionId: Uint128;
   };
 }
-export function useArenaTournamentModuleStatsQuery<TData = ArrayOfStatMsg>({
+export function useArenaTournamentModuleHistoricalStatsQuery<TData = ArrayOfArrayOfStatMsg>({
   client,
   args,
   options
-}: ArenaTournamentModuleStatsQuery<TData>) {
-  return useQuery<ArrayOfStatMsg, Error, TData>(arenaTournamentModuleQueryKeys.stats(client?.contractAddress, args), () => client ? client.stats({
+}: ArenaTournamentModuleHistoricalStatsQuery<TData>) {
+  return useQuery<ArrayOfArrayOfStatMsg, Error, TData>(arenaTournamentModuleQueryKeys.historicalStats(client?.contractAddress, args), () => client ? client.historicalStats({
     addr: args.addr,
     competitionId: args.competitionId
   }) : Promise.reject(new Error("Invalid client")), {
@@ -525,29 +525,6 @@ export function useArenaTournamentModuleUpdateStatTypesMutation(options?: Omit<U
       funds
     } = {}
   }) => client.updateStatTypes(msg, fee, memo, funds), options);
-}
-export interface ArenaTournamentModuleRemoveStatsMutation {
-  client: ArenaTournamentModuleClient;
-  msg: {
-    competitionId: Uint128;
-    stats: MemberStatsRemoveMsg[];
-  };
-  args?: {
-    fee?: number | StdFee | "auto";
-    memo?: string;
-    funds?: Coin[];
-  };
-}
-export function useArenaTournamentModuleRemoveStatsMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTournamentModuleRemoveStatsMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaTournamentModuleRemoveStatsMutation>(({
-    client,
-    msg,
-    args: {
-      fee,
-      memo,
-      funds
-    } = {}
-  }) => client.removeStats(msg, fee, memo, funds), options);
 }
 export interface ArenaTournamentModuleInputStatsMutation {
   client: ArenaTournamentModuleClient;

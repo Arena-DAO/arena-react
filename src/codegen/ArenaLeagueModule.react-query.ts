@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee, Coin } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ExecuteExt, MatchResult, Int128, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatValue, StatAggregationType, StatValueType, Action, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, LeagueInstantiateExt, MatchResultMsg, PointAdjustment, MemberStatsMsg, StatMsg, MemberStatsRemoveMsg, StatsRemoveMsg, StatType, QueryMsg, LeagueQueryExt, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForLeagueExt, LeagueExt, FeeInformationForAddr, ArrayOfCompetitionResponseForLeagueExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatMsg, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaLeagueModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ExecuteExt, MatchResult, Int128, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatMsg, StatValue, StatAggregationType, StatValueType, Action, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, LeagueInstantiateExt, MatchResultMsg, PointAdjustment, MemberStatsMsg, StatType, QueryMsg, LeagueQueryExt, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForLeagueExt, LeagueExt, FeeInformationForAddr, ArrayOfCompetitionResponseForLeagueExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, ArrayOfArrayOfStatMsg, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaLeagueModule.types";
 import { ArenaLeagueModuleQueryClient, ArenaLeagueModuleClient } from "./ArenaLeagueModule.client";
 export const arenaLeagueModuleQueryKeys = {
   contract: ([{
@@ -67,9 +67,9 @@ export const arenaLeagueModuleQueryKeys = {
     method: "stat_types",
     args
   }] as const),
-  stats: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
+  historicalStats: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
     ...arenaLeagueModuleQueryKeys.address(contractAddress)[0],
-    method: "stats",
+    method: "historical_stats",
     args
   }] as const),
   statsTable: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
@@ -201,13 +201,13 @@ export const arenaLeagueModuleQueries = {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   }),
-  stats: <TData = ArrayOfStatMsg,>({
+  historicalStats: <TData = ArrayOfArrayOfStatMsg,>({
     client,
     args,
     options
-  }: ArenaLeagueModuleStatsQuery<TData>): UseQueryOptions<ArrayOfStatMsg, Error, TData> => ({
-    queryKey: arenaLeagueModuleQueryKeys.stats(client?.contractAddress, args),
-    queryFn: () => client ? client.stats({
+  }: ArenaLeagueModuleHistoricalStatsQuery<TData>): UseQueryOptions<ArrayOfArrayOfStatMsg, Error, TData> => ({
+    queryKey: arenaLeagueModuleQueryKeys.historicalStats(client?.contractAddress, args),
+    queryFn: () => client ? client.historicalStats({
       addr: args.addr,
       competitionId: args.competitionId
     }) : Promise.reject(new Error("Invalid client")),
@@ -313,18 +313,18 @@ export function useArenaLeagueModuleStatsTableQuery<TData = ArrayOfStatTableEntr
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
-export interface ArenaLeagueModuleStatsQuery<TData> extends ArenaLeagueModuleReactQuery<ArrayOfStatMsg, TData> {
+export interface ArenaLeagueModuleHistoricalStatsQuery<TData> extends ArenaLeagueModuleReactQuery<ArrayOfArrayOfStatMsg, TData> {
   args: {
     addr: string;
     competitionId: Uint128;
   };
 }
-export function useArenaLeagueModuleStatsQuery<TData = ArrayOfStatMsg>({
+export function useArenaLeagueModuleHistoricalStatsQuery<TData = ArrayOfArrayOfStatMsg>({
   client,
   args,
   options
-}: ArenaLeagueModuleStatsQuery<TData>) {
-  return useQuery<ArrayOfStatMsg, Error, TData>(arenaLeagueModuleQueryKeys.stats(client?.contractAddress, args), () => client ? client.stats({
+}: ArenaLeagueModuleHistoricalStatsQuery<TData>) {
+  return useQuery<ArrayOfArrayOfStatMsg, Error, TData>(arenaLeagueModuleQueryKeys.historicalStats(client?.contractAddress, args), () => client ? client.historicalStats({
     addr: args.addr,
     competitionId: args.competitionId
   }) : Promise.reject(new Error("Invalid client")), {
@@ -525,29 +525,6 @@ export function useArenaLeagueModuleUpdateStatTypesMutation(options?: Omit<UseMu
       funds
     } = {}
   }) => client.updateStatTypes(msg, fee, memo, funds), options);
-}
-export interface ArenaLeagueModuleRemoveStatsMutation {
-  client: ArenaLeagueModuleClient;
-  msg: {
-    competitionId: Uint128;
-    stats: MemberStatsRemoveMsg[];
-  };
-  args?: {
-    fee?: number | StdFee | "auto";
-    memo?: string;
-    funds?: Coin[];
-  };
-}
-export function useArenaLeagueModuleRemoveStatsMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaLeagueModuleRemoveStatsMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaLeagueModuleRemoveStatsMutation>(({
-    client,
-    msg,
-    args: {
-      fee,
-      memo,
-      funds
-    } = {}
-  }) => client.removeStats(msg, fee, memo, funds), options);
 }
 export interface ArenaLeagueModuleInputStatsMutation {
   client: ArenaLeagueModuleClient;

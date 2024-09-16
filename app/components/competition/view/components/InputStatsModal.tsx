@@ -84,13 +84,7 @@ const InputStatsModal: React.FC<InputStatsModalProps> = ({
 	};
 
 	const schema = statTypes ? generateSchema(statTypes) : z.object({});
-	const {
-		control,
-		handleSubmit,
-		reset,
-		watch,
-		formState: { errors },
-	} = useForm({
+	const { control, handleSubmit, reset, watch } = useForm({
 		resolver: zodResolver(schema),
 	});
 
@@ -133,6 +127,12 @@ const InputStatsModal: React.FC<InputStatsModalProps> = ({
 					onSuccess: () => {
 						queryClient.invalidateQueries(
 							arenaWagerModuleQueryKeys.statsTable(moduleAddr, {
+								competitionId,
+							}),
+						);
+						queryClient.invalidateQueries(
+							arenaWagerModuleQueryKeys.historicalStats(moduleAddr, {
+								addr: data.addr,
 								competitionId,
 							}),
 						);

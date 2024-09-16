@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ExecuteExt, MatchResult, Int128, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatValue, StatAggregationType, StatValueType, Action, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, LeagueInstantiateExt, MatchResultMsg, PointAdjustment, MemberStatsMsg, StatMsg, MemberStatsRemoveMsg, StatsRemoveMsg, StatType, QueryMsg, LeagueQueryExt, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForLeagueExt, LeagueExt, FeeInformationForAddr, ArrayOfCompetitionResponseForLeagueExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatMsg, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaLeagueModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, ExecuteExt, MatchResult, Int128, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatMsg, StatValue, StatAggregationType, StatValueType, Action, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, LeagueInstantiateExt, MatchResultMsg, PointAdjustment, MemberStatsMsg, StatType, QueryMsg, LeagueQueryExt, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForLeagueExt, LeagueExt, FeeInformationForAddr, ArrayOfCompetitionResponseForLeagueExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, ArrayOfArrayOfStatMsg, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaLeagueModule.types";
 export interface ArenaLeagueModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForEmpty>;
@@ -51,13 +51,13 @@ export interface ArenaLeagueModuleReadOnlyInterface {
   }: {
     competitionId: Uint128;
   }) => Promise<NullableArrayOfStatType>;
-  stats: ({
+  historicalStats: ({
     addr,
     competitionId
   }: {
     addr: string;
     competitionId: Uint128;
-  }) => Promise<ArrayOfStatMsg>;
+  }) => Promise<ArrayOfArrayOfStatMsg>;
   statsTable: ({
     competitionId,
     limit,
@@ -96,7 +96,7 @@ export class ArenaLeagueModuleQueryClient implements ArenaLeagueModuleReadOnlyIn
     this.queryExtension = this.queryExtension.bind(this);
     this.paymentRegistry = this.paymentRegistry.bind(this);
     this.statTypes = this.statTypes.bind(this);
-    this.stats = this.stats.bind(this);
+    this.historicalStats = this.historicalStats.bind(this);
     this.statsTable = this.statsTable.bind(this);
     this.stat = this.stat.bind(this);
     this.ownership = this.ownership.bind(this);
@@ -199,15 +199,15 @@ export class ArenaLeagueModuleQueryClient implements ArenaLeagueModuleReadOnlyIn
       }
     });
   };
-  stats = async ({
+  historicalStats = async ({
     addr,
     competitionId
   }: {
     addr: string;
     competitionId: Uint128;
-  }): Promise<ArrayOfStatMsg> => {
+  }): Promise<ArrayOfArrayOfStatMsg> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      stats: {
+      historical_stats: {
         addr,
         competition_id: competitionId
       }
@@ -352,13 +352,6 @@ export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInt
     competitionId: Uint128;
     stats: MemberStatsMsg[];
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
-  removeStats: ({
-    competitionId,
-    stats
-  }: {
-    competitionId: Uint128;
-    stats: MemberStatsRemoveMsg[];
-  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   updateStatTypes: ({
     competitionId,
     toAdd,
@@ -390,7 +383,6 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
     this.extension = this.extension.bind(this);
     this.migrateEscrows = this.migrateEscrows.bind(this);
     this.inputStats = this.inputStats.bind(this);
-    this.removeStats = this.removeStats.bind(this);
     this.updateStatTypes = this.updateStatTypes.bind(this);
     this.updateOwnership = this.updateOwnership.bind(this);
   }
@@ -567,20 +559,6 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       input_stats: {
-        competition_id: competitionId,
-        stats
-      }
-    }, fee, memo, _funds);
-  };
-  removeStats = async ({
-    competitionId,
-    stats
-  }: {
-    competitionId: Uint128;
-    stats: MemberStatsRemoveMsg[];
-  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
-    return await this.client.execute(this.sender, this.contractAddress, {
-      remove_stats: {
         competition_id: competitionId,
         stats
       }
