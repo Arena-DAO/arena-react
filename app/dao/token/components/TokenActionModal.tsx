@@ -147,6 +147,7 @@ const TokenActionModal: React.FC<TokenActionModalProps> = ({
 				);
 			}
 			onClose();
+			toast.success("Transaction was successful");
 		} catch (e) {
 			console.error(e);
 			toast.error((e as Error).toString());
@@ -181,34 +182,42 @@ const TokenActionModal: React.FC<TokenActionModalProps> = ({
 				<ModalHeader className="flex flex-col gap-1">
 					Confirm Action
 				</ModalHeader>
-				<ModalBody>
+				<ModalBody className="gap-4">
 					{renderError()}
-					<p>Are you sure you want to {actionType} tokens?</p>
-					<p>
-						Amount: {amount}{" "}
-						{actionType === "mint" ? reserveToken?.symbol : supplyToken?.symbol}
-					</p>
+					<div>Are you sure you want to {actionType} tokens?</div>
+					<div>
+						Amount:
+						<TokenInfo
+							denomOrAddress={
+								actionType === "mint"
+									? reserveToken.display
+									: supplyToken.display
+							}
+							isNative
+							amount={amount}
+						/>
+					</div>
 					{actionType === "mint" && buyQuote && (
-						<p>
-							You will receive:{" "}
+						<div>
+							You will receive about:{" "}
 							<TokenInfo
 								denomOrAddress={supplyToken.base}
 								isNative
 								amount={BigInt(buyQuote.amount)}
 							/>
-						</p>
+						</div>
 					)}
 					{actionType === "burn" && sellQuote && (
-						<p>
-							You will receive:{" "}
+						<div>
+							You will receive about:{" "}
 							<TokenInfo
 								denomOrAddress={reserveToken.base}
 								isNative
 								amount={BigInt(sellQuote.amount)}
 							/>
-						</p>
+						</div>
 					)}
-					{isLoading && <p>Loading...</p>}
+					{isLoading && <div className="gap-4">Loading...</div>}
 				</ModalBody>
 				<ModalFooter>
 					<Button color="danger" variant="light" onPress={onClose}>
@@ -218,6 +227,7 @@ const TokenActionModal: React.FC<TokenActionModalProps> = ({
 						color="primary"
 						onPress={handleConfirm}
 						disabled={isBuyQuoteLoading || isSellQuoteLoading}
+						isLoading={buyMutation.isLoading || sellMutation.isLoading}
 					>
 						Confirm
 					</Button>

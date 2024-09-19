@@ -23,7 +23,7 @@ import {
 import type React from "react";
 import { useCallback, useMemo, useState } from "react";
 import { BsCart3, BsFillPersonPlusFill, BsFire } from "react-icons/bs";
-import { FiDollarSign } from "react-icons/fi";
+import { FiDollarSign, FiInfo } from "react-icons/fi";
 import { CwAbcQueryClient } from "~/codegen/CwAbc.client";
 import { useCwAbcDumpStateQuery } from "~/codegen/CwAbc.react-query";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
@@ -107,8 +107,13 @@ const TokenPage: React.FC = () => {
 		<div className="container mx-auto px-4 py-8">
 			<div className="grid grid-cols-1 gap-8 md:grid-cols-2">
 				<Card>
-					<CardHeader>
+					<CardHeader className="flex items-center">
 						<h2 className="text-2xl">Token Information</h2>
+						<Tooltip content="Effective prices are calculated from the bonding curve state and friction fees">
+							<span className="ml-2 cursor-help">
+								<FiInfo />
+							</span>
+						</Tooltip>
 					</CardHeader>
 					<CardBody>
 						<Table hideHeader removeWrapper aria-label="Token Information">
@@ -190,7 +195,7 @@ const TokenPage: React.FC = () => {
 							<Button
 								as={Link}
 								href="/dao/token/gateway"
-								color="secondary"
+								color="primary"
 								aria-label="Go to team onboarding page"
 								variant="shadow"
 								showAnchorIcon

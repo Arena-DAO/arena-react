@@ -555,18 +555,19 @@ const ArenaTokenGatewayPage: React.FC = () => {
 										<FiEye />
 									</Button>
 								</Tooltip>
-								{app.application.applicant === address && (
-									<Tooltip content="Edit">
-										<Button
-											isIconOnly
-											size="sm"
-											variant="light"
-											onPress={() => handleOpenModal(app, false)}
-										>
-											<FiEdit />
-										</Button>
-									</Tooltip>
-								)}
+								{app.application.applicant === address &&
+									!("accepted" in app.application.status) && (
+										<Tooltip content="Edit">
+											<Button
+												isIconOnly
+												size="sm"
+												variant="light"
+												onPress={() => handleOpenModal(app, false)}
+											>
+												<FiEdit />
+											</Button>
+										</Tooltip>
+									)}
 								{isDAOAddress && "pending" in app.application.status && (
 									<>
 										<Tooltip content="Accept">
@@ -797,17 +798,19 @@ const ArenaTokenGatewayPage: React.FC = () => {
 							<Button color="danger" variant="light" onPress={onClose}>
 								{isViewMode ? "Close" : "Cancel"}
 							</Button>
-							{!isViewMode && selectedApplication && (
-								<Button
-									color="warning"
-									variant="flat"
-									onPress={() =>
-										handleWithdraw(selectedApplication.application_id)
-									}
-								>
-									Withdraw
-								</Button>
-							)}
+							{!isViewMode &&
+								selectedApplication &&
+								!("accepted" in selectedApplication.application.status) && (
+									<Button
+										color="warning"
+										variant="flat"
+										onPress={() =>
+											handleWithdraw(selectedApplication.application_id)
+										}
+									>
+										Withdraw
+									</Button>
+								)}
 							{!isViewMode && (
 								<Button
 									color="primary"
