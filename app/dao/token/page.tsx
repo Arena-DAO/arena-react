@@ -22,8 +22,8 @@ import {
 } from "@nextui-org/react";
 import type React from "react";
 import { useCallback, useMemo, useState } from "react";
-import { BsCart3, BsFillPersonPlusFill, BsFire } from "react-icons/bs";
-import { FiDollarSign, FiInfo } from "react-icons/fi";
+import { BsCoin, BsFire } from "react-icons/bs";
+import { FiInfo } from "react-icons/fi";
 import { CwAbcQueryClient } from "~/codegen/CwAbc.client";
 import { useCwAbcDumpStateQuery } from "~/codegen/CwAbc.react-query";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
@@ -210,7 +210,7 @@ const TokenPage: React.FC = () => {
 								key="mint"
 								title={
 									<div className="flex items-center space-x-2">
-										<BsFillPersonPlusFill size={20} />
+										<BsCoin size={20} />
 										<span className="font-semibold">Mint</span>
 									</div>
 								}
@@ -239,7 +239,7 @@ const TokenPage: React.FC = () => {
 											onClick={() => openConfirmModal("mint")}
 											isDisabled={dumpState.is_paused}
 											className="font-semibold"
-											startContent={<BsCart3 size={18} />}
+											startContent={<BsCoin size={18} />}
 										>
 											Mint Tokens
 										</Button>
@@ -279,7 +279,7 @@ const TokenPage: React.FC = () => {
 											onClick={() => openConfirmModal("burn")}
 											isDisabled={dumpState.is_paused}
 											className="font-semibold"
-											startContent={<FiDollarSign size={18} />}
+											startContent={<BsFire size={18} />}
 										>
 											Burn Tokens
 										</Button>
