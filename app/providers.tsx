@@ -108,7 +108,11 @@ function InnerProviders({ children }: PropsWithChildren) {
 			throwErrors="connect_only"
 			logLevel={env.ENV === "production" ? "NONE" : undefined}
 			modalTheme={{ defaultTheme: theme === "light" ? "light" : "dark" }}
-			allowedIframeParentOrigins={["https://dao.daodao.zone", env.DAO_DAO_URL]}
+			allowedIframeParentOrigins={[
+				"https://dao.daodao.zone",
+				env.DAO_DAO_URL,
+				"http://localhost:3001",
+			]}
 		>
 			{children}
 			<ToastContainer position="bottom-right" theme={theme} />

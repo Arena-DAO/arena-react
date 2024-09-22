@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -15,11 +15,12 @@ import {
 	useDisclosure,
 } from "@nextui-org/react";
 import { useQueryClient } from "@tanstack/react-query";
+import React, { useMemo } from "react";
 import {
 	Controller,
-	useForm,
 	type ControllerRenderProps,
 	type FieldError,
+	useForm,
 } from "react-hook-form";
 import { BsPercent } from "react-icons/bs";
 import { toast } from "react-toastify";
@@ -38,7 +39,6 @@ import { DecimalSchema } from "~/config/schemas";
 import Uint128Schema from "~/config/schemas/AmountSchema";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import Profile from "@/components/Profile";
 
 // Define prop types for FormField
 interface FormFieldProps {
