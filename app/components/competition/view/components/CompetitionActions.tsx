@@ -1,3 +1,5 @@
+"use client";
+
 import { useChain } from "@cosmos-kit/react";
 import { Card, CardBody, CardHeader } from "@nextui-org/react";
 import type React from "react";
@@ -5,9 +7,9 @@ import { isActive } from "~/helpers/ArenaHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import type { CompetitionResponse } from "~/types/CompetitionResponse";
 import type { CompetitionType } from "~/types/CompetitionType";
-import EditStatTypes from "./EditStatTypes"; // Adjust the import path as needed
+import EditStatTypes from "./EditStatTypes";
 import InputStatsModal from "./InputStatsModal";
-import ProcessForm from "./ProcessForm"; // Adjust the import path as needed
+import ProcessForm from "./ProcessForm";
 
 interface CompetitionActionsProps {
 	competition: CompetitionResponse;

@@ -1,3 +1,5 @@
+"use client";
+
 import Profile from "@/components/Profile";
 import {
 	Button,
