@@ -401,17 +401,12 @@ const ArenaTokenGatewayPage: React.FC = () => {
 				env.ARENA_TOKEN_GATEWAY_ADDRESS,
 			);
 
-			// Calculate the upfront amount
-			const upfrontAmount = Math.floor(
-				Number(requestedAmount) * Number(vestingConfig.upfront_ratio),
-			).toString();
-
 			await acceptMutation.mutateAsync(
 				{
 					client: tokenGatewayClient,
 					msg: { applicationId },
 					args: {
-						funds: coins(upfrontAmount, env.ARENA_ABC_SUPPLY_DENOM),
+						funds: coins(requestedAmount, env.ARENA_ABC_SUPPLY_DENOM),
 					},
 				},
 				{
