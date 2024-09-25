@@ -50,17 +50,14 @@ const menuConfig = (env: Env) => [
 				startContent: <BsYinYang />,
 				target: "_blank",
 			},
-			...(env.ENV === "development"
-				? [
-						{
-							key: "token",
-							label: "Token",
-							href: "/dao/token",
-							description: "Become a member of the DAO",
-							startContent: <BsTrophyFill />,
-						},
-					]
-				: []),
+			{
+				key: "token",
+				label: "Token",
+				href: "/dao/token",
+				description: "Become a member of the DAO",
+				startContent: <BsTrophyFill />,
+			},
+
 			{
 				key: "jailhouse",
 				label: "Jailhouse",
