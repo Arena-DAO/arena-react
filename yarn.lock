@@ -177,10 +177,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.45.79":
-  version: 0.45.79
-  resolution: "@chain-registry/types@npm:0.45.79"
-  checksum: 10c0/5634fa2b779fe96eba79e80add69dfe9074dbbd7fcf28c03ce73f07df152e1a4f8050af01b20a58100de2ef8bbe7947e93e34b051949b5908cec15dabca5b17e
+"@chain-registry/types@npm:^0.45.81":
+  version: 0.45.81
+  resolution: "@chain-registry/types@npm:0.45.81"
+  checksum: 10c0/14257fc1441ab80e59aa7e8065db0c991534a9fdbcfc312d269f05e31a93ca8c0c450e23b531db952563dc96cf534566e13e37f16d2e4a5fe28439a3f80ed28b
   languageName: node
   linkType: hard
 
@@ -6623,10 +6623,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:*, @types/lodash@npm:^4.17.7":
+"@types/lodash@npm:*":
   version: 4.17.7
   resolution: "@types/lodash@npm:4.17.7"
   checksum: 10c0/40c965b5ffdcf7ff5c9105307ee08b782da228c01b5c0529122c554c64f6b7168fc8f11dc79aa7bae4e67e17efafaba685dc3a47e294dbf52a65ed2b67100561
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:^4.17.9":
+  version: 4.17.9
+  resolution: "@types/lodash@npm:4.17.9"
+  checksum: 10c0/54de935e835508b5f835a5dfaedd2b9a299685a21d11e9c5cd2dde57331d03bc2f98b71d2424ca8460f447ecd55a673e45ccdb70e58f9f72745710f6b91abc60
   languageName: node
   linkType: hard
 
@@ -6653,12 +6660,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.5.5":
-  version: 22.5.5
-  resolution: "@types/node@npm:22.5.5"
+"@types/node@npm:^22.7.0":
+  version: 22.7.0
+  resolution: "@types/node@npm:22.7.0"
   dependencies:
     undici-types: "npm:~6.19.2"
-  checksum: 10c0/ead9495cfc6b1da5e7025856dcce2591e9bae635357410c0d2dd619fce797d2a1d402887580ca4b336cb78168b195224869967de370a23f61663cf1e4836121c
+  checksum: 10c0/127b1ac3eebe8c2b09e3d2de277ee906710c4908b4573cde23b9c7cec1cb1aaf1af8bdabbccdac08d005f820b770e7447b22c8eb56ca63344f4d2e26bcdc29fb
   languageName: node
   linkType: hard
 
@@ -6688,13 +6695,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:18.3.8":
-  version: 18.3.8
-  resolution: "@types/react@npm:18.3.8"
+"@types/react@npm:18.3.9":
+  version: 18.3.9
+  resolution: "@types/react@npm:18.3.9"
   dependencies:
     "@types/prop-types": "npm:*"
     csstype: "npm:^3.0.2"
-  checksum: 10c0/367312c9fe276639ecb142265e090a4dd04bb39f8d718cbab546de3f1ddcfddeff415e1147d0fc40f734badaa7420b7b109d511bd4304b2c4c9c36164612fdf8
+  checksum: 10c0/a92b8e061d0c833e096254782c56a802316593f4a907fb834b557cabe848a0829b9eb6056404ea239eb4d5ec5ac7b7724309761516c0a7a277916fa04dd4f805
   languageName: node
   linkType: hard
 
@@ -7136,7 +7143,7 @@ __metadata:
   resolution: "arena-react@workspace:."
   dependencies:
     "@biomejs/biome": "npm:1.9.2"
-    "@chain-registry/types": "npm:^0.45.79"
+    "@chain-registry/types": "npm:^0.45.81"
     "@cosmjs/amino": "npm:^0.32.4"
     "@cosmjs/cosmwasm-stargate": "npm:0.32.4"
     "@cosmjs/encoding": "npm:^0.32.4"
@@ -7157,17 +7164,17 @@ __metadata:
     "@nextui-org/react": "npm:2.4.8"
     "@nextui-org/theme": "npm:^2.2.11"
     "@tanstack/react-query": "npm:4.36.1"
-    "@types/lodash": "npm:^4.17.7"
-    "@types/node": "npm:^22.5.5"
-    "@types/react": "npm:18.3.8"
+    "@types/lodash": "npm:^4.17.9"
+    "@types/node": "npm:^22.7.0"
+    "@types/react": "npm:18.3.9"
     "@types/react-dom": "npm:^18.3.0"
     autoprefixer: "npm:^10.4.20"
-    chain-registry: "npm:1.63.99"
+    chain-registry: "npm:1.63.101"
     clsx: "npm:^2.1.1"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^7.0.6"
     date-fns: "npm:^3.6.0"
-    framer-motion: "npm:^11.5.6"
+    framer-motion: "npm:^11.7.0"
     http-proxy-middleware: "npm:^3.0.2"
     keen-slider: "npm:^6.8.6"
     lodash: "npm:^4.17.21"
@@ -7185,7 +7192,7 @@ __metadata:
     reactflow: "npm:^11.11.4"
     recharts: "npm:^2.12.7"
     shx: "npm:^0.3.4"
-    tailwindcss: "npm:^3.4.12"
+    tailwindcss: "npm:^3.4.13"
     typescript: "npm:^5.6.2"
     zod: "npm:^3.23.8"
     zustand: "npm:^4.5.5"
@@ -7663,12 +7670,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.63.99":
-  version: 1.63.99
-  resolution: "chain-registry@npm:1.63.99"
+"chain-registry@npm:1.63.101":
+  version: 1.63.101
+  resolution: "chain-registry@npm:1.63.101"
   dependencies:
-    "@chain-registry/types": "npm:^0.45.79"
-  checksum: 10c0/121da8ad7aab3c58fdd37776acab23c7984e97cdab8aedcede7caa797d5268bcfeb171d77ff0cab2a9b980bb0e2eaeeabe34b5541eca80ff0324abce8a0af580
+    "@chain-registry/types": "npm:^0.45.81"
+  checksum: 10c0/30ebec876ce042a0f72c75bfae89b0365ac82bc2186301fa37fa9e692ba6d92c57b24c5614d75ac851f99c70fa767569b73a2369761e7e2502fbbfbc18c90f7a
   languageName: node
   linkType: hard
 
@@ -8926,9 +8933,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^11.5.6":
-  version: 11.5.6
-  resolution: "framer-motion@npm:11.5.6"
+"framer-motion@npm:^11.7.0":
+  version: 11.7.0
+  resolution: "framer-motion@npm:11.7.0"
   dependencies:
     tslib: "npm:^2.4.0"
   peerDependencies:
@@ -8942,7 +8949,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/f642224005505163fb409fa30d8a7ecf3bdead7722eddafe805062127c464a7c60b8beaff773b0d0c14ca580f492865a195e0a5832d0d6f7ddca95f97e8171b6
+  checksum: 10c0/14cbbc3fdc6017e37c61bc9f5882680da10b2231fbe821c8a1b16c54627d47f4686f45d3c067c600665d393a1565c3bd7ef69a87366bd35ea01f94fb046bf183
   languageName: node
   linkType: hard
 
@@ -12316,9 +12323,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwindcss@npm:^3.4.12":
-  version: 3.4.12
-  resolution: "tailwindcss@npm:3.4.12"
+"tailwindcss@npm:^3.4.13":
+  version: 3.4.13
+  resolution: "tailwindcss@npm:3.4.13"
   dependencies:
     "@alloc/quick-lru": "npm:^5.2.0"
     arg: "npm:^5.0.2"
@@ -12345,7 +12352,7 @@ __metadata:
   bin:
     tailwind: lib/cli.js
     tailwindcss: lib/cli.js
-  checksum: 10c0/9ed1449d3b98ce54c6c3a6c3354121a14b39d8dba28815ea1b0fc5a0b32422a744545ba357690468912a1a781593bc7da3d4e56367abed284a300ae1fb0ab42b
+  checksum: 10c0/c6525be3dd26febc4ec5e45e80596bff8b48ade7de258c1ec8704297bf47c1ec7b2b186b13662ebaa6ab4795ad8879fb64064f796756bfc8b46558b542b01a6c
   languageName: node
   linkType: hard
 
