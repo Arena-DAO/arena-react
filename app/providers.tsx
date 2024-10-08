@@ -1,6 +1,6 @@
 "use client";
 
-import type { Asset, AssetList, Chain } from "@chain-registry/types";
+import type { Chain } from "@chain-registry/types";
 import { GasPrice } from "@cosmjs/stargate";
 import { wallets as cosmosExtensionMetamaskWallets } from "@cosmos-kit/cosmos-extension-metamask";
 import { wallets as cosmostationWallets } from "@cosmos-kit/cosmostation";
@@ -49,46 +49,11 @@ function InnerProviders({ children }: PropsWithChildren) {
 		[env.ENV],
 	);
 	const assetsMemo = useMemo(() => {
-		const arenaAsset: Asset = {
-			description: "The governance token of the Arena DAO",
-			address: env.ARENA_ABC_SUPPLY_DENOM,
-			denom_units: [
-				{
-					denom: env.ARENA_ABC_SUPPLY_DENOM,
-					exponent: 0,
-				},
-				{
-					denom: "arena",
-					exponent: 6,
-				},
-			],
-			base: env.ARENA_ABC_SUPPLY_DENOM,
-			name: "Arena Token",
-			display: "arena",
-			symbol: "ARENA",
-			logo_URIs: {
-				svg: "/logo.svg",
-			},
-		};
-
 		if (env.ENV === "development") {
-			// Create a new array with the existing testnet assets
-			const updatedTestnetAssets: AssetList = {
-				...testnetAssets,
-				assets: [...testnetAssets.assets, arenaAsset],
-			};
-
-			return [updatedTestnetAssets];
+			return [testnetAssets];
 		}
-
-		// Create a new array with the existing mainnet assets
-		const updatedMainnetAssets: AssetList = {
-			...mainnetAssets,
-			assets: [...mainnetAssets.assets, arenaAsset],
-		};
-
-		return [updatedMainnetAssets];
-	}, [env.ENV, env.ARENA_ABC_SUPPLY_DENOM]);
+		return [mainnetAssets];
+	}, [env.ENV]);
 
 	return (
 		<ChainProvider
