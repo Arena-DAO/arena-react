@@ -392,7 +392,6 @@ const ArenaTokenGatewayPage: React.FC = () => {
 	) => {
 		try {
 			if (!address) throw new Error("Address not found");
-			if (!vestingConfig) throw new Error("Vesting configuration not found");
 
 			const client = await getSigningCosmWasmClient();
 			const tokenGatewayClient = new ArenaTokenGatewayClient(
