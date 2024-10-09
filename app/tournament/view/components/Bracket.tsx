@@ -150,7 +150,6 @@ function convertMatchesToNodesEdges(matches: Match[]) {
 				type: "smoothstep",
 				sourceHandle: "winner",
 				style: match.is_losers_bracket ? losersEdgeStyle : defaultEdgeStyle,
-				animated: !match.result,
 			});
 		}
 		if (match.next_match_loser) {
@@ -161,7 +160,6 @@ function convertMatchesToNodesEdges(matches: Match[]) {
 				type: "smoothstep",
 				sourceHandle: "loser",
 				style: losersEdgeStyle,
-				animated: !match.result,
 			});
 		}
 		return edges;
