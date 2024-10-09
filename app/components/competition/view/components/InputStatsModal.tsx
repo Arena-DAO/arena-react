@@ -250,8 +250,8 @@ const InputStatsModal: React.FC<InputStatsModalProps> = ({
 					<ModalContent>
 						{(onClose) => (
 							<>
-								<ModalHeader className="flex flex-col gap-1">
-									Input Stats
+								<ModalHeader>
+									<h2 className="font-semibold text-xl">Input Stats</h2>
 								</ModalHeader>
 								<ModalBody>
 									<div className="flex items-center space-x-2">

@@ -43,7 +43,9 @@ const ResultSection = ({ competitionId, moduleAddr }: ResultSectionProps) => {
 	return (
 		<Skeleton isLoaded={!isLoading}>
 			<Card>
-				<CardHeader>Result</CardHeader>
+				<CardHeader>
+					<h2 className="font-semibold text-xl">Result</h2>
+				</CardHeader>
 				<CardBody className="space-y-4">
 					{!data && <p className="font-bold text-lg">Draw</p>}
 					{data && (

@@ -186,7 +186,9 @@ const EvidenceSection = ({
 	return (
 		<>
 			<Card>
-				<CardHeader>Evidence</CardHeader>
+				<CardHeader>
+					<h2 className="font-semibold text-xl">Evidence</h2>
+				</CardHeader>
 				<CardBody>
 					<Table
 						isHeaderSticky

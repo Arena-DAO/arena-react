@@ -294,7 +294,9 @@ const ProcessForm = ({
 				scrollBehavior="outside"
 			>
 				<ModalContent>
-					<ModalHeader>{action} Competition</ModalHeader>
+					<ModalHeader>
+						<h2 className="font-semibold text-xl">{action} Competition</h2>
+					</ModalHeader>
 					<ModalBody className="space-y-4">
 						{"is_expired" in props && (
 							<>

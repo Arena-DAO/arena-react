@@ -91,8 +91,8 @@ const UserStatsModal: React.FC<UserStatsModalProps> = ({
 			<Button onPress={onOpen}>View Historical Stats</Button>
 			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl">
 				<ModalContent>
-					<ModalHeader className="flex flex-col gap-1">
-						User Historical Stats
+					<ModalHeader>
+						<h2 className="font-semibold text-xl">User Historical Stats</h2>
 					</ModalHeader>
 					<ModalBody>
 						<Table aria-label="User Historical Stats Table" removeWrapper>

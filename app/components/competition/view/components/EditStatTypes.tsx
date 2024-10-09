@@ -224,7 +224,9 @@ const EditStatTypes: React.FC<EditStatTypesProps> = ({
 					<ModalContent>
 						{(onClose) => (
 							<>
-								<ModalHeader>Edit Stat Types</ModalHeader>
+								<ModalHeader>
+									<h2 className="font-semibold text-xl">Edit Stat Types</h2>
+								</ModalHeader>
 								<ModalBody>
 									<Card className="min-h-60">
 										<CardHeader>

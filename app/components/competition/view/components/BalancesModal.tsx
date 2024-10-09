@@ -87,7 +87,9 @@ const BalancesModal = ({ escrow }: BalancesModalProps) => {
 			<Button onPress={onOpen}>View Balances</Button>
 			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
 				<ModalContent>
-					<ModalHeader className="flex flex-col gap-1">Balances</ModalHeader>
+					<ModalHeader>
+						<h2 className="font-semibold text-xl">Balances</h2>
+					</ModalHeader>
 					<ModalBody>
 						<Table
 							isHeaderSticky

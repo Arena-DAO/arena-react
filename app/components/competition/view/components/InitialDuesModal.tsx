@@ -65,8 +65,8 @@ const InitialDuesModal = ({ escrow }: InitialDuesModalProps) => {
 			<Button onPress={onOpen}>View Initial Dues</Button>
 			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
 				<ModalContent>
-					<ModalHeader className="flex flex-col gap-1">
-						Initial Dues
+					<ModalHeader>
+						<h2 className="font-semibold text-xl">Initial Dues</h2>
 					</ModalHeader>
 					<ModalBody>
 						<Table
