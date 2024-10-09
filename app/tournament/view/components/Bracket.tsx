@@ -24,6 +24,11 @@ import { useChain } from "@cosmos-kit/react";
 import dagre from "@dagrejs/dagre";
 import { Button, ButtonGroup, Tooltip } from "@nextui-org/react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import {
+	BsSymmetryHorizontal,
+	BsSymmetryVertical,
+	BsUpload,
+} from "react-icons/bs";
 import { toast } from "react-toastify";
 import { create } from "zustand";
 import { arenaCoreQueryKeys } from "~/codegen/ArenaCore.react-query";
@@ -37,11 +42,6 @@ import { getCompetitionQueryKey } from "~/helpers/CompetitionHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import type { CompetitionResponse } from "~/types/CompetitionResponse";
 import MatchNode from "./MatchNode";
-import {
-	BsSymmetryHorizontal,
-	BsSymmetryVertical,
-	BsUpload,
-} from "react-icons/bs";
 
 interface BracketProps {
 	tournamentId: string;
