@@ -22,7 +22,7 @@ import { useEnv } from "~/hooks/useEnv";
 import "reactflow/dist/style.css";
 import { useChain } from "@cosmos-kit/react";
 import dagre from "@dagrejs/dagre";
-import { Button, ButtonGroup } from "@nextui-org/react";
+import { Button, ButtonGroup, Tooltip } from "@nextui-org/react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { create } from "zustand";
@@ -37,6 +37,11 @@ import { getCompetitionQueryKey } from "~/helpers/CompetitionHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import type { CompetitionResponse } from "~/types/CompetitionResponse";
 import MatchNode from "./MatchNode";
+import {
+	BsSymmetryHorizontal,
+	BsSymmetryVertical,
+	BsUpload,
+} from "react-icons/bs";
 
 interface BracketProps {
 	tournamentId: string;
@@ -127,6 +132,16 @@ function convertMatchesToNodesEdges(matches: Match[]) {
 
 	const edges: Edge[] = matches.flatMap((match) => {
 		const edges = [];
+		const defaultEdgeStyle = {
+			stroke: "#4CAF50",
+			strokeWidth: 3,
+		};
+		const losersEdgeStyle = {
+			stroke: "#FF5722",
+			strokeWidth: 2,
+			strokeDasharray: "5,5",
+		};
+
 		if (match.next_match_winner) {
 			edges.push({
 				id: `win-${match.match_number}-${match.next_match_winner}`,
@@ -134,7 +149,8 @@ function convertMatchesToNodesEdges(matches: Match[]) {
 				target: match.next_match_winner.toString(),
 				type: "smoothstep",
 				sourceHandle: "winner",
-				style: { stroke: match.is_losers_bracket ? "#FF0000" : undefined },
+				style: match.is_losers_bracket ? losersEdgeStyle : defaultEdgeStyle,
+				animated: !match.result,
 			});
 		}
 		if (match.next_match_loser) {
@@ -144,7 +160,8 @@ function convertMatchesToNodesEdges(matches: Match[]) {
 				target: match.next_match_loser.toString(),
 				type: "smoothstep",
 				sourceHandle: "loser",
-				style: { stroke: "#FF8000" }, // Styling for losing paths
+				style: losersEdgeStyle,
+				animated: !match.result,
 			});
 		}
 		return edges;
@@ -353,12 +370,81 @@ function Bracket({ tournamentId, escrow }: BracketProps) {
 			<Controls />
 			<Panel position="top-right">
 				<ButtonGroup>
-					<Button onClick={() => onLayout("TB")}>Vertical Layout</Button>
-					<Button onClick={() => onLayout("LR")}>Horizontal Layout</Button>
-					<Button isDisabled={updates.size === 0} onClick={onSubmit}>
-						Submit
-					</Button>
+					<Tooltip content="Vertical Layout" placement="bottom">
+						<Button
+							isIconOnly
+							aria-label="Vertical Layout"
+							onClick={() => onLayout("TB")}
+						>
+							<BsSymmetryVertical size={20} />
+						</Button>
+					</Tooltip>
+					<Tooltip content="Horizontal Layout" placement="bottom">
+						<Button
+							isIconOnly
+							aria-label="Horizontal Layout"
+							onClick={() => onLayout("LR")}
+						>
+							<BsSymmetryHorizontal size={20} />
+						</Button>
+					</Tooltip>
+					<Tooltip content="Submit Results" placement="bottom">
+						<Button
+							isIconOnly
+							aria-label="Submit Results"
+							isDisabled={updates.size === 0}
+							onClick={onSubmit}
+						>
+							<BsUpload size={20} />
+						</Button>
+					</Tooltip>
 				</ButtonGroup>
+			</Panel>
+			<Panel
+				position="top-left"
+				style={{ padding: "10px", borderRadius: "5px" }}
+			>
+				<h3>Legend</h3>
+				<div
+					style={{ display: "flex", alignItems: "center", marginBottom: "5px" }}
+				>
+					<div
+						style={{
+							width: "20px",
+							height: "2px",
+							backgroundColor: "#4CAF50",
+							marginRight: "10px",
+						}}
+					/>
+					<span>Winners Bracket</span>
+				</div>
+				<div
+					style={{ display: "flex", alignItems: "center", marginBottom: "5px" }}
+				>
+					<div
+						style={{
+							width: "20px",
+							height: "2px",
+							backgroundImage:
+								"linear-gradient(to right, #FF5722 50%, transparent 50%)",
+							backgroundSize: "4px 100%",
+							backgroundRepeat: "repeat-x",
+							marginRight: "10px",
+						}}
+					/>
+					<span>Losers Bracket</span>
+				</div>
+				<div style={{ display: "flex", alignItems: "center" }}>
+					<div
+						className="bg-primary"
+						style={{
+							width: "20px",
+							height: "2px",
+							marginRight: "10px",
+						}}
+					/>
+					<span>Active Match</span>
+				</div>
 			</Panel>
 		</ReactFlow>
 	);

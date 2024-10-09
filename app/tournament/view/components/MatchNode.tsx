@@ -37,7 +37,7 @@ const MatchNode = memo(
 						data.team_1 &&
 							data.team_2 &&
 							!data.result &&
-							"border-4 border-success",
+							"border-4 border-primary",
 					)}
 				>
 					<CardHeader className="font-bold text-4xl">
