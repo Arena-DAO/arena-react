@@ -255,12 +255,7 @@ const InputStatsModal: React.FC<InputStatsModalProps> = ({
 								</ModalHeader>
 								<ModalBody>
 									<div className="flex items-center space-x-2">
-										<Profile
-											address={addr}
-											justAvatar
-											className="min-w-max"
-											hideIfInvalid
-										/>
+										<Profile address={addr} justAvatar hideIfInvalid />
 										<Controller
 											name="addr"
 											control={control}

@@ -13,7 +13,6 @@ import EnrollmentStatusDisplay from "./EnrollmentStatusDisplay";
 import ExpirationDisplay from "./ExpirationDisplay";
 import LeagueInfo from "./LeagueInfo";
 import TournamentInfo from "./TournamentInfo";
-import WagerInfo from "./WagerInfo";
 
 type Competition =
 	| CompetitionResponseForWagerExt
@@ -72,11 +71,10 @@ const Competition: React.FC<CompetitionProps> = ({
 	const renderCompetitionInfo = () => {
 		if (isEnrollment(competition))
 			return <EnrollmentInfo enrollment={competition} />;
-		if (isWager(competition)) return <WagerInfo wager={competition} />;
 		if (isLeague(competition)) return <LeagueInfo league={competition} />;
 		if (isTournament(competition))
 			return <TournamentInfo tournament={competition} />;
-		return null; // This should never happen if all types are covered
+		return null;
 	};
 
 	return (

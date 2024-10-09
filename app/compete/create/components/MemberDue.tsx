@@ -63,7 +63,7 @@ const MemberDue: React.FC<MemberDueProps> = ({
 	return (
 		<div className="mb-4">
 			<div className="mb-2 flex items-center space-x-2">
-				<Profile address={dueAddress} justAvatar className="min-w-max" />
+				<Profile address={dueAddress} justAvatar />
 				<Controller
 					name={`directParticipation.dues.${dueIndex}.addr`}
 					control={control}

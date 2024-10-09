@@ -18,7 +18,7 @@ const Member: React.FC<MemberProps> = ({ memberIndex, onRemove }) => {
 
 	return (
 		<div className="mb-4 flex items-center space-x-2">
-			<Profile address={address} justAvatar className="min-w-max" />
+			<Profile address={address} justAvatar />
 			<Controller
 				name={`directParticipation.members.${memberIndex}.address`}
 				control={control}

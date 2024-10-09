@@ -5,7 +5,6 @@ import {
 	Card,
 	CardBody,
 	CardHeader,
-	Input,
 	Progress,
 	Skeleton,
 	Table,
@@ -50,17 +49,9 @@ const ResultSection = ({ competitionId, moduleAddr }: ResultSectionProps) => {
 					{data && (
 						<>
 							{data?.remainder_addr && (
-								<div className="mb-4 flex items-center space-x-2">
-									<Profile
-										address={data.remainder_addr}
-										justAvatar
-										className="min-w-max"
-									/>
-									<Input
-										label="Remainder Address"
-										value={data.remainder_addr}
-										readOnly
-									/>
+								<div className="flex items-center space-x-2">
+									<div className="text-sm">Remainder:</div>
+									<Profile address={data.remainder_addr} />
 								</div>
 							)}
 

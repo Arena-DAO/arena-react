@@ -305,13 +305,7 @@ const PaymentRegistry: React.FC = () => {
 					</CardHeader>
 					<CardBody className="space-y-4">
 						<div className="flex items-center space-x-2">
-							{remainderAddr && (
-								<Profile
-									address={remainderAddr}
-									justAvatar
-									className="min-w-max"
-								/>
-							)}
+							{remainderAddr && <Profile address={remainderAddr} justAvatar />}
 							<Controller
 								control={control}
 								name="distribution.remainder_addr"
@@ -339,11 +333,7 @@ const PaymentRegistry: React.FC = () => {
 										<TableCell>
 											<div className="flex items-center space-x-2">
 												{percentages[i] && (
-													<Profile
-														address={percentages[i]?.addr}
-														justAvatar
-														className="min-w-max"
-													/>
+													<Profile address={percentages[i]?.addr} justAvatar />
 												)}
 												<Controller
 													control={control}

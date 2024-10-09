@@ -336,11 +336,7 @@ const ProcessForm = ({
 							<CardBody className="space-y-2">
 								<div className="flex items-center space-x-2">
 									{remainderAddr && (
-										<Profile
-											address={remainderAddr}
-											justAvatar
-											className="min-w-max"
-										/>
+										<Profile address={remainderAddr} justAvatar />
 									)}
 									<Controller
 										control={control}
@@ -374,7 +370,6 @@ const ProcessForm = ({
 															<Profile
 																address={percentages[i]?.addr}
 																justAvatar
-																className="min-w-max"
 															/>
 														)}
 														<Controller

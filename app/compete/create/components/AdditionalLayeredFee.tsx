@@ -22,7 +22,7 @@ const AdditionalLayeredFeeItem: React.FC<AdditionalLayeredFeeProps> = ({
 
 	return (
 		<div className="mb-4 flex items-center space-x-2">
-			<Profile address={addr} justAvatar className="min-w-max" />
+			<Profile address={addr} justAvatar />
 			<Controller
 				name={`additionalLayeredFees.${index}.addr`}
 				control={control}
