@@ -133,6 +133,30 @@
 					"title": "NHL 24",
 					"img": "nhl-24.jpg",
 					"category_id": 27
+				},
+				{
+					"url": "super-smash-bros-ultimate",
+					"title": "Super Smash Bros Ultimate",
+					"img": "super-smash-bros-ultimate.webp",
+					"category_id": 30
+				},
+				{
+					"url": "street-fighter",
+					"title": "Street Fighter",
+					"img": "street-fighter.jpg",
+					"category_id": 31
+				},
+				{
+					"url": "tekken",
+					"title": "Tekken",
+					"img": "tekken.jpg",
+					"category_id": 32
+				},
+				{
+					"url": "multiversus",
+					"title": "Multiversus",
+					"img": "multiversus.jpeg",
+					"category_id": 33
 				}
 			]
 		},
@@ -182,6 +206,37 @@
 					"title": "Hockey",
 					"img": "hockey.avif",
 					"category_id": 29
+				}
+			]
+		},
+		{
+			"url": "web3",
+			"title": "Web3",
+			"img": "web3.jpg",
+			"children": [
+				{
+					"url": "off-the-grid",
+					"title": "Off the Grid",
+					"img": "off-the-grid.jpg",
+					"category_id": 34
+				},
+				{
+					"url": "splinterlands",
+					"title": "Splinterlands",
+					"img": "splinterlands.jpg",
+					"category_id": 35
+				},
+				{
+					"url": "crypto-shots",
+					"title": "Crypto Shots",
+					"img": "crypto-shots.jpg",
+					"category_id": 36
+				},
+				{
+					"url": "magiccraft",
+					"title": "MagicCraft",
+					"img": "magiccraft.jpg",
+					"category_id": 37
 				}
 			]
 		},
