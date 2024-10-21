@@ -3,7 +3,7 @@
 import TokenInfo from "@/components/TokenInfo";
 import type { Asset } from "@chain-registry/types";
 import { Card, CardBody } from "@nextui-org/react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { BsTrophyFill } from "react-icons/bs";
 import {
 	CartesianGrid,
@@ -36,39 +36,29 @@ interface CustomTooltipProps {
 	}>;
 }
 
-const CustomDot = ({ cx, cy }: { cx: number; cy: number }) => {
-	const [visible, setVisible] = useState(false);
-
-	useEffect(() => {
-		const timer = setTimeout(() => setVisible(true), 100);
-		return () => clearTimeout(timer);
-	}, []);
-
-	return (
-		<g>
-			<defs>
-				<filter id="glow">
-					<feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
-					<feMerge>
-						<feMergeNode in="coloredBlur" />
-						<feMergeNode in="SourceGraphic" />
-					</feMerge>
-				</filter>
-			</defs>
-			<BsTrophyFill
-				x={cx - 6}
-				y={cy - 6}
-				size={12}
-				color="gold"
-				filter="url(#glow)"
-				opacity={visible ? 1 : 0}
-				style={{
-					transition: "opacity 2s ease-in-out",
-				}}
-			/>
-		</g>
-	);
-};
+const CustomDot = ({ cx, cy }: { cx: number; cy: number }) => (
+	<g>
+		<defs>
+			<filter id="glow">
+				<feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+				<feMerge>
+					<feMergeNode in="coloredBlur" />
+					<feMergeNode in="SourceGraphic" />
+				</feMerge>
+			</filter>
+		</defs>
+		<BsTrophyFill
+			x={cx - 6}
+			y={cy - 6}
+			size={12}
+			color="gold"
+			filter="url(#glow)"
+			style={{
+				animation: "fadeIn 2s ease-in-out",
+			}}
+		/>
+	</g>
+);
 
 const MAX_SUPPLY = 1_000_000;
 const MAX_RESERVE = 200;

@@ -24,5 +24,8 @@
 	},
 	"[env]": {
 		"editor.defaultFormatter": "IronGeek.vscode-env"
+	},
+	"[tailwindcss]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	}
 }
