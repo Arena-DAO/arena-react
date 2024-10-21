@@ -15,6 +15,7 @@ export interface Env {
 	DEFAULT_NATIVE: string;
 	ENV: string;
 	CODE_ID_ESCROW: number;
+	CODE_ID_GROUP: number;
 	ARENA_DAO_ADDRESS: string;
 	ARENA_CORE_ADDRESS: string;
 	ARENA_WAGER_MODULE_ADDRESS: string;
@@ -71,6 +72,7 @@ function getEnv(): Env {
 		ENV: checkEnv(process.env.NEXT_PUBLIC_ENV),
 		JACKAL_PATH: checkEnv(process.env.NEXT_PUBLIC_JACKAL_PATH),
 		CODE_ID_ESCROW: checkEnvNumber(process.env.NEXT_PUBLIC_CODE_ID_ESCROW),
+		CODE_ID_GROUP: checkEnvNumber(process.env.NEXT_PUBLIC_CODE_ID_GROUP),
 		ARENA_DAO_ADDRESS: checkEnv(process.env.NEXT_PUBLIC_ARENA_DAO_ADDRESS),
 		ARENA_CORE_ADDRESS: checkEnv(process.env.NEXT_PUBLIC_ARENA_CORE_ADDRESS),
 		ARENA_WAGER_MODULE_ADDRESS: checkEnv(

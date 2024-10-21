@@ -5,8 +5,8 @@
 */
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
-import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Binary, Decimal, Uint128, Expiration, Timestamp, Uint64, EliminationType, ExecuteExt, MatchResult, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatMsg, StatValue, StatAggregationType, StatValueType, Action, FeeInformationForString, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, TournamentInstantiateExt, MatchResultMsg, MemberStatsMsg, StatType, QueryMsg, QueryExt, Addr, SudoMsg, Match, Null, CompetitionResponseForTournamentExt, TournamentExt, FeeInformationForAddr, ArrayOfCompetitionResponseForTournamentExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, ArrayOfArrayOfStatMsg, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaTournamentModule.types";
+import { StdFee } from "@cosmjs/amino";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Decimal, Binary, Expiration, Timestamp, Uint64, GroupContractInfo, Admin, EliminationType, ExecuteExt, MatchResult, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatMsg, StatValue, StatAggregationType, StatValueType, Action, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, FeeInformationForString, ModuleInstantiateInfo, Coin, TournamentInstantiateExt, MatchResultMsg, MemberStatsMsg, StatType, QueryMsg, QueryExt, Addr, SudoMsg, Match, Null, CompetitionResponseForTournamentExt, TournamentExt, FeeInformationForAddr, ArrayOfCompetitionResponseForTournamentExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, ArrayOfArrayOfStatMsg, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaTournamentModule.types";
 export interface ArenaTournamentModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForEmpty>;
@@ -260,13 +260,11 @@ export interface ArenaTournamentModuleInterface extends ArenaTournamentModuleRea
   contractAddress: string;
   sender: string;
   jailCompetition: ({
-    additionalLayeredFees,
     competitionId,
     description,
     distribution,
     title
   }: {
-    additionalLayeredFees?: FeeInformationForString;
     competitionId: Uint128;
     description: string;
     distribution?: DistributionForString;
@@ -296,6 +294,7 @@ export interface ArenaTournamentModuleInterface extends ArenaTournamentModuleRea
     description,
     escrow,
     expiration,
+    groupContract,
     host,
     instantiateExtension,
     name,
@@ -307,6 +306,7 @@ export interface ArenaTournamentModuleInterface extends ArenaTournamentModuleRea
     description: string;
     escrow?: EscrowInstantiateInfo;
     expiration: Expiration;
+    groupContract: GroupContractInfo;
     host?: string;
     instantiateExtension: TournamentInstantiateExt;
     name: string;
@@ -387,13 +387,11 @@ export class ArenaTournamentModuleClient extends ArenaTournamentModuleQueryClien
     this.updateOwnership = this.updateOwnership.bind(this);
   }
   jailCompetition = async ({
-    additionalLayeredFees,
     competitionId,
     description,
     distribution,
     title
   }: {
-    additionalLayeredFees?: FeeInformationForString;
     competitionId: Uint128;
     description: string;
     distribution?: DistributionForString;
@@ -401,7 +399,6 @@ export class ArenaTournamentModuleClient extends ArenaTournamentModuleQueryClien
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       jail_competition: {
-        additional_layered_fees: additionalLayeredFees,
         competition_id: competitionId,
         description,
         distribution,
@@ -456,6 +453,7 @@ export class ArenaTournamentModuleClient extends ArenaTournamentModuleQueryClien
     description,
     escrow,
     expiration,
+    groupContract,
     host,
     instantiateExtension,
     name,
@@ -467,6 +465,7 @@ export class ArenaTournamentModuleClient extends ArenaTournamentModuleQueryClien
     description: string;
     escrow?: EscrowInstantiateInfo;
     expiration: Expiration;
+    groupContract: GroupContractInfo;
     host?: string;
     instantiateExtension: TournamentInstantiateExt;
     name: string;
@@ -480,6 +479,7 @@ export class ArenaTournamentModuleClient extends ArenaTournamentModuleQueryClien
         description,
         escrow,
         expiration,
+        group_contract: groupContract,
         host,
         instantiate_extension: instantiateExtension,
         name,

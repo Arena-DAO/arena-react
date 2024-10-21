@@ -47,10 +47,7 @@ const TokenInfo = ({
 			<User
 				name={displayName}
 				avatarProps={{
-					src:
-						token?.logo_URIs?.svg ??
-						token?.logo_URIs?.png ??
-						token?.logo_URIs?.jpeg,
+					src: token?.logo_URIs?.svg ?? token?.logo_URIs?.png,
 				}}
 				{...props}
 			/>

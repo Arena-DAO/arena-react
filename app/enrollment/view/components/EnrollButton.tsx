@@ -13,6 +13,7 @@ import {
 	useArenaCompetitionEnrollmentIsMemberQuery,
 	useArenaCompetitionEnrollmentWithdrawMutation,
 } from "~/codegen/ArenaCompetitionEnrollment.react-query";
+import { arenaGroupQueryKeys } from "~/codegen/ArenaGroup.react-query";
 import type { Coin } from "~/codegen/ArenaCompetitionEnrollment.types";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
@@ -21,12 +22,14 @@ interface EnrollButtonProps {
 	entryFee?: Coin | null;
 	enrollmentId: string;
 	isFull: boolean;
+	groupContract: string;
 }
 
 const EnrollButton: React.FC<EnrollButtonProps> = ({
 	enrollmentId,
 	isFull,
 	entryFee,
+	groupContract,
 }) => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
@@ -148,10 +151,7 @@ const EnrollButton: React.FC<EnrollButtonProps> = ({
 			),
 		);
 		await queryClient.invalidateQueries(
-			arenaCompetitionEnrollmentQueryKeys.enrollmentMembers(
-				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
-				{ enrollmentId },
-			),
+			arenaGroupQueryKeys.members(groupContract, {}),
 		);
 	};
 

@@ -160,7 +160,7 @@ export class ArenaTokenGatewayClient extends ArenaTokenGatewayQueryClient implem
       apply: {
         description,
         project_links,
-        requested_amount,
+        requested_amount: requested_amount,
         title
       }
     }, fee, memo, _funds);

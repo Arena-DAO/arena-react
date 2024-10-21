@@ -36,12 +36,13 @@ import BalanceDisplay from "./BalanceDisplay";
 import BalancesModal from "./BalancesModal";
 import DuesModal from "./DuesModal";
 import InitialDuesModal from "./InitialDuesModal";
+import type { PropsWithChildren } from "react";
 
 interface PageData {
 	items: ArrayOfMemberBalanceChecked;
 }
 
-interface EscrowSectionProps {
+interface EscrowSectionProps extends PropsWithChildren {
 	escrow: string;
 	competitionStatus: CompetitionStatus;
 	competitionType: CompetitionType;
@@ -53,6 +54,7 @@ const EscrowSection = ({
 	competitionStatus,
 	competitionType,
 	competitionId,
+	children,
 }: EscrowSectionProps) => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
@@ -204,51 +206,54 @@ const EscrowSection = ({
 			<CardHeader>
 				<h2 className="font-semibold text-xl">Escrow Information</h2>
 			</CardHeader>
-			<CardBody className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-				{data.balance && (
-					<Card shadow="sm">
-						<CardHeader>
-							<h3 className="font-medium text-lg">User Balance</h3>
-						</CardHeader>
-						<CardBody>
-							<BalanceDisplay balance={data.balance} />
-						</CardBody>
-						{!data.is_locked && (
-							<CardFooter>
-								<Button color="primary" onClick={withdraw}>
-									Withdraw
-								</Button>
-							</CardFooter>
-						)}
-					</Card>
-				)}
-				{data.due && (
-					<Card shadow="sm">
-						<CardHeader>
-							<h3 className="font-medium text-lg">User Due</h3>
-						</CardHeader>
-						<CardBody>
-							<BalanceDisplay balance={data.due} />
-						</CardBody>
-						{!data.is_locked && (
+			<CardBody>
+				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+					{data.balance && (
+						<Card shadow="sm">
+							<CardHeader>
+								<h3 className="font-medium text-lg">User Balance</h3>
+							</CardHeader>
 							<CardBody>
-								<Button color="primary" onClick={deposit} fullWidth>
-									Deposit
-								</Button>
+								<BalanceDisplay balance={data.balance} />
 							</CardBody>
-						)}
-					</Card>
-				)}
-				{data.total_balance && (
-					<Card shadow="sm">
-						<CardHeader>
-							<h3 className="font-medium text-lg">Total Balance</h3>
-						</CardHeader>
-						<CardBody>
-							<BalanceDisplay balance={data.total_balance} />
-						</CardBody>
-					</Card>
-				)}
+							{!data.is_locked && (
+								<CardFooter>
+									<Button color="primary" onClick={withdraw}>
+										Withdraw
+									</Button>
+								</CardFooter>
+							)}
+						</Card>
+					)}
+					{data.due && (
+						<Card shadow="sm">
+							<CardHeader>
+								<h3 className="font-medium text-lg">User Due</h3>
+							</CardHeader>
+							<CardBody>
+								<BalanceDisplay balance={data.due} />
+							</CardBody>
+							{!data.is_locked && (
+								<CardBody>
+									<Button color="primary" onClick={deposit} fullWidth>
+										Deposit
+									</Button>
+								</CardBody>
+							)}
+						</Card>
+					)}
+					{data.total_balance && (
+						<Card shadow="sm">
+							<CardHeader>
+								<h3 className="font-medium text-lg">Total Balance</h3>
+							</CardHeader>
+							<CardBody>
+								<BalanceDisplay balance={data.total_balance} />
+							</CardBody>
+						</Card>
+					)}
+				</div>
+				{children}
 			</CardBody>
 			<CardFooter className="gap-4">
 				{competitionStatus === "pending" && <DuesModal escrow={escrow} />}

@@ -14,6 +14,7 @@ export type ExecuteMsg = {
     competition_type: CompetitionType;
     entry_fee?: Coin | null;
     expiration: Expiration;
+    group_contract_info: ModuleInstantiateInfo;
     max_members: Uint64;
     min_members?: Uint64 | null;
   };
@@ -65,6 +66,13 @@ export type EliminationType = "double_elimination" | {
     play_third_place_match: boolean;
   };
 };
+export type Admin = {
+  address: {
+    addr: string;
+  };
+} | {
+  core_module: {};
+};
 export type Action = {
   transfer_ownership: {
     expiry?: Expiration | null;
@@ -91,6 +99,13 @@ export interface Coin {
   denom: string;
   [k: string]: unknown;
 }
+export interface ModuleInstantiateInfo {
+  admin?: Admin | null;
+  code_id: number;
+  funds: Coin[];
+  label: string;
+  msg: Binary;
+}
 export type QueryMsg = {
   enrollments: {
     filter?: EnrollmentFilter | null;
@@ -103,12 +118,6 @@ export type QueryMsg = {
   };
 } | {
   enrollment_count: {};
-} | {
-  enrollment_members: {
-    enrollment_id: Uint128;
-    limit?: number | null;
-    start_after?: string | null;
-  };
 } | {
   is_member: {
     addr: string;
@@ -126,6 +135,10 @@ export type EnrollmentFilter = {
 };
 export type MigrateMsg = {
   from_compatible: {};
+} | {
+  with_group_id: {
+    group_id: number;
+  };
 };
 export type Addr = string;
 export interface SudoMsg {
@@ -139,6 +152,7 @@ export interface EnrollmentEntryResponse {
   current_members: Uint64;
   entry_fee?: Coin | null;
   expiration: Expiration;
+  group_contract: Addr;
   has_triggered_expiration: boolean;
   host: Addr;
   id: Uint128;
@@ -156,7 +170,6 @@ export interface CompetitionInfoResponse {
   rules?: string[] | null;
   rulesets?: Uint128[] | null;
 }
-export type ArrayOfAddr = Addr[];
 export type ArrayOfEnrollmentEntryResponse = EnrollmentEntryResponse[];
 export type Boolean = boolean;
 export interface OwnershipForString {

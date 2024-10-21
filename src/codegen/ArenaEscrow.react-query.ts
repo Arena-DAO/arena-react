@@ -416,6 +416,7 @@ export interface ArenaEscrowDistributeMutation {
   msg: {
     activationHeight?: number;
     distribution?: DistributionForString;
+    groupContract: string;
     layeredFees?: FeeInformationForString[];
   };
   args?: {

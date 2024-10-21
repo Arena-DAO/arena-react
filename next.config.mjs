@@ -18,9 +18,6 @@ const nextConfig = {
 	reactStrictMode: true,
 	swcMinify: true,
 	output: "export",
-	typescript: {
-		ignoreBuildErrors: true,
-	},
 	experimental: {
 		missingSuspenseWithCSRBailout: false,
 	},

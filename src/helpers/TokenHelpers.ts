@@ -158,5 +158,6 @@ export async function getNativeAsset(
 			// Assuming uri holds an image
 			svg: metadata.uri,
 		},
+		type_asset: "sdk.coin",
 	};
 }

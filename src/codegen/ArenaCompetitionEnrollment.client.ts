@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ExecuteMsg, Uint128, Binary, Decimal, Expiration, Timestamp, Uint64, CompetitionType, EliminationType, Action, CompetitionInfoMsg, FeeInformationForString, Coin, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, ArrayOfAddr, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
+import { InstantiateMsg, ExecuteMsg, Uint128, Binary, Decimal, Expiration, Timestamp, Uint64, CompetitionType, EliminationType, Admin, Action, CompetitionInfoMsg, FeeInformationForString, Coin, ModuleInstantiateInfo, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
 export interface ArenaCompetitionEnrollmentReadOnlyInterface {
   contractAddress: string;
   enrollments: ({
@@ -24,15 +24,6 @@ export interface ArenaCompetitionEnrollmentReadOnlyInterface {
     enrollmentId: Uint128;
   }) => Promise<EnrollmentEntryResponse>;
   enrollmentCount: () => Promise<Uint128>;
-  enrollmentMembers: ({
-    enrollmentId,
-    limit,
-    startAfter
-  }: {
-    enrollmentId: Uint128;
-    limit?: number;
-    startAfter?: string;
-  }) => Promise<ArrayOfAddr>;
   isMember: ({
     addr,
     enrollmentId
@@ -51,7 +42,6 @@ export class ArenaCompetitionEnrollmentQueryClient implements ArenaCompetitionEn
     this.enrollments = this.enrollments.bind(this);
     this.enrollment = this.enrollment.bind(this);
     this.enrollmentCount = this.enrollmentCount.bind(this);
-    this.enrollmentMembers = this.enrollmentMembers.bind(this);
     this.isMember = this.isMember.bind(this);
     this.ownership = this.ownership.bind(this);
   }
@@ -88,23 +78,6 @@ export class ArenaCompetitionEnrollmentQueryClient implements ArenaCompetitionEn
       enrollment_count: {}
     });
   };
-  enrollmentMembers = async ({
-    enrollmentId,
-    limit,
-    startAfter
-  }: {
-    enrollmentId: Uint128;
-    limit?: number;
-    startAfter?: string;
-  }): Promise<ArrayOfAddr> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      enrollment_members: {
-        enrollment_id: enrollmentId,
-        limit,
-        start_after: startAfter
-      }
-    });
-  };
   isMember = async ({
     addr,
     enrollmentId
@@ -134,6 +107,7 @@ export interface ArenaCompetitionEnrollmentInterface extends ArenaCompetitionEnr
     competitionType,
     entryFee,
     expiration,
+    groupContractInfo,
     maxMembers,
     minMembers
   }: {
@@ -142,6 +116,7 @@ export interface ArenaCompetitionEnrollmentInterface extends ArenaCompetitionEnr
     competitionType: CompetitionType;
     entryFee?: Coin;
     expiration: Expiration;
+    groupContractInfo: ModuleInstantiateInfo;
     maxMembers: Uint64;
     minMembers?: Uint64;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
@@ -185,6 +160,7 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
     competitionType,
     entryFee,
     expiration,
+    groupContractInfo,
     maxMembers,
     minMembers
   }: {
@@ -193,6 +169,7 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
     competitionType: CompetitionType;
     entryFee?: Coin;
     expiration: Expiration;
+    groupContractInfo: ModuleInstantiateInfo;
     maxMembers: Uint64;
     minMembers?: Uint64;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
@@ -203,6 +180,7 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
         competition_type: competitionType,
         entry_fee: entryFee,
         expiration,
+        group_contract_info: groupContractInfo,
         max_members: maxMembers,
         min_members: minMembers
       }

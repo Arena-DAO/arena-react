@@ -9,6 +9,7 @@ import {
 	Button,
 	Card,
 	CardBody,
+	CardFooter,
 	CardHeader,
 	Chip,
 	Image,
@@ -38,7 +39,7 @@ import RulesDisplay from "../../components/competition/RulesDisplay";
 import CategoryDisplay from "./components/CategoryDisplay";
 import DistributionDisplay from "./components/DistributionDisplay";
 import EnrollButton from "./components/EnrollButton";
-import EnrollmentMembers from "./components/EnrollmentMembers";
+import GroupMembersModal from "../../components/competition/GroupMembersModal";
 import TriggerButton from "./components/TriggerButton";
 
 const EnrollmentView = () => {
@@ -106,6 +107,9 @@ const EnrollmentView = () => {
 								<Profile address={enrollment.host} />
 							</div>
 						</CardBody>
+						<CardFooter>
+							<GroupMembersModal groupContract={enrollment.group_contract} />
+						</CardFooter>
 					</Card>
 
 					<Card>
@@ -250,8 +254,6 @@ const EnrollmentView = () => {
 					</CardBody>
 				</Card>
 
-				<EnrollmentMembers enrollmentId={enrollment.id} />
-
 				{enrollment.competition_info.additional_layered_fees &&
 					enrollment.competition_info.additional_layered_fees.length > 0 && (
 						<Card>
@@ -340,6 +342,7 @@ const EnrollmentView = () => {
 								enrollmentId={enrollment.id}
 								isFull={currentMembers >= maxMembers}
 								entryFee={enrollment.entry_fee}
+								groupContract={enrollment.group_contract}
 							/>
 						</>
 					)}

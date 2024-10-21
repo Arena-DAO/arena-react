@@ -14,7 +14,6 @@ export interface Empty {
 }
 export type ExecuteMsg = {
   jail_competition: {
-    additional_layered_fees?: FeeInformationForString | null;
     competition_id: Uint128;
     description: string;
     distribution?: DistributionForString | null;
@@ -42,6 +41,7 @@ export type ExecuteMsg = {
     description: string;
     escrow?: EscrowInstantiateInfo | null;
     expiration: Expiration;
+    group_contract: GroupContractInfo;
     host?: string | null;
     instantiate_extension: WagerInstantiateExt;
     name: string;
@@ -84,9 +84,9 @@ export type ExecuteMsg = {
 } | {
   update_ownership: Action;
 };
-export type Binary = string;
-export type Decimal = string;
 export type Uint128 = string;
+export type Decimal = string;
+export type Binary = string;
 export type Expiration = {
   at_height: number;
 } | {
@@ -96,9 +96,29 @@ export type Expiration = {
 };
 export type Timestamp = Uint64;
 export type Uint64 = string;
+export type GroupContractInfo = {
+  existing: {
+    addr: string;
+  };
+} | {
+  new: {
+    info: ModuleInstantiateInfo;
+  };
+};
+export type Admin = {
+  address: {
+    addr: string;
+  };
+} | {
+  core_module: {};
+};
 export type ExecuteExt = string;
 export type MigrateMsg = {
   from_compatible: {};
+} | {
+  with_group_address: {
+    group_contract: string;
+  };
 };
 export type CompetitionsFilter = {
   competition_status: {
@@ -147,12 +167,6 @@ export type Action = {
     new_owner: string;
   };
 } | "accept_ownership" | "renounce_ownership";
-export interface FeeInformationForString {
-  cw20_msg?: Binary | null;
-  cw721_msg?: Binary | null;
-  receiver: string;
-  tax: Decimal;
-}
 export interface DistributionForString {
   member_percentages: MemberPercentageForString[];
   remainder_addr: string;
@@ -167,9 +181,25 @@ export interface EscrowInstantiateInfo {
   label: string;
   msg: Binary;
 }
-export interface WagerInstantiateExt {
-  registered_members?: string[] | null;
+export interface FeeInformationForString {
+  cw20_msg?: Binary | null;
+  cw721_msg?: Binary | null;
+  receiver: string;
+  tax: Decimal;
 }
+export interface ModuleInstantiateInfo {
+  admin?: Admin | null;
+  code_id: number;
+  funds: Coin[];
+  label: string;
+  msg: Binary;
+}
+export interface Coin {
+  amount: Uint128;
+  denom: string;
+  [k: string]: unknown;
+}
+export interface WagerInstantiateExt {}
 export interface MemberStatsMsg {
   addr: string;
   stats: StatMsg[];
@@ -249,6 +279,7 @@ export interface CompetitionResponseForWagerExt {
   expiration: Expiration;
   extension: WagerExt;
   fees?: FeeInformationForAddr[] | null;
+  group_contract: Addr;
   host: Addr;
   id: Uint128;
   is_expired: boolean;
@@ -258,9 +289,7 @@ export interface CompetitionResponseForWagerExt {
   start_height: number;
   status: CompetitionStatus;
 }
-export interface WagerExt {
-  registered_members?: Addr[] | null;
-}
+export interface WagerExt {}
 export interface FeeInformationForAddr {
   cw20_msg?: Binary | null;
   cw721_msg?: Binary | null;

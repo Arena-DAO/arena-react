@@ -192,18 +192,11 @@ export type Expiration = {
 export type Timestamp = Uint64;
 export type Uint64 = string;
 export interface ProposeMessage {
-  additional_layered_fees?: FeeInformationForString | null;
   competition_id: Uint128;
   description: string;
   distribution?: DistributionForString | null;
   originator: string;
   title: string;
-}
-export interface FeeInformationForString {
-  cw20_msg?: Binary | null;
-  cw721_msg?: Binary | null;
-  receiver: string;
-  tax: Decimal;
 }
 export interface DistributionForString {
   member_percentages: MemberPercentageForString[];

@@ -212,10 +212,12 @@ export interface ArenaEscrowInterface extends ArenaEscrowReadOnlyInterface {
   distribute: ({
     activationHeight,
     distribution,
+    groupContract,
     layeredFees
   }: {
     activationHeight?: number;
     distribution?: DistributionForString;
+    groupContract: string;
     layeredFees?: FeeInformationForString[];
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   lock: ({
@@ -298,16 +300,19 @@ export class ArenaEscrowClient extends ArenaEscrowQueryClient implements ArenaEs
   distribute = async ({
     activationHeight,
     distribution,
+    groupContract,
     layeredFees
   }: {
     activationHeight?: number;
     distribution?: DistributionForString;
+    groupContract: string;
     layeredFees?: FeeInformationForString[];
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       distribute: {
         activation_height: activationHeight,
         distribution,
+        group_contract: groupContract,
         layered_fees: layeredFees
       }
     }, fee, memo, _funds);

@@ -45,6 +45,7 @@ export type ExecuteMsg = {
   distribute: {
     activation_height?: number | null;
     distribution?: DistributionForString | null;
+    group_contract: string;
     layered_fees?: FeeInformationForString[] | null;
   };
 } | {

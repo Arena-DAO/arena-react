@@ -1,6 +1,6 @@
 "use client";
 
-import type { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
+import { toBinary, type ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -50,6 +50,11 @@ import LeagueInformationForm from "./components/LeagueInformationForm";
 import ReviewCompetition from "./components/ReviewCompetition";
 import RulesAndRulesetsForm from "./components/RulesAndRulesetsForm";
 import TournamentInformationForm from "./components/TournamentInformationForm";
+import type {
+	AddMemberMsg,
+	InstantiateMsg as GroupInstantiateMsg,
+} from "~/codegen/ArenaGroup.types";
+import type { GroupContractInfo } from "~/codegen/ArenaWagerModule.types";
 
 const CreateCompetitionPage = () => {
 	const [activeTab, setActiveTab] = useState(0);
@@ -222,6 +227,12 @@ const CreateCompetitionPage = () => {
 						expiration: convertToExpiration(
 							values.enrollmentInfo.enrollment_expiration,
 						),
+						groupContractInfo: {
+							code_id: env.CODE_ID_GROUP,
+							funds: [],
+							label: "Arena Group",
+							msg: toBinary({} as GroupInstantiateMsg),
+						},
 					});
 
 					// Extract competition ID from the result
@@ -250,16 +261,29 @@ const CreateCompetitionPage = () => {
 					}
 
 					// Construct the members array based on the logic
-					let members: string[] = [];
+					let members: AddMemberMsg[] = [];
 					if (values.directParticipation.membersFromDues) {
 						members = values.directParticipation.dues
-							? values.directParticipation.dues.map((due) => due.addr)
+							? values.directParticipation.dues.map((due) => ({
+									addr: due.addr,
+								}))
 							: [];
 					} else if (values.directParticipation.members) {
-						members = values.directParticipation.members.map(
-							(member) => member.address,
-						);
+						members = values.directParticipation.members.map((member) => ({
+							addr: member.address,
+						}));
 					}
+
+					const groupContract = {
+						new: {
+							info: {
+								code_id: env.CODE_ID_GROUP,
+								label: "Arena Group",
+								funds: [],
+								msg: toBinary(members),
+							},
+						},
+					} as GroupContractInfo;
 
 					const escrow =
 						values.directParticipation.dues &&
@@ -282,10 +306,8 @@ const CreateCompetitionPage = () => {
 								...commonMsg,
 								categoryId,
 								escrow,
-								instantiateExtension: {
-									registered_members:
-										members.length === 2 ? members : undefined,
-								},
+								instantiateExtension: {},
+								groupContract,
 							});
 							break;
 						}
@@ -313,8 +335,8 @@ const CreateCompetitionPage = () => {
 										values.leagueInfo.matchDrawPoints.toString(),
 									match_lose_points:
 										values.leagueInfo.matchLosePoints.toString(),
-									teams: members,
 								},
+								groupContract,
 							});
 							break;
 						}
@@ -347,8 +369,8 @@ const CreateCompetitionPage = () => {
 													},
 												}
 											: "double_elimination",
-									teams: members,
 								},
+								groupContract,
 							});
 							break;
 						}
