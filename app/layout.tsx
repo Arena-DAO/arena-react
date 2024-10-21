@@ -13,7 +13,7 @@ const Layout = ({ children }: PropsWithChildren) => {
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<meta
 					name="description"
-					content="The Future of Competition, Decentralized"
+					content="Empowering Communities to Compete, Govern, and Win"
 				/>
 				<meta
 					name="keywords"
