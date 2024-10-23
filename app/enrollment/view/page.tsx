@@ -35,11 +35,11 @@ import {
 } from "~/helpers/EnrollmentHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
+import GroupMembersModal from "../../components/competition/GroupMembersModal";
 import RulesDisplay from "../../components/competition/RulesDisplay";
 import CategoryDisplay from "./components/CategoryDisplay";
 import DistributionDisplay from "./components/DistributionDisplay";
 import EnrollButton from "./components/EnrollButton";
-import GroupMembersModal from "../../components/competition/GroupMembersModal";
 import TriggerButton from "./components/TriggerButton";
 
 const EnrollmentView = () => {

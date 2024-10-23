@@ -5,31 +5,30 @@
 @import "tailwindcss/utilities";
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
 }
 
 @font-face {
-  font-family: cinzel;
-  src: url(Cinzel-VariableFont_wght.ttf);
+	font-family: cinzel;
+	src: url(Cinzel-VariableFont_wght.ttf);
 }
 
 .trophy_cursor {
-  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>🏆</text></svg>")
-      16 0,
-    auto;
+	cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>🏆</text></svg>")
+		16 0, auto;
 }
 
 body {
-  font-size: large;
+	font-size: large;
 }
 
 header {
-  max-width: 1920px !important;
+	max-width: 1920px !important;
 }
 
 h1,
@@ -38,73 +37,73 @@ h3,
 h4,
 h5,
 .title {
-  font-family: cinzel, serif;
-  font-weight: bolder;
+	font-family: cinzel, serif;
+	font-weight: bolder;
 }
 
 h1 {
-  margin-top: 1rem;
-  font-size: xx-large;
+	margin-top: 1rem;
+	font-size: xx-large;
 }
 
 form {
-  display: flex;
-  flex-direction: column;
+	display: flex;
+	flex-direction: column;
 }
 
 [data-overlay-container="true"] {
-  height: 100dvh;
+	height: 100dvh;
 }
 
 .navigation-wrapper {
-  position: relative;
+	position: relative;
 }
 
 .dots {
-  display: flex;
-  padding: 10px 0;
-  justify-content: center;
+	display: flex;
+	padding: 10px 0;
+	justify-content: center;
 }
 
 .dot {
-  border: none;
-  width: 10px;
-  height: 10px;
-  background: #ffffff;
-  border-radius: 50%;
-  margin: 0 5px;
-  padding: 5px;
-  cursor: pointer;
+	border: none;
+	width: 10px;
+	height: 10px;
+	background: #ffffff;
+	border-radius: 50%;
+	margin: 0 5px;
+	padding: 5px;
+	cursor: pointer;
 }
 
 .dot:focus {
-  outline: none;
+	outline: none;
 }
 
 .dot.active {
-  background: #ff8000;
+	background: #ff8000;
 }
 
 .arrow {
-  width: 30px;
-  height: 30px;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  -webkit-transform: translateY(-50%);
-  fill: #fff;
-  cursor: pointer;
+	width: 30px;
+	height: 30px;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	-webkit-transform: translateY(-50%);
+	fill: #fff;
+	cursor: pointer;
 }
 
 .arrow--left {
-  left: 5px;
+	left: 5px;
 }
 
 .arrow--right {
-  left: auto;
-  right: 5px;
+	left: auto;
+	right: 5px;
 }
 
 .arrow--disabled {
-  fill: rgba(255, 255, 255, 0.5);
+	fill: rgba(255, 255, 255, 0.5);
 }

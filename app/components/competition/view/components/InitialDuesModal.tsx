@@ -6,6 +6,7 @@ import {
 	Modal,
 	ModalBody,
 	ModalContent,
+	ModalFooter,
 	ModalHeader,
 	Spinner,
 	Table,
@@ -55,7 +56,7 @@ const InitialDuesModal = ({ escrow }: InitialDuesModalProps) => {
 			queryKey: arenaEscrowQueryKeys.initialDues(escrow),
 			queryFn: fetchInitialDues,
 			getNextPageParam: (lastPage) => lastPage.nextCursor,
-			enabled: !!cosmWasmClient,
+			enabled: !!cosmWasmClient && isOpen,
 		});
 
 	const allDues = data?.pages.flatMap((page) => page.items) ?? [];
@@ -72,18 +73,6 @@ const InitialDuesModal = ({ escrow }: InitialDuesModalProps) => {
 						<Table
 							isHeaderSticky
 							aria-label="Dues"
-							bottomContent={
-								hasNextPage && (
-									<div className="flex w-full justify-center">
-										<Button
-											isLoading={isFetchingNextPage}
-											onPress={() => fetchNextPage()}
-										>
-											Load More
-										</Button>
-									</div>
-								)
-							}
 							classNames={{
 								base: "max-h-xl overflow-auto table-auto",
 							}}
@@ -111,6 +100,16 @@ const InitialDuesModal = ({ escrow }: InitialDuesModalProps) => {
 							</TableBody>
 						</Table>
 					</ModalBody>
+					{hasNextPage && (
+						<ModalFooter>
+							<Button
+								isLoading={isFetchingNextPage}
+								onPress={() => fetchNextPage()}
+							>
+								Load More
+							</Button>
+						</ModalFooter>
+					)}
 				</ModalContent>
 			</Modal>
 		</>

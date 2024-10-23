@@ -57,7 +57,6 @@ const GroupMembers: React.FC<GroupMemberProps> = ({ groupContract }) => {
 		hasNextPage,
 		isFetchingNextPage,
 		isInitialLoading,
-		isError,
 	} = useInfiniteQuery({
 		queryKey: arenaGroupQueryKeys.members(groupContract, {}),
 		queryFn: fetchMembers,

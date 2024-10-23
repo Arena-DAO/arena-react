@@ -63,6 +63,7 @@ const RoundDisplay = ({
 		args: {
 			msg: { round: { league_id: leagueId, round_number: roundNumber } },
 		},
+		options: { enabled: !!cosmWasmClient },
 	});
 	const roundMutation = useArenaLeagueModuleExtensionMutation();
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -253,6 +254,7 @@ const RoundDisplay = ({
 									value={changeMap.get(x.match_number)}
 									defaultSelectedKeys={x.result ? [x.result] : undefined}
 									onChange={(e) => handleSelectionChange(x.match_number, e)}
+									variant="bordered"
 								>
 									{LeagueResultValues.map((x) => (
 										<SelectItem key={x.value} value={x.value}>

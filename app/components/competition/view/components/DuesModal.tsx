@@ -66,7 +66,7 @@ const DuesModal = ({ escrow }: DuesModalProps) => {
 		queryKey: arenaEscrowQueryKeys.dues(escrow),
 		queryFn: fetchDues,
 		getNextPageParam: (lastPage) => lastPage.nextCursor,
-		enabled: !!cosmWasmClient,
+		enabled: !!cosmWasmClient && isOpen,
 	});
 
 	const dues = useMemo(

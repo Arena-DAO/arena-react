@@ -11,6 +11,7 @@ import {
 	Spinner,
 } from "@nextui-org/react";
 import { type InfiniteData, useQueryClient } from "@tanstack/react-query";
+import type { PropsWithChildren } from "react";
 import { toast } from "react-toastify";
 import {
 	ArenaEscrowClient,
@@ -36,7 +37,6 @@ import BalanceDisplay from "./BalanceDisplay";
 import BalancesModal from "./BalancesModal";
 import DuesModal from "./DuesModal";
 import InitialDuesModal from "./InitialDuesModal";
-import type { PropsWithChildren } from "react";
 
 interface PageData {
 	items: ArrayOfMemberBalanceChecked;
@@ -206,7 +206,7 @@ const EscrowSection = ({
 			<CardHeader>
 				<h2 className="font-semibold text-xl">Escrow Information</h2>
 			</CardHeader>
-			<CardBody>
+			<CardBody className="space-y-4">
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 					{data.balance && (
 						<Card shadow="sm">

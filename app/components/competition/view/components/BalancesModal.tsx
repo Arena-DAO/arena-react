@@ -7,6 +7,7 @@ import {
 	Modal,
 	ModalBody,
 	ModalContent,
+	ModalFooter,
 	ModalHeader,
 	Spinner,
 	Table,
@@ -66,21 +67,13 @@ const BalancesModal = ({ escrow }: BalancesModalProps) => {
 		queryKey: arenaEscrowQueryKeys.balances(escrow),
 		queryFn: fetchBalances,
 		getNextPageParam: (lastPage) => lastPage.nextCursor,
-		enabled: !!cosmWasmClient,
+		enabled: !!cosmWasmClient && isOpen,
 	});
 
 	const balances = useMemo(
 		() => query.data?.pages.flatMap((page) => page.items) ?? [],
 		[query.data],
 	);
-
-	if (!cosmWasmClient || query.isInitialLoading) {
-		return (
-			<div className="flex justify-center">
-				<Spinner />
-			</div>
-		);
-	}
 
 	return (
 		<>
@@ -94,18 +87,6 @@ const BalancesModal = ({ escrow }: BalancesModalProps) => {
 						<Table
 							isHeaderSticky
 							aria-label="Balances"
-							bottomContent={
-								query.hasNextPage && (
-									<div className="flex w-full justify-center">
-										<Button
-											onClick={() => query.fetchNextPage()}
-											isLoading={query.isFetchingNextPage}
-										>
-											Load More
-										</Button>
-									</div>
-								)
-							}
 							classNames={{
 								base: "max-h-xl overflow-auto table-auto",
 							}}
@@ -133,6 +114,16 @@ const BalancesModal = ({ escrow }: BalancesModalProps) => {
 							</TableBody>
 						</Table>
 					</ModalBody>
+					{query.hasNextPage && (
+						<ModalFooter>
+							<Button
+								onClick={() => query.fetchNextPage()}
+								isLoading={query.isFetchingNextPage}
+							>
+								Load More
+							</Button>
+						</ModalFooter>
+					)}
 				</ModalContent>
 			</Modal>
 		</>

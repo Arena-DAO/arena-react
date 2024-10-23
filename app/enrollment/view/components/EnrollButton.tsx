@@ -13,8 +13,8 @@ import {
 	useArenaCompetitionEnrollmentIsMemberQuery,
 	useArenaCompetitionEnrollmentWithdrawMutation,
 } from "~/codegen/ArenaCompetitionEnrollment.react-query";
-import { arenaGroupQueryKeys } from "~/codegen/ArenaGroup.react-query";
 import type { Coin } from "~/codegen/ArenaCompetitionEnrollment.types";
+import { arenaGroupQueryKeys } from "~/codegen/ArenaGroup.react-query";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 

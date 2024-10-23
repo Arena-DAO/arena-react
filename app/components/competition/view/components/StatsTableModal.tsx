@@ -3,6 +3,11 @@
 import Profile from "@/components/Profile";
 import {
 	Button,
+	Modal,
+	ModalBody,
+	ModalContent,
+	ModalFooter,
+	ModalHeader,
 	Spinner,
 	Table,
 	TableBody,
@@ -11,6 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 	getKeyValue,
+	useDisclosure,
 } from "@nextui-org/react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import type React from "react";
@@ -33,6 +39,7 @@ const StatsTable: React.FC<StatsTableProps> = ({
 }) => {
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
 	const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
 		useInfiniteQuery({
@@ -56,7 +63,7 @@ const StatsTable: React.FC<StatsTableProps> = ({
 					return undefined;
 				return lastPage[lastPage.length - 1]?.addr;
 			},
-			enabled: !!cosmWasmClient,
+			enabled: !!cosmWasmClient && isOpen,
 			retry: false,
 			refetchOnWindowFocus: false,
 			refetchOnReconnect: false,
@@ -93,47 +100,57 @@ const StatsTable: React.FC<StatsTableProps> = ({
 
 	return (
 		<>
-			<Table aria-label="Competition Stats Table" removeWrapper>
-				<TableHeader columns={columns}>
-					{(column) => (
-						<TableColumn key={column.key}>{column.label}</TableColumn>
+			<Button onPress={onOpen}>Stats</Button>
+			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl">
+				<ModalContent>
+					<ModalHeader>
+						<h2>Members</h2>
+					</ModalHeader>
+					<ModalBody>
+						<Table aria-label="Competition Stats Table" removeWrapper>
+							<TableHeader columns={columns}>
+								{(column) => (
+									<TableColumn key={column.key}>{column.label}</TableColumn>
+								)}
+							</TableHeader>
+							<TableBody
+								items={rows}
+								emptyContent="No stats recorded for the competition yet"
+								isLoading={isLoading}
+								loadingContent={<Spinner content="Loading stats..." />}
+							>
+								{(item) => (
+									<TableRow key={item.key}>
+										{(columnKey) => (
+											<TableCell>
+												{columnKey === "addr" ? (
+													<Profile
+														address={getKeyValue(item, columnKey)}
+														statProps={{ moduleAddr, competitionId }}
+													/>
+												) : (
+													getKeyValue(item, columnKey)
+												)}
+											</TableCell>
+										)}
+									</TableRow>
+								)}
+							</TableBody>
+						</Table>
+					</ModalBody>
+					{hasNextPage && (
+						<ModalFooter>
+							<Button
+								onClick={() => fetchNextPage()}
+								isLoading={isFetchingNextPage}
+								disabled={!hasNextPage || isFetchingNextPage}
+							>
+								{isFetchingNextPage ? "Loading more..." : "Load More"}
+							</Button>
+						</ModalFooter>
 					)}
-				</TableHeader>
-				<TableBody
-					items={rows}
-					emptyContent="No stats recorded for the competition yet"
-					isLoading={isLoading}
-					loadingContent={<Spinner content="Loading stats..." />}
-				>
-					{(item) => (
-						<TableRow key={item.key}>
-							{(columnKey) => (
-								<TableCell>
-									{columnKey === "addr" ? (
-										<Profile
-											address={getKeyValue(item, columnKey)}
-											statProps={{ moduleAddr, competitionId }}
-										/>
-									) : (
-										getKeyValue(item, columnKey)
-									)}
-								</TableCell>
-							)}
-						</TableRow>
-					)}
-				</TableBody>
-			</Table>
-			{hasNextPage && (
-				<div className="mt-4 flex justify-end">
-					<Button
-						onClick={() => fetchNextPage()}
-						isLoading={isFetchingNextPage}
-						disabled={!hasNextPage || isFetchingNextPage}
-					>
-						{isFetchingNextPage ? "Loading more..." : "Load More"}
-					</Button>
-				</div>
-			)}
+				</ModalContent>
+			</Modal>
 		</>
 	);
 };

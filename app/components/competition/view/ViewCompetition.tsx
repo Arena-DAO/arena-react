@@ -3,7 +3,6 @@
 import Profile from "@/components/Profile";
 import RulesDisplay from "@/components/competition/RulesDisplay";
 import CategoryDisplay from "@/enrollment/view/components/CategoryDisplay";
-import { useChain } from "@cosmos-kit/react";
 import {
 	Button,
 	Card,
@@ -29,12 +28,12 @@ import type { CompetitionResponse } from "~/types/CompetitionResponse";
 import type { CompetitionType } from "~/types/CompetitionType";
 import CompetitionStatusDisplay from "../CompetitionStatusDisplay";
 import ExpirationDisplay from "../ExpirationDisplay";
+import GroupMembersModal from "../GroupMembersModal";
 import CompetitionActions from "./components/CompetitionActions";
 import EscrowSection from "./components/EscrowSection";
 import EvidenceSection from "./components/EvidenceSection";
 import ResultSection from "./components/ResultSection";
-import StatsTable from "./components/StatsTable";
-import GroupMembersModal from "../GroupMembersModal";
+import StatsTableModal from "./components/StatsTableModal";
 
 interface ViewCompetitionProps extends PropsWithChildren {
 	moduleAddr: string;
@@ -51,7 +50,6 @@ const ViewCompetition = ({
 	children,
 }: ViewCompetitionProps) => {
 	const { data: env } = useEnv();
-	const { address } = useChain(env.CHAIN);
 
 	return (
 		<div className="space-y-6">
@@ -90,8 +88,12 @@ const ViewCompetition = ({
 							)}
 						</div>
 					</CardBody>
-					<CardFooter>
+					<CardFooter className="gap-2">
 						<GroupMembersModal groupContract={competition.group_contract} />
+						<StatsTableModal
+							moduleAddr={moduleAddr}
+							competitionId={competition.id}
+						/>
 					</CardFooter>
 				</Card>
 
@@ -140,15 +142,6 @@ const ViewCompetition = ({
 					</CardBody>
 				</Card>
 			)}
-
-			<Card>
-				<CardHeader>
-					<h2 className="font-semibold text-xl">Competition Stats</h2>
-				</CardHeader>
-				<CardBody>
-					<StatsTable moduleAddr={moduleAddr} competitionId={competition.id} />
-				</CardBody>
-			</Card>
 
 			{(isJailed(competition.status) || competition.status === "inactive") && (
 				<EvidenceSection

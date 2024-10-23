@@ -1240,9 +1240,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@interchain-ui/react@npm:1.25.5":
-  version: 1.25.5
-  resolution: "@interchain-ui/react@npm:1.25.5"
+"@interchain-ui/react@npm:1.25.6":
+  version: 1.25.6
+  resolution: "@interchain-ui/react@npm:1.25.6"
   dependencies:
     "@floating-ui/core": "npm:^1.6.7"
     "@floating-ui/dom": "npm:^1.6.10"
@@ -1266,14 +1266,14 @@ __metadata:
     copy-to-clipboard: "npm:^3.3.3"
     immer: "npm:^10.1.1"
     lodash: "npm:^4.17.21"
-    rainbow-sprinkles: "npm:^0.17.2"
+    rainbow-sprinkles: "npm:^0.17.3"
     react-aria: "npm:^3.34.3"
     react-stately: "npm:^3.32.2"
     zustand: "npm:^4.5.5"
   peerDependencies:
     react: ^16.14.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/39e5d0c9f98e0af86880034c1828097e798ed6482185ec40d34508b64044a2c2c91e55441e4b8766cd45388e1e7128869d5a0dfecac3796e1c9c4fc7ad981db0
+  checksum: 10c0/7e50a787ef887e3a1a4f949de0babdeffb558feb25d10a56bbc8bc9e79f9d8bd4442672b5d54518d5e4f9a6b51a05e26f24eddd05580ba3da4f0a216ac115ec8
   languageName: node
   linkType: hard
 
@@ -1659,72 +1659,72 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/env@npm:14.2.15":
-  version: 14.2.15
-  resolution: "@next/env@npm:14.2.15"
-  checksum: 10c0/b1af95941bd7e080276af0901512c8c56b4e157402d2d913feca435c6a6f01130c9f322cca67e5c2b1ca160f54f6c0c4913fb8a3201812a5bb62dbdccae6f8fa
+"@next/env@npm:14.2.16":
+  version: 14.2.16
+  resolution: "@next/env@npm:14.2.16"
+  checksum: 10c0/e9d795727bc43f171557a7a91111c9b71833840061275b5d4adf96f416febf4f02afb9dac1f4275f4a3e96a0a0db22b58fe934483e2823e76a5d3c60a563394b
   languageName: node
   linkType: hard
 
-"@next/swc-darwin-arm64@npm:14.2.15":
-  version: 14.2.15
-  resolution: "@next/swc-darwin-arm64@npm:14.2.15"
+"@next/swc-darwin-arm64@npm:14.2.16":
+  version: 14.2.16
+  resolution: "@next/swc-darwin-arm64@npm:14.2.16"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@next/swc-darwin-x64@npm:14.2.15":
-  version: 14.2.15
-  resolution: "@next/swc-darwin-x64@npm:14.2.15"
+"@next/swc-darwin-x64@npm:14.2.16":
+  version: 14.2.16
+  resolution: "@next/swc-darwin-x64@npm:14.2.16"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@next/swc-linux-arm64-gnu@npm:14.2.15":
-  version: 14.2.15
-  resolution: "@next/swc-linux-arm64-gnu@npm:14.2.15"
+"@next/swc-linux-arm64-gnu@npm:14.2.16":
+  version: 14.2.16
+  resolution: "@next/swc-linux-arm64-gnu@npm:14.2.16"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@next/swc-linux-arm64-musl@npm:14.2.15":
-  version: 14.2.15
-  resolution: "@next/swc-linux-arm64-musl@npm:14.2.15"
+"@next/swc-linux-arm64-musl@npm:14.2.16":
+  version: 14.2.16
+  resolution: "@next/swc-linux-arm64-musl@npm:14.2.16"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@next/swc-linux-x64-gnu@npm:14.2.15":
-  version: 14.2.15
-  resolution: "@next/swc-linux-x64-gnu@npm:14.2.15"
+"@next/swc-linux-x64-gnu@npm:14.2.16":
+  version: 14.2.16
+  resolution: "@next/swc-linux-x64-gnu@npm:14.2.16"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@next/swc-linux-x64-musl@npm:14.2.15":
-  version: 14.2.15
-  resolution: "@next/swc-linux-x64-musl@npm:14.2.15"
+"@next/swc-linux-x64-musl@npm:14.2.16":
+  version: 14.2.16
+  resolution: "@next/swc-linux-x64-musl@npm:14.2.16"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@next/swc-win32-arm64-msvc@npm:14.2.15":
-  version: 14.2.15
-  resolution: "@next/swc-win32-arm64-msvc@npm:14.2.15"
+"@next/swc-win32-arm64-msvc@npm:14.2.16":
+  version: 14.2.16
+  resolution: "@next/swc-win32-arm64-msvc@npm:14.2.16"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@next/swc-win32-ia32-msvc@npm:14.2.15":
-  version: 14.2.15
-  resolution: "@next/swc-win32-ia32-msvc@npm:14.2.15"
+"@next/swc-win32-ia32-msvc@npm:14.2.16":
+  version: 14.2.16
+  resolution: "@next/swc-win32-ia32-msvc@npm:14.2.16"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@next/swc-win32-x64-msvc@npm:14.2.15":
-  version: 14.2.15
-  resolution: "@next/swc-win32-x64-msvc@npm:14.2.15"
+"@next/swc-win32-x64-msvc@npm:14.2.16":
+  version: 14.2.16
+  resolution: "@next/swc-win32-x64-msvc@npm:14.2.16"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -6464,12 +6464,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.7.7":
-  version: 22.7.7
-  resolution: "@types/node@npm:22.7.7"
+"@types/node@npm:^22.7.8":
+  version: 22.7.8
+  resolution: "@types/node@npm:22.7.8"
   dependencies:
     undici-types: "npm:~6.19.2"
-  checksum: 10c0/07268a1e990ad9d9b1865092881317ea679a46eb6706d83a8874eec75fdddae6cfd6452e4e68b651561183e2a8f8548276f3155744bc402c2545978c19b70d65
+  checksum: 10c0/3d3b3a2ec5a57ca4fd37b34dce415620993ca5f87cea2c728ffe73aa31446dbfe19c53171c478447bd7d78011ef4845a46ab2f0dc38e699cc75b3d100a60c690
   languageName: node
   linkType: hard
 
@@ -6960,17 +6960,17 @@ __metadata:
     "@cosmos-kit/station": "npm:^2.12.0"
     "@dagrejs/dagre": "npm:^1.1.4"
     "@hookform/resolvers": "npm:^3.9.0"
-    "@interchain-ui/react": "npm:1.25.5"
+    "@interchain-ui/react": "npm:1.25.6"
     "@internationalized/date": "npm:^3.5.6"
     "@nextui-org/react": "npm:2.4.8"
     "@nextui-org/theme": "npm:^2.2.11"
     "@tanstack/react-query": "npm:4.36.1"
     "@types/lodash": "npm:^4.17.12"
-    "@types/node": "npm:^22.7.7"
+    "@types/node": "npm:^22.7.8"
     "@types/react": "npm:18.3.11"
     "@types/react-dom": "npm:^18.3.1"
     autoprefixer: "npm:^10.4.20"
-    chain-registry: "npm:1.69.6"
+    chain-registry: "npm:1.69.9"
     clsx: "npm:^2.1.1"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^7.0.6"
@@ -6979,7 +6979,7 @@ __metadata:
     http-proxy-middleware: "npm:^3.0.3"
     keen-slider: "npm:^6.8.6"
     lodash: "npm:^4.17.21"
-    next: "npm:14.2.15"
+    next: "npm:14.2.16"
     next-themes: "npm:^0.3.0"
     pino-pretty: "npm:^11.3.0"
     postcss: "npm:^8.4.47"
@@ -7462,12 +7462,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.69.6":
-  version: 1.69.6
-  resolution: "chain-registry@npm:1.69.6"
+"chain-registry@npm:1.69.9":
+  version: 1.69.9
+  resolution: "chain-registry@npm:1.69.9"
   dependencies:
     "@chain-registry/types": "npm:^0.50.1"
-  checksum: 10c0/086f3b3c444c35a0b428280702dec797256f070ab7c8dade662c80b94532995e69d8ef8015e8dedfc03c3c10352b673c5781cd6a71a3070b5d270626f8abecb0
+  checksum: 10c0/ae3b9d8476c7943fe0887286f94c4d4060a2cddf1181bd17ac0868f787da29eb95280ad0549bd9340936590f431e2114794172682148654e6bb06b8178435155
   languageName: node
   linkType: hard
 
@@ -10026,20 +10026,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next@npm:14.2.15":
-  version: 14.2.15
-  resolution: "next@npm:14.2.15"
+"next@npm:14.2.16":
+  version: 14.2.16
+  resolution: "next@npm:14.2.16"
   dependencies:
-    "@next/env": "npm:14.2.15"
-    "@next/swc-darwin-arm64": "npm:14.2.15"
-    "@next/swc-darwin-x64": "npm:14.2.15"
-    "@next/swc-linux-arm64-gnu": "npm:14.2.15"
-    "@next/swc-linux-arm64-musl": "npm:14.2.15"
-    "@next/swc-linux-x64-gnu": "npm:14.2.15"
-    "@next/swc-linux-x64-musl": "npm:14.2.15"
-    "@next/swc-win32-arm64-msvc": "npm:14.2.15"
-    "@next/swc-win32-ia32-msvc": "npm:14.2.15"
-    "@next/swc-win32-x64-msvc": "npm:14.2.15"
+    "@next/env": "npm:14.2.16"
+    "@next/swc-darwin-arm64": "npm:14.2.16"
+    "@next/swc-darwin-x64": "npm:14.2.16"
+    "@next/swc-linux-arm64-gnu": "npm:14.2.16"
+    "@next/swc-linux-arm64-musl": "npm:14.2.16"
+    "@next/swc-linux-x64-gnu": "npm:14.2.16"
+    "@next/swc-linux-x64-musl": "npm:14.2.16"
+    "@next/swc-win32-arm64-msvc": "npm:14.2.16"
+    "@next/swc-win32-ia32-msvc": "npm:14.2.16"
+    "@next/swc-win32-x64-msvc": "npm:14.2.16"
     "@swc/helpers": "npm:0.5.5"
     busboy: "npm:1.6.0"
     caniuse-lite: "npm:^1.0.30001579"
@@ -10080,7 +10080,7 @@ __metadata:
       optional: true
   bin:
     next: dist/bin/next
-  checksum: 10c0/45d02c5a42f70cdbb8fba7a91f602d1852119f85cf5886d01d17e839ef096d42986ac17fe6356ed6e481548035e4eabff13b12818bf3ee38c11f488df579a8b0
+  checksum: 10c0/8cd036a6f30d4cc8ab8480c19339ee6134ffd5b18338ff5a07de397ed4e29fad54de5219f70aafabf1fe9c48a7d54b7df58ba1f29cfa5d3351ff7763e8d4844e
   languageName: node
   linkType: hard
 
@@ -11097,13 +11097,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rainbow-sprinkles@npm:^0.17.2":
-  version: 0.17.2
-  resolution: "rainbow-sprinkles@npm:0.17.2"
+"rainbow-sprinkles@npm:^0.17.3":
+  version: 0.17.3
+  resolution: "rainbow-sprinkles@npm:0.17.3"
   peerDependencies:
     "@vanilla-extract/css": ^1
     "@vanilla-extract/dynamic": ^2
-  checksum: 10c0/c7ab7955592860afaab023f75b20c82d5f6242c766a8b2c42cd5794082ef51b25411c6c2f22f46525791ef8104c95dc13d72772904d37382564aed3a229684ef
+  checksum: 10c0/fc6c98ddb5ad8a1b09ffa96df305c7c69a1aef07da13f1e318cebd8dd5bb9d175ea6653e8316f6d8a07c8c3b0568c05a3f25545a7f2e51ca2ac23ae892b837d2
   languageName: node
   linkType: hard
 

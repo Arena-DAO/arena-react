@@ -1,6 +1,6 @@
 "use client";
 
-import { toBinary, type ExecuteResult } from "@cosmjs/cosmwasm-stargate";
+import { type ExecuteResult, toBinary } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -27,9 +27,14 @@ import {
 import { toast } from "react-toastify";
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import type { CompetitionType } from "~/codegen/ArenaCompetitionEnrollment.types";
+import type {
+	AddMemberMsg,
+	InstantiateMsg as GroupInstantiateMsg,
+} from "~/codegen/ArenaGroup.types";
 import { ArenaLeagueModuleClient } from "~/codegen/ArenaLeagueModule.client";
 import { ArenaTournamentModuleClient } from "~/codegen/ArenaTournamentModule.client";
 import { ArenaWagerModuleClient } from "~/codegen/ArenaWagerModule.client";
+import type { GroupContractInfo } from "~/codegen/ArenaWagerModule.types";
 import {
 	type CreateCompetitionFormValues,
 	CreateCompetitionSchema,
@@ -50,11 +55,6 @@ import LeagueInformationForm from "./components/LeagueInformationForm";
 import ReviewCompetition from "./components/ReviewCompetition";
 import RulesAndRulesetsForm from "./components/RulesAndRulesetsForm";
 import TournamentInformationForm from "./components/TournamentInformationForm";
-import type {
-	AddMemberMsg,
-	InstantiateMsg as GroupInstantiateMsg,
-} from "~/codegen/ArenaGroup.types";
-import type { GroupContractInfo } from "~/codegen/ArenaWagerModule.types";
 
 const CreateCompetitionPage = () => {
 	const [activeTab, setActiveTab] = useState(0);
@@ -280,7 +280,8 @@ const CreateCompetitionPage = () => {
 								code_id: env.CODE_ID_GROUP,
 								label: "Arena Group",
 								funds: [],
-								msg: toBinary(members),
+								msg: toBinary({ members }),
+								admin: { address: { addr: env.ARENA_DAO_ADDRESS } },
 							},
 						},
 					} as GroupContractInfo;
