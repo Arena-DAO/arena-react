@@ -47,13 +47,10 @@ const Layout = ({ children }: PropsWithChildren) => {
 			<body className="font-roboto">
 				<Providers>
 					<AppNavbar />
-					<div
-						className="min-h-full"
-						style={{ paddingTop: "4rem", paddingBottom: "4rem" }}
-					>
+					<div className="min-h-full pb-10">
 						<ErrorBoundary>{children}</ErrorBoundary>
 					</div>
-					{<Footer />}
+					<Footer />
 				</Providers>
 			</body>
 		</html>

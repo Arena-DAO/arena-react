@@ -1,19 +1,16 @@
 "use client";
 
 import {
-	Button,
 	Chip,
-	Dropdown,
-	DropdownItem,
-	DropdownMenu,
-	DropdownTrigger,
 	Link,
 	Navbar,
 	NavbarBrand,
 	NavbarContent,
 	NavbarItem,
 	NavbarMenu,
+	NavbarMenuItem,
 	NavbarMenuToggle,
+	cn,
 } from "@nextui-org/react";
 import dynamic from "next/dynamic";
 const ColorModeSwitch = dynamic(() => import("./ColorModeSwitch"), {
@@ -21,115 +18,47 @@ const ColorModeSwitch = dynamic(() => import("./ColorModeSwitch"), {
 });
 import { Image } from "@nextui-org/react";
 import NextImage from "next/image";
+import NextLink from "next/link";
 import { useMemo, useState } from "react";
-import {
-	BsAlarm,
-	BsBook,
-	BsChevronDown,
-	BsCurrencyBitcoin,
-	BsCurrencyExchange,
-	BsDiscord,
-	BsGithub,
-	BsTrophyFill,
-	BsTwitterX,
-	BsYinYang,
-} from "react-icons/bs";
 import { type Env, useEnv } from "~/hooks/useEnv";
 import WalletConnectToggle from "./WalletConnectToggle";
 
 // Define the menu structure
-const menuConfig = (env: Env) => [
-	{
-		label: "DAO",
-		items: [
-			{
-				key: "dao",
-				label: "DAO",
-				href: `${env.DAO_DAO_URL}/dao/${env.ARENA_DAO_ADDRESS}`,
-				description: "View the Arena DAO on DAO DAO",
-				startContent: <BsYinYang />,
-				target: "_blank",
-			},
-			{
-				key: "token",
-				label: "Token",
-				href: "/dao/token",
-				description: "Become a member of the DAO",
-				startContent: <BsTrophyFill />,
-			},
+const menuConfig = (env: Env) => {
+	const menu = [
+		{
+			key: "home",
+			text: "Home",
+			href: "/",
+		},
+		{
+			key: "compete",
+			text: "Compete",
+			href: "/compete",
+		},
+		{
+			key: "jailhouse",
+			text: "Jailhouse",
+			href: "/dao/jailhouse",
+		},
+		{
+			key: "docs",
+			text: "Docs",
+			href: env.DOCS_URL,
+		},
+	];
 
-			{
-				key: "jailhouse",
-				label: "Jailhouse",
-				href: "/dao/jailhouse",
-				description: "View jailed competitions needing action through the DAO",
-				startContent: <BsAlarm />,
-			},
-		],
-	},
-	{
-		label: "Resources",
-		items: [
-			...(env.FAUCET_URL
-				? [
-						{
-							key: "faucet",
-							label: "Faucet",
-							href: env.FAUCET_URL,
-							description: "Get testnet gas to explore The Arena",
-							startContent: <BsCurrencyBitcoin />,
-							target: "_blank",
-						},
-					]
-				: []),
-			{
-				key: "docs",
-				label: "Docs",
-				href: env.DOCS_URL,
-				description: "Learn more about how the Arena DAO works",
-				startContent: <BsBook />,
-				target: "_blank",
-			},
-			{
-				key: "bridge",
-				label: "Bridge",
-				href: env.IBC_FUN,
-				description: "Transfer funds from other chains into the ecosystem",
-				startContent: <BsCurrencyExchange />,
-				target: "_blank",
-			},
-		],
-	},
-	{
-		label: "Socials",
-		items: [
-			{
-				key: "twitter",
-				label: "Twitter",
-				href: "https://x.com/ArenaDAO",
-				description: "Stay up to date with our announcements",
-				startContent: <BsTwitterX />,
-				target: "_blank",
-			},
-			{
-				key: "discord",
-				label: "Discord",
-				href: "https://discord.arenadao.org/",
-				description: "Connect with the community",
-				startContent: <BsDiscord />,
-				target: "_blank",
-			},
-			{
-				key: "github",
-				label: "GitHub",
-				href: "https://github.com/Arena-DAO",
-				description: "View or contribute to our codebase",
-				startContent: <BsGithub />,
-				target: "_blank",
-			},
-		],
-	},
-];
+	// Conditionally add the faucet link for testnet
+	if (env.FAUCET_URL) {
+		menu.push({
+			key: "faucet",
+			text: "Faucet",
+			href: env.FAUCET_URL,
+		});
+	}
+
+	return menu;
+};
 
 export default function AppNavbar() {
 	const { data: env } = useEnv();
@@ -140,133 +69,80 @@ export default function AppNavbar() {
 		<Navbar
 			onMenuOpenChange={setIsMenuOpen}
 			isMenuOpen={isMenuOpen}
-			className="fixed"
+			classNames={{
+				base: cn("border-default-100", {
+					"bg-default-200/50 dark:bg-default-100/50": isMenuOpen,
+				}),
+				wrapper: "w-full justify-center bg-transparent",
+				item: "hidden md:flex font-semibold",
+			}}
+			isBordered
+			height="60px"
 		>
-			<NavbarContent>
-				<NavbarMenuToggle
-					aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-					className="md:hidden"
-				/>
-				<NavbarBrand>
-					<Link
-						className="flex cursor-pointer flex-row items-center justify-center"
-						onPress={() => setIsMenuOpen(false)}
-						href="/"
-					>
-						<Image
-							as={NextImage}
-							src="/logo.svg"
-							alt="logo"
-							width="48"
-							height="48"
-							removeWrapper
-						/>
-						<p className="title ml-2 font-bold">Arena DAO</p>
-						{env.ENV === "development" && (
-							<Chip className="ml-2 hidden md:flex" size="sm">
-								testnet
-							</Chip>
-						)}
-					</Link>
-				</NavbarBrand>
-			</NavbarContent>
+			<NavbarMenuToggle className="text-default-400 md:hidden" />
+			<NavbarBrand>
+				<div className="rounded-full bg-foreground text-background">
+					<Image
+						as={NextImage}
+						src="/logo.png"
+						alt="logo"
+						width="48"
+						height="48"
+						removeWrapper
+					/>
+				</div>
+				<p className="ml-2 font-bold text-inherit">Arena DAO</p>
+				{env.ENV === "development" && (
+					<Chip className="ml-2 hidden md:flex" size="sm">
+						testnet
+					</Chip>
+				)}
+			</NavbarBrand>
 
-			<NavbarContent className="hidden gap-4 md:flex" justify="center">
-				<NavbarItem>
-					<Link
-						className="flex cursor-pointer items-center font-semibold text-sm/6"
-						href="/compete"
-						onPress={() => setIsMenuOpen(false)}
-					>
-						Compete
-					</Link>
-				</NavbarItem>
-
-				{menuItems.map((menu) => (
-					<Dropdown key={menu.label}>
-						<NavbarItem>
-							<DropdownTrigger>
-								<Button
-									variant="light"
-									className="flex items-center font-semibold text-primary text-sm/6"
-									endContent={<BsChevronDown className="size-3" />}
-								>
-									{menu.label}
-								</Button>
-							</DropdownTrigger>
-						</NavbarItem>
-						<DropdownMenu
-							aria-label={`${menu.label} Menu`}
-							itemClasses={{ title: "text-primary font-semibold" }}
-							onAction={() => setIsMenuOpen(false)}
-						>
-							{menu.items.map((item) => (
-								<DropdownItem
-									key={item.key}
-									href={item.href}
-									description={item.description}
-									startContent={item.startContent}
-									target={item.target}
-								>
-									{item.label}
-								</DropdownItem>
-							))}
-						</DropdownMenu>
-					</Dropdown>
+			<NavbarContent
+				className="hidden h-11 gap-6 rounded-full border-default-200/20 border-small bg-background/60 px-4 shadow-medium backdrop-blur-md backdrop-saturate-150 md:flex dark:bg-default-100/50"
+				justify="center"
+			>
+				{menuItems.map((item) => (
+					<NavbarItem key={item.key}>
+						<Link as={NextLink} className="text-default-500" href={item.href}>
+							{item.text}
+						</Link>
+					</NavbarItem>
 				))}
 			</NavbarContent>
-
-			<NavbarMenu>
-				{env.ENV === "development" && (
-					<NavbarItem>
-						<Chip size="sm">testnet</Chip>
-					</NavbarItem>
-				)}
-				<NavbarItem>
-					<Link
-						className="ml-4 flex cursor-pointer items-center py-1 font-semibold text-xl"
-						href="/compete"
-						onPress={() => setIsMenuOpen(false)}
-					>
-						Compete
-					</Link>
+			<NavbarContent justify="end">
+				<NavbarItem className="!flex ml-2 gap-2">
+					<ColorModeSwitch />
+					<WalletConnectToggle />
 				</NavbarItem>
-
-				{menuItems.map((menu) => (
-					<Dropdown key={menu.label}>
-						<NavbarItem>
-							<DropdownTrigger className="text-left">
-								<Button
-									variant="light"
-									className="flex items-center font-semibold text-primary text-xl"
-									endContent={<BsChevronDown className="size-3" />}
-								>
-									{menu.label}
-								</Button>
-							</DropdownTrigger>
-						</NavbarItem>
-						<DropdownMenu
-							aria-label={`${menu.label} Menu`}
-							itemClasses={{ title: "text-primary font-semibold" }}
-							onAction={() => setIsMenuOpen(false)}
+			</NavbarContent>
+			<NavbarMenu
+				className="top-[calc(var(--navbar-height)_-_1px)] max-h-[70vh] bg-default-200/50 pt-6 shadow-medium backdrop-blur-md backdrop-saturate-150 dark:bg-default-100/50"
+				motionProps={{
+					initial: { opacity: 0, y: -20 },
+					animate: { opacity: 1, y: 0 },
+					exit: { opacity: 0, y: -20 },
+					transition: {
+						ease: "easeInOut",
+						duration: 0.2,
+					},
+				}}
+			>
+				{menuItems.map((item) => (
+					<NavbarMenuItem key={item.key}>
+						<Link
+							as={NextLink}
+							className="w-full text-default-500"
+							href={item.href}
+							size="md"
+							onPress={() => setIsMenuOpen(false)}
 						>
-							{menu.items.map((item) => (
-								<DropdownItem
-									key={item.key}
-									href={item.href}
-									description={item.description}
-									startContent={item.startContent}
-									target={item.target}
-								>
-									{item.label}
-								</DropdownItem>
-							))}
-						</DropdownMenu>
-					</Dropdown>
+							{item.text}
+						</Link>
+					</NavbarMenuItem>
 				))}
 			</NavbarMenu>
-			<ColorModeSwitch />
-			<WalletConnectToggle />
 		</Navbar>
 	);
 }

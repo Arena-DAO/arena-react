@@ -1,9 +1,11 @@
 "use client";
 
 import { Button, ButtonGroup, Link } from "@nextui-org/react";
-import { BsDiscord, BsGithub, BsTwitterX } from "react-icons/bs";
+import { BsDiscord, BsGithub, BsTwitterX, BsYinYang } from "react-icons/bs";
+import { useEnv } from "~/hooks/useEnv";
 
 export default function Footer() {
+	const { data: env } = useEnv();
 	return (
 		<>
 			<div className="flex flex-col-reverse items-center justify-between px-10 md:flex-row">
@@ -42,6 +44,15 @@ export default function Footer() {
 							isExternal
 						>
 							<BsGithub />
+						</Button>
+						<Button
+							as={Link}
+							isIconOnly
+							aria-label="DAO DAO"
+							href={`${env.DAO_DAO_URL}/dao/${env.ARENA_DAO_ADDRESS}`}
+							isExternal
+						>
+							<BsYinYang />
 						</Button>
 					</ButtonGroup>
 				</div>
