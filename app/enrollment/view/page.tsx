@@ -118,7 +118,15 @@ const EnrollmentView = () => {
 						</CardHeader>
 						<CardBody>
 							<div className="flex items-center justify-between">
-								<ExpirationDisplay expiration={enrollment.expiration} />
+								<div className="flex flex-col gap-4">
+									<ExpirationDisplay
+										tooltip="Registration Deadline"
+										expiration={enrollment.expiration}
+									/>
+									<ExpirationDisplay
+										expiration={enrollment.competition_info.expiration}
+									/>
+								</div>
 								<EnrollmentStatusDisplay
 									hasTriggeredExpiration={enrollment.has_triggered_expiration}
 									isExpired={enrollment.is_expired}

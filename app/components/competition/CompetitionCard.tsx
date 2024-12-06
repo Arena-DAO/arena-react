@@ -106,20 +106,27 @@ const Competition: React.FC<CompetitionProps> = ({
 				{renderCompetitionInfo()}
 
 				<div className="mt-3 flex items-center justify-between">
-					<ExpirationDisplay expiration={competition.expiration} />
 					{isEnrollment(competition) ? (
-						<EnrollmentStatusDisplay
-							hasTriggeredExpiration={competition.has_triggered_expiration}
-							isExpired={competition.is_expired}
-							currentMembers={Number(competition.current_members)}
-							maxMembers={Number(competition.max_members)}
-							competitionId={competition.competition_info.competition_id}
-						/>
+						<>
+							<ExpirationDisplay
+								expiration={competition.competition_info.expiration}
+							/>
+							<EnrollmentStatusDisplay
+								hasTriggeredExpiration={competition.has_triggered_expiration}
+								isExpired={competition.is_expired}
+								currentMembers={Number(competition.current_members)}
+								maxMembers={Number(competition.max_members)}
+								competitionId={competition.competition_info.competition_id}
+							/>
+						</>
 					) : (
-						<CompetitionStatusDisplay
-							status={competition.status}
-							isExpired={competition.is_expired}
-						/>
+						<>
+							<ExpirationDisplay expiration={competition.expiration} />
+							<CompetitionStatusDisplay
+								status={competition.status}
+								isExpired={competition.is_expired}
+							/>
+						</>
 					)}
 				</div>
 			</CardBody>

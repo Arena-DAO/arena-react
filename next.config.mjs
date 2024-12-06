@@ -16,11 +16,7 @@ const nextConfig = {
 		return config;
 	},
 	reactStrictMode: true,
-	swcMinify: true,
 	output: "export",
-	experimental: {
-		missingSuspenseWithCSRBailout: false,
-	},
 };
 
 export default nextConfig;

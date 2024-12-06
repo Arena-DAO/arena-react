@@ -1,4 +1,4 @@
-import { Chip } from "@nextui-org/react";
+import { Chip, Tooltip } from "@nextui-org/react";
 import type React from "react";
 import { BsInfinity } from "react-icons/bs";
 import { FiClock, FiLayers } from "react-icons/fi";
@@ -7,10 +7,12 @@ import { formatTimestampToDisplay } from "~/helpers/DateHelpers";
 
 interface ExpirationDisplayProps {
 	expiration: Expiration;
+	tooltip?: string;
 }
 
 const ExpirationDisplay: React.FC<ExpirationDisplayProps> = ({
 	expiration,
+	tooltip = "Competition Expiration",
 }) => {
 	let content: React.ReactNode;
 	let icon: React.ReactNode;
@@ -27,9 +29,11 @@ const ExpirationDisplay: React.FC<ExpirationDisplayProps> = ({
 	}
 
 	return (
-		<Chip startContent={icon} variant="flat">
-			{content}
-		</Chip>
+		<Tooltip content={tooltip}>
+			<Chip startContent={icon} variant="flat">
+				{content}
+			</Chip>
+		</Tooltip>
 	);
 };
 
