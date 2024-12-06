@@ -17,6 +17,7 @@ import {
 	TableHeader,
 	TableRow,
 	useDisclosure,
+	useDraggable,
 } from "@nextui-org/react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -26,6 +27,7 @@ import type { MemberBalanceChecked } from "~/codegen/ArenaEscrow.types";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import BalanceDisplay from "./BalanceDisplay";
+import React from "react";
 
 interface BalancesModalProps {
 	escrow: string;
@@ -37,6 +39,8 @@ const BalancesModal = ({ escrow }: BalancesModalProps) => {
 	const { address } = useChain(env.CHAIN);
 	const queryClient = useQueryClient();
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
+	const targetRef = React.useRef(null);
+	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
 	const fetchBalances = async ({ pageParam = undefined }) => {
 		if (!cosmWasmClient) {
@@ -78,9 +82,14 @@ const BalancesModal = ({ escrow }: BalancesModalProps) => {
 	return (
 		<>
 			<Button onPress={onOpen}>View Balances</Button>
-			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
+			<Modal
+				ref={targetRef}
+				isOpen={isOpen}
+				onOpenChange={onOpenChange}
+				size="5xl"
+			>
 				<ModalContent>
-					<ModalHeader>
+					<ModalHeader {...moveProps}>
 						<h2 className="font-semibold text-xl">Balances</h2>
 					</ModalHeader>
 					<ModalBody>

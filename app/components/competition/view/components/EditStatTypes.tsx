@@ -25,6 +25,7 @@ import {
 	TableRow,
 	Tooltip,
 	useDisclosure,
+	useDraggable,
 } from "@nextui-org/react";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useMemo } from "react";
@@ -211,10 +212,14 @@ const EditStatTypes: React.FC<EditStatTypesProps> = ({
 		}
 	};
 
+	const targetRef = React.useRef(null);
+	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
+
 	return (
 		<>
 			<Button onPress={onOpen}>Edit Stat Types</Button>
 			<Modal
+				ref={targetRef}
 				isOpen={isOpen}
 				onClose={onClose}
 				size="full"
@@ -224,7 +229,7 @@ const EditStatTypes: React.FC<EditStatTypesProps> = ({
 					<ModalContent>
 						{(onClose) => (
 							<>
-								<ModalHeader>
+								<ModalHeader {...moveProps}>
 									<h2 className="font-semibold text-xl">Edit Stat Types</h2>
 								</ModalHeader>
 								<ModalBody>

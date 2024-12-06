@@ -1,7 +1,6 @@
 import {
 	Button,
 	Divider,
-	Modal,
 	Switch,
 	Textarea,
 	Tooltip,
@@ -164,20 +163,14 @@ const MembersAndDuesForm = () => {
 				</>
 			)}
 
-			<Modal
+			<AddDueForm
 				isOpen={isOpen}
 				onOpenChange={onOpenChange}
+				index={
+					editingDueIndex !== null ? editingDueIndex : duesFields.length - 1
+				}
 				onClose={handleCloseDueForm}
-			>
-				<AddDueForm
-					isOpen={isOpen}
-					onOpenChange={onOpenChange}
-					index={
-						editingDueIndex !== null ? editingDueIndex : duesFields.length - 1
-					}
-					onClose={handleCloseDueForm}
-				/>
-			</Modal>
+			/>
 		</div>
 	);
 };

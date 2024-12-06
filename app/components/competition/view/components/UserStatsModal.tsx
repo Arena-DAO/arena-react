@@ -14,8 +14,9 @@ import {
 	TableHeader,
 	TableRow,
 	useDisclosure,
+	useDraggable,
 } from "@nextui-org/react";
-import type React from "react";
+import React from "react";
 import { useMemo } from "react";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { useArenaWagerModuleHistoricalStatsQuery } from "~/codegen/ArenaWagerModule.react-query";
@@ -86,12 +87,20 @@ const UserStatsModal: React.FC<UserStatsModalProps> = ({
 		return { rows, columns };
 	}, [data]);
 
+	const targetRef = React.useRef(null);
+	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
+
 	return (
 		<>
 			<Button onPress={onOpen}>View Historical Stats</Button>
-			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl">
+			<Modal
+				ref={targetRef}
+				isOpen={isOpen}
+				onOpenChange={onOpenChange}
+				size="2xl"
+			>
 				<ModalContent>
-					<ModalHeader>
+					<ModalHeader {...moveProps}>
 						<h2 className="font-semibold text-xl">User Historical Stats</h2>
 					</ModalHeader>
 					<ModalBody>

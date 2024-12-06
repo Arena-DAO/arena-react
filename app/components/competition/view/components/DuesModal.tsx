@@ -16,6 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 	useDisclosure,
+	useDraggable,
 } from "@nextui-org/react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -25,6 +26,7 @@ import type { MemberBalanceChecked } from "~/codegen/ArenaEscrow.types";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import BalanceDisplay from "./BalanceDisplay";
+import React from "react";
 
 interface DuesModalProps {
 	escrow: string;
@@ -73,6 +75,8 @@ const DuesModal = ({ escrow }: DuesModalProps) => {
 		() => query.data?.pages.flatMap((page) => page.items) ?? [],
 		[query.data],
 	);
+	const targetRef = React.useRef(null);
+	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
 	if (!cosmWasmClient || query.isLoading) {
 		return (
@@ -85,9 +89,16 @@ const DuesModal = ({ escrow }: DuesModalProps) => {
 	return (
 		<>
 			<Button onPress={onOpen}>View Dues</Button>
-			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
+			<Modal
+				ref={targetRef}
+				isOpen={isOpen}
+				onOpenChange={onOpenChange}
+				size="5xl"
+			>
 				<ModalContent>
-					<ModalHeader className="flex flex-col gap-1">Dues</ModalHeader>
+					<ModalHeader {...moveProps} className="flex flex-col gap-1">
+						Dues
+					</ModalHeader>
 					<ModalBody>
 						<Table
 							isHeaderSticky

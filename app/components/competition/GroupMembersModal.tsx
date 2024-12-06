@@ -14,9 +14,10 @@ import {
 	TableHeader,
 	TableRow,
 	useDisclosure,
+	useDraggable,
 } from "@nextui-org/react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import type React from "react";
+import React from "react";
 import { useCallback, useMemo } from "react";
 import { ArenaGroupQueryClient } from "~/codegen/ArenaGroup.client";
 import { arenaGroupQueryKeys } from "~/codegen/ArenaGroup.react-query";
@@ -74,13 +75,20 @@ const GroupMembers: React.FC<GroupMemberProps> = ({ groupContract }) => {
 		() => data?.pages.flatMap((page) => page.members) || [],
 		[data],
 	);
+	const targetRef = React.useRef(null);
+	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
 	return (
 		<>
 			<Button onPress={onOpen}>Members</Button>
-			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg">
+			<Modal
+				ref={targetRef}
+				isOpen={isOpen}
+				onOpenChange={onOpenChange}
+				size="lg"
+			>
 				<ModalContent>
-					<ModalHeader>
+					<ModalHeader {...moveProps}>
 						<h2>Members</h2>
 					</ModalHeader>
 					<ModalBody>

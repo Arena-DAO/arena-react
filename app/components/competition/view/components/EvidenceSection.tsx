@@ -25,6 +25,7 @@ import {
 	TableRow,
 	Tooltip,
 	useDisclosure,
+	useDraggable,
 } from "@nextui-org/react";
 import {
 	type InfiniteData,
@@ -32,6 +33,7 @@ import {
 	useQueryClient,
 } from "@tanstack/react-query";
 import { chunk } from "lodash";
+import React from "react";
 import { useMemo } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { FiPlus, FiTrash } from "react-icons/fi";
@@ -181,12 +183,15 @@ const EvidenceSection = ({
 		[query.data],
 	);
 
+	const targetRef = React.useRef(null);
+	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
+
 	if (evidence.length === 0 && hideIfEmpty) return null;
 
 	return (
 		<>
-			<Card>
-				<CardHeader>
+			<Card ref={targetRef}>
+				<CardHeader {...moveProps}>
 					<h2 className="font-semibold text-xl">Evidence</h2>
 				</CardHeader>
 				<CardBody>

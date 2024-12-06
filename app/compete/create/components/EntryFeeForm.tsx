@@ -10,9 +10,10 @@ import {
 	ModalFooter,
 	ModalHeader,
 	Spinner,
+	useDraggable,
 } from "@nextui-org/react";
 import _ from "lodash";
-import type React from "react";
+import React from "react";
 import { useEffect, useState } from "react";
 import { Controller, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
@@ -58,6 +59,8 @@ const EntryFeeForm: React.FC<EntryFeeFormProps> = ({
 	const watchDenom = watch("denom");
 	const [debouncedDenom, setDebouncedDenom] = useState(watchDenom);
 	const [isLoading, setIsLoading] = useState(false);
+	const targetRef = React.useRef(null);
+	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
 	useEffect(() => {
 		const debouncer = _.debounce(setDebouncedDenom, 500);
@@ -94,6 +97,7 @@ const EntryFeeForm: React.FC<EntryFeeFormProps> = ({
 
 	return (
 		<Modal
+			ref={targetRef}
 			isOpen={isOpen}
 			onOpenChange={onOpenChange}
 			onClose={() => {
@@ -102,7 +106,7 @@ const EntryFeeForm: React.FC<EntryFeeFormProps> = ({
 			}}
 		>
 			<ModalContent>
-				<ModalHeader>Set Entry Fee</ModalHeader>
+				<ModalHeader {...moveProps}>Set Entry Fee</ModalHeader>
 				<ModalBody>
 					<Controller
 						name="denom"

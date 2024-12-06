@@ -16,6 +16,7 @@ import {
 	TableHeader,
 	TableRow,
 	useDisclosure,
+	useDraggable,
 } from "@nextui-org/react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { ArenaEscrowQueryClient } from "~/codegen/ArenaEscrow.client";
@@ -24,6 +25,7 @@ import type { MemberBalanceChecked } from "~/codegen/ArenaEscrow.types";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import BalanceDisplay from "./BalanceDisplay";
+import React from "react";
 
 interface InitialDuesModalProps {
 	escrow: string;
@@ -60,13 +62,20 @@ const InitialDuesModal = ({ escrow }: InitialDuesModalProps) => {
 		});
 
 	const allDues = data?.pages.flatMap((page) => page.items) ?? [];
+	const targetRef = React.useRef(null);
+	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
 	return (
 		<>
 			<Button onPress={onOpen}>View Initial Dues</Button>
-			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
+			<Modal
+				ref={targetRef}
+				isOpen={isOpen}
+				onOpenChange={onOpenChange}
+				size="5xl"
+			>
 				<ModalContent>
-					<ModalHeader>
+					<ModalHeader {...moveProps}>
 						<h2 className="font-semibold text-xl">Initial Dues</h2>
 					</ModalHeader>
 					<ModalBody>

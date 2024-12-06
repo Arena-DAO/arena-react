@@ -17,9 +17,10 @@ import {
 	TableRow,
 	getKeyValue,
 	useDisclosure,
+	useDraggable,
 } from "@nextui-org/react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import type React from "react";
+import React from "react";
 import { useMemo } from "react";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { arenaWagerModuleQueryKeys } from "~/codegen/ArenaWagerModule.react-query";
@@ -97,13 +98,20 @@ const StatsTable: React.FC<StatsTableProps> = ({
 
 		return { rows, columns };
 	}, [data]);
+	const targetRef = React.useRef(null);
+	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
 	return (
 		<>
 			<Button onPress={onOpen}>Stats</Button>
-			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl">
+			<Modal
+				ref={targetRef}
+				isOpen={isOpen}
+				onOpenChange={onOpenChange}
+				size="xl"
+			>
 				<ModalContent>
-					<ModalHeader>
+					<ModalHeader {...moveProps}>
 						<h2>Members</h2>
 					</ModalHeader>
 					<ModalBody>

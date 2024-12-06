@@ -13,6 +13,7 @@ import {
 	ModalHeader,
 	Switch,
 	useDisclosure,
+	useDraggable,
 } from "@nextui-org/react";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useMemo } from "react";
@@ -236,6 +237,9 @@ const InputStatsModal: React.FC<InputStatsModalProps> = ({
 		[statTypes, control],
 	);
 
+	const targetRef = React.useRef(null);
+	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
+
 	return (
 		<>
 			<Button
@@ -245,12 +249,12 @@ const InputStatsModal: React.FC<InputStatsModalProps> = ({
 			>
 				Input Stats
 			</Button>
-			<Modal isOpen={isOpen} onClose={onClose}>
+			<Modal ref={targetRef} isOpen={isOpen} onClose={onClose}>
 				<form onSubmit={handleSubmit(onSubmit)}>
 					<ModalContent>
 						{(onClose) => (
 							<>
-								<ModalHeader>
+								<ModalHeader {...moveProps}>
 									<h2 className="font-semibold text-xl">Input Stats</h2>
 								</ModalHeader>
 								<ModalBody>

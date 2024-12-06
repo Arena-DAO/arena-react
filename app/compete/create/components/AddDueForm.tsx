@@ -13,10 +13,11 @@ import {
 	Radio,
 	RadioGroup,
 	Spinner,
+	useDraggable,
 } from "@nextui-org/react";
 import _ from "lodash";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
 	Controller,
 	useFieldArray,
@@ -85,6 +86,8 @@ const AddDueForm: React.FC<AddDueFormProps> = ({
 	const { assets } = useChain(env.CHAIN);
 	const { control: competitionControl } =
 		useFormContext<CreateCompetitionFormValues>();
+	const targetRef = useRef(null);
+	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
 	const { append: appendNative, fields: nativeFields } = useFieldArray({
 		control: competitionControl,
@@ -239,9 +242,10 @@ const AddDueForm: React.FC<AddDueFormProps> = ({
 				reset();
 				onClose();
 			}}
+			ref={targetRef}
 		>
 			<ModalContent>
-				<ModalHeader className="flex justify-between pr-8">
+				<ModalHeader {...moveProps} className="flex justify-between pr-8">
 					<div>Add Due</div>
 					{watchTokenType !== "cw721" && debouncedDenomOrAddress.length > 0 && (
 						<TokenInfo

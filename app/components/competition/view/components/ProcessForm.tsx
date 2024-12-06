@@ -23,9 +23,11 @@ import {
 	TableRow,
 	Textarea,
 	useDisclosure,
+	useDraggable,
 } from "@nextui-org/react";
 import { useQueryClient } from "@tanstack/react-query";
 import type {} from "react";
+import React from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { BsPercent } from "react-icons/bs";
 import { FiPlus, FiTrash } from "react-icons/fi";
@@ -277,6 +279,8 @@ const ProcessForm = ({
 			}
 		}
 	};
+	const targetRef = React.useRef(null);
+	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
 	const action = "is_expired" in props ? "Jail" : "Process";
 	return (
@@ -288,13 +292,14 @@ const ProcessForm = ({
 				{action}
 			</Button>
 			<Modal
+				ref={targetRef}
 				isOpen={isOpen}
 				onOpenChange={onOpenChange}
 				size="5xl"
 				scrollBehavior="outside"
 			>
 				<ModalContent>
-					<ModalHeader>
+					<ModalHeader {...moveProps}>
 						<h2 className="font-semibold text-xl">{action} Competition</h2>
 					</ModalHeader>
 					<ModalBody className="space-y-4">
