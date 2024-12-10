@@ -135,7 +135,7 @@ const ReviewCompetition = () => {
 						<ul className="list-disc pl-5">
 							{values.rulesets.map((ruleset) => (
 								<li key={ruleset.ruleset_id}>
-									Ruleset ID: {ruleset.ruleset_id}
+									Ruleset ID: {ruleset.ruleset_id.toString()}
 								</li>
 							))}
 						</ul>

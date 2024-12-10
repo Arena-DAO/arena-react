@@ -21,13 +21,13 @@ import {
 } from "@nextui-org/react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
+import React from "react";
 import { ArenaEscrowQueryClient } from "~/codegen/ArenaEscrow.client";
 import { arenaEscrowQueryKeys } from "~/codegen/ArenaEscrow.react-query";
 import type { MemberBalanceChecked } from "~/codegen/ArenaEscrow.types";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import BalanceDisplay from "./BalanceDisplay";
-import React from "react";
 
 interface BalancesModalProps {
 	escrow: string;

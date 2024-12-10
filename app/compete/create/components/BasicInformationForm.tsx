@@ -2,6 +2,7 @@ import {
 	getLocalTimeZone,
 	now,
 	parseAbsoluteToLocal,
+	type ZonedDateTime,
 } from "@internationalized/date";
 import {
 	Accordion,
@@ -117,7 +118,7 @@ const BasicInformationForm = () => {
 						defaultValue="at_time"
 						isInvalid={!!error}
 						errorMessage={error?.message}
-						onValueChange={(value) => {
+						onValueChange={(value: string) => {
 							switch (value) {
 								case "never":
 									field.onChange({ never: {} });
@@ -160,7 +161,9 @@ const BasicInformationForm = () => {
 							isRequired
 							{...field}
 							value={field.value.toString()}
-							onChange={(e) => field.onChange(Number.parseInt(e.target.value))}
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+								field.onChange(Number.parseInt(e.target.value))
+							}
 							description="Specify the block height at which the competition should expire"
 						/>
 					)}
@@ -184,7 +187,9 @@ const BasicInformationForm = () => {
 							)}
 							{...field}
 							value={parseAbsoluteToLocal(field.value)}
-							onChange={(x) => field.onChange(x.toAbsoluteString())}
+							onChange={(x: ZonedDateTime | null) =>
+								field.onChange(x?.toAbsoluteString())
+							}
 							description="Select the date and time when the competition should expire"
 						/>
 					)}

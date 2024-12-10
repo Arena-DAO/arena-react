@@ -98,7 +98,7 @@ const EnrollmentInformationForm = () => {
 								showMonthAndYearPickers
 								label="Enrollment Expiration"
 								value={parseAbsoluteToLocal(field.value)}
-								onChange={(x) => field.onChange(x.toAbsoluteString())}
+								onChange={(x) => field.onChange(x?.toAbsoluteString())}
 								minValue={parseAbsoluteToLocal(competitionExpiration)}
 								isInvalid={!!error}
 								errorMessage={error?.message}

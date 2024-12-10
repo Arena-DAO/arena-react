@@ -7,6 +7,9 @@ module.exports = {
 		"./src/**/*.{js,ts,jsx,tsx,mdx,mjs}",
 		"./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx,mjs}",
 	],
+	theme: {
+		extend: {},
+	},
 	darkMode: "class",
 	plugins: [
 		nextui({
@@ -17,6 +20,7 @@ module.exports = {
 			},
 			themes: {
 				dark: {
+					extend: "dark",
 					colors: {
 						danger: {
 							DEFAULT: "#C22A28",
@@ -52,7 +56,9 @@ module.exports = {
 					},
 				},
 				light: {
+					extend: "light",
 					colors: {
+						hover: "#000",
 						danger: {
 							DEFAULT: "#C22A28",
 							foreground: "#000000",
