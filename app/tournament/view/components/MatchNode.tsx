@@ -48,6 +48,7 @@ const MatchNode = memo(
 							<Profile
 								address={data.team_1}
 								classNames={{ name: "text-3xl" }}
+								tooltipOpenDelay={1000}
 							/>
 						) : (
 							<p>TBD</p>
@@ -57,6 +58,7 @@ const MatchNode = memo(
 							<Profile
 								address={data.team_2}
 								classNames={{ name: "text-3xl" }}
+								tooltipOpenDelay={1000}
 							/>
 						) : (
 							<p>TBD</p>

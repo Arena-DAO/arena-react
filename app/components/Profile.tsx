@@ -41,6 +41,7 @@ export interface ProfileProps extends Omit<UserProps, "name"> {
 	isTooltipDisabled?: boolean;
 	isRatingDisabled?: boolean; // Should not be checked by the WalletConnectToggle
 	statProps?: StatProps;
+	tooltipOpenDelay?: number;
 }
 
 const Profile = ({
@@ -50,6 +51,7 @@ const Profile = ({
 	isTooltipDisabled = false,
 	isRatingDisabled = false,
 	statProps,
+	tooltipOpenDelay,
 	...props
 }: ProfileProps) => {
 	const { data: env } = useEnv();
@@ -142,6 +144,7 @@ const Profile = ({
 				isDisabled={isTooltipDisabled}
 				showArrow
 				content={tooltipContent}
+				delay={tooltipOpenDelay}
 			>
 				<Avatar
 					className={`${props.className} aspect-square`}
@@ -153,7 +156,12 @@ const Profile = ({
 	}
 
 	return (
-		<Tooltip isDisabled={isTooltipDisabled} showArrow content={tooltipContent}>
+		<Tooltip
+			delay={tooltipOpenDelay}
+			isDisabled={isTooltipDisabled}
+			showArrow
+			content={tooltipContent}
+		>
 			<User
 				{...props}
 				name={data?.name ?? data?.address}
