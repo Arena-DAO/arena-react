@@ -2,7 +2,6 @@
 
 import {
 	Chip,
-	cn,
 	Link,
 	Navbar,
 	NavbarBrand,
@@ -11,6 +10,7 @@ import {
 	NavbarMenu,
 	NavbarMenuItem,
 	NavbarMenuToggle,
+	cn,
 } from "@nextui-org/react";
 import dynamic from "next/dynamic";
 const ColorModeSwitch = dynamic(() => import("./ColorModeSwitch"), {

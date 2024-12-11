@@ -2,10 +2,10 @@
 
 import type { Chain } from "@chain-registry/types";
 import { GasPrice } from "@cosmjs/stargate";
+import { wallets as metamaskExtensionWallets } from "@cosmos-kit/cosmos-extension-metamask";
 import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { ChainProvider } from "@cosmos-kit/react";
-import { wallets as metamaskExtensionWallets } from "@cosmos-kit/cosmos-extension-metamask";
 import { NextUIProvider } from "@nextui-org/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
