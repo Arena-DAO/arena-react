@@ -4847,7 +4847,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:4.36.1":
+"@tanstack/react-query@npm:=4.36.1":
   version: 4.36.1
   resolution: "@tanstack/react-query@npm:4.36.1"
   dependencies:
@@ -5691,7 +5691,7 @@ __metadata:
     "@internationalized/date": "npm:^3.6.0"
     "@nextui-org/react": "npm:2.6.7"
     "@nextui-org/theme": "npm:^2.4.3"
-    "@tanstack/react-query": "npm:4.36.1"
+    "@tanstack/react-query": "npm:=4.36.1"
     "@types/lodash": "npm:^4.17.13"
     "@types/node": "npm:^22.10.1"
     "@types/react": "npm:18.3.14"
@@ -5701,7 +5701,7 @@ __metadata:
     clsx: "npm:^2.1.1"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^7.0.6"
-    date-fns: "npm:^3.6.0"
+    date-fns: "npm:=3.6.0"
     framer-motion: "npm:^11.13.5"
     http-proxy-middleware: "npm:^3.0.3"
     keen-slider: "npm:^6.8.6"
@@ -5723,7 +5723,7 @@ __metadata:
     tailwindcss: "npm:^3.4.16"
     typescript: "npm:^5.7.2"
     zod: "npm:^3.24.0"
-    zustand: "npm:^4.5.5"
+    zustand: "npm:=4.5.5"
   languageName: unknown
   linkType: soft
 
@@ -6623,7 +6623,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^3.6.0":
+"date-fns@npm:=3.6.0":
   version: 3.6.0
   resolution: "date-fns@npm:3.6.0"
   checksum: 10c0/0b5fb981590ef2f8e5a3ba6cd6d77faece0ea7f7158948f2eaae7bbb7c80a8f63ae30b01236c2923cf89bb3719c33aeb150c715ea4fe4e86e37dcf06bed42fb6
@@ -10733,7 +10733,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zustand@npm:^4.4.1, zustand@npm:^4.5.5":
+"zustand@npm:=4.5.5, zustand@npm:^4.4.1, zustand@npm:^4.5.5":
   version: 4.5.5
   resolution: "zustand@npm:4.5.5"
   dependencies:
