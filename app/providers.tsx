@@ -2,13 +2,10 @@
 
 import type { Chain } from "@chain-registry/types";
 import { GasPrice } from "@cosmjs/stargate";
-import { wallets as cosmosExtensionMetamaskWallets } from "@cosmos-kit/cosmos-extension-metamask";
-import { wallets as cosmostationWallets } from "@cosmos-kit/cosmostation";
 import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
-import { wallets as ledgerWallets } from "@cosmos-kit/ledger";
 import { ChainProvider } from "@cosmos-kit/react";
-import { wallets as stationWallets } from "@cosmos-kit/station";
+import { wallets as metamaskExtensionWallets } from "@cosmos-kit/cosmos-extension-metamask";
 import { NextUIProvider } from "@nextui-org/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
@@ -59,14 +56,7 @@ function InnerProviders({ children }: PropsWithChildren) {
 		<ChainProvider
 			chains={chainsMemo}
 			assetLists={assetsMemo}
-			wallets={[
-				...keplrWallets,
-				...leapWallets,
-				...ledgerWallets,
-				...cosmostationWallets,
-				...stationWallets,
-				...cosmosExtensionMetamaskWallets,
-			]}
+			wallets={[...keplrWallets, ...leapWallets, ...metamaskExtensionWallets]}
 			signerOptions={signerOptions}
 			walletConnectOptions={{
 				signClient: {
