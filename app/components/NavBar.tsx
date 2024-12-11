@@ -2,6 +2,7 @@
 
 import {
 	Chip,
+	cn,
 	Link,
 	Navbar,
 	NavbarBrand,
@@ -10,7 +11,6 @@ import {
 	NavbarMenu,
 	NavbarMenuItem,
 	NavbarMenuToggle,
-	cn,
 } from "@nextui-org/react";
 import dynamic from "next/dynamic";
 const ColorModeSwitch = dynamic(() => import("./ColorModeSwitch"), {
@@ -45,6 +45,7 @@ const menuConfig = (env: Env) => {
 			key: "docs",
 			text: "Docs",
 			href: env.DOCS_URL,
+			isExternal: true,
 		},
 	];
 
@@ -54,6 +55,7 @@ const menuConfig = (env: Env) => {
 			key: "faucet",
 			text: "Faucet",
 			href: env.FAUCET_URL,
+			isExternal: true,
 		});
 	}
 
@@ -76,7 +78,6 @@ export default function AppNavbar() {
 				wrapper: "w-full justify-center bg-transparent",
 				item: "hidden md:flex font-semibold",
 			}}
-			isBordered
 			height="60px"
 		>
 			<NavbarMenuToggle className="text-default-400 md:hidden" />
@@ -105,7 +106,12 @@ export default function AppNavbar() {
 			>
 				{menuItems.map((item) => (
 					<NavbarItem key={item.key}>
-						<Link as={NextLink} className="text-default-500" href={item.href}>
+						<Link
+							as={NextLink}
+							className="text-default-500"
+							href={item.href}
+							isExternal={item.isExternal}
+						>
 							{item.text}
 						</Link>
 					</NavbarItem>
@@ -137,6 +143,7 @@ export default function AppNavbar() {
 							href={item.href}
 							size="md"
 							onPress={() => setIsMenuOpen(false)}
+							isExternal={item.isExternal}
 						>
 							{item.text}
 						</Link>
