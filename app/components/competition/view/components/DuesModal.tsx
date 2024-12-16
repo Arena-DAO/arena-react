@@ -78,7 +78,7 @@ const DuesModal = ({ escrow }: DuesModalProps) => {
 	const targetRef = React.useRef(null);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
-	if (!cosmWasmClient || query.isLoading) {
+	if (!cosmWasmClient) {
 		return (
 			<div className="flex justify-center">
 				<Spinner />
