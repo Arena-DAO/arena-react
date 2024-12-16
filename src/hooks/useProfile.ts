@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { DaoDaoCoreQueryClient } from "~/codegen/DaoDaoCore.client";
-import { useDaoDaoCoreConfigQuery } from "~/codegen/DaoDaoCore.react-query";
 import { isValidWalletAddress } from "~/helpers/AddressHelpers";
 import { withIpfsSupport } from "~/helpers/IPFSHelpers";
 import { useCosmWasmClient } from "./useCosmWamClient";
 import { useEnv } from "./useEnv";
+import { ArenaDiscordIdentityQueryClient } from "~/codegen/ArenaDiscordIdentity.client";
 
 type UserProfile = {
 	nonce: number;
@@ -25,7 +25,8 @@ type ErrorResponse = {
 type Profile = {
 	address: string;
 	name?: string;
-	imageUrl?: string;
+	imageUrl?: string | null;
+	discordId?: string;
 };
 
 type FetchProfileResponse = UserProfile | ErrorResponse;
@@ -56,57 +57,58 @@ const fetchProfile = async (
 
 export const useProfileData = (address: string, isValid: boolean) => {
 	const isWallet = isValidWalletAddress(address);
-
 	const { data: env } = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
 	const isEnrollmentContract = isWallet
 		? false
 		: address === env.ARENA_COMPETITION_ENROLLMENT_ADDRESS;
 
-	const walletQuery = useQuery(
-		["profile", address],
-		async () => await fetchProfile(env.PFPK_URL, address),
-		{
-			staleTime: Number.POSITIVE_INFINITY,
-			enabled: isWallet && isValid,
-			select: (data) => {
-				return {
-					address,
-					name: data.name,
-					imageUrl: withIpfsSupport(data.imageUrl),
-				} as Profile;
-			},
-		},
-	);
-	const daoQuery = useDaoDaoCoreConfigQuery({
-		client:
-			cosmWasmClient && new DaoDaoCoreQueryClient(cosmWasmClient, address),
-		options: {
-			staleTime: Number.POSITIVE_INFINITY,
-			enabled: !isWallet && isValid && !isEnrollmentContract,
-			select: (data) => {
-				return {
-					address,
-					name: data.name,
-					imageUrl: withIpfsSupport(data.image_url),
-				} as Profile;
-			},
-		},
-	});
-	const enrollmentQuery = useQuery(
-		["profile", address],
-		() => {
-			return { address, name: "Competition Enrollment", imageUrl: "/logo.svg" };
-		},
-		{
-			staleTime: Number.POSITIVE_INFINITY,
-			enabled: isEnrollmentContract,
-		},
-	);
+	return useQuery({
+		queryKey: ["profile", address],
+		queryFn: async (): Promise<Profile> => {
+			if (!cosmWasmClient) {
+				throw "Query must block on loading CosmWasm client";
+			}
 
-	return isWallet
-		? walletQuery
-		: isEnrollmentContract
-			? enrollmentQuery
-			: daoQuery;
+			// First check Discord identity
+			if (env.ARENA_DISCORD_IDENTITY_ADDRESS) {
+				const identityClient = new ArenaDiscordIdentityQueryClient(
+					cosmWasmClient,
+					env.ARENA_DISCORD_IDENTITY_ADDRESS,
+				);
+				const discordUserId = await identityClient.userId({ addr: address });
+
+				if (discordUserId) {
+					return {
+						address,
+						discordId: discordUserId,
+					};
+				}
+			}
+
+			// If no Discord ID found, get the appropriate profile
+			if (isEnrollmentContract) {
+				return {
+					address,
+					name: "Competition Enrollment",
+					imageUrl: "/logo.svg",
+				};
+			}
+
+			if (isWallet) {
+				return await fetchProfile(env.PFPK_URL, address);
+			}
+
+			// Must be a DAO
+			const daoClient = new DaoDaoCoreQueryClient(cosmWasmClient, address);
+			const config = await daoClient.config();
+
+			return {
+				address,
+				name: config.name,
+				imageUrl: withIpfsSupport(config.image_url),
+			};
+		},
+		enabled: isValid && !!cosmWasmClient,
+	});
 };

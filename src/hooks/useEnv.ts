@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 export interface Env {
 	BECH32_PREFIX: string;
 	PFPK_URL: string;
+	API_URL: string;
+	DISCORD_API_URL: string;
 	WALLETCONNECT_PROJECT_ID: string;
 	BECH32_WALLET_LENGTH: number;
 	BECH32_CONTRACT_LENGTH: number;
@@ -27,6 +29,7 @@ export interface Env {
 	ARENA_ABC_RESERVE_DENOM: string;
 	ARENA_PAYMENT_REGISTRY_ADDRESS: string;
 	ARENA_TOKEN_GATEWAY_ADDRESS: string;
+	ARENA_DISCORD_IDENTITY_ADDRESS?: string;
 	DAO_DAO_URL: string;
 	DOCS_URL: string;
 	RPC_URL: string;
@@ -51,7 +54,11 @@ const checkEnvNumber = (key: string | undefined): number => {
 
 function getEnv(): Env {
 	return {
+		DISCORD_API_URL: checkEnv(process.env.NEXT_PUBLIC_DISCORD_API_URL),
+		ARENA_DISCORD_IDENTITY_ADDRESS:
+			process.env.NEXT_PUBLIC_ARENA_DISCORD_IDENTITY_ADDRESS,
 		IBC_FUN: checkEnv(process.env.NEXT_PUBLIC_IBC_FUN),
+		API_URL: checkEnv(process.env.NEXT_PUBLIC_API_URL),
 		BECH32_PREFIX: checkEnv(process.env.NEXT_PUBLIC_BECH32_PREFIX),
 		PFPK_URL: checkEnv(process.env.NEXT_PUBLIC_PFPK_URL),
 		WALLETCONNECT_PROJECT_ID: checkEnv(
