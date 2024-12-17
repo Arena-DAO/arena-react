@@ -48,6 +48,7 @@ export default function WalletConnectToggle() {
 							handleDiscordConnect();
 						}
 					}}
+					disabledKeys={env.ENV === "production" ? [] : ["connect"]}
 				>
 					<DropdownItem key="wallet">Manage Wallet</DropdownItem>
 					<DropdownItem
