@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+import { ArenaDiscordIdentityQueryClient } from "~/codegen/ArenaDiscordIdentity.client";
 import { DaoDaoCoreQueryClient } from "~/codegen/DaoDaoCore.client";
 import { isValidWalletAddress } from "~/helpers/AddressHelpers";
 import { withIpfsSupport } from "~/helpers/IPFSHelpers";
 import { useCosmWasmClient } from "./useCosmWamClient";
 import { useEnv } from "./useEnv";
-import { ArenaDiscordIdentityQueryClient } from "~/codegen/ArenaDiscordIdentity.client";
 
 type UserProfile = {
 	nonce: number;
