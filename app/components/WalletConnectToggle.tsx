@@ -24,11 +24,11 @@ export default function WalletConnectToggle() {
 		}
 
 		// Encode the current URL and wallet address
-		const redirectUrl = encodeURIComponent(window.location.href);
+		const redirectUri = encodeURIComponent(window.location.href);
 		const walletAddress = encodeURIComponent(chainContext.address);
 
 		// Redirect to the Lambda login endpoint with both parameters
-		window.location.href = `${env.API_URL}/login?redirect_url=${redirectUrl}&wallet_address=${walletAddress}`;
+		window.location.href = `${env.API_URL}/login?redirect_uri=${redirectUri}&wallet_address=${walletAddress}`;
 	};
 
 	if (chainContext.isWalletConnected && chainContext.address) {

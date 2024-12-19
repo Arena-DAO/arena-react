@@ -14,7 +14,7 @@ export default function DiscordCallback() {
 	const { address } = useChain(env.CHAIN);
 
 	// Get redirect from URL parameters
-	const redirectUrl = searchParams.get("redirect_url");
+	const redirectUri = searchParams.get("redirect_uri");
 	const errorDescription = searchParams.get("error_description");
 
 	// Handle error cases
@@ -28,8 +28,8 @@ export default function DiscordCallback() {
 	}
 
 	// If we have a redirect URL, use it, otherwise go to home
-	if (redirectUrl) {
-		router.push(redirectUrl);
+	if (redirectUri) {
+		router.push(decodeURIComponent(redirectUri));
 	} else {
 		router.push("/");
 	}
