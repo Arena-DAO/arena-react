@@ -1,11 +1,17 @@
 "use client";
 
+import { useChain } from "@cosmos-kit/react";
 import { Card, CardBody, CardHeader, Spinner } from "@nextui-org/react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEnv } from "~/hooks/useEnv";
 
 export default function DiscordCallback() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
+	const queryClient = useQueryClient();
+	const { data: env } = useEnv();
+	const { address } = useChain(env.CHAIN);
 
 	// Get redirect from URL parameters
 	const redirectUrl = searchParams.get("redirect_url");
@@ -14,6 +20,11 @@ export default function DiscordCallback() {
 	// Handle error cases
 	if (errorDescription) {
 		throw Error(errorDescription);
+	}
+
+	// Invalidate profile query
+	if (address) {
+		queryClient.invalidateQueries({ queryKey: ["profile", address] });
 	}
 
 	// If we have a redirect URL, use it, otherwise go to home
