@@ -9,6 +9,7 @@ import {
 	DropdownTrigger,
 } from "@nextui-org/react";
 import { BsDiscord, BsWallet } from "react-icons/bs";
+import { toast } from "react-toastify";
 import { useEnv } from "~/hooks/useEnv";
 import Profile from "./Profile";
 
@@ -17,13 +18,17 @@ export default function WalletConnectToggle() {
 	const chainContext = useChain(env.CHAIN);
 
 	const handleDiscordConnect = () => {
-		// Generate and store state parameter for security
-		const state = crypto.randomUUID();
-		localStorage.setItem("discord_oauth_state", state);
-		localStorage.setItem("discord_oauth_redirect", window.location.href);
+		if (!chainContext.address) {
+			toast.error("Wallet must be connected");
+			return; // Exit the function if no wallet is connected
+		}
 
-		// Redirect to the Lambda login endpoint
-		window.location.href = `${env.API_URL}/login?state=${state}`;
+		// Encode the current URL and wallet address
+		const redirectUrl = encodeURIComponent(window.location.href);
+		const walletAddress = encodeURIComponent(chainContext.address);
+
+		// Redirect to the Lambda login endpoint with both parameters
+		window.location.href = `${env.API_URL}/login?redirect_url=${redirectUrl}&wallet_address=${walletAddress}`;
 	};
 
 	if (chainContext.isWalletConnected && chainContext.address) {
