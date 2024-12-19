@@ -6,14 +6,24 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { Uint128, InstantiateMsg, Coin, ExecuteMsg, Uint64, Action, Expiration, Timestamp, QueryMsg, MigrateMsg, OwnershipForString, NullableUint64 } from "./ArenaDiscordIdentity.types";
+import { Uint128, InstantiateMsg, Coin, ExecuteMsg, Uint64, Action, Expiration, Timestamp, DiscordProfile, DiscordConnection, QueryMsg, MigrateMsg, Addr, ArrayOfAddr, ArrayOfDiscordConnection, NullableDiscordProfile, OwnershipForString } from "./ArenaDiscordIdentity.types";
 export interface ArenaDiscordIdentityReadOnlyInterface {
   contractAddress: string;
-  userId: ({
+  discordProfile: ({
     addr
   }: {
     addr: string;
-  }) => Promise<NullableUint64>;
+  }) => Promise<NullableDiscordProfile>;
+  connectedWallets: ({
+    discordId
+  }: {
+    discordId: Uint64;
+  }) => Promise<ArrayOfAddr>;
+  discordConnections: ({
+    addr
+  }: {
+    addr: string;
+  }) => Promise<ArrayOfDiscordConnection>;
   ownership: () => Promise<OwnershipForString>;
 }
 export class ArenaDiscordIdentityQueryClient implements ArenaDiscordIdentityReadOnlyInterface {
@@ -22,16 +32,40 @@ export class ArenaDiscordIdentityQueryClient implements ArenaDiscordIdentityRead
   constructor(client: CosmWasmClient, contractAddress: string) {
     this.client = client;
     this.contractAddress = contractAddress;
-    this.userId = this.userId.bind(this);
+    this.discordProfile = this.discordProfile.bind(this);
+    this.connectedWallets = this.connectedWallets.bind(this);
+    this.discordConnections = this.discordConnections.bind(this);
     this.ownership = this.ownership.bind(this);
   }
-  userId = async ({
+  discordProfile = async ({
     addr
   }: {
     addr: string;
-  }): Promise<NullableUint64> => {
+  }): Promise<NullableDiscordProfile> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      user_id: {
+      discord_profile: {
+        addr
+      }
+    });
+  };
+  connectedWallets = async ({
+    discordId
+  }: {
+    discordId: Uint64;
+  }): Promise<ArrayOfAddr> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      connected_wallets: {
+        discord_id: discordId
+      }
+    });
+  };
+  discordConnections = async ({
+    addr
+  }: {
+    addr: string;
+  }): Promise<ArrayOfDiscordConnection> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      discord_connections: {
         addr
       }
     });
@@ -47,10 +81,15 @@ export interface ArenaDiscordIdentityInterface extends ArenaDiscordIdentityReadO
   sender: string;
   setProfile: ({
     addr,
-    userId
+    discordProfile
   }: {
     addr: string;
-    userId: Uint64;
+    discordProfile: DiscordProfile;
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  setConnections: ({
+    connections
+  }: {
+    connections: DiscordConnection[];
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   setFaucetAmount: ({
     amount
@@ -70,21 +109,33 @@ export class ArenaDiscordIdentityClient extends ArenaDiscordIdentityQueryClient 
     this.sender = sender;
     this.contractAddress = contractAddress;
     this.setProfile = this.setProfile.bind(this);
+    this.setConnections = this.setConnections.bind(this);
     this.setFaucetAmount = this.setFaucetAmount.bind(this);
     this.withdraw = this.withdraw.bind(this);
     this.updateOwnership = this.updateOwnership.bind(this);
   }
   setProfile = async ({
     addr,
-    userId
+    discordProfile
   }: {
     addr: string;
-    userId: Uint64;
+    discordProfile: DiscordProfile;
   }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       set_profile: {
         addr,
-        user_id: userId
+        discord_profile: discordProfile
+      }
+    }, fee, memo, _funds);
+  };
+  setConnections = async ({
+    connections
+  }: {
+    connections: DiscordConnection[];
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      set_connections: {
+        connections
       }
     }, fee, memo, _funds);
   };

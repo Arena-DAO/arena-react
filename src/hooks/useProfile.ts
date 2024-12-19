@@ -70,29 +70,36 @@ export const useProfileData = (address: string, isValid: boolean) => {
 				throw "Query must block on loading CosmWasm client";
 			}
 
-			// First check Discord identity
+			if (isEnrollmentContract) {
+				return {
+					address,
+					name: "Competition Enrollment",
+					imageUrl: "/logo.png",
+				};
+			}
+
+			// Check Discord identity
 			if (env.ARENA_DISCORD_IDENTITY_ADDRESS) {
 				const identityClient = new ArenaDiscordIdentityQueryClient(
 					cosmWasmClient,
 					env.ARENA_DISCORD_IDENTITY_ADDRESS,
 				);
-				const discordUserId = await identityClient.userId({ addr: address });
+				const discordProfile = await identityClient.discordProfile({
+					addr: address,
+				});
 
-				if (discordUserId) {
+				if (discordProfile) {
+					const { user_id, username, avatar_hash } = discordProfile;
+
 					return {
 						address,
-						discordId: discordUserId,
+						discordId: user_id,
+						name: username,
+						imageUrl: avatar_hash
+							? `https://cdn.discordapp.com/avatars/${user_id}/${avatar_hash}.png`
+							: null,
 					};
 				}
-			}
-
-			// If no Discord ID found, get the appropriate profile
-			if (isEnrollmentContract) {
-				return {
-					address,
-					name: "Competition Enrollment",
-					imageUrl: "/logo.svg",
-				};
 			}
 
 			if (isWallet) {

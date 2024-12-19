@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { Uint128, InstantiateMsg, Coin, ExecuteMsg, Uint64, Action, Expiration, Timestamp, QueryMsg, MigrateMsg, OwnershipForString, NullableUint64 } from "./ArenaDiscordIdentity.types";
+import { Uint128, InstantiateMsg, Coin, ExecuteMsg, Uint64, Action, Expiration, Timestamp, DiscordProfile, DiscordConnection, QueryMsg, MigrateMsg, Addr, ArrayOfAddr, ArrayOfDiscordConnection, NullableDiscordProfile, OwnershipForString } from "./ArenaDiscordIdentity.types";
 import { ArenaDiscordIdentityQueryClient, ArenaDiscordIdentityClient } from "./ArenaDiscordIdentity.client";
 export const arenaDiscordIdentityQueryKeys = {
   contract: ([{
@@ -17,9 +17,19 @@ export const arenaDiscordIdentityQueryKeys = {
     ...arenaDiscordIdentityQueryKeys.contract[0],
     address: contractAddress
   }] as const),
-  userId: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
+  discordProfile: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
     ...arenaDiscordIdentityQueryKeys.address(contractAddress)[0],
-    method: "user_id",
+    method: "discord_profile",
+    args
+  }] as const),
+  connectedWallets: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
+    ...arenaDiscordIdentityQueryKeys.address(contractAddress)[0],
+    method: "connected_wallets",
+    args
+  }] as const),
+  discordConnections: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
+    ...arenaDiscordIdentityQueryKeys.address(contractAddress)[0],
+    method: "discord_connections",
     args
   }] as const),
   ownership: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
@@ -29,13 +39,37 @@ export const arenaDiscordIdentityQueryKeys = {
   }] as const)
 };
 export const arenaDiscordIdentityQueries = {
-  userId: <TData = NullableUint64,>({
+  discordProfile: <TData = NullableDiscordProfile,>({
     client,
     args,
     options
-  }: ArenaDiscordIdentityUserIdQuery<TData>): UseQueryOptions<NullableUint64, Error, TData> => ({
-    queryKey: arenaDiscordIdentityQueryKeys.userId(client?.contractAddress, args),
-    queryFn: () => client ? client.userId({
+  }: ArenaDiscordIdentityDiscordProfileQuery<TData>): UseQueryOptions<NullableDiscordProfile, Error, TData> => ({
+    queryKey: arenaDiscordIdentityQueryKeys.discordProfile(client?.contractAddress, args),
+    queryFn: () => client ? client.discordProfile({
+      addr: args.addr
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  connectedWallets: <TData = ArrayOfAddr,>({
+    client,
+    args,
+    options
+  }: ArenaDiscordIdentityConnectedWalletsQuery<TData>): UseQueryOptions<ArrayOfAddr, Error, TData> => ({
+    queryKey: arenaDiscordIdentityQueryKeys.connectedWallets(client?.contractAddress, args),
+    queryFn: () => client ? client.connectedWallets({
+      discordId: args.discordId
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  discordConnections: <TData = ArrayOfDiscordConnection,>({
+    client,
+    args,
+    options
+  }: ArenaDiscordIdentityDiscordConnectionsQuery<TData>): UseQueryOptions<ArrayOfDiscordConnection, Error, TData> => ({
+    queryKey: arenaDiscordIdentityQueryKeys.discordConnections(client?.contractAddress, args),
+    queryFn: () => client ? client.discordConnections({
       addr: args.addr
     }) : Promise.reject(new Error("Invalid client")),
     ...options,
@@ -67,17 +101,51 @@ export function useArenaDiscordIdentityOwnershipQuery<TData = OwnershipForString
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
-export interface ArenaDiscordIdentityUserIdQuery<TData> extends ArenaDiscordIdentityReactQuery<NullableUint64, TData> {
+export interface ArenaDiscordIdentityDiscordConnectionsQuery<TData> extends ArenaDiscordIdentityReactQuery<ArrayOfDiscordConnection, TData> {
   args: {
     addr: string;
   };
 }
-export function useArenaDiscordIdentityUserIdQuery<TData = NullableUint64>({
+export function useArenaDiscordIdentityDiscordConnectionsQuery<TData = ArrayOfDiscordConnection>({
   client,
   args,
   options
-}: ArenaDiscordIdentityUserIdQuery<TData>) {
-  return useQuery<NullableUint64, Error, TData>(arenaDiscordIdentityQueryKeys.userId(client?.contractAddress, args), () => client ? client.userId({
+}: ArenaDiscordIdentityDiscordConnectionsQuery<TData>) {
+  return useQuery<ArrayOfDiscordConnection, Error, TData>(arenaDiscordIdentityQueryKeys.discordConnections(client?.contractAddress, args), () => client ? client.discordConnections({
+    addr: args.addr
+  }) : Promise.reject(new Error("Invalid client")), {
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
+}
+export interface ArenaDiscordIdentityConnectedWalletsQuery<TData> extends ArenaDiscordIdentityReactQuery<ArrayOfAddr, TData> {
+  args: {
+    discordId: Uint64;
+  };
+}
+export function useArenaDiscordIdentityConnectedWalletsQuery<TData = ArrayOfAddr>({
+  client,
+  args,
+  options
+}: ArenaDiscordIdentityConnectedWalletsQuery<TData>) {
+  return useQuery<ArrayOfAddr, Error, TData>(arenaDiscordIdentityQueryKeys.connectedWallets(client?.contractAddress, args), () => client ? client.connectedWallets({
+    discordId: args.discordId
+  }) : Promise.reject(new Error("Invalid client")), {
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
+}
+export interface ArenaDiscordIdentityDiscordProfileQuery<TData> extends ArenaDiscordIdentityReactQuery<NullableDiscordProfile, TData> {
+  args: {
+    addr: string;
+  };
+}
+export function useArenaDiscordIdentityDiscordProfileQuery<TData = NullableDiscordProfile>({
+  client,
+  args,
+  options
+}: ArenaDiscordIdentityDiscordProfileQuery<TData>) {
+  return useQuery<NullableDiscordProfile, Error, TData>(arenaDiscordIdentityQueryKeys.discordProfile(client?.contractAddress, args), () => client ? client.discordProfile({
     addr: args.addr
   }) : Promise.reject(new Error("Invalid client")), {
     ...options,
@@ -144,11 +212,33 @@ export function useArenaDiscordIdentitySetFaucetAmountMutation(options?: Omit<Us
     } = {}
   }) => client.setFaucetAmount(msg, fee, memo, funds), options);
 }
+export interface ArenaDiscordIdentitySetConnectionsMutation {
+  client: ArenaDiscordIdentityClient;
+  msg: {
+    connections: DiscordConnection[];
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaDiscordIdentitySetConnectionsMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaDiscordIdentitySetConnectionsMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaDiscordIdentitySetConnectionsMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.setConnections(msg, fee, memo, funds), options);
+}
 export interface ArenaDiscordIdentitySetProfileMutation {
   client: ArenaDiscordIdentityClient;
   msg: {
     addr: string;
-    userId: Uint64;
+    discordProfile: DiscordProfile;
   };
   args?: {
     fee?: number | StdFee | "auto";

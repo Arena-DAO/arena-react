@@ -17,7 +17,11 @@ export interface Coin {
 export type ExecuteMsg = {
   set_profile: {
     addr: string;
-    user_id: Uint64;
+    discord_profile: DiscordProfile;
+  };
+} | {
+  set_connections: {
+    connections: DiscordConnection[];
   };
 } | {
   set_faucet_amount: {
@@ -43,8 +47,25 @@ export type Expiration = {
   never: {};
 };
 export type Timestamp = Uint64;
+export interface DiscordProfile {
+  avatar_hash?: string | null;
+  user_id: Uint64;
+  username: string;
+}
+export interface DiscordConnection {
+  key: string;
+  username: string;
+}
 export type QueryMsg = {
-  user_id: {
+  discord_profile: {
+    addr: string;
+  };
+} | {
+  connected_wallets: {
+    discord_id: Uint64;
+  };
+} | {
+  discord_connections: {
     addr: string;
   };
 } | {
@@ -53,9 +74,12 @@ export type QueryMsg = {
 export type MigrateMsg = {
   from_compatible: {};
 };
+export type Addr = string;
+export type ArrayOfAddr = Addr[];
+export type ArrayOfDiscordConnection = DiscordConnection[];
+export type NullableDiscordProfile = DiscordProfile | null;
 export interface OwnershipForString {
   owner?: string | null;
   pending_expiry?: Expiration | null;
   pending_owner?: string | null;
 }
-export type NullableUint64 = Uint64 | null;
