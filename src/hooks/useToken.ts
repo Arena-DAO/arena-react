@@ -27,6 +27,7 @@ export const useToken = (
 					),
 		{
 			staleTime: Number.POSITIVE_INFINITY,
+			cacheTime: 600000,
 			retryOnMount: false,
 			retry: false,
 			enabled: !!cosmWasmClient && denomOrAddress.length > 0,

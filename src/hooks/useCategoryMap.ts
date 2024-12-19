@@ -67,5 +67,6 @@ export const useCategoryMap = (key: Keys = "url") => {
 	return useQuery(["categories", key], () => getCategoryMap(env.ENV, key), {
 		initialData: getCategoryMap(env.ENV, key),
 		staleTime: Number.POSITIVE_INFINITY,
+		cacheTime: Number.POSITIVE_INFINITY,
 	});
 };

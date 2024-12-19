@@ -117,5 +117,7 @@ export const useProfileData = (address: string, isValid: boolean) => {
 			};
 		},
 		enabled: isValid && !!cosmWasmClient,
+		staleTime: Number.POSITIVE_INFINITY,
+		cacheTime: 600000,
 	});
 };

@@ -7,5 +7,6 @@ export const useCosmWasmClient = (chain?: string) => {
 	const { getCosmWasmClient } = useChain(chain ?? env.CHAIN);
 	return useQuery(["cosmWasmClient"], async () => await getCosmWasmClient(), {
 		staleTime: Number.POSITIVE_INFINITY,
+		cacheTime: Number.POSITIVE_INFINITY,
 	});
 };
