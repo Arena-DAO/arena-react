@@ -7,6 +7,7 @@ import {
 	DropdownItem,
 	DropdownMenu,
 	DropdownTrigger,
+	Tooltip,
 } from "@nextui-org/react";
 import { BsDiscord, BsWallet } from "react-icons/bs";
 import { toast } from "react-toastify";
@@ -76,14 +77,16 @@ export default function WalletConnectToggle() {
 		);
 	}
 	return (
-		<Button
-			isLoading={chainContext.isWalletConnecting}
-			variant="ghost"
-			color="primary"
-			onPress={chainContext.openView}
-			isIconOnly
-		>
-			<BsWallet />
-		</Button>
+		<Tooltip content="Connect a wallet to get started!">
+			<Button
+				isLoading={chainContext.isWalletConnecting}
+				variant="ghost"
+				color="primary"
+				onPress={chainContext.openView}
+				isIconOnly
+			>
+				<BsWallet />
+			</Button>
+		</Tooltip>
 	);
 }
