@@ -287,7 +287,7 @@ const ProcessForm = ({
 		<>
 			<Button
 				color={action === "Jail" ? "danger" : "primary"}
-				onClick={tryOpen}
+				onPress={tryOpen}
 			>
 				{action}
 			</Button>
@@ -441,7 +441,7 @@ const ProcessForm = ({
 														isIconOnly
 														aria-label="Delete Recipient"
 														variant="faded"
-														onClick={() => remove(i)}
+														onPress={() => remove(i)}
 														isDisabled={isSubmitting}
 													>
 														<FiTrash />
@@ -467,7 +467,7 @@ const ProcessForm = ({
 							</CardBody>
 							<CardFooter>
 								<Button
-									onClick={() => append({ addr: "", percentage: 0 })}
+									onPress={() => append({ addr: "", percentage: 0 })}
 									aria-label="Add Recipient"
 									startContent={<FiPlus />}
 									isDisabled={isSubmitting}
@@ -478,7 +478,10 @@ const ProcessForm = ({
 						</Card>
 					</ModalBody>
 					<ModalFooter>
-						<Button onClick={handleSubmit(onSubmit)} isLoading={isSubmitting}>
+						<Button
+							onPress={() => handleSubmit(onSubmit)}
+							isLoading={isSubmitting}
+						>
 							Submit
 						</Button>
 					</ModalFooter>

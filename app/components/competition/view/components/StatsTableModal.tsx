@@ -149,7 +149,7 @@ const StatsTable: React.FC<StatsTableProps> = ({
 					{hasNextPage && (
 						<ModalFooter>
 							<Button
-								onClick={() => fetchNextPage()}
+								onPress={() => fetchNextPage()}
 								isLoading={isFetchingNextPage}
 								disabled={!hasNextPage || isFetchingNextPage}
 							>

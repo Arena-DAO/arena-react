@@ -126,7 +126,7 @@ const BalancesModal = ({ escrow }: BalancesModalProps) => {
 					{query.hasNextPage && (
 						<ModalFooter>
 							<Button
-								onClick={() => query.fetchNextPage()}
+								onPress={() => query.fetchNextPage()}
 								isLoading={query.isFetchingNextPage}
 							>
 								Load More

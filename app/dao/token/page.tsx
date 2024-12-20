@@ -236,7 +236,7 @@ const TokenPage: React.FC = () => {
 										<Button
 											color="success"
 											variant="shadow"
-											onClick={() => openConfirmModal("mint")}
+											onPress={() => openConfirmModal("mint")}
 											isDisabled={dumpState.is_paused}
 											className="font-semibold"
 											startContent={<BsCoin size={18} />}
@@ -276,7 +276,7 @@ const TokenPage: React.FC = () => {
 										<Button
 											color="danger"
 											variant="shadow"
-											onClick={() => openConfirmModal("burn")}
+											onPress={() => openConfirmModal("burn")}
 											isDisabled={dumpState.is_paused}
 											className="font-semibold"
 											startContent={<BsFire size={18} />}

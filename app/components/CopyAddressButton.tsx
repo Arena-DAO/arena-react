@@ -18,7 +18,7 @@ export function CopyAddressButton({
 
 	return (
 		<Button
-			onClick={setCopied}
+			onPress={setCopied}
 			aria-label="Copy address"
 			startContent={isCopied ? <FiCheck /> : <FiClipboard />}
 			isDisabled={isCopied}

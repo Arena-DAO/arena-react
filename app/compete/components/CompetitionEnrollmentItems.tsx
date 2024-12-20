@@ -101,7 +101,7 @@ const CompetitionEnrollmentItems = ({
 			{query.hasNextPage && (
 				<div className="mt-4 flex justify-center">
 					<Button
-						onClick={() => query.fetchNextPage()}
+						onPress={() => query.fetchNextPage()}
 						isLoading={query.isFetchingNextPage}
 					>
 						Load More

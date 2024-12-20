@@ -45,7 +45,7 @@ const RulesAndRulesetsForm = () => {
 											variant="faded"
 											isIconOnly
 											className="my-auto"
-											onClick={() => removeRule(index)}
+											onPress={() => removeRule(index)}
 										>
 											<FiMinus />
 										</Button>
@@ -57,7 +57,7 @@ const RulesAndRulesetsForm = () => {
 				))}
 				<Button
 					className="mt-4"
-					onClick={() => appendRule({ rule: "" })}
+					onPress={() => appendRule({ rule: "" })}
 					startContent={<FiPlus />}
 				>
 					Add Rule

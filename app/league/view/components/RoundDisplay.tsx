@@ -271,7 +271,7 @@ const RoundDisplay = ({
 				<Button
 					type="submit"
 					className="ml-auto"
-					onClick={onSubmit}
+					onPress={onSubmit}
 					isDisabled={changeMap.size === 0 || isSubmitting}
 				>
 					Submit

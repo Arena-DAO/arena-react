@@ -218,7 +218,7 @@ const EscrowSection = ({
 							</CardBody>
 							{!data.is_locked && (
 								<CardFooter>
-									<Button color="primary" onClick={withdraw}>
+									<Button color="primary" onPress={withdraw}>
 										Withdraw
 									</Button>
 								</CardFooter>
@@ -235,7 +235,7 @@ const EscrowSection = ({
 							</CardBody>
 							{!data.is_locked && (
 								<CardBody>
-									<Button color="primary" onClick={deposit} fullWidth>
+									<Button color="primary" onPress={deposit} fullWidth>
 										Deposit
 									</Button>
 								</CardBody>

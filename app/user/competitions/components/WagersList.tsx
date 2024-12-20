@@ -59,7 +59,7 @@ const WagersList: React.FC<WagersListProps> = ({ hostAddress }) => {
 			</div>
 			{wagersQuery.hasNextPage && (
 				<Button
-					onClick={() => wagersQuery.fetchNextPage()}
+					onPress={() => wagersQuery.fetchNextPage()}
 					disabled={wagersQuery.isFetchingNextPage}
 				>
 					{wagersQuery.isFetchingNextPage ? "Loading more..." : "Load More"}

@@ -202,7 +202,7 @@ const EvidenceSection = ({
 							query.hasNextPage && (
 								<div className="flex w-full justify-center">
 									<Button
-										onClick={() => query.fetchNextPage()}
+										onPress={() => query.fetchNextPage()}
 										isLoading={query.isFetchingNextPage}
 									>
 										Load More
@@ -242,7 +242,7 @@ const EvidenceSection = ({
 					</Table>
 				</CardBody>
 				<CardFooter>
-					<Button onClick={onOpen} isDisabled={isSubmitting}>
+					<Button onPress={onOpen} isDisabled={isSubmitting}>
 						Add Evidence
 					</Button>
 				</CardFooter>
@@ -268,7 +268,7 @@ const EvidenceSection = ({
 													isIconOnly
 													aria-label="Delete evidence item"
 													variant="faded"
-													onClick={() => remove(i)}
+													onPress={() => remove(i)}
 													isDisabled={isSubmitting}
 												>
 													<FiTrash />
@@ -287,14 +287,17 @@ const EvidenceSection = ({
 					</ModalBody>
 					<ModalFooter>
 						<Button
-							onClick={() => append({ content: "" })}
+							onPress={() => append({ content: "" })}
 							isDisabled={isSubmitting}
 							aria-label="Add evidence item"
 							startContent={<FiPlus />}
 						>
 							Add Item
 						</Button>
-						<Button onClick={handleSubmit(onSubmit)} isLoading={isSubmitting}>
+						<Button
+							onPress={() => handleSubmit(onSubmit)}
+							isLoading={isSubmitting}
+						>
 							Submit
 						</Button>
 					</ModalFooter>

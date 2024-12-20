@@ -59,7 +59,7 @@ const LeaguesList: React.FC<LeaguesListProps> = ({ hostAddress }) => {
 			</div>
 			{leaguesQuery.hasNextPage && (
 				<Button
-					onClick={() => leaguesQuery.fetchNextPage()}
+					onPress={() => leaguesQuery.fetchNextPage()}
 					disabled={leaguesQuery.isFetchingNextPage}
 				>
 					{leaguesQuery.isFetchingNextPage ? "Loading more..." : "Load More"}

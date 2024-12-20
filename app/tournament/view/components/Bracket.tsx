@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import ReactFlow, {
 	Background,
 	Controls,
@@ -23,12 +23,12 @@ import "reactflow/dist/style.css";
 import { useChain } from "@cosmos-kit/react";
 import dagre from "@dagrejs/dagre";
 import { Button, ButtonGroup, Tooltip } from "@nextui-org/react";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import {
-	BsSymmetryHorizontal,
-	BsSymmetryVertical,
-	BsUpload,
-} from "react-icons/bs";
+	type QueryClient,
+	useInfiniteQuery,
+	useQueryClient,
+} from "@tanstack/react-query";
+import { BsUpload } from "react-icons/bs";
 import { toast } from "react-toastify";
 import { create } from "zustand";
 import { arenaCoreQueryKeys } from "~/codegen/ArenaCore.react-query";
@@ -40,6 +40,7 @@ import {
 import { useCategoryContext } from "~/contexts/CategoryContext";
 import { getCompetitionQueryKey } from "~/helpers/CompetitionHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
+import type { Profile } from "~/hooks/useProfile";
 import type { CompetitionResponse } from "~/types/CompetitionResponse";
 import MatchNode from "./MatchNode";
 
@@ -52,6 +53,23 @@ const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 
 const nodeTypes = {
 	matchNode: MatchNode,
+};
+
+const EDGE_STYLES = {
+	winner: {
+		stroke: "#4CAF50",
+		strokeWidth: 3,
+	},
+	loser: {
+		stroke: "#FF5722",
+		strokeWidth: 3,
+		strokeDasharray: "5,5",
+	},
+	redemption: {
+		stroke: "#FFFF00",
+		strokeWidth: 3,
+		strokeDasharray: "5,5",
+	},
 };
 
 interface MatchResultsState {
@@ -84,17 +102,31 @@ export const useMatchResultsStore = create<MatchResultsState>()((set, get) => ({
 }));
 
 const getLayoutedElements = (
+	queryClient: QueryClient,
 	nodes: Node[],
 	edges: Edge[],
-	options: { direction: string },
 ) => {
-	const isHorizontal = options.direction === "LR";
-	dagreGraph.setGraph({ rankdir: options.direction });
+	dagreGraph.setGraph({
+		rankdir: "LR",
+		ranker: "tight-tree",
+	});
 
 	for (const node of nodes) {
+		const profile1 = queryClient.getQueryData<Profile>([
+			"profile",
+			node.data.team_1,
+		]);
+		const profile2 = queryClient.getQueryData<Profile>([
+			"profile",
+			node.data.team_2,
+		]);
 		dagreGraph.setNode(node.id, {
-			width: 400,
-			height: 450,
+			width: Math.max(
+				Math.max(profile1?.name?.length ?? 46, profile2?.name?.length ?? 46) *
+					20,
+				330,
+			),
+			height: 500,
 		});
 	}
 	for (const edge of edges) {
@@ -113,8 +145,8 @@ const getLayoutedElements = (
 			const x = position.x - (node.width ?? 0) / 2;
 			const y = position.y - (node.height ?? 0) / 2;
 
-			node.targetPosition = isHorizontal ? Position.Left : Position.Top;
-			node.sourcePosition = isHorizontal ? Position.Right : Position.Bottom;
+			node.targetPosition = Position.Left;
+			node.sourcePosition = Position.Right;
 
 			return { ...node, position: { x, y } };
 		}),
@@ -128,19 +160,11 @@ function convertMatchesToNodesEdges(matches: Match[]) {
 		data: match,
 		type: "matchNode",
 		position: { x: 0, y: 0 },
+		style: { transition: "all 50ms ease" },
 	}));
 
 	const edges: Edge[] = matches.flatMap((match) => {
 		const edges = [];
-		const defaultEdgeStyle = {
-			stroke: "#4CAF50",
-			strokeWidth: 3,
-		};
-		const losersEdgeStyle = {
-			stroke: "#FF5722",
-			strokeWidth: 2,
-			strokeDasharray: "5,5",
-		};
 
 		if (match.next_match_winner) {
 			edges.push({
@@ -149,7 +173,9 @@ function convertMatchesToNodesEdges(matches: Match[]) {
 				target: match.next_match_winner.toString(),
 				type: "smoothstep",
 				sourceHandle: "winner",
-				style: match.is_losers_bracket ? losersEdgeStyle : defaultEdgeStyle,
+				style: match.is_losers_bracket
+					? EDGE_STYLES.redemption
+					: EDGE_STYLES.winner,
 			});
 		}
 		if (match.next_match_loser) {
@@ -159,7 +185,7 @@ function convertMatchesToNodesEdges(matches: Match[]) {
 				target: match.next_match_loser.toString(),
 				type: "smoothstep",
 				sourceHandle: "loser",
-				style: losersEdgeStyle,
+				style: EDGE_STYLES.loser,
 			});
 		}
 		return edges;
@@ -229,22 +255,12 @@ function Bracket({ tournamentId, escrow }: BracketProps) {
 			const { nodes: newNodes, edges: newEdges } =
 				convertMatchesToNodesEdges(allMatches);
 			const { nodes: layoutedNodes, edges: layoutedEdges } =
-				getLayoutedElements(newNodes, newEdges, { direction: "LR" });
+				getLayoutedElements(queryClient, newNodes, newEdges);
 
 			setNodes(layoutedNodes);
 			setEdges(layoutedEdges);
 		}
-	}, [data, setNodes, setEdges]);
-
-	const onLayout = useCallback(
-		(direction: string) => {
-			const { nodes: layoutedNodes, edges: layoutedEdges } =
-				getLayoutedElements(nodes, edges, { direction });
-			setNodes([...layoutedNodes]);
-			setEdges([...layoutedEdges]);
-		},
-		[nodes, edges, setNodes, setEdges],
-	);
+	}, [queryClient, data, setNodes, setEdges]);
 
 	const onSubmit = async () => {
 		try {
@@ -368,30 +384,12 @@ function Bracket({ tournamentId, escrow }: BracketProps) {
 			<Controls />
 			<Panel position="top-right">
 				<ButtonGroup>
-					<Tooltip content="Vertical Layout" placement="bottom">
-						<Button
-							isIconOnly
-							aria-label="Vertical Layout"
-							onClick={() => onLayout("TB")}
-						>
-							<BsSymmetryVertical size={20} />
-						</Button>
-					</Tooltip>
-					<Tooltip content="Horizontal Layout" placement="bottom">
-						<Button
-							isIconOnly
-							aria-label="Horizontal Layout"
-							onClick={() => onLayout("LR")}
-						>
-							<BsSymmetryHorizontal size={20} />
-						</Button>
-					</Tooltip>
 					<Tooltip content="Submit Results" placement="bottom">
 						<Button
 							isIconOnly
 							aria-label="Submit Results"
 							isDisabled={updates.size === 0}
-							onClick={onSubmit}
+							onPress={onSubmit}
 						>
 							<BsUpload size={20} />
 						</Button>

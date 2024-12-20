@@ -99,7 +99,7 @@ const RulesetsSelection: React.FC<RulesetsSelectionProps> = ({
 						<div className="flex justify-center">
 							<Button
 								isLoading={query.isFetchingNextPage}
-								onClick={() => query.fetchNextPage()}
+								onPress={() => query.fetchNextPage()}
 							>
 								Load More
 							</Button>

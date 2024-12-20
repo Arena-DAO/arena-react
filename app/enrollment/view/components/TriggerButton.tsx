@@ -113,7 +113,7 @@ const TriggerButton: React.FC<TriggerButtonProps> = ({
 	return (
 		<Button
 			color="primary"
-			onClick={handleTriggerExpiration}
+			onPress={handleTriggerExpiration}
 			isLoading={triggerExpirationMutation.isLoading}
 		>
 			Trigger Expiration

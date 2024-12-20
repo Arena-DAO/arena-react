@@ -107,7 +107,7 @@ const DuesModal = ({ escrow }: DuesModalProps) => {
 								query.hasNextPage && (
 									<div className="flex w-full justify-center">
 										<Button
-											onClick={() => query.fetchNextPage()}
+											onPress={() => query.fetchNextPage()}
 											isLoading={query.isFetchingNextPage}
 										>
 											Load More

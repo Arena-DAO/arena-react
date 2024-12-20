@@ -143,10 +143,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.50.32, @chain-registry/types@npm:^0.50.36":
+"@chain-registry/types@npm:^0.50.36":
   version: 0.50.36
   resolution: "@chain-registry/types@npm:0.50.36"
   checksum: 10c0/c5a377a3ff3cfedfd1dfcda83e61dbbe61d258e279c8dd20e6192a285cf400b9a3419c545c744eb00d4b1c7db59afd7114f285aa0bb8701cb27196061273f955
+  languageName: node
+  linkType: hard
+
+"@chain-registry/types@npm:^0.50.39":
+  version: 0.50.39
+  resolution: "@chain-registry/types@npm:0.50.39"
+  checksum: 10c0/165547c5c53e49f686a75927a4afa9822e058d93135c37646706f472996ec51fd2decb86582e6fe0fa7a290d685dd96ac778291d32a8bf53756eb2541d5e0429
   languageName: node
   linkType: hard
 
@@ -400,7 +407,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmos-kit/cosmos-extension-metamask@npm:^0.12.1":
+"@cosmos-kit/cosmos-extension-metamask@npm:^0.12.2":
   version: 0.12.2
   resolution: "@cosmos-kit/cosmos-extension-metamask@npm:0.12.2"
   dependencies:
@@ -415,7 +422,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmos-kit/keplr-extension@npm:^2.14.0, @cosmos-kit/keplr-extension@npm:^2.14.1":
+"@cosmos-kit/keplr-extension@npm:^2.14.1":
   version: 2.14.1
   resolution: "@cosmos-kit/keplr-extension@npm:2.14.1"
   dependencies:
@@ -430,7 +437,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmos-kit/keplr-mobile@npm:^2.14.1":
+"@cosmos-kit/keplr-mobile@npm:^2.14.2":
   version: 2.14.2
   resolution: "@cosmos-kit/keplr-mobile@npm:2.14.2"
   dependencies:
@@ -447,13 +454,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmos-kit/keplr@npm:2.14.1":
-  version: 2.14.1
-  resolution: "@cosmos-kit/keplr@npm:2.14.1"
+"@cosmos-kit/keplr@npm:2.14.2":
+  version: 2.14.2
+  resolution: "@cosmos-kit/keplr@npm:2.14.2"
   dependencies:
-    "@cosmos-kit/keplr-extension": "npm:^2.14.0"
-    "@cosmos-kit/keplr-mobile": "npm:^2.14.1"
-  checksum: 10c0/a0d695fb4daaf4667a42a6d121a7b2d4420b3a95c7220102171263b2365aa1d48b8357bd5c5cbda8329b3cfb63a1e6a46273b18cff1a96b2115eb257b4583aa0
+    "@cosmos-kit/keplr-extension": "npm:^2.14.1"
+    "@cosmos-kit/keplr-mobile": "npm:^2.14.2"
+  checksum: 10c0/e340fe5e59f56dd4b2a9ab860bd316a7414ea65748e9495af6b2cf4ab5f0db35f5672535064cc5a8a7913391d9b3e2504f7d299a224ac666434e1c3be2ac4368
   languageName: node
   linkType: hard
 
@@ -497,7 +504,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmos-kit/leap@npm:^2.14.1":
+"@cosmos-kit/leap@npm:^2.14.2":
   version: 2.14.2
   resolution: "@cosmos-kit/leap@npm:2.14.2"
   dependencies:
@@ -508,7 +515,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmos-kit/react-lite@npm:^2.15.1":
+"@cosmos-kit/react-lite@npm:^2.15.2":
   version: 2.15.2
   resolution: "@cosmos-kit/react-lite@npm:2.15.2"
   dependencies:
@@ -524,13 +531,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmos-kit/react@npm:2.20.1":
-  version: 2.20.1
-  resolution: "@cosmos-kit/react@npm:2.20.1"
+"@cosmos-kit/react@npm:2.21.1":
+  version: 2.21.1
+  resolution: "@cosmos-kit/react@npm:2.21.1"
   dependencies:
     "@chain-registry/types": "npm:^0.46.11"
     "@cosmos-kit/core": "npm:^2.15.0"
-    "@cosmos-kit/react-lite": "npm:^2.15.1"
+    "@cosmos-kit/react-lite": "npm:^2.15.2"
     "@react-icons/all-files": "npm:^4.1.0"
   peerDependencies:
     "@interchain-ui/react": ^1.23.9
@@ -538,7 +545,7 @@ __metadata:
     "@types/react-dom": ">= 17"
     react: ^18
     react-dom: ^18
-  checksum: 10c0/df7e06e3bec756fa8f57dae4762eb47c73b3d869aa6a02a2c47657521d4cb4848a54d8a2915fc4afe8601866889dfaa405cc737a44285fc80d0e4553611bd71f
+  checksum: 10c0/2080892c85e8bdf2d954baedcfa4ecee30c1820a39220a800ca75a784c8f9a79f0cf95eae30dab9873cca235837489f2d837893e72f68665258512896104bbcd
   languageName: node
   linkType: hard
 
@@ -1547,65 +1554,65 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/env@npm:15.1.0":
-  version: 15.1.0
-  resolution: "@next/env@npm:15.1.0"
-  checksum: 10c0/5c6d66bcc652696a8dbbe1596194b612dd492e8b27041b738fcb63aa08669754bd7bdd3664ec8b756029a7d7b22187e646409fc1651c5e95d3ae39c3cca62c3d
+"@next/env@npm:15.1.2":
+  version: 15.1.2
+  resolution: "@next/env@npm:15.1.2"
+  checksum: 10c0/07f2b258bd0e8937bfd33515c48b920491d9c281de5f1fa58c4c222dc8e7e0ad3745ca6035bfef788f07d9a39c583bc18cb0cdfbaa8c2177761d9c2bbdd9592f
   languageName: node
   linkType: hard
 
-"@next/swc-darwin-arm64@npm:15.1.0":
-  version: 15.1.0
-  resolution: "@next/swc-darwin-arm64@npm:15.1.0"
+"@next/swc-darwin-arm64@npm:15.1.2":
+  version: 15.1.2
+  resolution: "@next/swc-darwin-arm64@npm:15.1.2"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@next/swc-darwin-x64@npm:15.1.0":
-  version: 15.1.0
-  resolution: "@next/swc-darwin-x64@npm:15.1.0"
+"@next/swc-darwin-x64@npm:15.1.2":
+  version: 15.1.2
+  resolution: "@next/swc-darwin-x64@npm:15.1.2"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@next/swc-linux-arm64-gnu@npm:15.1.0":
-  version: 15.1.0
-  resolution: "@next/swc-linux-arm64-gnu@npm:15.1.0"
+"@next/swc-linux-arm64-gnu@npm:15.1.2":
+  version: 15.1.2
+  resolution: "@next/swc-linux-arm64-gnu@npm:15.1.2"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@next/swc-linux-arm64-musl@npm:15.1.0":
-  version: 15.1.0
-  resolution: "@next/swc-linux-arm64-musl@npm:15.1.0"
+"@next/swc-linux-arm64-musl@npm:15.1.2":
+  version: 15.1.2
+  resolution: "@next/swc-linux-arm64-musl@npm:15.1.2"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@next/swc-linux-x64-gnu@npm:15.1.0":
-  version: 15.1.0
-  resolution: "@next/swc-linux-x64-gnu@npm:15.1.0"
+"@next/swc-linux-x64-gnu@npm:15.1.2":
+  version: 15.1.2
+  resolution: "@next/swc-linux-x64-gnu@npm:15.1.2"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@next/swc-linux-x64-musl@npm:15.1.0":
-  version: 15.1.0
-  resolution: "@next/swc-linux-x64-musl@npm:15.1.0"
+"@next/swc-linux-x64-musl@npm:15.1.2":
+  version: 15.1.2
+  resolution: "@next/swc-linux-x64-musl@npm:15.1.2"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@next/swc-win32-arm64-msvc@npm:15.1.0":
-  version: 15.1.0
-  resolution: "@next/swc-win32-arm64-msvc@npm:15.1.0"
+"@next/swc-win32-arm64-msvc@npm:15.1.2":
+  version: 15.1.2
+  resolution: "@next/swc-win32-arm64-msvc@npm:15.1.2"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@next/swc-win32-x64-msvc@npm:15.1.0":
-  version: 15.1.0
-  resolution: "@next/swc-win32-x64-msvc@npm:15.1.0"
+"@next/swc-win32-x64-msvc@npm:15.1.2":
+  version: 15.1.2
+  resolution: "@next/swc-win32-x64-msvc@npm:15.1.2"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -5548,7 +5555,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=13.7.0, @types/node@npm:^22.10.1":
+"@types/node@npm:*, @types/node@npm:>=13.7.0, @types/node@npm:^22.10.2":
   version: 22.10.2
   resolution: "@types/node@npm:22.10.2"
   dependencies:
@@ -5571,7 +5578,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.3.3":
+"@types/react-dom@npm:^18.3.5":
   version: 18.3.5
   resolution: "@types/react-dom@npm:18.3.5"
   peerDependencies:
@@ -5580,13 +5587,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:18.3.14":
-  version: 18.3.14
-  resolution: "@types/react@npm:18.3.14"
+"@types/react@npm:18.3.18":
+  version: 18.3.18
+  resolution: "@types/react@npm:18.3.18"
   dependencies:
     "@types/prop-types": "npm:*"
     csstype: "npm:^3.0.2"
-  checksum: 10c0/d925fbfcf084238b93d1a0b5406d4cf9aeb37c4a1191559aa4ee107c2e55cc15327989140f03eddda4d471f5b935d4673fd74a86f451860edea18eae48ca44f8
+  checksum: 10c0/8fb2b00672072135d0858dc9db07873ea107cc238b6228aaa2a9afd1ef7a64a7074078250db38afbeb19064be8ea6af5eac32d404efdd5f45e093cc4829d87f8
   languageName: node
   linkType: hard
 
@@ -6029,17 +6036,17 @@ __metadata:
   resolution: "arena-react@workspace:."
   dependencies:
     "@biomejs/biome": "npm:1.9.4"
-    "@chain-registry/types": "npm:^0.50.32"
+    "@chain-registry/types": "npm:^0.50.39"
     "@cosmjs/amino": "npm:^0.32.4"
     "@cosmjs/cosmwasm-stargate": "npm:0.32.4"
     "@cosmjs/encoding": "npm:^0.32.4"
     "@cosmjs/proto-signing": "npm:^0.32.4"
     "@cosmjs/stargate": "npm:^0.32.4"
     "@cosmjs/tendermint-rpc": "npm:^0.32.4"
-    "@cosmos-kit/cosmos-extension-metamask": "npm:^0.12.1"
-    "@cosmos-kit/keplr": "npm:2.14.1"
-    "@cosmos-kit/leap": "npm:^2.14.1"
-    "@cosmos-kit/react": "npm:2.20.1"
+    "@cosmos-kit/cosmos-extension-metamask": "npm:^0.12.2"
+    "@cosmos-kit/keplr": "npm:2.14.2"
+    "@cosmos-kit/leap": "npm:^2.14.2"
+    "@cosmos-kit/react": "npm:2.21.1"
     "@dagrejs/dagre": "npm:^1.1.4"
     "@hookform/resolvers": "npm:^3.9.1"
     "@interchain-ui/react": "npm:1.26.1"
@@ -6048,11 +6055,11 @@ __metadata:
     "@nextui-org/theme": "npm:^2.4.3"
     "@tanstack/react-query": "npm:4.36.1"
     "@types/lodash": "npm:^4.17.13"
-    "@types/node": "npm:^22.10.1"
-    "@types/react": "npm:18.3.14"
-    "@types/react-dom": "npm:^18.3.3"
+    "@types/node": "npm:^22.10.2"
+    "@types/react": "npm:18.3.18"
+    "@types/react-dom": "npm:^18.3.5"
     autoprefixer: "npm:^10.4.20"
-    chain-registry: "npm:1.69.64"
+    chain-registry: "npm:1.69.68"
     clsx: "npm:^2.1.1"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^7.0.6"
@@ -6062,7 +6069,7 @@ __metadata:
     http-proxy-middleware: "npm:^3.0.3"
     keen-slider: "npm:^6.8.6"
     lodash: "npm:^4.17.21"
-    next: "npm:15.1.0"
+    next: "npm:15.1.2"
     next-themes: "npm:^0.4.4"
     pino-pretty: "npm:^13.0.0"
     postcss: "npm:^8.4.49"
@@ -6076,7 +6083,7 @@ __metadata:
     reactflow: "npm:^11.11.4"
     recharts: "npm:^2.15.0"
     shx: "npm:^0.3.4"
-    tailwindcss: "npm:^3.4.16"
+    tailwindcss: "npm:^3.4.17"
     typescript: "npm:^5.7.2"
     zod: "npm:^3.24.1"
     zustand: "npm:^4.5.5"
@@ -6386,12 +6393,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.69.64":
-  version: 1.69.64
-  resolution: "chain-registry@npm:1.69.64"
+"chain-registry@npm:1.69.68":
+  version: 1.69.68
+  resolution: "chain-registry@npm:1.69.68"
   dependencies:
-    "@chain-registry/types": "npm:^0.50.36"
-  checksum: 10c0/124876c03ed01a51599aaf2ee29023dc0c1dea9adafa616750c857c860ce5c8b177aa543277eaa5390b9cf2658659899ec97cc518935f9872a1754d4ec304a24
+    "@chain-registry/types": "npm:^0.50.39"
+  checksum: 10c0/a60713ba4ae9af62727d5dd5e3366bbea946edb9e670e07037484b9a3fed1820b3589047107c925d0a4519f329185226f62e9dff8fd85b7bd13723d1d30ccadf
   languageName: node
   linkType: hard
 
@@ -8669,19 +8676,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next@npm:15.1.0":
-  version: 15.1.0
-  resolution: "next@npm:15.1.0"
+"next@npm:15.1.2":
+  version: 15.1.2
+  resolution: "next@npm:15.1.2"
   dependencies:
-    "@next/env": "npm:15.1.0"
-    "@next/swc-darwin-arm64": "npm:15.1.0"
-    "@next/swc-darwin-x64": "npm:15.1.0"
-    "@next/swc-linux-arm64-gnu": "npm:15.1.0"
-    "@next/swc-linux-arm64-musl": "npm:15.1.0"
-    "@next/swc-linux-x64-gnu": "npm:15.1.0"
-    "@next/swc-linux-x64-musl": "npm:15.1.0"
-    "@next/swc-win32-arm64-msvc": "npm:15.1.0"
-    "@next/swc-win32-x64-msvc": "npm:15.1.0"
+    "@next/env": "npm:15.1.2"
+    "@next/swc-darwin-arm64": "npm:15.1.2"
+    "@next/swc-darwin-x64": "npm:15.1.2"
+    "@next/swc-linux-arm64-gnu": "npm:15.1.2"
+    "@next/swc-linux-arm64-musl": "npm:15.1.2"
+    "@next/swc-linux-x64-gnu": "npm:15.1.2"
+    "@next/swc-linux-x64-musl": "npm:15.1.2"
+    "@next/swc-win32-arm64-msvc": "npm:15.1.2"
+    "@next/swc-win32-x64-msvc": "npm:15.1.2"
     "@swc/counter": "npm:0.1.3"
     "@swc/helpers": "npm:0.5.15"
     busboy: "npm:1.6.0"
@@ -8726,7 +8733,7 @@ __metadata:
       optional: true
   bin:
     next: dist/bin/next
-  checksum: 10c0/652a48a6cf6329753da72bec9777c153e88aee8dd1bb709c2c8e6b31b678514d50501e1a58e065464416998bb5d872ce0eaf769e7aacebc2821d36359e63c225
+  checksum: 10c0/320b949336fa41210ebe5cee66fce7edb4dc3474b438898590e43f6dfe30212620b090801d6f8cc4d37bfb54cb316680f65b58110cc8885f8c2b108a80e4ecee
   languageName: node
   linkType: hard
 
@@ -10570,9 +10577,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwindcss@npm:^3.4.16":
-  version: 3.4.16
-  resolution: "tailwindcss@npm:3.4.16"
+"tailwindcss@npm:^3.4.17":
+  version: 3.4.17
+  resolution: "tailwindcss@npm:3.4.17"
   dependencies:
     "@alloc/quick-lru": "npm:^5.2.0"
     arg: "npm:^5.0.2"
@@ -10599,7 +10606,7 @@ __metadata:
   bin:
     tailwind: lib/cli.js
     tailwindcss: lib/cli.js
-  checksum: 10c0/f716ff38e0ea6f25c2b3d811e0aaac07f627193e8527d8ad945d5088d4a188ac1eb1e8ee9aef76d8525e756ffbb8369d717013d3ffc2f49fabaa94cb1e6784c1
+  checksum: 10c0/cc42c6e7fdf88a5507a0d7fea37f1b4122bec158977f8c017b2ae6828741f9e6f8cb90282c6bf2bd5951fd1220a53e0a50ca58f5c1c00eb7f5d9f8b80dc4523c
   languageName: node
   linkType: hard
 

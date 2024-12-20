@@ -149,7 +149,7 @@ const EntryFeeForm: React.FC<EntryFeeFormProps> = ({
 				</ModalBody>
 				<ModalFooter>
 					<Button
-						onClick={handleSubmit(onSubmit)}
+						onPress={() => handleSubmit(onSubmit)}
 						isLoading={isSubmitting || isLoading}
 					>
 						Set Fee

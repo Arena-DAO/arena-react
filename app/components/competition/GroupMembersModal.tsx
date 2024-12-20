@@ -114,7 +114,7 @@ const GroupMembers: React.FC<GroupMemberProps> = ({ groupContract }) => {
 					{hasNextPage && (
 						<ModalFooter>
 							<Button
-								onClick={loadMore}
+								onPress={loadMore}
 								isLoading={isFetchingNextPage}
 								disabled={!hasNextPage || isFetchingNextPage}
 							>

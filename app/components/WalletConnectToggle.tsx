@@ -80,7 +80,7 @@ export default function WalletConnectToggle() {
 			isLoading={chainContext.isWalletConnecting}
 			variant="ghost"
 			color="primary"
-			onClick={chainContext.openView}
+			onPress={chainContext.openView}
 			isIconOnly
 		>
 			<BsWallet />

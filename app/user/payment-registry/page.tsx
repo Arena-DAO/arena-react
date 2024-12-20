@@ -255,7 +255,7 @@ const PaymentRegistry: React.FC = () => {
 							onChange={(e) => setHeight(e.target.value)}
 							placeholder="Enter block height (optional)"
 						/>
-						<Button onClick={handleQuery} disabled={isLoading}>
+						<Button onPress={handleQuery} disabled={isLoading}>
 							Query
 						</Button>
 					</div>
@@ -394,7 +394,7 @@ const PaymentRegistry: React.FC = () => {
 												isIconOnly
 												aria-label="Remove Recipient"
 												variant="faded"
-												onClick={() => remove(i)}
+												onPress={() => remove(i)}
 												isDisabled={isSubmitting}
 											>
 												<FiTrash />
@@ -421,7 +421,7 @@ const PaymentRegistry: React.FC = () => {
 					</CardBody>
 					<CardFooter className="flex justify-between">
 						<Button
-							onClick={() => append({ addr: "", percentage: 0 })}
+							onPress={() => append({ addr: "", percentage: 0 })}
 							aria-label="Add Recipient"
 							startContent={<FiPlus />}
 							isDisabled={isSubmitting}
@@ -431,7 +431,7 @@ const PaymentRegistry: React.FC = () => {
 						<div className="space-x-2">
 							{distribution && !height && (
 								<Button
-									onClick={onRemoveDistribution}
+									onPress={onRemoveDistribution}
 									isLoading={removeDistributionMutation.isLoading}
 									color="danger"
 								>
@@ -439,7 +439,7 @@ const PaymentRegistry: React.FC = () => {
 								</Button>
 							)}
 							<Button
-								onClick={handleSubmit(onSubmit)}
+								onPress={() => handleSubmit(onSubmit)}
 								isLoading={isSubmitting}
 								color="primary"
 							>

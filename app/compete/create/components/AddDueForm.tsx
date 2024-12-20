@@ -329,7 +329,7 @@ const AddDueForm: React.FC<AddDueFormProps> = ({
 									/>
 									<Button
 										color="danger"
-										onClick={() => removeTokenId(index)}
+										onPress={() => removeTokenId(index)}
 										isDisabled={isSubmitting}
 									>
 										Remove
@@ -337,7 +337,7 @@ const AddDueForm: React.FC<AddDueFormProps> = ({
 								</div>
 							))}
 							<Button
-								onClick={() => appendTokenId({ id: "" })}
+								onPress={() => appendTokenId({ id: "" })}
 								isDisabled={isSubmitting}
 							>
 								Add Token ID
@@ -356,7 +356,7 @@ const AddDueForm: React.FC<AddDueFormProps> = ({
 				</ModalBody>
 				<ModalFooter>
 					<Button
-						onClick={handleSubmit(onSubmit)}
+						onPress={() => handleSubmit(onSubmit)}
 						isLoading={isSubmitting || isLoading}
 					>
 						{isLoading ? <Spinner size="sm" /> : "Submit"}

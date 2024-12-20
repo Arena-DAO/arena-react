@@ -56,7 +56,7 @@ const EnrollmentsList: React.FC<EnrollmentsListProps> = ({ hostAddress }) => {
 			</div>
 			{enrollmentQuery.hasNextPage && (
 				<Button
-					onClick={() => enrollmentQuery.fetchNextPage()}
+					onPress={() => enrollmentQuery.fetchNextPage()}
 					disabled={enrollmentQuery.isFetchingNextPage}
 				>
 					{enrollmentQuery.isFetchingNextPage ? "Loading more..." : "Load More"}

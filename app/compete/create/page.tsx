@@ -494,14 +494,14 @@ const CreateCompetitionPage = () => {
 
 						<div className="mt-8 flex justify-between">
 							<Button
-								onClick={handlePrevious}
+								onPress={handlePrevious}
 								isDisabled={activeTab === 0}
 								startContent={<FiChevronLeft />}
 							>
 								Previous
 							</Button>
 							<Button
-								onClick={handleNext}
+								onPress={handleNext}
 								isDisabled={activeTab === tabs.length - 1}
 								endContent={<FiChevronRight />}
 							>

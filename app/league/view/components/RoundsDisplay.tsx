@@ -47,13 +47,13 @@ const RoundsDisplay = ({
 			</CardBody>
 			<CardFooter>
 				{currentRound > 1 && (
-					<Button onClick={() => setCurrentRound((x) => x - 1)}>
+					<Button onPress={() => setCurrentRound((x) => x - 1)}>
 						Previous Round
 					</Button>
 				)}
 				{currentRound < total_rounds && (
 					<Button
-						onClick={() => setCurrentRound((x) => x + 1)}
+						onPress={() => setCurrentRound((x) => x + 1)}
 						className="ml-auto"
 					>
 						Next Round

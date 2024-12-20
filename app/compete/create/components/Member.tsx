@@ -36,7 +36,7 @@ const Member: React.FC<MemberProps> = ({ memberIndex, onRemove }) => {
 								isIconOnly
 								aria-label="Remove member"
 								className="my-auto"
-								onClick={onRemove}
+								onPress={onRemove}
 							>
 								<FiMinus />
 							</Button>

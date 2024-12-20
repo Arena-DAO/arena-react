@@ -219,7 +219,7 @@ const BasicInformationForm = () => {
 						/>
 					))}
 					<Button
-						onClick={() => appendFee({ addr: "", percentage: 0 })}
+						onPress={() => appendFee({ addr: "", percentage: 0 })}
 						startContent={<FiPlus />}
 					>
 						Add Fee

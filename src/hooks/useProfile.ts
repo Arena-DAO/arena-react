@@ -22,7 +22,7 @@ type ErrorResponse = {
 	message: string;
 };
 
-type Profile = {
+export type Profile = {
 	address: string;
 	name?: string;
 	imageUrl?: string | null;

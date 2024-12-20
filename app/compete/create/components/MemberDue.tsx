@@ -78,12 +78,12 @@ const MemberDue: React.FC<MemberDueProps> = ({
 							endContent={
 								<ButtonGroup variant="faded" className="my-auto">
 									<Tooltip content="Remove dues">
-										<Button isIconOnly onClick={onRemove}>
+										<Button isIconOnly onPress={onRemove}>
 											<FiMinus />
 										</Button>
 									</Tooltip>
 									<Tooltip content="Add more due">
-										<Button isIconOnly onClick={onEdit}>
+										<Button isIconOnly onPress={onEdit}>
 											<FiPlus />
 										</Button>
 									</Tooltip>
@@ -120,7 +120,7 @@ const MemberDue: React.FC<MemberDueProps> = ({
 												variant="faded"
 												isIconOnly
 												aria-label="Remove due"
-												onClick={() => removeNative(index)}
+												onPress={() => removeNative(index)}
 											>
 												<FiMinus />
 											</Button>
@@ -157,7 +157,7 @@ const MemberDue: React.FC<MemberDueProps> = ({
 												variant="faded"
 												isIconOnly
 												aria-label="Remove due"
-												onClick={() => removeCw20(index)}
+												onPress={() => removeCw20(index)}
 											>
 												<FiTrash />
 											</Button>

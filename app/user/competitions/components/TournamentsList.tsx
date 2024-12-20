@@ -59,7 +59,7 @@ const TournamentsList: React.FC<TournamentsListProps> = ({ hostAddress }) => {
 			</div>
 			{tournamentsQuery.hasNextPage && (
 				<Button
-					onClick={() => tournamentsQuery.fetchNextPage()}
+					onPress={() => tournamentsQuery.fetchNextPage()}
 					disabled={tournamentsQuery.isFetchingNextPage}
 				>
 					{tournamentsQuery.isFetchingNextPage

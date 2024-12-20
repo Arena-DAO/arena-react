@@ -119,7 +119,7 @@ const LeagueInformationForm = () => {
 										<Button
 											isIconOnly
 											aria-label="Delete distribution"
-											onClick={() => remove(index)}
+											onPress={() => remove(index)}
 											className="my-auto"
 											variant="faded"
 										>
@@ -138,7 +138,7 @@ const LeagueInformationForm = () => {
 					/>
 				))}
 				<Button
-					onClick={() => append({ percent: 0 })}
+					onPress={() => append({ percent: 0 })}
 					startContent={<FiPlus />}
 				>
 					Add Distribution

@@ -60,7 +60,7 @@ const AdditionalLayeredFeeItem: React.FC<AdditionalLayeredFeeProps> = ({
 								<Button
 									isIconOnly
 									aria-label="Delete fee"
-									onClick={() => remove(index)}
+									onPress={() => remove(index)}
 									className="my-auto"
 									variant="faded"
 								>

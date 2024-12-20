@@ -93,7 +93,7 @@ const MembersAndDuesForm = () => {
 			))}
 			<div className="flex flex-col space-y-4">
 				<div className="flex">
-					<Button onClick={handleAddDue} startContent={<FiPlus />}>
+					<Button onPress={handleAddDue} startContent={<FiPlus />}>
 						Add Due
 					</Button>
 				</div>
@@ -103,7 +103,7 @@ const MembersAndDuesForm = () => {
 						value={bulkDueAddresses}
 						onChange={(e) => setBulkDueAddresses(e.target.value)}
 					/>
-					<Button onClick={() => handleBulkAdd("due")}>Add Bulk Dues</Button>
+					<Button onPress={() => handleBulkAdd("due")}>Add Bulk Dues</Button>
 				</div>
 			</div>
 
@@ -143,7 +143,7 @@ const MembersAndDuesForm = () => {
 					<div className="flex flex-col space-y-4">
 						<div className="flex">
 							<Button
-								onClick={() => appendMember({ address: "" })}
+								onPress={() => appendMember({ address: "" })}
 								startContent={<FiPlus />}
 							>
 								Add Member
@@ -155,7 +155,7 @@ const MembersAndDuesForm = () => {
 								value={bulkMemberAddresses}
 								onChange={(e) => setBulkMemberAddresses(e.target.value)}
 							/>
-							<Button onClick={() => handleBulkAdd("member")}>
+							<Button onPress={() => handleBulkAdd("member")}>
 								Add Bulk Members
 							</Button>
 						</div>
