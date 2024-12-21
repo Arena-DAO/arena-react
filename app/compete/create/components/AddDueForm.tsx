@@ -81,8 +81,8 @@ const AddDueForm: React.FC<AddDueFormProps> = ({
 	index,
 	onClose,
 }) => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { assets } = useChain(env.CHAIN);
 	const { control: competitionControl } =
 		useFormContext<CreateCompetitionFormValues>();

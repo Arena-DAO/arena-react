@@ -22,7 +22,7 @@ const TriggerButton: React.FC<TriggerButtonProps> = ({
 	isExpired,
 	isFull,
 }) => {
-	const { data: env } = useEnv();
+	const env = useEnv();
 	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
 	const triggerExpirationMutation =
 		useArenaCompetitionEnrollmentTriggerExpirationMutation();

@@ -27,7 +27,7 @@ const queryClient = new QueryClient();
 
 function InnerProviders({ children }: PropsWithChildren) {
 	const { theme } = useTheme();
-	const { data: env } = useEnv();
+	const env = useEnv();
 	const signerOptions = {
 		signingCosmwasm: (chain: string | Chain) => {
 			if (typeof chain !== "string" && chain.chain_name === env.CHAIN)

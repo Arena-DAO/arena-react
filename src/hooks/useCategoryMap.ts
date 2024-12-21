@@ -63,7 +63,7 @@ const getCategoryMap = (env: string, key: Keys) => {
 };
 
 export const useCategoryMap = (key: Keys = "url") => {
-	const { data: env } = useEnv();
+	const env = useEnv();
 	return useQuery(["categories", key], () => getCategoryMap(env.ENV, key), {
 		initialData: getCategoryMap(env.ENV, key),
 		staleTime: Number.POSITIVE_INFINITY,

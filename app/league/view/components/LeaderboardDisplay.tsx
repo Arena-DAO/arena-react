@@ -27,8 +27,8 @@ interface LeaderboardDisplayProps extends CardProps {
 }
 
 const LeaderboardDisplay = ({ league, ...props }: LeaderboardDisplayProps) => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { data } = useArenaLeagueModuleQueryExtensionQuery({
 		client:
 			cosmWasmClient &&

@@ -10,7 +10,7 @@ export default function DiscordCallback() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const queryClient = useQueryClient();
-	const { data: env } = useEnv();
+	const env = useEnv();
 	const { address } = useChain(env.CHAIN);
 
 	// Get redirect from URL parameters

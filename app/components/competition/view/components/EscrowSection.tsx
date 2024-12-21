@@ -56,8 +56,8 @@ const EscrowSection = ({
 	competitionId,
 	children,
 }: EscrowSectionProps) => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
 	const queryClient = useQueryClient();
 	const { data, isLoading } = useArenaEscrowDumpStateQuery({

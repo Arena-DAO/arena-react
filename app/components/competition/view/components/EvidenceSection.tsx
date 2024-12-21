@@ -67,8 +67,8 @@ const EvidenceSection = ({
 	moduleAddr,
 	hideIfEmpty,
 }: EvidenceSectionProps) => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const queryClient = useQueryClient();
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const fetchEvidence = async ({ pageParam = undefined }) => {

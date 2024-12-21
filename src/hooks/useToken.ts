@@ -9,8 +9,8 @@ export const useToken = (
 	isNative = true,
 	chain?: string,
 ) => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { assets } = useChain(chain ?? env.CHAIN);
 
 	return useQuery(

@@ -30,7 +30,7 @@ import LeaderboardDisplay from "./components/LeaderboardDisplay";
 import RoundsDisplay from "./components/RoundsDisplay";
 
 const ViewWager = () => {
-	const { data: env } = useEnv();
+	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { address } = useChain(env.CHAIN);
 	const searchParams = useSearchParams();

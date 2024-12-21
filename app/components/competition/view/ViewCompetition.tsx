@@ -49,7 +49,7 @@ const ViewCompetition = ({
 	competitionType,
 	children,
 }: ViewCompetitionProps) => {
-	const { data: env } = useEnv();
+	const env = useEnv();
 
 	return (
 		<div className="space-y-6">

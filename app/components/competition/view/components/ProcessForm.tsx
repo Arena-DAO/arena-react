@@ -97,7 +97,7 @@ const ProcessForm = ({
 	type ProcessFormValues = z.infer<typeof ProcessFormSchema>;
 
 	const queryClient = useQueryClient();
-	const { data: env } = useEnv();
+	const env = useEnv();
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
 	const category = useCategoryContext();
 

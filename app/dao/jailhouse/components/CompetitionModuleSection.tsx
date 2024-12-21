@@ -29,8 +29,8 @@ const CompetitionModuleSection = ({
 	module_addr,
 	path,
 }: CompetitionModuleSectionProps) => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 
 	const fetchCompetitions = async ({ pageParam = undefined }) => {
 		if (!cosmWasmClient) {

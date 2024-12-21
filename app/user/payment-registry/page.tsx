@@ -50,8 +50,8 @@ const PaymentRegistrySchema = z.object({
 type PaymentRegistryFormValues = z.infer<typeof PaymentRegistrySchema>;
 
 const PaymentRegistry: React.FC = () => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
 	const queryClient = useQueryClient();
 	const setDistributionMutation =

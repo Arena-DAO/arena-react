@@ -77,8 +77,8 @@ const applicationSchema = z.object({
 type ApplicationFormValues = z.infer<typeof applicationSchema>;
 
 const ArenaTokenGatewayPage: React.FC = () => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
 	const queryClient = useQueryClient();
 	const [selectedStatus, setSelectedStatus] = useState<ApplicationStatus>({

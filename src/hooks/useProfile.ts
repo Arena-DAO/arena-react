@@ -57,8 +57,8 @@ const fetchProfile = async (
 
 export const useProfileData = (address: string, isValid: boolean) => {
 	const isWallet = isValidWalletAddress(address);
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const isEnrollmentContract = isWallet
 		? false
 		: address === env.ARENA_COMPETITION_ENROLLMENT_ADDRESS;

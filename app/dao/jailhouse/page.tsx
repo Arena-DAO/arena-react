@@ -5,7 +5,7 @@ import { useEnv } from "~/hooks/useEnv";
 import CompetitionModuleSection from "./components/CompetitionModuleSection";
 
 const Jailhouse = () => {
-	const { data: env } = useEnv();
+	const env = useEnv();
 
 	return (
 		<div className="container mx-auto space-y-4">

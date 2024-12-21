@@ -15,7 +15,7 @@ export default function CompetitionCategoryCard({
 	...props
 }: CompetitionCategoryCardProps) {
 	const router = useRouter();
-	const { data: env } = useEnv();
+	const env = useEnv();
 
 	return (
 		<Card

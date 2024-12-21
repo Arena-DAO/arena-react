@@ -10,7 +10,7 @@ import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 
 const ViewWager = () => {
-	const { data: env } = useEnv();
+	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const searchParams = useSearchParams();
 	const competitionId = searchParams?.get("competitionId");

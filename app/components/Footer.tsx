@@ -5,7 +5,7 @@ import { BsDiscord, BsGithub, BsTwitterX, BsYinYang } from "react-icons/bs";
 import { useEnv } from "~/hooks/useEnv";
 
 export default function Footer() {
-	const { data: env } = useEnv();
+	const env = useEnv();
 	return (
 		<>
 			<div className="flex flex-col-reverse items-center justify-between px-10 md:flex-row">

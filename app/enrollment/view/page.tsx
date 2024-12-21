@@ -43,8 +43,8 @@ import EnrollButton from "./components/EnrollButton";
 import TriggerButton from "./components/TriggerButton";
 
 const EnrollmentView = () => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const searchParams = useSearchParams();
 	const enrollmentId = searchParams?.get("enrollmentId");
 

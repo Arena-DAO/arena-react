@@ -13,8 +13,8 @@ interface WagersListProps {
 }
 
 const WagersList: React.FC<WagersListProps> = ({ hostAddress }) => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 
 	const wagersQuery = useInfiniteQuery({
 		queryKey: arenaWagerModuleQueryKeys.competitions(

@@ -47,7 +47,7 @@ function Arrow(props: {
 }
 
 function HomePage() {
-	const { data: env } = useEnv();
+	const env = useEnv();
 	const [currentSlide, setCurrentSlide] = useState(0);
 	const [loaded, setLoaded] = useState(false);
 	const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>(

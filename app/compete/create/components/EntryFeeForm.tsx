@@ -38,7 +38,7 @@ const EntryFeeForm: React.FC<EntryFeeFormProps> = ({
 	onOpenChange,
 	onClose,
 }) => {
-	const { data: env } = useEnv();
+	const env = useEnv();
 	const { assets } = useChain(env.CHAIN);
 	const { setValue: setParentValue } = useFormContext();
 

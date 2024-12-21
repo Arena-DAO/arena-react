@@ -31,8 +31,8 @@ const EnrollButton: React.FC<EnrollButtonProps> = ({
 	entryFee,
 	groupContract,
 }) => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
 	const queryClient = useQueryClient();
 

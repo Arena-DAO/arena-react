@@ -36,8 +36,8 @@ const UserStatsModal: React.FC<UserStatsModalProps> = ({
 	userAddress,
 }) => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 
 	const { data, isLoading } = useArenaWagerModuleHistoricalStatsQuery({
 		client:

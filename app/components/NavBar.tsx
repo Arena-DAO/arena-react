@@ -63,7 +63,7 @@ const menuConfig = (env: Env) => {
 };
 
 export default function AppNavbar() {
-	const { data: env } = useEnv();
+	const env = useEnv();
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const menuItems = useMemo(() => menuConfig(env), [env]);
 

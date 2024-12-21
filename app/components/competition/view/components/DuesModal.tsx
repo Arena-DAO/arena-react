@@ -33,8 +33,8 @@ interface DuesModalProps {
 }
 
 const DuesModal = ({ escrow }: DuesModalProps) => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { address } = useChain(env.CHAIN);
 	const queryClient = useQueryClient();
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();

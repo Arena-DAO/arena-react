@@ -15,7 +15,7 @@ import { useEnv } from "~/hooks/useEnv";
 import Profile from "./Profile";
 
 export default function WalletConnectToggle() {
-	const { data: env } = useEnv();
+	const env = useEnv();
 	const chainContext = useChain(env.CHAIN);
 
 	const handleDiscordConnect = () => {

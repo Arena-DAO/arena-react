@@ -58,7 +58,7 @@ import TournamentInformationForm from "./components/TournamentInformationForm";
 
 const CreateCompetitionPage = () => {
 	const [activeTab, setActiveTab] = useState(0);
-	const { data: env } = useEnv();
+	const env = useEnv();
 	const params = useSearchParams();
 	const category = useCategoryContext(params.get("category"));
 	const router = useRouter();

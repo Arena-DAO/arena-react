@@ -32,8 +32,8 @@ interface InitialDuesModalProps {
 }
 
 const InitialDuesModal = ({ escrow }: InitialDuesModalProps) => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
 	const fetchInitialDues = async ({ pageParam = undefined }) => {

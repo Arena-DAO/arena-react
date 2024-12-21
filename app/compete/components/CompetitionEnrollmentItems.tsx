@@ -18,8 +18,8 @@ interface CompetitionModuleSectionProps {
 const CompetitionEnrollmentItems = ({
 	category,
 }: CompetitionModuleSectionProps) => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const queryClient = useQueryClient();
 
 	const fetchEnrollments = async ({ pageParam = undefined }) => {

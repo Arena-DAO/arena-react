@@ -107,8 +107,8 @@ const InputStatsModal: React.FC<InputStatsModalProps> = ({
 	moduleAddr,
 	competitionId,
 }) => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const queryClient = useQueryClient();

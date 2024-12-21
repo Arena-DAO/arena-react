@@ -41,8 +41,8 @@ const TokenActionModal: React.FC<TokenActionModalProps> = ({
 	supplyToken,
 	reserveToken,
 }) => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
 	const queryClient = useQueryClient();
 

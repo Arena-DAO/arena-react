@@ -54,8 +54,8 @@ const Profile = ({
 	tooltipOpenDelay,
 	...props
 }: ProfileProps) => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const category = useCategoryContext();
 
 	const isValid = useMemo(

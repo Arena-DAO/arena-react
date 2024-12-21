@@ -12,8 +12,8 @@ interface EnrollmentsListProps {
 }
 
 const EnrollmentsList: React.FC<EnrollmentsListProps> = ({ hostAddress }) => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 
 	const enrollmentQuery = useInfiniteQuery({
 		queryKey: arenaCompetitionEnrollmentQueryKeys.enrollments(

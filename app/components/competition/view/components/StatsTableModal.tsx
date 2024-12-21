@@ -38,8 +38,8 @@ const StatsTable: React.FC<StatsTableProps> = ({
 	moduleAddr,
 	competitionId,
 }) => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
 	const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =

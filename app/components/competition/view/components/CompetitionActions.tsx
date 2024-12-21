@@ -24,7 +24,7 @@ const CompetitionActions: React.FC<CompetitionActionsProps> = ({
 	competitionType,
 	moduleAddr,
 }) => {
-	const { data: env } = useEnv();
+	const env = useEnv();
 	const { address } = useChain(env.CHAIN);
 
 	const showEditStatTypes =

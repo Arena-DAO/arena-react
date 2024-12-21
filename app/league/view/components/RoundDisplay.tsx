@@ -52,8 +52,8 @@ const RoundDisplay = ({
 	escrow,
 }: RoundDisplayProps) => {
 	const queryClient = useQueryClient();
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
 	const category = useCategoryContext();
 	const { data } = useArenaLeagueModuleQueryExtensionQuery({

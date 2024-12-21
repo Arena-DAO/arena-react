@@ -35,8 +35,8 @@ import TokenActionModal from "./components/TokenActionModal";
 type ActionType = "mint" | "burn" | null;
 
 const TokenPage: React.FC = () => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const [amount, setAmount] = useState<string>("");
 	const [actionType, setActionType] = useState<ActionType>(null);
 	const { isOpen, onOpen, onClose } = useDisclosure();

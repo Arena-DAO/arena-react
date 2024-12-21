@@ -30,8 +30,8 @@ interface RulesetsSelectionProps {
 const RulesetsSelection: React.FC<RulesetsSelectionProps> = ({
 	category_id,
 }) => {
-	const { data: env } = useEnv();
-	const { data: cosmWasmClient } = useCosmWasmClient(env.CHAIN);
+	const env = useEnv();
+	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { control } = useFormContext<CreateCompetitionFormValues>();
 	const { append, remove } = useFieldArray({
 		name: "rulesets",
