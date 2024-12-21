@@ -68,7 +68,7 @@ const CreateCompetitionPage = () => {
 		resolver: zodResolver(CreateCompetitionSchema),
 		defaultValues: {
 			competitionType: "wager",
-			useCrowdfunding: false,
+			useEnrollments: false,
 			name: "",
 			description: "",
 			expiration: { at_time: addMonths(new Date(), 1).toISOString() },
@@ -100,7 +100,7 @@ const CreateCompetitionPage = () => {
 
 	const { handleSubmit, watch, setValue } = formMethods;
 
-	const useCrowdfunding = watch("useCrowdfunding");
+	const useEnrollments = watch("useEnrollments");
 	const competitionType = watch("competitionType");
 
 	const tabs = [
@@ -144,11 +144,9 @@ const CreateCompetitionPage = () => {
 					banner: values.banner,
 				};
 
-				if (values.useCrowdfunding) {
+				if (values.useEnrollments) {
 					if (!values.enrollmentInfo) {
-						throw new Error(
-							"Enrollment information is required for crowdfunding",
-						);
+						throw new Error("Enrollment information is required");
 					}
 
 					const enrollmentClient = new ArenaCompetitionEnrollmentClient(
@@ -470,15 +468,15 @@ const CreateCompetitionPage = () => {
 														<div className="flex flex-col items-start justify-between gap-2 pb-4 sm:flex-row sm:items-center sm:gap-0">
 															<h3>Participation Details</h3>
 															<Switch
-																isSelected={useCrowdfunding}
+																isSelected={useEnrollments}
 																onValueChange={(checked) =>
-																	setValue("useCrowdfunding", checked)
+																	setValue("useEnrollments", checked)
 																}
 															>
-																Use Crowdfunding
+																Use Enrollments
 															</Switch>
 														</div>
-														{useCrowdfunding ? (
+														{useEnrollments ? (
 															<EnrollmentInformationForm />
 														) : (
 															<MembersAndDuesForm />

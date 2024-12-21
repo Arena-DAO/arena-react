@@ -206,10 +206,10 @@ const ReviewCompetition = () => {
 				"Participation",
 				<>
 					{renderKeyValue(
-						"Crowdfunding",
-						renderBooleanValue(values.useCrowdfunding),
+						"Enrollments",
+						renderBooleanValue(values.useEnrollments),
 					)}
-					{values.useCrowdfunding && values.enrollmentInfo ? (
+					{values.useEnrollments && values.enrollmentInfo ? (
 						<>
 							{renderKeyValue("Min Members", values.enrollmentInfo.minMembers)}
 							{renderKeyValue("Max Members", values.enrollmentInfo.maxMembers)}

@@ -91,20 +91,20 @@ const TournamentSchema = z.object({
 
 const CreateCompetitionSchema = BaseCreateCompetitionSchema.extend({
 	competitionType: z.enum(["wager", "league", "tournament"]),
-	useCrowdfunding: z.boolean(),
+	useEnrollments: z.boolean(),
 	leagueInfo: LeagueSchema.optional(),
 	tournamentInfo: TournamentSchema.optional(),
 	enrollmentInfo: EnrollmentInfoSchema.optional(),
 	directParticipation: DirectParticipationSchema.optional(),
 }).superRefine((data, ctx) => {
-	if (data.useCrowdfunding && !data.enrollmentInfo) {
+	if (data.useEnrollments && !data.enrollmentInfo) {
 		ctx.addIssue({
 			code: z.ZodIssueCode.custom,
 			message: "Enrollment information is required when using crowdfunding",
 			path: ["enrollmentInfo"],
 		});
 	}
-	if (!data.useCrowdfunding && !data.directParticipation) {
+	if (!data.useEnrollments && !data.directParticipation) {
 		ctx.addIssue({
 			code: z.ZodIssueCode.custom,
 			message:
