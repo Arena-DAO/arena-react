@@ -9,14 +9,60 @@ import {
 	DropdownTrigger,
 	Tooltip,
 } from "@nextui-org/react";
+import { useMemo } from "react";
 import { BsDiscord, BsWallet } from "react-icons/bs";
 import { toast } from "react-toastify";
+import { isValidWalletAddress } from "~/helpers/AddressHelpers";
 import { useEnv } from "~/hooks/useEnv";
+import { useAuthStore } from "~/store/authStore";
 import Profile from "./Profile";
 
 export default function WalletConnectToggle() {
 	const env = useEnv();
 	const chainContext = useChain(env.CHAIN);
+	const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+	const menuItems = useMemo(() => {
+		const discordIcon = <BsDiscord className="text-[#5865F2]" />;
+		return [
+			{
+				key: "wallet",
+				label: "Manage Wallet",
+			},
+			...(env.ENV === "production" &&
+			!isAuthenticated &&
+			chainContext.address &&
+			isValidWalletAddress(chainContext.address)
+				? [
+						{
+							key: "connect",
+							label: "Connect Discord",
+							icon: discordIcon,
+						},
+					]
+				: []),
+			...(isAuthenticated
+				? [
+						{
+							key: "logout",
+							label: "Logout",
+							icon: discordIcon,
+							href: "/oauth/logout",
+						},
+					]
+				: []),
+			{
+				key: "registry",
+				label: "Payment Registry",
+				href: "/user/payment-registry",
+			},
+			{
+				key: "competitions",
+				label: "My Competitions",
+				href: `/user/competitions?host=${chainContext.address}`,
+			},
+		];
+	}, [chainContext.address, env.ENV, isAuthenticated]);
 
 	const handleDiscordConnect = () => {
 		if (!chainContext.address) {
@@ -54,24 +100,16 @@ export default function WalletConnectToggle() {
 							handleDiscordConnect();
 						}
 					}}
-					disabledKeys={env.ENV === "production" ? [] : ["connect"]}
 				>
-					<DropdownItem key="wallet">Manage Wallet</DropdownItem>
-					<DropdownItem
-						key="connect"
-						startContent={<BsDiscord className="text-[#5865F2]" />}
-					>
-						Connect Discord
-					</DropdownItem>
-					<DropdownItem key="registry" href={"/user/payment-registry"}>
-						Payment Registry
-					</DropdownItem>
-					<DropdownItem
-						key="competitions"
-						href={`/user/competitions?host=${chainContext.address}`}
-					>
-						My Competitions
-					</DropdownItem>
+					{menuItems.map((item) => (
+						<DropdownItem
+							key={item.key}
+							startContent={item.icon}
+							href={item.href}
+						>
+							{item.label}
+						</DropdownItem>
+					))}
 				</DropdownMenu>
 			</Dropdown>
 		);

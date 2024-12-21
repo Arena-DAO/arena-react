@@ -5,6 +5,7 @@ import { Card, CardBody, CardHeader, Spinner } from "@nextui-org/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEnv } from "~/hooks/useEnv";
+import { useAuthStore } from "~/store/authStore";
 
 export default function DiscordCallback() {
 	const router = useRouter();
@@ -12,6 +13,7 @@ export default function DiscordCallback() {
 	const queryClient = useQueryClient();
 	const env = useEnv();
 	const { address } = useChain(env.CHAIN);
+	const setAuthenticated = useAuthStore((state) => state.setAuthenticated);
 
 	// Get redirect from URL parameters
 	const redirectUri = searchParams.get("redirect_uri");
@@ -22,8 +24,14 @@ export default function DiscordCallback() {
 		throw Error(errorDescription);
 	}
 
+	// Only allowed in prod
+	if (env.ENV !== "production") {
+		throw Error("OAuth2 flow is only implemented in production");
+	}
+
 	// Invalidate profile query
 	if (address) {
+		setAuthenticated(true);
 		queryClient.invalidateQueries({ queryKey: ["profile", address] });
 	}
 

@@ -56,12 +56,8 @@ const fetchProfile = async (
 };
 
 export const useProfileData = (address: string, isValid: boolean) => {
-	const isWallet = isValidWalletAddress(address);
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
-	const isEnrollmentContract = isWallet
-		? false
-		: address === env.ARENA_COMPETITION_ENROLLMENT_ADDRESS;
 
 	return useQuery({
 		queryKey: ["profile", address],
@@ -70,7 +66,7 @@ export const useProfileData = (address: string, isValid: boolean) => {
 				throw "Query must block on loading CosmWasm client";
 			}
 
-			if (isEnrollmentContract) {
+			if (address === env.ARENA_COMPETITION_ENROLLMENT_ADDRESS) {
 				return {
 					address,
 					name: "Competition Enrollment",
@@ -78,31 +74,31 @@ export const useProfileData = (address: string, isValid: boolean) => {
 				};
 			}
 
-			// Check Discord identity
-			if (env.ARENA_DISCORD_IDENTITY_ADDRESS) {
-				const identityClient = new ArenaDiscordIdentityQueryClient(
-					cosmWasmClient,
-					env.ARENA_DISCORD_IDENTITY_ADDRESS,
-				);
-				const discordProfile = await identityClient.discordProfile({
-					addr: address,
-				});
+			if (isValidWalletAddress(address)) {
+				// Check Discord identity
+				if (env.ARENA_DISCORD_IDENTITY_ADDRESS) {
+					const identityClient = new ArenaDiscordIdentityQueryClient(
+						cosmWasmClient,
+						env.ARENA_DISCORD_IDENTITY_ADDRESS,
+					);
+					const discordProfile = await identityClient.discordProfile({
+						addr: address,
+					});
 
-				if (discordProfile) {
-					const { user_id, username, avatar_hash } = discordProfile;
+					if (discordProfile) {
+						const { user_id, username, avatar_hash } = discordProfile;
 
-					return {
-						address,
-						discordId: user_id,
-						name: username,
-						imageUrl: avatar_hash
-							? `https://cdn.discordapp.com/avatars/${user_id}/${avatar_hash}.png`
-							: null,
-					};
+						return {
+							address,
+							discordId: user_id,
+							name: username,
+							imageUrl: avatar_hash
+								? `https://cdn.discordapp.com/avatars/${user_id}/${avatar_hash}.png`
+								: null,
+						};
+					}
 				}
-			}
 
-			if (isWallet) {
 				return await fetchProfile(env.PFPK_URL, address);
 			}
 
