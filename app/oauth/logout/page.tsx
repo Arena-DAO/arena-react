@@ -3,7 +3,7 @@
 import { useChain } from "@cosmos-kit/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useEnv } from "~/hooks/useEnv";
 import type { Profile } from "~/hooks/useProfile";
