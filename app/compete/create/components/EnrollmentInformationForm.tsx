@@ -1,5 +1,9 @@
 import TokenInfo from "@/components/TokenInfo";
-import { parseAbsoluteToLocal } from "@internationalized/date";
+import {
+	getLocalTimeZone,
+	now,
+	parseAbsoluteToLocal,
+} from "@internationalized/date";
 import {
 	Button,
 	ButtonGroup,
@@ -20,6 +24,8 @@ const EnrollmentInformationForm = () => {
 		control,
 		name: "expiration.at_time",
 	});
+
+	console.log(competitionExpiration);
 
 	return (
 		<div className="space-y-6">
@@ -99,7 +105,8 @@ const EnrollmentInformationForm = () => {
 								label="Enrollment Expiration"
 								value={parseAbsoluteToLocal(field.value)}
 								onChange={(x) => field.onChange(x?.toAbsoluteString())}
-								minValue={parseAbsoluteToLocal(competitionExpiration)}
+								minValue={now(getLocalTimeZone())}
+								maxValue={parseAbsoluteToLocal(competitionExpiration)}
 								isInvalid={!!error}
 								errorMessage={error?.message}
 								isRequired
