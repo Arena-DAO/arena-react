@@ -1,3 +1,5 @@
+"use client";
+
 import { useChain } from "@cosmos-kit/react";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
