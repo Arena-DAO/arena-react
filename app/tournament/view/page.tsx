@@ -36,6 +36,7 @@ const ViewWager = () => {
 	const { address } = useChain(env.CHAIN);
 	const searchParams = useSearchParams();
 	const competitionId = searchParams?.get("competitionId");
+	const showBracket = searchParams?.get("showBracket") === "true";
 
 	const { data, isLoading } = useArenaTournamentModuleCompetitionQuery({
 		client:
@@ -81,7 +82,12 @@ const ViewWager = () => {
 							<Tab key="bracket" title="Bracket" className="text-xs md:text-lg">
 								<div className="h-[85vh] w-full">
 									<ReactFlowProvider>
-										<Bracket tournamentId={data.id} escrow={data.escrow} />
+										<Bracket
+											tournamentId={data.id}
+											escrow={data.escrow}
+											isHost={address === data.host}
+											showBracket={showBracket}
+										/>
 									</ReactFlowProvider>
 								</div>
 							</Tab>

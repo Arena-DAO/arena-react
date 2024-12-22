@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ReactFlow, {
 	Background,
 	Controls,
@@ -22,14 +22,20 @@ import { useEnv } from "~/hooks/useEnv";
 import "reactflow/dist/style.css";
 import { useChain } from "@cosmos-kit/react";
 import dagre from "@dagrejs/dagre";
-import { Button, ButtonGroup, Tooltip } from "@nextui-org/react";
+import { Button, ButtonGroup } from "@nextui-org/react";
 import {
 	type QueryClient,
 	useInfiniteQuery,
 	useQueryClient,
 } from "@tanstack/react-query";
-import { BsUpload } from "react-icons/bs";
+import {
+	BsFullscreen,
+	BsFullscreenExit,
+	BsShare,
+	BsUpload,
+} from "react-icons/bs";
 import { toast } from "react-toastify";
+import useClipboard from "react-use-clipboard";
 import { create } from "zustand";
 import { arenaCoreQueryKeys } from "~/codegen/ArenaCore.react-query";
 import { arenaEscrowQueryKeys } from "~/codegen/ArenaEscrow.react-query";
@@ -47,6 +53,8 @@ import MatchNode from "./MatchNode";
 interface BracketProps {
 	tournamentId: string;
 	escrow?: string | null;
+	isHost?: boolean;
+	showBracket?: boolean;
 }
 
 const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
@@ -123,10 +131,10 @@ const getLayoutedElements = (
 		dagreGraph.setNode(node.id, {
 			width: Math.max(
 				Math.max(profile1?.name?.length ?? 46, profile2?.name?.length ?? 46) *
-					20,
-				330,
+					10,
+				350,
 			),
-			height: 500,
+			height: 350,
 		});
 	}
 	for (const edge of edges) {
@@ -194,11 +202,20 @@ function convertMatchesToNodesEdges(matches: Match[]) {
 	return { nodes, edges };
 }
 
-function Bracket({ tournamentId, escrow }: BracketProps) {
+function Bracket({
+	tournamentId,
+	escrow,
+	isHost,
+	showBracket = false,
+}: BracketProps) {
 	const queryClient = useQueryClient();
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const category = useCategoryContext();
+	const [isFullscreen, setIsFullscreen] = useState(showBracket);
+	const toggleFullscreen = () => {
+		setIsFullscreen(!isFullscreen);
+	};
 
 	const processMatchesMutation = useArenaTournamentModuleExtensionMutation();
 
@@ -206,6 +223,19 @@ function Bracket({ tournamentId, escrow }: BracketProps) {
 	const [nodes, setNodes, onNodesChange] = useNodesState([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 	const updates = useMatchResultsStore((state) => state.matchResults);
+	const shareBracketLink = useMemo(() => {
+		const currentUrl = new URL(window.location.href);
+
+		// Check if `showBracket` is already present
+		if (!currentUrl.searchParams.has("showBracket")) {
+			currentUrl.searchParams.append("showBracket", "true");
+		}
+
+		return currentUrl.toString();
+	}, []);
+	const [isCopied, setCopied] = useClipboard(shareBracketLink, {
+		successDuration: 500,
+	});
 
 	const fetchMatches = async ({ pageParam = undefined }) => {
 		if (!cosmWasmClient) {
@@ -371,78 +401,113 @@ function Bracket({ tournamentId, escrow }: BracketProps) {
 	};
 
 	return (
-		<ReactFlow
-			nodes={nodes}
-			edges={edges}
-			onNodesChange={onNodesChange}
-			onEdgesChange={onEdgesChange}
-			nodeTypes={nodeTypes}
-			fitView
-			minZoom={0.1}
+		<div
+			className={
+				isFullscreen ? "fixed inset-0 z-50 bg-background" : "h-full w-full"
+			}
 		>
-			<Background size={2} />
-			<Controls />
-			<Panel position="top-right">
-				<ButtonGroup>
-					<Tooltip content="Submit Results" placement="bottom">
-						<Button
-							isIconOnly
-							aria-label="Submit Results"
-							isDisabled={updates.size === 0}
-							onPress={onSubmit}
-						>
-							<BsUpload size={20} />
-						</Button>
-					</Tooltip>
-				</ButtonGroup>
-			</Panel>
-			<Panel
-				position="top-left"
-				style={{ padding: "10px", borderRadius: "5px" }}
+			<ReactFlow
+				nodes={nodes}
+				edges={edges}
+				onNodesChange={onNodesChange}
+				onEdgesChange={onEdgesChange}
+				nodeTypes={nodeTypes}
+				fitView
+				minZoom={0.1}
 			>
-				<h3>Legend</h3>
-				<div
-					style={{ display: "flex", alignItems: "center", marginBottom: "5px" }}
+				<Background size={2} />
+				<Controls />
+				<Panel position="top-right">
+					<ButtonGroup>
+						<Button
+							aria-label="Share Bracket"
+							startContent={<BsShare />}
+							isDisabled={isCopied}
+							onPress={() => {
+								setCopied();
+								toast.success("Link copied 👍");
+							}}
+						>
+							Share
+						</Button>
+						<Button
+							startContent={
+								isFullscreen ? <BsFullscreenExit /> : <BsFullscreen />
+							}
+							aria-label={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+							onPress={toggleFullscreen}
+						>
+							{isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+						</Button>
+						{isHost && (
+							<Button
+								startContent={<BsUpload />}
+								aria-label="Submit Results"
+								isDisabled={updates.size === 0}
+								onPress={onSubmit}
+								isLoading={processMatchesMutation.isLoading}
+							>
+								Submit Results
+							</Button>
+						)}
+					</ButtonGroup>
+				</Panel>
+				<Panel
+					position="top-left"
+					style={{ padding: "10px", borderRadius: "5px" }}
 				>
+					<h3>Legend</h3>
 					<div
 						style={{
-							width: "20px",
-							height: "2px",
-							backgroundColor: "#4CAF50",
-							marginRight: "10px",
+							display: "flex",
+							alignItems: "center",
+							marginBottom: "5px",
 						}}
-					/>
-					<span>Winners Bracket</span>
-				</div>
-				<div
-					style={{ display: "flex", alignItems: "center", marginBottom: "5px" }}
-				>
+					>
+						<div
+							style={{
+								width: "20px",
+								height: "2px",
+								backgroundColor: "#4CAF50",
+								marginRight: "10px",
+							}}
+						/>
+						<span>Winners Bracket</span>
+					</div>
 					<div
 						style={{
-							width: "20px",
-							height: "2px",
-							backgroundImage:
-								"linear-gradient(to right, #FF5722 50%, transparent 50%)",
-							backgroundSize: "4px 100%",
-							backgroundRepeat: "repeat-x",
-							marginRight: "10px",
+							display: "flex",
+							alignItems: "center",
+							marginBottom: "5px",
 						}}
-					/>
-					<span>Losers Bracket</span>
-				</div>
-				<div style={{ display: "flex", alignItems: "center" }}>
-					<div
-						className="bg-primary"
-						style={{
-							width: "20px",
-							height: "2px",
-							marginRight: "10px",
-						}}
-					/>
-					<span>Active Match</span>
-				</div>
-			</Panel>
-		</ReactFlow>
+					>
+						<div
+							style={{
+								width: "20px",
+								height: "2px",
+								backgroundImage:
+									"linear-gradient(to right, #FF5722 50%, transparent 50%)",
+								backgroundSize: "4px 100%",
+								backgroundRepeat: "repeat-x",
+								marginRight: "10px",
+							}}
+						/>
+						<span>Losers Bracket</span>
+					</div>
+					<div style={{ display: "flex", alignItems: "center" }}>
+						<div
+							className="bg-primary"
+							style={{
+								width: "20px",
+								height: "2px",
+								marginRight: "10px",
+							}}
+						/>
+						<span>Active Match</span>
+					</div>
+				</Panel>
+			</ReactFlow>
+		</div>
 	);
 }
 

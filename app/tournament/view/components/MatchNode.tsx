@@ -55,11 +55,11 @@ const MatchNode = memo(({ data }: MatchNodeProps) => {
 				<CardHeader className="font-bold text-4xl">
 					Match {data.match_number}
 				</CardHeader>
-				<CardBody className="gap-4 text-center align-middle text-3xl">
+				<CardBody className="gap-4 text-center align-middle text-4xl">
 					{data.team_1 ? (
 						<Profile
 							address={data.team_1}
-							classNames={{ name: "text-3xl" }}
+							classNames={{ name: "text-4xl" }}
 							tooltipOpenDelay={1000}
 						/>
 					) : (
@@ -69,7 +69,7 @@ const MatchNode = memo(({ data }: MatchNodeProps) => {
 					{data.team_2 ? (
 						<Profile
 							address={data.team_2}
-							classNames={{ name: "text-3xl" }}
+							classNames={{ name: "text-4xl" }}
 							tooltipOpenDelay={1000}
 						/>
 					) : (
@@ -102,14 +102,14 @@ const MatchNode = memo(({ data }: MatchNodeProps) => {
 										<Profile
 											address={data.team_1}
 											isTooltipDisabled
-											classNames={{ name: "text-2xl" }}
+											classNames={{ name: "text-3xl" }}
 										/>
 									)}
 									{item.textValue === "team2" && data.team_2 && (
 										<Profile
 											address={data.team_2}
 											isTooltipDisabled
-											classNames={{ name: "text-2xl" }}
+											classNames={{ name: "text-3xl" }}
 										/>
 									)}
 								</div>
