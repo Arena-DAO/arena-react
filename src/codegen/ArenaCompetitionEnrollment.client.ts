@@ -137,6 +137,13 @@ export interface ArenaCompetitionEnrollmentInterface extends ArenaCompetitionEnr
   }: {
     id: Uint128;
   }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
+  forceWithdraw: ({
+    id,
+    members
+  }: {
+    id: Uint128;
+    members: string[];
+  }, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
   updateOwnership: (action: Action, fee?: number | StdFee | "auto", memo?: string, _funds?: Coin[]) => Promise<ExecuteResult>;
 }
 export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollmentQueryClient implements ArenaCompetitionEnrollmentInterface {
@@ -152,6 +159,7 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
     this.triggerExpiration = this.triggerExpiration.bind(this);
     this.enroll = this.enroll.bind(this);
     this.withdraw = this.withdraw.bind(this);
+    this.forceWithdraw = this.forceWithdraw.bind(this);
     this.updateOwnership = this.updateOwnership.bind(this);
   }
   createEnrollment = async ({
@@ -219,6 +227,20 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
     return await this.client.execute(this.sender, this.contractAddress, {
       withdraw: {
         id
+      }
+    }, fee, memo, _funds);
+  };
+  forceWithdraw = async ({
+    id,
+    members
+  }: {
+    id: Uint128;
+    members: string[];
+  }, fee: number | StdFee | "auto" = "auto", memo?: string, _funds?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      force_withdraw: {
+        id,
+        members
       }
     }, fee, memo, _funds);
   };

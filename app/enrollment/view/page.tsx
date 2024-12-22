@@ -5,6 +5,7 @@ import TokenInfo from "@/components/TokenInfo";
 import CompetitionTypeDisplay from "@/components/competition/CompetitionTypeDisplay";
 import EnrollmentStatusDisplay from "@/components/competition/EnrollmentStatusDisplay";
 import ExpirationDisplay from "@/components/competition/ExpirationDisplay";
+import { useChain } from "@cosmos-kit/react";
 import {
 	Button,
 	Card,
@@ -47,6 +48,7 @@ const EnrollmentView = () => {
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const searchParams = useSearchParams();
 	const enrollmentId = searchParams?.get("enrollmentId");
+	const { address } = useChain(env.CHAIN);
 
 	const { data: enrollment, isLoading } =
 		useArenaCompetitionEnrollmentEnrollmentQuery({
@@ -108,7 +110,12 @@ const EnrollmentView = () => {
 							</div>
 						</CardBody>
 						<CardFooter>
-							<GroupMembersModal groupContract={enrollment.group_contract} />
+							<GroupMembersModal
+								groupContract={enrollment.group_contract}
+								forceWithdrawEnrollmentId={
+									address === enrollment.host ? enrollment.id : undefined
+								}
+							/>
 						</CardFooter>
 					</Card>
 

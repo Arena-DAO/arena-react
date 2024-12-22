@@ -151,7 +151,7 @@ const EnrollButton: React.FC<EnrollButtonProps> = ({
 			),
 		);
 		await queryClient.invalidateQueries(
-			arenaGroupQueryKeys.members(groupContract, {}),
+			arenaGroupQueryKeys.members(groupContract),
 		);
 	};
 

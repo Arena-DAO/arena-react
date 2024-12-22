@@ -32,6 +32,11 @@ export type ExecuteMsg = {
     id: Uint128;
   };
 } | {
+  force_withdraw: {
+    id: Uint128;
+    members: string[];
+  };
+} | {
   update_ownership: Action;
 };
 export type Uint128 = string;

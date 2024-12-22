@@ -205,6 +205,29 @@ export function useArenaCompetitionEnrollmentUpdateOwnershipMutation(options?: O
     } = {}
   }) => client.updateOwnership(msg, fee, memo, funds), options);
 }
+export interface ArenaCompetitionEnrollmentForceWithdrawMutation {
+  client: ArenaCompetitionEnrollmentClient;
+  msg: {
+    id: Uint128;
+    members: string[];
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaCompetitionEnrollmentForceWithdrawMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaCompetitionEnrollmentForceWithdrawMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaCompetitionEnrollmentForceWithdrawMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.forceWithdraw(msg, fee, memo, funds), options);
+}
 export interface ArenaCompetitionEnrollmentWithdrawMutation {
   client: ArenaCompetitionEnrollmentClient;
   msg: {

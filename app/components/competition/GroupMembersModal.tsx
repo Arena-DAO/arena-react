@@ -1,6 +1,8 @@
 import Profile from "@/components/Profile";
+import { useChain } from "@cosmos-kit/react";
 import {
 	Button,
+	Checkbox,
 	Modal,
 	ModalBody,
 	ModalContent,
@@ -16,9 +18,12 @@ import {
 	useDisclosure,
 	useDraggable,
 } from "@nextui-org/react";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import React from "react";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import React, { useState } from "react";
 import { useCallback, useMemo } from "react";
+import { toast } from "react-toastify";
+import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
+import { arenaCompetitionEnrollmentQueryKeys } from "~/codegen/ArenaCompetitionEnrollment.react-query";
 import { ArenaGroupQueryClient } from "~/codegen/ArenaGroup.client";
 import { arenaGroupQueryKeys } from "~/codegen/ArenaGroup.react-query";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
@@ -26,12 +31,34 @@ import { useEnv } from "~/hooks/useEnv";
 
 interface GroupMemberProps {
 	groupContract: string;
+	// Pass in the enrollmentId if the user can force withdraw member
+	forceWithdrawEnrollmentId?: string;
 }
 
-const GroupMembers: React.FC<GroupMemberProps> = ({ groupContract }) => {
+const GroupMembers: React.FC<GroupMemberProps> = ({
+	groupContract,
+	forceWithdrawEnrollmentId,
+}) => {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
-	const { isOpen, onOpen, onOpenChange } = useDisclosure();
+	const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+	const [selectedMembers, setSelectedMembers] = useState<Set<string>>(
+		new Set(),
+	);
+	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
+	const queryClient = useQueryClient();
+
+	const handleCheckboxChange = (address: string, isSelected: boolean) => {
+		setSelectedMembers((prev) => {
+			const newSelection = new Set(prev);
+			if (isSelected) {
+				newSelection.add(address);
+			} else {
+				newSelection.delete(address);
+			}
+			return newSelection;
+		});
+	};
 
 	const fetchMembers = async ({ pageParam = undefined }) => {
 		if (!cosmWasmClient) throw new Error("Could not get CosmWasm client");
@@ -78,6 +105,38 @@ const GroupMembers: React.FC<GroupMemberProps> = ({ groupContract }) => {
 	const targetRef = React.useRef(null);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
+	const handleForceWithdraw = async () => {
+		if (selectedMembers.size === 0 || !forceWithdrawEnrollmentId) return;
+		try {
+			const client = await getSigningCosmWasmClient();
+			if (!address) throw new Error("Could not get user address");
+
+			const enrollmentClient = new ArenaCompetitionEnrollmentClient(
+				client,
+				address,
+				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+			);
+
+			await enrollmentClient.forceWithdraw({
+				id: forceWithdrawEnrollmentId,
+				members: Array.from(selectedMembers),
+			});
+
+			await queryClient.invalidateQueries(
+				arenaCompetitionEnrollmentQueryKeys.enrollment(
+					env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+					{ enrollmentId: forceWithdrawEnrollmentId },
+				),
+			);
+			onClose();
+			setSelectedMembers(new Set());
+			toast.success("Users have been successfully withdrawn");
+		} catch (e) {
+			console.error(e);
+			toast.error((e as Error).toString());
+		}
+	};
+
 	return (
 		<>
 			<Button onPress={onOpen}>Members</Button>
@@ -85,7 +144,7 @@ const GroupMembers: React.FC<GroupMemberProps> = ({ groupContract }) => {
 				ref={targetRef}
 				isOpen={isOpen}
 				onOpenChange={onOpenChange}
-				size="lg"
+				size="xl"
 			>
 				<ModalContent>
 					<ModalHeader {...moveProps}>
@@ -95,6 +154,11 @@ const GroupMembers: React.FC<GroupMemberProps> = ({ groupContract }) => {
 						<Table aria-label="Enrolled Members" removeWrapper>
 							<TableHeader>
 								<TableColumn>Member</TableColumn>
+								{forceWithdrawEnrollmentId ? (
+									<TableColumn>Selections</TableColumn>
+								) : (
+									<TableColumn> </TableColumn>
+								)}
 							</TableHeader>
 							<TableBody
 								emptyContent="No members yet..."
@@ -106,20 +170,43 @@ const GroupMembers: React.FC<GroupMemberProps> = ({ groupContract }) => {
 										<TableCell>
 											<Profile address={member.addr} />
 										</TableCell>
+										{forceWithdrawEnrollmentId ? (
+											<TableCell>
+												<Checkbox
+													isSelected={selectedMembers.has(member.addr)}
+													onValueChange={(isSelected) =>
+														handleCheckboxChange(member.addr, isSelected)
+													}
+												/>
+											</TableCell>
+										) : (
+											<></>
+										)}
 									</TableRow>
 								))}
 							</TableBody>
 						</Table>
 					</ModalBody>
-					{hasNextPage && (
+					{(hasNextPage || forceWithdrawEnrollmentId) && (
 						<ModalFooter>
-							<Button
-								onPress={loadMore}
-								isLoading={isFetchingNextPage}
-								disabled={!hasNextPage || isFetchingNextPage}
-							>
-								{isFetchingNextPage ? "Loading more..." : "Load More"}
-							</Button>
+							{hasNextPage && (
+								<Button
+									onPress={loadMore}
+									isLoading={isFetchingNextPage}
+									disabled={!hasNextPage || isFetchingNextPage}
+								>
+									{isFetchingNextPage ? "Loading more..." : "Load More"}
+								</Button>
+							)}
+							{forceWithdrawEnrollmentId && (
+								<Button
+									onPress={handleForceWithdraw}
+									isDisabled={selectedMembers.size === 0}
+									color="danger"
+								>
+									Force Withdraw
+								</Button>
+							)}
 						</ModalFooter>
 					)}
 				</ModalContent>
