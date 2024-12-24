@@ -76,7 +76,7 @@ const TournamentInformationForm = () => {
 							<Switch
 								{...field}
 								value={field?.value?.toString()}
-								checked={field.value}
+								isSelected={field.value}
 								onChange={field.onChange}
 								isDisabled={isSubmitting}
 							>

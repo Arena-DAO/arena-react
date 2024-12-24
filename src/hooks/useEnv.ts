@@ -34,6 +34,11 @@ const envSchema = z.object({
 	PAGINATION_LIMIT: z.coerce.number(),
 	IBC_FUN: z.string(),
 	JACKAL_PATH: z.string(),
+	CODE_ID_DAO_CORE: z.coerce.number(),
+	CODE_ID_CW4_GROUP: z.coerce.number(),
+	CODE_ID_CW4_VOTING: z.coerce.number(),
+	CODE_ID_DAO_PROPOSAL_SINGLE: z.coerce.number(),
+	CODE_ID_DAO_PREPROPOSE_SINGLE: z.coerce.number(),
 });
 
 let cachedEnv: Env | null = null;
@@ -83,6 +88,13 @@ const getEnv = (): Env => {
 			PAGINATION_LIMIT: process.env.NEXT_PUBLIC_PAGINATION_LIMIT,
 			IBC_FUN: process.env.NEXT_PUBLIC_IBC_FUN,
 			JACKAL_PATH: process.env.NEXT_PUBLIC_JACKAL_PATH,
+			CODE_ID_DAO_CORE: process.env.NEXT_PUBLIC_CODE_ID_DAO_CORE,
+			CODE_ID_CW4_GROUP: process.env.NEXT_PUBLIC_CODE_ID_CW4_GROUP,
+			CODE_ID_CW4_VOTING: process.env.NEXT_PUBLIC_CODE_ID_CW4_VOTING,
+			CODE_ID_DAO_PROPOSAL_SINGLE:
+				process.env.NEXT_PUBLIC_CODE_ID_DAO_PROPOSAL_SINGLE,
+			CODE_ID_DAO_PREPROPOSE_SINGLE:
+				process.env.NEXT_PUBLIC_CODE_ID_DAO_PREPROPOSE_SINGLE,
 		};
 
 		cachedEnv = envSchema.parse(env);

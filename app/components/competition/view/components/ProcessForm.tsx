@@ -479,7 +479,7 @@ const ProcessForm = ({
 					</ModalBody>
 					<ModalFooter>
 						<Button
-							onPress={() => handleSubmit(onSubmit)}
+							onPress={() => handleSubmit(onSubmit)()}
 							isLoading={isSubmitting}
 						>
 							Submit

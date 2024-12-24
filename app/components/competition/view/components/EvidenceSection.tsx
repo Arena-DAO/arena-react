@@ -295,7 +295,7 @@ const EvidenceSection = ({
 							Add Item
 						</Button>
 						<Button
-							onPress={() => handleSubmit(onSubmit)}
+							onPress={() => handleSubmit(onSubmit)()}
 							isLoading={isSubmitting}
 						>
 							Submit

@@ -297,157 +297,164 @@ const PaymentRegistry: React.FC = () => {
 				</CardBody>
 			</Card>
 			{isOwnRegistry && (
-				<Card>
-					<CardHeader>
-						<h2 className="font-semibold text-xl">
-							Update Preset Distribution
-						</h2>
-					</CardHeader>
-					<CardBody className="space-y-4">
-						<div className="flex items-center space-x-2">
-							{remainderAddr && <Profile address={remainderAddr} justAvatar />}
-							<Controller
-								control={control}
-								name="distribution.remainder_addr"
-								render={({ field }) => (
-									<Input
-										label="Remainder Address"
-										autoFocus
-										isDisabled={isSubmitting}
-										isInvalid={!!errors.distribution?.remainder_addr}
-										errorMessage={errors.distribution?.remainder_addr?.message}
-										{...field}
-									/>
+				<form onSubmit={handleSubmit(onSubmit)}>
+					<Card>
+						<CardHeader>
+							<h2 className="font-semibold text-xl">
+								Update Preset Distribution
+							</h2>
+						</CardHeader>
+						<CardBody className="space-y-4">
+							<div className="flex items-center space-x-2">
+								{remainderAddr && (
+									<Profile address={remainderAddr} justAvatar />
 								)}
-							/>
-						</div>
-						<Table aria-label="Distribution" removeWrapper>
-							<TableHeader>
-								<TableColumn>Recipient</TableColumn>
-								<TableColumn>Percentage</TableColumn>
-								<TableColumn>Action</TableColumn>
-							</TableHeader>
-							<TableBody emptyContent="No recipients added">
-								{fields.map((memberPercentage, i) => (
-									<TableRow key={memberPercentage.id} className="align-top">
-										<TableCell>
-											<div className="flex items-center space-x-2">
-												{percentages[i] && (
-													<Profile address={percentages[i]?.addr} justAvatar />
-												)}
+								<Controller
+									control={control}
+									name="distribution.remainder_addr"
+									render={({ field }) => (
+										<Input
+											label="Remainder Address"
+											autoFocus
+											isDisabled={isSubmitting}
+											isInvalid={!!errors.distribution?.remainder_addr}
+											errorMessage={
+												errors.distribution?.remainder_addr?.message
+											}
+											{...field}
+										/>
+									)}
+								/>
+							</div>
+							<Table aria-label="Distribution" removeWrapper>
+								<TableHeader>
+									<TableColumn>Recipient</TableColumn>
+									<TableColumn>Percentage</TableColumn>
+									<TableColumn>Action</TableColumn>
+								</TableHeader>
+								<TableBody emptyContent="No recipients added">
+									{fields.map((memberPercentage, i) => (
+										<TableRow key={memberPercentage.id} className="align-top">
+											<TableCell>
+												<div className="flex items-center space-x-2">
+													{percentages[i] && (
+														<Profile
+															address={percentages[i]?.addr}
+															justAvatar
+														/>
+													)}
+													<Controller
+														control={control}
+														name={`distribution.member_percentages.${i}.addr`}
+														render={({ field }) => (
+															<Input
+																label={`Recipient ${i + 1}`}
+																isDisabled={isSubmitting}
+																isInvalid={
+																	!!errors.distribution?.member_percentages?.[i]
+																		?.addr
+																}
+																errorMessage={
+																	errors.distribution?.member_percentages?.[i]
+																		?.addr?.message
+																}
+																{...field}
+																className="min-w-80"
+															/>
+														)}
+													/>
+												</div>
+											</TableCell>
+											<TableCell className="align-top">
 												<Controller
 													control={control}
-													name={`distribution.member_percentages.${i}.addr`}
+													name={`distribution.member_percentages.${i}.percentage`}
 													render={({ field }) => (
 														<Input
-															label={`Recipient ${i + 1}`}
+															type="number"
+															min="0"
+															max="100"
+															step="1"
+															label="Percentage"
 															isDisabled={isSubmitting}
 															isInvalid={
 																!!errors.distribution?.member_percentages?.[i]
-																	?.addr
+																	?.percentage
 															}
 															errorMessage={
 																errors.distribution?.member_percentages?.[i]
-																	?.addr?.message
+																	?.percentage?.message
 															}
+															endContent={<BsPercent />}
+															classNames={{ input: "text-right" }}
 															{...field}
-															className="min-w-80"
+															value={field.value?.toString()}
+															onChange={(e) =>
+																field.onChange(
+																	Number.parseFloat(e.target.value),
+																)
+															}
+															className="min-w-32 max-w-40"
 														/>
 													)}
 												/>
-											</div>
-										</TableCell>
-										<TableCell className="align-top">
-											<Controller
-												control={control}
-												name={`distribution.member_percentages.${i}.percentage`}
-												render={({ field }) => (
-													<Input
-														type="number"
-														min="0"
-														max="100"
-														step="1"
-														label="Percentage"
-														isDisabled={isSubmitting}
-														isInvalid={
-															!!errors.distribution?.member_percentages?.[i]
-																?.percentage
-														}
-														errorMessage={
-															errors.distribution?.member_percentages?.[i]
-																?.percentage?.message
-														}
-														endContent={<BsPercent />}
-														classNames={{ input: "text-right" }}
-														{...field}
-														value={field.value?.toString()}
-														onChange={(e) =>
-															field.onChange(Number.parseFloat(e.target.value))
-														}
-														className="min-w-32 max-w-40"
-													/>
-												)}
-											/>
-										</TableCell>
-										<TableCell className="align-top">
-											<Button
-												isIconOnly
-												aria-label="Remove Recipient"
-												variant="faded"
-												onPress={() => remove(i)}
-												isDisabled={isSubmitting}
-											>
-												<FiTrash />
-											</Button>
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
-						<div className="text-danger text-xs">
-							<p>{errors.distribution?.message}</p>
-							<p>{errors.distribution?.member_percentages?.message}</p>
-							<p>{errors.distribution?.member_percentages?.root?.message}</p>
-						</div>
-						<Progress
-							aria-label="Total Percentage"
-							value={percentages.reduce(
-								(acc, x) => acc + (x.percentage as number),
-								0,
-							)}
-							color="primary"
-							showValueLabel
-						/>
-					</CardBody>
-					<CardFooter className="flex justify-between">
-						<Button
-							onPress={() => append({ addr: "", percentage: 0 })}
-							aria-label="Add Recipient"
-							startContent={<FiPlus />}
-							isDisabled={isSubmitting}
-						>
-							Add Recipient
-						</Button>
-						<div className="space-x-2">
-							{distribution && !height && (
-								<Button
-									onPress={onRemoveDistribution}
-									isLoading={removeDistributionMutation.isLoading}
-									color="danger"
-								>
-									Remove Current
-								</Button>
-							)}
-							<Button
-								onPress={() => handleSubmit(onSubmit)}
-								isLoading={isSubmitting}
+											</TableCell>
+											<TableCell className="align-top">
+												<Button
+													isIconOnly
+													aria-label="Remove Recipient"
+													variant="faded"
+													onPress={() => remove(i)}
+													isDisabled={isSubmitting}
+												>
+													<FiTrash />
+												</Button>
+											</TableCell>
+										</TableRow>
+									))}
+								</TableBody>
+							</Table>
+							<div className="text-danger text-xs">
+								<p>{errors.distribution?.message}</p>
+								<p>{errors.distribution?.member_percentages?.message}</p>
+								<p>{errors.distribution?.member_percentages?.root?.message}</p>
+							</div>
+							<Progress
+								aria-label="Total Percentage"
+								value={percentages.reduce(
+									(acc, x) => acc + (x.percentage as number),
+									0,
+								)}
 								color="primary"
+								showValueLabel
+							/>
+						</CardBody>
+						<CardFooter className="flex justify-between">
+							<Button
+								onPress={() => append({ addr: "", percentage: 0 })}
+								aria-label="Add Recipient"
+								startContent={<FiPlus />}
+								isDisabled={isSubmitting}
 							>
-								Update
+								Add Recipient
 							</Button>
-						</div>
-					</CardFooter>
-				</Card>
+							<div className="space-x-2">
+								{distribution && !height && (
+									<Button
+										onPress={onRemoveDistribution}
+										isLoading={removeDistributionMutation.isLoading}
+										color="danger"
+									>
+										Remove Current
+									</Button>
+								)}
+								<Button type="submit" isLoading={isSubmitting} color="primary">
+									Update
+								</Button>
+							</div>
+						</CardFooter>
+					</Card>
+				</form>
 			)}
 		</div>
 	);

@@ -356,7 +356,7 @@ const AddDueForm: React.FC<AddDueFormProps> = ({
 				</ModalBody>
 				<ModalFooter>
 					<Button
-						onPress={() => handleSubmit(onSubmit)}
+						onPress={() => handleSubmit(onSubmit)()}
 						isLoading={isSubmitting || isLoading}
 					>
 						{isLoading ? <Spinner size="sm" /> : "Submit"}
