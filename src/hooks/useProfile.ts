@@ -5,6 +5,7 @@ import { isValidWalletAddress } from "~/helpers/AddressHelpers";
 import { withIpfsSupport } from "~/helpers/IPFSHelpers";
 import { useCosmWasmClient } from "./useCosmWamClient";
 import { useEnv } from "./useEnv";
+import { useChain } from "@cosmos-kit/react";
 
 type UserProfile = {
 	nonce: number;
@@ -58,6 +59,7 @@ const fetchProfile = async (
 export const useProfileData = (address: string, isValid: boolean) => {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
+	const { getCosmWasmClient } = useChain("neutron");
 
 	return useQuery({
 		queryKey: ["profile", address],
@@ -77,8 +79,12 @@ export const useProfileData = (address: string, isValid: boolean) => {
 			if (isValidWalletAddress(address)) {
 				// Check Discord identity
 				if (env.ARENA_DISCORD_IDENTITY_ADDRESS) {
+					const mainnetClient =
+						env.ENV === "production"
+							? cosmWasmClient
+							: await getCosmWasmClient();
 					const identityClient = new ArenaDiscordIdentityQueryClient(
-						cosmWasmClient,
+						mainnetClient,
 						env.ARENA_DISCORD_IDENTITY_ADDRESS,
 					);
 					const discordProfile = await identityClient.discordProfile({

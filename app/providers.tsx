@@ -42,12 +42,13 @@ function InnerProviders({ children }: PropsWithChildren) {
 		},
 	};
 	const chainsMemo = useMemo(
-		() => (env.ENV === "development" ? [testnetChain] : [mainnetChain]),
+		() =>
+			env.ENV === "development" ? [testnetChain, mainnetChain] : [mainnetChain],
 		[env.ENV],
 	);
 	const assetsMemo = useMemo(() => {
 		if (env.ENV === "development") {
-			return [testnetAssets];
+			return [testnetAssets, mainnetAssets];
 		}
 		return [mainnetAssets];
 	}, [env.ENV]);

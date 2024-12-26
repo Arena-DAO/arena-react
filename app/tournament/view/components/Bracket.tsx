@@ -131,10 +131,10 @@ const getLayoutedElements = (
 		dagreGraph.setNode(node.id, {
 			width: Math.max(
 				Math.max(profile1?.name?.length ?? 46, profile2?.name?.length ?? 46) *
-					10,
-				350,
+					22,
+				325,
 			),
-			height: 350,
+			height: 315,
 		});
 	}
 	for (const edge of edges) {
