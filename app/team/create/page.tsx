@@ -1,5 +1,5 @@
 "use client";
-
+import { ProfileInput } from "@/components/ProfileInput";
 import { toBinary } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,8 +18,10 @@ import {
 	TableRow,
 	Textarea,
 } from "@nextui-org/react";
+import { useEffect } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { BsPercent } from "react-icons/bs";
+import { toast } from "react-toastify";
 import { z } from "zod";
 import type { ExecuteMsg as ArenaPaymentRegistryExecuteMsg } from "~/codegen/ArenaPaymentRegistry.types";
 import type {
@@ -50,7 +52,7 @@ const CreateTeamSchema = z.object({
 		.max(50, "Team name cannot exceed 50 characters"),
 	description: z
 		.string()
-		.min(10, "Description must be at least 10 characters")
+		.min(1, "Description is required")
 		.max(500, "Description cannot exceed 500 characters"),
 	teamImageUrl: z
 		.string()
@@ -66,7 +68,8 @@ const CreateTeamSchema = z.object({
 			(url) => !url || isValidUrl(url),
 			"Must be a valid IPFS or HTTP(S) URL",
 		),
-	members: MemberPercentageSchema.array()
+	members: z
+		.array(MemberPercentageSchema)
 		.min(1, "At least one team member is required")
 		.refine(
 			(members) => {
@@ -89,6 +92,8 @@ const CreateTeam = () => {
 		control,
 		handleSubmit,
 		formState: { errors, isSubmitting },
+		setValue,
+		getValues,
 	} = useForm<CreateTeamFormData>({
 		resolver: zodResolver(CreateTeamSchema),
 		defaultValues: {
@@ -99,6 +104,12 @@ const CreateTeam = () => {
 			members: [{ addr: address, percentage: 0 }],
 		},
 	});
+
+	useEffect(() => {
+		if (address && !getValues("members.0.addr")) {
+			setValue("members.0.addr", address); // Update the first member's address dynamically
+		}
+	}, [address, setValue, getValues]);
 
 	const { fields, append, remove } = useFieldArray({
 		control,
@@ -203,6 +214,7 @@ const CreateTeam = () => {
 			);
 		} catch (error) {
 			console.error("Error submitting form:", error);
+			toast.error((error as Error).message);
 		}
 	};
 
@@ -234,7 +246,7 @@ const CreateTeam = () => {
 									<Textarea
 										{...field}
 										isRequired
-										label="Description"
+										label="Team Description"
 										errorMessage={errors.description?.message}
 										isInvalid={!!errors.description}
 									/>
@@ -294,15 +306,12 @@ const CreateTeam = () => {
 														name={`members.${index}.addr`}
 														control={control}
 														render={({ field }) => (
-															<Input
-																{...field}
+															<ProfileInput
 																label="Address"
+																field={field}
+																error={errors.members?.[index]?.addr}
 																isRequired
-																placeholder={`${env.BECH32_PREFIX}...`}
-																errorMessage={
-																	errors.members?.[index]?.addr?.message
-																}
-																isInvalid={!!errors.members?.[index]?.addr}
+																isDisabled={isSubmitting}
 															/>
 														)}
 													/>
@@ -319,7 +328,7 @@ const CreateTeam = () => {
 																max="100"
 																step="1"
 																type="number"
-																label="Percentage"
+																label="Payout %"
 																isDisabled={isSubmitting}
 																value={field.value?.toString()}
 																onChange={(e) =>
@@ -347,13 +356,11 @@ const CreateTeam = () => {
 									</TableBody>
 								</Table>
 
-								{errors.members &&
-									typeof errors.members === "object" &&
-									"message" in errors.members && (
-										<p className="text-danger text-sm">
-											{errors.members.message as string}
-										</p>
-									)}
+								{errors.members?.root && (
+									<p className="text-danger text-sm">
+										{errors.members.root.message}
+									</p>
+								)}
 
 								<Progress
 									value={members.reduce((acc, x) => acc + x.percentage, 0)}
