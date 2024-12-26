@@ -101,7 +101,21 @@ const Profile = ({
 
 	const tooltipContent = (
 		<Card shadow="none" classNames={{ header: "pb-0", footer: "px-0 py-1" }}>
-			{data?.name && justAvatar && <CardHeader>{data.name}</CardHeader>}
+			{data?.name && (
+				<CardHeader>
+					{data.discordId ? (
+						<Link
+							isExternal
+							showAnchorIcon
+							href={`https://discordapp.com/users/${data.discordId}`}
+						>
+							{data.name}
+						</Link>
+					) : (
+						<>{data.name}</>
+					)}
+				</CardHeader>
+			)}
 			{!isEnrollmentContract && parsedRating && (
 				<CardBody>Rating {Number.parseFloat(parsedRating).toFixed(2)}</CardBody>
 			)}
