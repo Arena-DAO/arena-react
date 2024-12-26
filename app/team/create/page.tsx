@@ -35,6 +35,7 @@ import type { InstantiateMsg as DAOProposalSingleInstantiateMsg } from "~/codege
 import type { InstantiateMsg as DAOVotingCw4InstantiateMsg } from "~/codegen/DaoVotingCw4.types";
 import { MemberPercentageSchema } from "~/config/schemas";
 import { useEnv } from "~/hooks/useEnv";
+import { useTeamStore } from "~/store/teamStore";
 
 // Helper function to validate IPFS or HTTP(S) URLs
 const isValidUrl = (url: string) => {
@@ -88,6 +89,7 @@ type CreateTeamFormData = z.infer<typeof CreateTeamSchema>;
 const CreateTeam = () => {
 	const env = useEnv();
 	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
+	const { addTeam } = useTeamStore();
 	const {
 		control,
 		handleSubmit,
@@ -127,7 +129,7 @@ const CreateTeam = () => {
 				throw Error("Wallet must be connected");
 			}
 			const cosmWasmClient = await getSigningCosmWasmClient();
-			await cosmWasmClient.instantiate(
+			const result = await cosmWasmClient.instantiate(
 				address,
 				env.CODE_ID_DAO_CORE,
 				{
@@ -212,6 +214,8 @@ const CreateTeam = () => {
 				"Arena Team",
 				"auto",
 			);
+			addTeam(result.contractAddress);
+			toast.success("Successfully created the team");
 		} catch (error) {
 			console.error("Error submitting form:", error);
 			toast.error((error as Error).message);
