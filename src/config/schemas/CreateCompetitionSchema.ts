@@ -28,6 +28,11 @@ const EnrollmentInfoSchema = z
 			.optional(),
 		enrollment_expiration: ExpirationSchema,
 		isCreatorMember: z.boolean().optional(),
+		requiredTeamSize: z
+			.number()
+			.min(1, "1 is the min team size")
+			.max(30, "30 is the max team size")
+			.optional(),
 	})
 	.refine((data) => !data.minMembers || data.minMembers <= data.maxMembers, {
 		message: "Minimum members must be less than or equal to maximum members",

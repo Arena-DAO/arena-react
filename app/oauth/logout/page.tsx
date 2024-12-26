@@ -10,7 +10,7 @@ import type { Profile } from "~/hooks/useProfile";
 import { useAuthStore } from "~/store/authStore";
 
 const LogoutPage = () => {
-	const setAuthenticated = useAuthStore((state) => state.setAuthenticated);
+	const { setAuthenticated } = useAuthStore();
 	const env = useEnv();
 	const router = useRouter();
 	const queryClient = useQueryClient();

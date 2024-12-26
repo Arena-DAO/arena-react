@@ -112,11 +112,12 @@ const TriggerButton: React.FC<TriggerButtonProps> = ({
 
 	return (
 		<Button
-			color="primary"
+			color="success"
+			variant="bordered"
 			onPress={handleTriggerExpiration}
 			isLoading={triggerExpirationMutation.isLoading}
 		>
-			Trigger Expiration
+			Finalize
 		</Button>
 	);
 };

@@ -173,8 +173,6 @@ const EnrollButton: React.FC<EnrollButtonProps> = ({
 		);
 	}
 
-	const buttonText = isFull ? "Full" : "Enroll";
-
 	return (
 		<Tooltip
 			content={
@@ -189,7 +187,7 @@ const EnrollButton: React.FC<EnrollButtonProps> = ({
 				isDisabled={isFull}
 				isLoading={enrollMutation.isLoading}
 			>
-				{buttonText}
+				Enroll
 			</Button>
 		</Tooltip>
 	);

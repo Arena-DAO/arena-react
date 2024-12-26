@@ -348,11 +348,13 @@ const EnrollmentView = () => {
 						)}
 					{!enrollment.has_triggered_expiration && (
 						<>
-							<TriggerButton
-								enrollmentId={enrollment.id}
-								isExpired={enrollment.is_expired}
-								isFull={currentMembers >= maxMembers}
-							/>
+							{enrollment.host === address && (
+								<TriggerButton
+									enrollmentId={enrollment.id}
+									isExpired={enrollment.is_expired}
+									isFull={currentMembers >= maxMembers}
+								/>
+							)}
 							<EnrollButton
 								enrollmentId={enrollment.id}
 								isFull={currentMembers >= maxMembers}

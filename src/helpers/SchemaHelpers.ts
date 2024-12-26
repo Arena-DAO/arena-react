@@ -100,3 +100,8 @@ export function convertToEscrowInstantiate(
 			: undefined,
 	};
 }
+
+export const preprocessInput = (value: string): number | undefined => {
+	const parsed = Number.parseInt(value);
+	return Number.isNaN(parsed) || value.trim() === "" ? undefined : parsed;
+};

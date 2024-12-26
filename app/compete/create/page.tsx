@@ -231,6 +231,7 @@ const CreateCompetitionPage = () => {
 							label: "Arena Group",
 							msg: toBinary({} as GroupInstantiateMsg),
 						},
+						requireTeamSize: values.enrollmentInfo.requiredTeamSize,
 					});
 
 					// Extract competition ID from the result

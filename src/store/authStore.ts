@@ -10,7 +10,7 @@ export const useAuthStore = create(
 	persist<AuthState>(
 		(set) => ({
 			isAuthenticated: false,
-			setAuthenticated: (auth) => set(() => ({ isAuthenticated: auth })),
+			setAuthenticated: (auth) => set({ isAuthenticated: auth }),
 		}),
 		{
 			name: "auth-storage",

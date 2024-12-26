@@ -1,7 +1,7 @@
-import { useEnv } from "~/hooks/useEnv";
-import Profile from "./Profile";
 import { Input, type InputProps } from "@nextui-org/react";
 import type { FieldError, FieldValues } from "react-hook-form";
+import { useEnv } from "~/hooks/useEnv";
+import Profile from "./Profile";
 
 interface ProfileInputProps extends InputProps {
 	error?: FieldError;

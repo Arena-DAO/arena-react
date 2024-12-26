@@ -4,6 +4,7 @@ import { useChain } from "@cosmos-kit/react";
 import { Card, CardBody, CardHeader, Spinner } from "@nextui-org/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 import { useEnv } from "~/hooks/useEnv";
 import { useAuthStore } from "~/store/authStore";
 
@@ -13,7 +14,7 @@ export default function DiscordCallback() {
 	const queryClient = useQueryClient();
 	const env = useEnv();
 	const { address } = useChain(env.CHAIN);
-	const setAuthenticated = useAuthStore((state) => state.setAuthenticated);
+	const { setAuthenticated } = useAuthStore();
 
 	// Get redirect from URL parameters
 	const redirectUri = searchParams.get("redirect_uri");
@@ -29,18 +30,20 @@ export default function DiscordCallback() {
 		throw Error("OAuth2 flow is only implemented in production");
 	}
 
-	// Invalidate profile query
-	if (address) {
-		setAuthenticated(true);
-		queryClient.invalidateQueries({ queryKey: ["profile", address] });
-	}
+	useEffect(() => {
+		if (address) {
+			// Invalidate profile query
+			setAuthenticated(true);
+			queryClient.invalidateQueries({ queryKey: ["profile", address] });
 
-	// If we have a redirect URL, use it, otherwise go to home
-	if (redirectUri) {
-		router.push(decodeURIComponent(redirectUri));
-	} else {
-		router.push("/");
-	}
+			// Handle redirection
+			if (redirectUri) {
+				router.push(decodeURIComponent(redirectUri));
+			} else {
+				router.push("/");
+			}
+		}
+	}, [address, redirectUri, queryClient, router, setAuthenticated]);
 
 	// Show loading state while processing
 	return (

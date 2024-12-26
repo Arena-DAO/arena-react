@@ -13,6 +13,7 @@ import {
 } from "@nextui-org/react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
+import { preprocessInput } from "~/helpers/SchemaHelpers";
 import EntryFeeForm from "./EntryFeeForm";
 
 const EnrollmentInformationForm = () => {
@@ -31,7 +32,7 @@ const EnrollmentInformationForm = () => {
 		<div className="space-y-6">
 			<h2 className="font-semibold text-lg">Enrollment Information</h2>
 			<div className="space-y-6">
-				<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+				<div className="grid grid-cols-1 gap-4 md:grid-cols-3">
 					<Controller
 						name="enrollmentInfo.minMembers"
 						control={control}
@@ -46,7 +47,7 @@ const EnrollmentInformationForm = () => {
 								description="The minimum number of participants required"
 								value={field.value?.toString()}
 								onChange={(e) =>
-									field.onChange(Number.parseInt(e.target.value))
+									field.onChange(preprocessInput(e.target.value))
 								}
 							/>
 						)}
@@ -67,6 +68,26 @@ const EnrollmentInformationForm = () => {
 								value={field.value.toString()}
 								onChange={(e) =>
 									field.onChange(Number.parseInt(e.target.value))
+								}
+							/>
+						)}
+					/>
+					<Controller
+						name="enrollmentInfo.requiredTeamSize"
+						control={control}
+						render={({ field, fieldState: { error } }) => (
+							<Input
+								{...field}
+								max="30"
+								type="number"
+								label="Require Team Size"
+								placeholder="Enter the required team size"
+								isInvalid={!!error}
+								errorMessage={error?.message}
+								description="The number of members per team"
+								value={field.value?.toString()}
+								onChange={(e) =>
+									field.onChange(preprocessInput(e.target.value))
 								}
 							/>
 						)}
