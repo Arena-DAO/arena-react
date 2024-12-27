@@ -52,6 +52,11 @@ export default function WalletConnectToggle() {
 					]
 				: []),
 			{
+				key: "teams",
+				label: "Teams",
+				href: "/user/teams",
+			},
+			{
 				key: "registry",
 				label: "Payment Registry",
 				href: "/user/payment-registry",

@@ -18,6 +18,7 @@ import {
 	TableRow,
 	Textarea,
 } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { BsPercent } from "react-icons/bs";
@@ -87,6 +88,7 @@ const CreateTeamSchema = z.object({
 type CreateTeamFormData = z.infer<typeof CreateTeamSchema>;
 
 const CreateTeam = () => {
+	const router = useRouter();
 	const env = useEnv();
 	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
 	const { addTeam } = useTeamStore();
@@ -216,6 +218,7 @@ const CreateTeam = () => {
 			);
 			addTeam(result.contractAddress);
 			toast.success("Successfully created the team");
+			router.push("/user/teams");
 		} catch (error) {
 			console.error("Error submitting form:", error);
 			toast.error((error as Error).message);
