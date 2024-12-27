@@ -14,15 +14,11 @@ import {
 	type UserProps,
 } from "@nextui-org/react";
 import { useMemo } from "react";
-import { BsYinYang } from "react-icons/bs";
 import { ArenaCoreQueryClient } from "~/codegen/ArenaCore.client";
 import { useArenaCoreQueryExtensionQuery } from "~/codegen/ArenaCore.react-query";
 import type { Rating } from "~/codegen/ArenaCore.types";
 import { useCategoryContext } from "~/contexts/CategoryContext";
-import {
-	isValidBech32Address,
-	isValidContractAddress,
-} from "~/helpers/AddressHelpers";
+import { isValidBech32Address } from "~/helpers/AddressHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import { useProfileData } from "~/hooks/useProfile";
@@ -100,15 +96,11 @@ const Profile = ({
 		: undefined;
 
 	const tooltipContent = (
-		<Card shadow="none" classNames={{ header: "pb-0", footer: "px-0 py-1" }}>
+		<Card shadow="none" classNames={{ footer: "px-0 py-1" }}>
 			{data?.name && (
 				<CardHeader>
-					{data.discordId ? (
-						<Link
-							isExternal
-							showAnchorIcon
-							href={`https://discordapp.com/users/${data.discordId}`}
-						>
+					{data.link ? (
+						<Link isExternal showAnchorIcon href={data.link}>
 							{data.name}
 						</Link>
 					) : (
@@ -117,7 +109,9 @@ const Profile = ({
 				</CardHeader>
 			)}
 			{!isEnrollmentContract && parsedRating && (
-				<CardBody>Rating {Number.parseFloat(parsedRating).toFixed(2)}</CardBody>
+				<CardBody className="pt-0">
+					Rating {Number.parseFloat(parsedRating).toFixed(2)}
+				</CardBody>
 			)}
 			{data?.address && (
 				<CardFooter className="gap-2">
@@ -130,17 +124,6 @@ const Profile = ({
 							>
 								Competitions
 							</Button>
-
-							{isValidContractAddress(data.address, env.BECH32_PREFIX) && (
-								<Button
-									as={Link}
-									href={`${env.DAO_DAO_URL}/dao/${data.address}`}
-									isExternal
-									startContent={<BsYinYang />}
-								>
-									View on DAO DAO
-								</Button>
-							)}
 
 							{statProps && (
 								<UserStatsModal userAddress={data.address} {...statProps} />

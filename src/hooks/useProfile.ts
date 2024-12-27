@@ -28,6 +28,7 @@ export type Profile = {
 	name?: string;
 	imageUrl?: string | null;
 	discordId?: string;
+	link?: string;
 };
 
 type FetchProfileResponse = UserProfile | ErrorResponse;
@@ -101,6 +102,7 @@ export const useProfileData = (address: string, isValid: boolean) => {
 							imageUrl: avatar_hash
 								? `https://cdn.discordapp.com/avatars/${user_id}/${avatar_hash}.png`
 								: null,
+							link: `https://discordapp.com/users/${user_id}`,
 						};
 					}
 				}
@@ -116,6 +118,7 @@ export const useProfileData = (address: string, isValid: boolean) => {
 				address,
 				name: config.name,
 				imageUrl: withIpfsSupport(config.image_url),
+				link: `${env.DAO_DAO_URL}/dao/${address}`,
 			};
 		},
 		enabled: isValid && !!cosmWasmClient,
