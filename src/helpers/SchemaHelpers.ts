@@ -70,6 +70,7 @@ export function convertToEscrowInstantiate(
 	escrowCodeId: number,
 	dues: z.infer<typeof DueSchema>[],
 	additionalLayeredFees?: z.infer<typeof MemberPercentageSchema>[],
+	is_enrollment?: boolean,
 ): EscrowContractInfo {
 	return {
 		new: {
@@ -92,6 +93,7 @@ export function convertToEscrowInstantiate(
 						},
 					};
 				}),
+				is_enrollment: is_enrollment ?? false,
 			} as ArenaEscrowInstantiateMsg),
 			additional_layered_fees: additionalLayeredFees?.length
 				? additionalLayeredFees.map((fee) => ({
