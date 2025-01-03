@@ -13,15 +13,15 @@ export type ExecuteMsg = {
     competition_info: CompetitionInfoMsg;
     competition_type: CompetitionType;
     entry_fee?: Coin | null;
+    escrow_contract_info: EscrowContractInfo;
     expiration: Expiration;
     group_contract_info: ModuleInstantiateInfo;
     max_members: Uint64;
     min_members?: Uint64 | null;
-    require_team_size?: number | null;
+    required_team_size?: number | null;
   };
 } | {
-  trigger_expiration: {
-    escrow_id: number;
+  finalize: {
     id: Uint128;
   };
 } | {
@@ -39,11 +39,14 @@ export type ExecuteMsg = {
     members: string[];
   };
 } | {
+  set_rankings: {
+    id: Uint128;
+    rankings: MemberMsgForString[];
+  };
+} | {
   update_ownership: Action;
 };
 export type Uint128 = string;
-export type Binary = string;
-export type Decimal = string;
 export type Expiration = {
   at_height: number;
 } | {
@@ -68,11 +71,26 @@ export type CompetitionType = {
     elimination_type: EliminationType;
   };
 };
+export type Decimal = string;
 export type EliminationType = "double_elimination" | {
   single_elimination: {
     play_third_place_match: boolean;
   };
 };
+export type EscrowContractInfo = {
+  existing: {
+    additional_layered_fees?: FeeInformationForString[] | null;
+    addr: string;
+  };
+} | {
+  new: {
+    additional_layered_fees?: FeeInformationForString[] | null;
+    code_id: number;
+    label: string;
+    msg: Binary;
+  };
+};
+export type Binary = string;
 export type Admin = {
   address: {
     addr: string;
@@ -87,7 +105,6 @@ export type Action = {
   };
 } | "accept_ownership" | "renounce_ownership";
 export interface CompetitionInfoMsg {
-  additional_layered_fees?: FeeInformationForString[] | null;
   banner?: string | null;
   description: string;
   expiration: Expiration;
@@ -95,16 +112,16 @@ export interface CompetitionInfoMsg {
   rules?: string[] | null;
   rulesets?: Uint128[] | null;
 }
+export interface Coin {
+  amount: Uint128;
+  denom: string;
+  [k: string]: unknown;
+}
 export interface FeeInformationForString {
   cw20_msg?: Binary | null;
   cw721_msg?: Binary | null;
   receiver: string;
   tax: Decimal;
-}
-export interface Coin {
-  amount: Uint128;
-  denom: string;
-  [k: string]: unknown;
 }
 export interface ModuleInstantiateInfo {
   admin?: Admin | null;
@@ -112,6 +129,10 @@ export interface ModuleInstantiateInfo {
   funds: Coin[];
   label: string;
   msg: Binary;
+}
+export interface MemberMsgForString {
+  addr: string;
+  seed: Uint64;
 }
 export type QueryMsg = {
   enrollments: {
@@ -143,12 +164,12 @@ export type EnrollmentFilter = {
 export type MigrateMsg = {
   from_compatible: {};
 } | {
-  with_group_id: {
-    group_id: number;
-  };
-} | {
   remove_third_place_match: {
     enrollment_id: Uint128;
+  };
+} | {
+  from_v2_2: {
+    escrow_id: number;
   };
 };
 export type Addr = string;
@@ -163,8 +184,7 @@ export interface EnrollmentEntryResponse {
   current_members: Uint64;
   entry_fee?: Coin | null;
   expiration: Expiration;
-  group_contract: Addr;
-  has_triggered_expiration: boolean;
+  has_finalized: boolean;
   host: Addr;
   id: Uint128;
   is_expired: boolean;
@@ -173,14 +193,22 @@ export interface EnrollmentEntryResponse {
   require_team_size?: number | null;
 }
 export interface CompetitionInfoResponse {
-  additional_layered_fees?: FeeInformationForString[] | null;
+  additional_layered_fees?: FeeInformationForAddr[] | null;
   banner?: string | null;
   competition_id?: Uint128 | null;
   description: string;
+  escrow: Addr;
   expiration: Expiration;
+  group_contract: Addr;
   name: string;
   rules?: string[] | null;
   rulesets?: Uint128[] | null;
+}
+export interface FeeInformationForAddr {
+  cw20_msg?: Binary | null;
+  cw721_msg?: Binary | null;
+  receiver: Addr;
+  tax: Decimal;
 }
 export type ArrayOfEnrollmentEntryResponse = EnrollmentEntryResponse[];
 export type Boolean = boolean;

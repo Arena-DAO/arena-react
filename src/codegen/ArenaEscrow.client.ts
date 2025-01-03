@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { Uint128, InstantiateMsg, MemberBalanceUnchecked, BalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, Cw20ReceiveMsg, Cw721ReceiveMsg, DistributionForString, MemberPercentageForString, FeeInformationForString, QueryMsg, MigrateMsg, NullableBalanceVerified, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceChecked, MemberBalanceChecked, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
+import { Uint128, InstantiateMsg, MemberBalanceUnchecked, BalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, Cw20ReceiveMsg, Cw721ReceiveMsg, DistributionForString, MemberPercentageForString, FeeInformationForString, TransferEscrowOwnershipMsg, QueryMsg, MigrateMsg, NullableBalanceVerified, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceChecked, MemberBalanceChecked, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
 export interface ArenaEscrowReadOnlyInterface {
   contractAddress: string;
   balances: ({
@@ -190,6 +190,13 @@ export interface ArenaEscrowInterface extends ArenaEscrowReadOnlyInterface {
     cw20Msg?: Binary;
     cw721Msg?: Binary;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
+  enrollmentWithdraw: ({
+    addrs,
+    entryFee
+  }: {
+    addrs: string[];
+    entryFee: Coin;
+  }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   receiveNative: (fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   receive: ({
     amount,
@@ -221,8 +228,10 @@ export interface ArenaEscrowInterface extends ArenaEscrowReadOnlyInterface {
     layeredFees?: FeeInformationForString[];
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   lock: ({
+    transferOwnership,
     value
   }: {
+    transferOwnership?: TransferEscrowOwnershipMsg;
     value: boolean;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   updateOwnership: (action: Action, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
@@ -237,6 +246,7 @@ export class ArenaEscrowClient extends ArenaEscrowQueryClient implements ArenaEs
     this.sender = sender;
     this.contractAddress = contractAddress;
     this.withdraw = this.withdraw.bind(this);
+    this.enrollmentWithdraw = this.enrollmentWithdraw.bind(this);
     this.receiveNative = this.receiveNative.bind(this);
     this.receive = this.receive.bind(this);
     this.receiveNft = this.receiveNft.bind(this);
@@ -255,6 +265,20 @@ export class ArenaEscrowClient extends ArenaEscrowQueryClient implements ArenaEs
       withdraw: {
         cw20_msg: cw20Msg,
         cw721_msg: cw721Msg
+      }
+    }, fee_, memo_, funds_);
+  };
+  enrollmentWithdraw = async ({
+    addrs,
+    entryFee
+  }: {
+    addrs: string[];
+    entryFee: Coin;
+  }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      enrollment_withdraw: {
+        addrs,
+        entry_fee: entryFee
       }
     }, fee_, memo_, funds_);
   };
@@ -318,12 +342,15 @@ export class ArenaEscrowClient extends ArenaEscrowQueryClient implements ArenaEs
     }, fee_, memo_, funds_);
   };
   lock = async ({
+    transferOwnership,
     value
   }: {
+    transferOwnership?: TransferEscrowOwnershipMsg;
     value: boolean;
   }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       lock: {
+        transfer_ownership: transferOwnership,
         value
       }
     }, fee_, memo_, funds_);

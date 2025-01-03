@@ -22,24 +22,11 @@ export type ExecuteMsg = {
 } | {
   activate_competition: {};
 } | {
-  add_competition_hook: {
-    competition_id: Uint128;
-  };
-} | {
-  remove_competition_hook: {
-    competition_id: Uint128;
-  };
-} | {
-  execute_competition_hook: {
-    competition_id: Uint128;
-    distribution?: DistributionForString | null;
-  };
-} | {
   create_competition: {
     banner?: string | null;
     category_id?: Uint128 | null;
     description: string;
-    escrow?: EscrowInstantiateInfo | null;
+    escrow: EscrowContractInfo;
     expiration: Expiration;
     group_contract: GroupContractInfo;
     host?: string | null;
@@ -86,6 +73,19 @@ export type ExecuteMsg = {
 };
 export type Uint128 = string;
 export type Decimal = string;
+export type EscrowContractInfo = {
+  existing: {
+    additional_layered_fees?: FeeInformationForString[] | null;
+    addr: string;
+  };
+} | {
+  new: {
+    additional_layered_fees?: FeeInformationForString[] | null;
+    code_id: number;
+    label: string;
+    msg: Binary;
+  };
+};
 export type Binary = string;
 export type Expiration = {
   at_height: number;
@@ -113,13 +113,7 @@ export type Admin = {
   core_module: {};
 };
 export type ExecuteExt = string;
-export type MigrateMsg = {
-  from_compatible: {};
-} | {
-  with_group_address: {
-    group_contract: string;
-  };
-};
+export type MigrateMsg = MigrateBase;
 export type CompetitionsFilter = {
   competition_status: {
     status: CompetitionStatus;
@@ -174,12 +168,6 @@ export interface DistributionForString {
 export interface MemberPercentageForString {
   addr: string;
   percentage: Decimal;
-}
-export interface EscrowInstantiateInfo {
-  additional_layered_fees?: FeeInformationForString[] | null;
-  code_id: number;
-  label: string;
-  msg: Binary;
 }
 export interface FeeInformationForString {
   cw20_msg?: Binary | null;
@@ -269,13 +257,20 @@ export type QueryMsg = {
   ownership: {};
 };
 export type QueryExt = string;
+export type MigrateBase = {
+  from_compatible: {};
+} | {
+  from_v2_2: {
+    escrow_id: number;
+  };
+};
 export type Null = null;
 export type Addr = string;
 export interface CompetitionResponseForWagerExt {
   banner?: string | null;
   category_id?: Uint128 | null;
   description: string;
-  escrow?: Addr | null;
+  escrow: Addr;
   expiration: Expiration;
   extension: WagerExt;
   fees?: FeeInformationForAddr[] | null;

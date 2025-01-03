@@ -112,7 +112,7 @@ const Competition: React.FC<CompetitionProps> = ({
 								expiration={competition.competition_info.expiration}
 							/>
 							<EnrollmentStatusDisplay
-								hasTriggeredExpiration={competition.has_triggered_expiration}
+								hasTriggeredExpiration={competition.has_finalized}
 								isExpired={competition.is_expired}
 								currentMembers={Number(competition.current_members)}
 								maxMembers={Number(competition.max_members)}

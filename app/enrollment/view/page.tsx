@@ -41,7 +41,7 @@ import RulesDisplay from "../../components/competition/RulesDisplay";
 import CategoryDisplay from "./components/CategoryDisplay";
 import DistributionDisplay from "./components/DistributionDisplay";
 import EnrollButton from "./components/EnrollButton";
-import TriggerButton from "./components/TriggerButton";
+import FinalizeButton from "./components/FinalizeButton";
 
 const EnrollmentView = () => {
 	const env = useEnv();
@@ -111,7 +111,7 @@ const EnrollmentView = () => {
 						</CardBody>
 						<CardFooter>
 							<GroupMembersModal
-								groupContract={enrollment.group_contract}
+								groupContract={enrollment.competition_info.group_contract}
 								forceWithdrawEnrollmentId={
 									address === enrollment.host ? enrollment.id : undefined
 								}
@@ -135,7 +135,7 @@ const EnrollmentView = () => {
 									/>
 								</div>
 								<EnrollmentStatusDisplay
-									hasTriggeredExpiration={enrollment.has_triggered_expiration}
+									hasTriggeredExpiration={enrollment.has_finalized}
 									isExpired={enrollment.is_expired}
 									currentMembers={Number(enrollment.current_members)}
 									maxMembers={Number(enrollment.max_members)}
@@ -336,7 +336,7 @@ const EnrollmentView = () => {
 				</div>
 
 				<div className="flex justify-end gap-2">
-					{enrollment.has_triggered_expiration &&
+					{enrollment.has_finalized &&
 						enrollment.competition_info.competition_id && (
 							<Button
 								color="primary"
@@ -346,10 +346,10 @@ const EnrollmentView = () => {
 								View
 							</Button>
 						)}
-					{!enrollment.has_triggered_expiration && (
+					{!enrollment.has_finalized && (
 						<>
 							{enrollment.host === address && (
-								<TriggerButton
+								<FinalizeButton
 									enrollmentId={enrollment.id}
 									isExpired={enrollment.is_expired}
 									isFull={currentMembers >= maxMembers}
@@ -359,7 +359,7 @@ const EnrollmentView = () => {
 								enrollmentId={enrollment.id}
 								isFull={currentMembers >= maxMembers}
 								entryFee={enrollment.entry_fee}
-								groupContract={enrollment.group_contract}
+								groupContract={enrollment.competition_info.group_contract}
 							/>
 						</>
 					)}

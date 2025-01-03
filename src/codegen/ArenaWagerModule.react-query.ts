@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Decimal, Binary, Expiration, Timestamp, Uint64, GroupContractInfo, Admin, ExecuteExt, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatMsg, StatValue, StatAggregationType, StatValueType, Action, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, FeeInformationForString, ModuleInstantiateInfo, Coin, WagerInstantiateExt, MemberStatsMsg, StatType, QueryMsg, QueryExt, Null, Addr, CompetitionResponseForWagerExt, WagerExt, FeeInformationForAddr, ArrayOfCompetitionResponseForWagerExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, ArrayOfArrayOfStatMsg, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Decimal, EscrowContractInfo, Binary, Expiration, Timestamp, Uint64, GroupContractInfo, Admin, ExecuteExt, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatMsg, StatValue, StatAggregationType, StatValueType, Action, DistributionForString, MemberPercentageForString, FeeInformationForString, ModuleInstantiateInfo, Coin, WagerInstantiateExt, MemberStatsMsg, StatType, QueryMsg, QueryExt, MigrateBase, Null, Addr, CompetitionResponseForWagerExt, WagerExt, FeeInformationForAddr, ArrayOfCompetitionResponseForWagerExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, ArrayOfArrayOfStatMsg, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaWagerModule.types";
 import { ArenaWagerModuleQueryClient, ArenaWagerModuleClient } from "./ArenaWagerModule.client";
 export const arenaWagerModuleQueryKeys = {
   contract: ([{
@@ -649,7 +649,7 @@ export interface ArenaWagerModuleCreateCompetitionMutation {
     banner?: string;
     categoryId?: Uint128;
     description: string;
-    escrow?: EscrowInstantiateInfo;
+    escrow: EscrowContractInfo;
     expiration: Expiration;
     groupContract: GroupContractInfo;
     host?: string;
@@ -674,73 +674,6 @@ export function useArenaWagerModuleCreateCompetitionMutation(options?: Omit<UseM
       funds
     } = {}
   }) => client.createCompetition(msg, fee, memo, funds), options);
-}
-export interface ArenaWagerModuleExecuteCompetitionHookMutation {
-  client: ArenaWagerModuleClient;
-  msg: {
-    competitionId: Uint128;
-    distribution?: DistributionForString;
-  };
-  args?: {
-    fee?: number | StdFee | "auto";
-    memo?: string;
-    funds?: Coin[];
-  };
-}
-export function useArenaWagerModuleExecuteCompetitionHookMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleExecuteCompetitionHookMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaWagerModuleExecuteCompetitionHookMutation>(({
-    client,
-    msg,
-    args: {
-      fee,
-      memo,
-      funds
-    } = {}
-  }) => client.executeCompetitionHook(msg, fee, memo, funds), options);
-}
-export interface ArenaWagerModuleRemoveCompetitionHookMutation {
-  client: ArenaWagerModuleClient;
-  msg: {
-    competitionId: Uint128;
-  };
-  args?: {
-    fee?: number | StdFee | "auto";
-    memo?: string;
-    funds?: Coin[];
-  };
-}
-export function useArenaWagerModuleRemoveCompetitionHookMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleRemoveCompetitionHookMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaWagerModuleRemoveCompetitionHookMutation>(({
-    client,
-    msg,
-    args: {
-      fee,
-      memo,
-      funds
-    } = {}
-  }) => client.removeCompetitionHook(msg, fee, memo, funds), options);
-}
-export interface ArenaWagerModuleAddCompetitionHookMutation {
-  client: ArenaWagerModuleClient;
-  msg: {
-    competitionId: Uint128;
-  };
-  args?: {
-    fee?: number | StdFee | "auto";
-    memo?: string;
-    funds?: Coin[];
-  };
-}
-export function useArenaWagerModuleAddCompetitionHookMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaWagerModuleAddCompetitionHookMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaWagerModuleAddCompetitionHookMutation>(({
-    client,
-    msg,
-    args: {
-      fee,
-      memo,
-      funds
-    } = {}
-  }) => client.addCompetitionHook(msg, fee, memo, funds), options);
 }
 export interface ArenaWagerModuleActivateCompetitionMutation {
   client: ArenaWagerModuleClient;

@@ -7,6 +7,7 @@
 export type Uint128 = string;
 export interface InstantiateMsg {
   dues: MemberBalanceUnchecked[];
+  is_enrollment: boolean;
 }
 export interface MemberBalanceUnchecked {
   addr: string;
@@ -36,6 +37,11 @@ export type ExecuteMsg = {
     cw721_msg?: Binary | null;
   };
 } | {
+  enrollment_withdraw: {
+    addrs: string[];
+    entry_fee: Coin;
+  };
+} | {
   receive_native: {};
 } | {
   receive: Cw20ReceiveMsg;
@@ -50,6 +56,7 @@ export type ExecuteMsg = {
   };
 } | {
   lock: {
+    transfer_ownership?: TransferEscrowOwnershipMsg | null;
     value: boolean;
   };
 } | {
@@ -95,6 +102,10 @@ export interface FeeInformationForString {
   cw721_msg?: Binary | null;
   receiver: string;
   tax: Decimal;
+}
+export interface TransferEscrowOwnershipMsg {
+  addr: string;
+  is_enrollment: boolean;
 }
 export type QueryMsg = {
   balances: {

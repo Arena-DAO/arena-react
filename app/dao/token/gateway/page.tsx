@@ -184,7 +184,12 @@ const ArenaTokenGatewayPage: React.FC = () => {
 						client: tokenGatewayClient,
 						msg: {
 							applicationId: selectedApplication.application_id,
-							applicationInfo,
+							applicationInfo: {
+								requested_amount: requestedAmount,
+								project_links: data.projectLinks,
+								description: data.description,
+								title: data.title,
+							},
 						},
 					},
 					{
@@ -235,7 +240,14 @@ const ArenaTokenGatewayPage: React.FC = () => {
 				);
 			} else {
 				await applyMutation.mutateAsync(
-					{ client: tokenGatewayClient, msg: applicationInfo },
+					{
+						client: tokenGatewayClient,
+						msg: {
+							...applicationInfo,
+							requestedAmount,
+							projectLinks: data.projectLinks,
+						},
+					},
 					{
 						onSuccess: (result) => {
 							const applicationId = result.events
