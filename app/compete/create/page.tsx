@@ -27,6 +27,7 @@ import {
 import { toast } from "react-toastify";
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import type { CompetitionType } from "~/codegen/ArenaCompetitionEnrollment.types";
+import type { InstantiateMsg as ArenaEscrowInstantiateMsg } from "~/codegen/ArenaEscrow.types";
 import type {
 	AddMemberMsg,
 	InstantiateMsg as GroupInstantiateMsg,
@@ -55,7 +56,6 @@ import LeagueInformationForm from "./components/LeagueInformationForm";
 import ReviewCompetition from "./components/ReviewCompetition";
 import RulesAndRulesetsForm from "./components/RulesAndRulesetsForm";
 import TournamentInformationForm from "./components/TournamentInformationForm";
-import type { InstantiateMsg as ArenaEscrowInstantiateMsg } from "~/codegen/ArenaEscrow.types";
 
 const CreateCompetitionPage = () => {
 	const [activeTab, setActiveTab] = useState(0);
