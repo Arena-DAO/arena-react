@@ -147,6 +147,7 @@ const Profile = ({
 					className={`${props.className} aspect-square`}
 					src={data?.imageUrl || undefined}
 					content={data?.name ?? data?.address}
+					showFallback
 				/>
 			</Tooltip>
 		);
@@ -162,9 +163,10 @@ const Profile = ({
 			<User
 				{...props}
 				name={data?.name ?? data?.address}
+				showFallback
 				avatarProps={{
 					src: data?.imageUrl || undefined,
-					className: "aspect-square",
+					className: `${props.className} aspect-square`,
 				}}
 			/>
 		</Tooltip>
