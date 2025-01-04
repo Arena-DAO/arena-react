@@ -5173,6 +5173,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tailwindcss/line-clamp@npm:^0.4.4":
+  version: 0.4.4
+  resolution: "@tailwindcss/line-clamp@npm:0.4.4"
+  peerDependencies:
+    tailwindcss: ">=2.0.0 || >=3.0.0 || >=3.0.0-alpha.1"
+  checksum: 10c0/53e74e75bff066469501b784ab70af444fa460d556a3adf95cb14ccf1a56b1e63c106f0c4bb94463ba0310f2ce1f71350f9b18a556048655cfd2a0ad308ccfb8
+  languageName: node
+  linkType: hard
+
 "@tanstack/query-core@npm:4.36.1":
   version: 4.36.1
   resolution: "@tanstack/query-core@npm:4.36.1"
@@ -6053,6 +6062,7 @@ __metadata:
     "@internationalized/date": "npm:^3.6.0"
     "@nextui-org/react": "npm:2.6.10"
     "@nextui-org/theme": "npm:^2.4.4"
+    "@tailwindcss/line-clamp": "npm:^0.4.4"
     "@tanstack/react-query": "npm:4.36.1"
     "@types/lodash": "npm:^4.17.13"
     "@types/node": "npm:^22.10.2"
