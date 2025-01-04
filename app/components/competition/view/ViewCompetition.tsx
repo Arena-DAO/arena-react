@@ -2,7 +2,7 @@
 
 import Profile from "@/components/Profile";
 import RulesDisplay from "@/components/competition/RulesDisplay";
-import CategoryDisplay from "@/enrollment/view/components/CategoryDisplay";
+import CategoryDisplay from "@/components/competition/view/components/CategoryDisplay";
 import {
 	Button,
 	Card,

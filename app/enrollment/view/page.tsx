@@ -38,7 +38,7 @@ import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import GroupMembersModal from "../../components/competition/GroupMembersModal";
 import RulesDisplay from "../../components/competition/RulesDisplay";
-import CategoryDisplay from "./components/CategoryDisplay";
+import CategoryDisplay from "../../components/competition/view/components/CategoryDisplay";
 import DistributionDisplay from "./components/DistributionDisplay";
 import EnrollButton from "./components/EnrollButton";
 import FinalizeButton from "./components/FinalizeButton";
@@ -155,6 +155,12 @@ const EnrollmentView = () => {
 							<CategoryDisplay />
 							<CompetitionTypeDisplay type={enrollment.competition_type} />
 						</div>
+						{enrollment.require_team_size && (
+							<div>
+								<span className="font-medium">Required Team Size:</span>{" "}
+								{enrollment.require_team_size}
+							</div>
+						)}
 						{"league" in enrollment.competition_type && (
 							<div className="flex flex-col gap-2">
 								<h3>League Information</h3>
