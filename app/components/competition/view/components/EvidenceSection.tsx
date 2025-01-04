@@ -5,11 +5,12 @@ import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+	Accordion,
+	AccordionItem,
 	Button,
 	Card,
 	CardBody,
 	CardFooter,
-	CardHeader,
 	Input,
 	Modal,
 	ModalBody,
@@ -71,6 +72,7 @@ const EvidenceSection = ({
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const queryClient = useQueryClient();
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
+	const [isSectionOpen, setIsSectionOpen] = React.useState(false);
 	const fetchEvidence = async ({ pageParam = undefined }) => {
 		if (!cosmWasmClient) {
 			throw new Error("Could not get CosmWasm client");
@@ -97,7 +99,7 @@ const EvidenceSection = ({
 		}),
 		queryFn: fetchEvidence,
 		getNextPageParam: (lastPage) => lastPage.nextCursor,
-		enabled: !!cosmWasmClient,
+		enabled: !!cosmWasmClient && isSectionOpen,
 	});
 
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
@@ -190,66 +192,86 @@ const EvidenceSection = ({
 
 	return (
 		<>
-			<Card ref={targetRef}>
-				<CardHeader {...moveProps}>
-					<h2 className="font-semibold text-xl">Evidence</h2>
-				</CardHeader>
+			<Card>
 				<CardBody>
-					<Table
-						isHeaderSticky
-						aria-label="Evidence"
-						bottomContent={
-							query.hasNextPage && (
-								<div className="flex w-full justify-center">
-									<Button
-										onPress={() => query.fetchNextPage()}
-										isLoading={query.isFetchingNextPage}
-									>
-										Load More
-									</Button>
-								</div>
-							)
-						}
-						classNames={{
-							base: "max-h-xl overflow-auto table-auto",
+					<Accordion
+						selectionMode="single"
+						onSelectionChange={(keys) => {
+							if (keys === "all") {
+								setIsSectionOpen(true);
+							} else {
+								setIsSectionOpen(keys.has("evidence"));
+							}
 						}}
 					>
-						<TableHeader>
-							<TableColumn>Evidence Time</TableColumn>
-							<TableColumn>Submission User</TableColumn>
-							<TableColumn>Content</TableColumn>
-						</TableHeader>
-						<TableBody
-							emptyContent="No evidence available"
-							items={evidence}
-							isLoading={query.isLoading}
-							loadingContent={<Spinner color="white" />}
+						<AccordionItem
+							key="evidence"
+							aria-label="Evidence"
+							title="Evidence"
+							classNames={{ title: "font-semibold text-xl", content: "gap-2" }}
 						>
-							{(item: Evidence) => (
-								<TableRow key={item.id}>
-									<TableCell>
-										{formatTimestampToDisplay(item.submit_time)}
-									</TableCell>
-									<TableCell>
-										<Profile address={item.submit_user} />
-									</TableCell>
-									<TableCell>
-										<MaybeLink content={item.content} />
-									</TableCell>
-								</TableRow>
-							)}
-						</TableBody>
-					</Table>
+							<Table
+								isHeaderSticky
+								aria-label="Evidence"
+								bottomContent={
+									query.hasNextPage && (
+										<div className="flex w-full justify-center">
+											<Button
+												onPress={() => query.fetchNextPage()}
+												isLoading={query.isFetchingNextPage}
+											>
+												Load More
+											</Button>
+										</div>
+									)
+								}
+								classNames={{
+									base: "max-h-xl overflow-auto table-auto",
+								}}
+							>
+								<TableHeader>
+									<TableColumn>Evidence Time</TableColumn>
+									<TableColumn>Submission User</TableColumn>
+									<TableColumn>Content</TableColumn>
+								</TableHeader>
+								<TableBody
+									emptyContent="No evidence available"
+									items={evidence}
+									isLoading={query.isLoading}
+									loadingContent={<Spinner color="white" />}
+								>
+									{(item: Evidence) => (
+										<TableRow key={item.id}>
+											<TableCell>
+												{formatTimestampToDisplay(item.submit_time)}
+											</TableCell>
+											<TableCell>
+												<Profile address={item.submit_user} />
+											</TableCell>
+											<TableCell>
+												<MaybeLink content={item.content} />
+											</TableCell>
+										</TableRow>
+									)}
+								</TableBody>
+							</Table>
+							<CardFooter>
+								<Button onPress={onOpen} isDisabled={isSubmitting}>
+									Add Evidence
+								</Button>
+							</CardFooter>
+						</AccordionItem>
+					</Accordion>
 				</CardBody>
-				<CardFooter>
-					<Button onPress={onOpen} isDisabled={isSubmitting}>
-						Add Evidence
-					</Button>
-				</CardFooter>
 			</Card>
-			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl">
+			<Modal
+				isOpen={isOpen}
+				onOpenChange={onOpenChange}
+				size="4xl"
+				ref={targetRef}
+			>
 				<ModalContent>
-					<ModalHeader>Add Evidence</ModalHeader>
+					<ModalHeader {...moveProps}>Add Evidence</ModalHeader>
 					<ModalBody className="space-y-4">
 						{fields?.map((evidence, i) => (
 							<Controller

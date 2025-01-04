@@ -22,7 +22,6 @@ import {
 import type { PropsWithChildren } from "react";
 import { BsYinYang } from "react-icons/bs";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
-import { isJailed } from "~/helpers/ArenaHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import type { CompetitionResponse } from "~/types/CompetitionResponse";
 import type { CompetitionType } from "~/types/CompetitionType";
@@ -88,11 +87,19 @@ const ViewCompetition = ({
 							)}
 						</div>
 					</CardBody>
-					<CardFooter className="gap-2">
-						<GroupMembersModal groupContract={competition.group_contract} />
-						<StatsTableModal
+					<CardFooter className="justify-between gap-4 overflow-x-auto">
+						<div className="flex gap-2">
+							<GroupMembersModal groupContract={competition.group_contract} />
+							<StatsTableModal
+								moduleAddr={moduleAddr}
+								competitionId={competition.id}
+							/>
+						</div>
+						<CompetitionActions
+							competition={competition}
+							competitionType={competitionType}
 							moduleAddr={moduleAddr}
-							competitionId={competition.id}
+							hideProcess={hideProcess}
 						/>
 					</CardFooter>
 				</Card>
@@ -143,7 +150,7 @@ const ViewCompetition = ({
 				</Card>
 			)}
 
-			{(isJailed(competition.status) || competition.status === "inactive") && (
+			{competition.status !== "pending" && (
 				<EvidenceSection
 					moduleAddr={moduleAddr}
 					competitionId={competition.id}
@@ -193,12 +200,6 @@ const ViewCompetition = ({
 				<ResultSection moduleAddr={moduleAddr} competitionId={competition.id} />
 			)}
 
-			<CompetitionActions
-				competition={competition}
-				hideProcess={hideProcess}
-				competitionType={competitionType}
-				moduleAddr={moduleAddr}
-			/>
 			{children}
 		</div>
 	);

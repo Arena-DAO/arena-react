@@ -1,7 +1,6 @@
 "use client";
 
 import { useChain } from "@cosmos-kit/react";
-import { Card, CardBody, CardHeader } from "@nextui-org/react";
 import type React from "react";
 import { isActive } from "~/helpers/ArenaHelpers";
 import { useEnv } from "~/hooks/useEnv";
@@ -52,44 +51,34 @@ const CompetitionActions: React.FC<CompetitionActionsProps> = ({
 	}
 
 	return (
-		<Card>
-			<CardHeader>
-				<h2 className="font-semibold text-xl">Competition Actions</h2>
-			</CardHeader>
-			<CardBody>
-				<div className="flex flex-wrap gap-2">
-					{showEditStatTypes && (
-						<EditStatTypes
-							moduleAddr={moduleAddr}
-							competitionId={competition.id}
-						/>
-					)}
-					{showInputStatsForm && (
-						<InputStatsModal
-							moduleAddr={moduleAddr}
-							competitionId={competition.id}
-						/>
-					)}
-					{showHostProcessForm && (
-						<ProcessForm
-							moduleAddr={moduleAddr}
-							competitionId={competition.id}
-							host={competition.host}
-							competitionType={competitionType}
-							escrow={competition.escrow}
-						/>
-					)}
-					{showExpiredProcessForm && (
-						<ProcessForm
-							moduleAddr={moduleAddr}
-							competitionId={competition.id}
-							is_expired
-							competitionType={competitionType}
-						/>
-					)}
-				</div>
-			</CardBody>
-		</Card>
+		<div className="flex gap-2">
+			{showEditStatTypes && (
+				<EditStatTypes moduleAddr={moduleAddr} competitionId={competition.id} />
+			)}
+			{showInputStatsForm && (
+				<InputStatsModal
+					moduleAddr={moduleAddr}
+					competitionId={competition.id}
+				/>
+			)}
+			{showHostProcessForm && (
+				<ProcessForm
+					moduleAddr={moduleAddr}
+					competitionId={competition.id}
+					host={competition.host}
+					competitionType={competitionType}
+					escrow={competition.escrow}
+				/>
+			)}
+			{showExpiredProcessForm && (
+				<ProcessForm
+					moduleAddr={moduleAddr}
+					competitionId={competition.id}
+					is_expired
+					competitionType={competitionType}
+				/>
+			)}
+		</div>
 	);
 };
 
