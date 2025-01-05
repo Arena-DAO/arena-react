@@ -84,17 +84,17 @@ const AddDueForm: React.FC<AddDueFormProps> = ({
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { assets } = useChain(env.CHAIN);
-	const { control: competitionControl } =
+	const { control: competitionControl, getValues } =
 		useFormContext<CreateCompetitionFormValues>();
 	const targetRef = useRef(null);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
-	const { append: appendNative, fields: nativeFields } = useFieldArray({
+	const { append: appendNative } = useFieldArray({
 		control: competitionControl,
 		name: `directParticipation.dues.${index}.balance.native`,
 	});
 
-	const { append: appendCw20, fields: cw20Fields } = useFieldArray({
+	const { append: appendCw20 } = useFieldArray({
 		control: competitionControl,
 		name: `directParticipation.dues.${index}.balance.cw20`,
 	});
@@ -185,7 +185,7 @@ const AddDueForm: React.FC<AddDueFormProps> = ({
 			env.BECH32_PREFIX,
 		);
 		if (
-			cw20Fields.find((x) =>
+			getValues(`directParticipation.dues.${index}.balance.cw20`)?.find((x) =>
 				cw20.denom_units.find((y) => y.denom === x.address),
 			)
 		) {
@@ -208,7 +208,7 @@ const AddDueForm: React.FC<AddDueFormProps> = ({
 			assets?.assets,
 		);
 		if (
-			nativeFields.find((x) =>
+			getValues(`directParticipation.dues.${index}.balance.native`)?.find((x) =>
 				native.denom_units.find((y) => y.denom === x.denom),
 			)
 		) {
