@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { Uint128, InstantiateMsg, MemberBalanceUnchecked, BalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, Cw20ReceiveMsg, Cw721ReceiveMsg, DistributionForString, MemberPercentageForString, FeeInformationForString, QueryMsg, MigrateMsg, NullableBalanceVerified, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceChecked, MemberBalanceChecked, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
+import { Uint128, InstantiateMsg, MemberBalanceUnchecked, BalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, Cw20ReceiveMsg, Cw721ReceiveMsg, DistributionForString, MemberPercentageForString, FeeInformationForString, TransferEscrowOwnershipMsg, QueryMsg, MigrateMsg, NullableBalanceVerified, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceChecked, MemberBalanceChecked, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
 import { ArenaEscrowQueryClient, ArenaEscrowClient } from "./ArenaEscrow.client";
 export const arenaEscrowQueryKeys = {
   contract: ([{
@@ -392,6 +392,7 @@ export function useArenaEscrowUpdateOwnershipMutation(options?: Omit<UseMutation
 export interface ArenaEscrowLockMutation {
   client: ArenaEscrowClient;
   msg: {
+    transferOwnership?: TransferEscrowOwnershipMsg;
     value: boolean;
   };
   args?: {
@@ -501,6 +502,29 @@ export function useArenaEscrowReceiveNativeMutation(options?: Omit<UseMutationOp
       funds
     } = {}
   }) => client.receiveNative(fee, memo, funds), options);
+}
+export interface ArenaEscrowEnrollmentWithdrawMutation {
+  client: ArenaEscrowClient;
+  msg: {
+    addrs: string[];
+    entryFee: Coin;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaEscrowEnrollmentWithdrawMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaEscrowEnrollmentWithdrawMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaEscrowEnrollmentWithdrawMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.enrollmentWithdraw(msg, fee, memo, funds), options);
 }
 export interface ArenaEscrowWithdrawMutation {
   client: ArenaEscrowClient;

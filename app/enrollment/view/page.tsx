@@ -5,6 +5,7 @@ import TokenInfo from "@/components/TokenInfo";
 import CompetitionTypeDisplay from "@/components/competition/CompetitionTypeDisplay";
 import EnrollmentStatusDisplay from "@/components/competition/EnrollmentStatusDisplay";
 import ExpirationDisplay from "@/components/competition/ExpirationDisplay";
+import EscrowSection from "@/components/competition/view/components/EscrowSection";
 import { useChain } from "@cosmos-kit/react";
 import {
 	Button,
@@ -38,10 +39,10 @@ import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import GroupMembersModal from "../../components/competition/GroupMembersModal";
 import RulesDisplay from "../../components/competition/RulesDisplay";
-import CategoryDisplay from "./components/CategoryDisplay";
+import CategoryDisplay from "../../components/competition/view/components/CategoryDisplay";
 import DistributionDisplay from "./components/DistributionDisplay";
 import EnrollButton from "./components/EnrollButton";
-import TriggerButton from "./components/TriggerButton";
+import FinalizeButton from "./components/FinalizeButton";
 
 const EnrollmentView = () => {
 	const env = useEnv();
@@ -111,7 +112,7 @@ const EnrollmentView = () => {
 						</CardBody>
 						<CardFooter>
 							<GroupMembersModal
-								groupContract={enrollment.group_contract}
+								groupContract={enrollment.competition_info.group_contract}
 								forceWithdrawEnrollmentId={
 									address === enrollment.host ? enrollment.id : undefined
 								}
@@ -135,7 +136,7 @@ const EnrollmentView = () => {
 									/>
 								</div>
 								<EnrollmentStatusDisplay
-									hasTriggeredExpiration={enrollment.has_triggered_expiration}
+									hasTriggeredExpiration={enrollment.has_finalized}
 									isExpired={enrollment.is_expired}
 									currentMembers={Number(enrollment.current_members)}
 									maxMembers={Number(enrollment.max_members)}
@@ -146,6 +147,45 @@ const EnrollmentView = () => {
 					</Card>
 				</div>
 
+				<EscrowSection
+					escrow={enrollment.competition_info.escrow}
+					context={{ type: "enrollment", enrollmentId: enrollment.id }}
+				>
+					{enrollment.competition_info.additional_layered_fees &&
+						enrollment.competition_info.additional_layered_fees.length > 0 && (
+							<Card>
+								<CardHeader>
+									<h2 className="font-semibold text-xl">
+										Additional Layered Fees
+									</h2>
+								</CardHeader>
+								<CardBody>
+									<Table aria-label="Additional Fees" removeWrapper>
+										<TableHeader>
+											<TableColumn>Recipient</TableColumn>
+											<TableColumn>Percentage</TableColumn>
+										</TableHeader>
+										<TableBody emptyContent="No additional fees">
+											{enrollment.competition_info.additional_layered_fees.map(
+												(x, i) => (
+													// biome-ignore lint/suspicious/noArrayIndexKey: best option
+													<TableRow key={i}>
+														<TableCell>
+															<Profile address={x.receiver} />
+														</TableCell>
+														<TableCell>
+															{Number.parseFloat(x.tax) * 100}%
+														</TableCell>
+													</TableRow>
+												),
+											)}
+										</TableBody>
+									</Table>
+								</CardBody>
+							</Card>
+						)}
+				</EscrowSection>
+
 				<Card>
 					<CardHeader>
 						<h2>Description</h2>
@@ -155,6 +195,12 @@ const EnrollmentView = () => {
 							<CategoryDisplay />
 							<CompetitionTypeDisplay type={enrollment.competition_type} />
 						</div>
+						{enrollment.require_team_size && (
+							<div>
+								<span className="font-medium">Required Team Size:</span>{" "}
+								{enrollment.require_team_size}
+							</div>
+						)}
 						{"league" in enrollment.competition_type && (
 							<div className="flex flex-col gap-2">
 								<h3>League Information</h3>
@@ -336,7 +382,7 @@ const EnrollmentView = () => {
 				</div>
 
 				<div className="flex justify-end gap-2">
-					{enrollment.has_triggered_expiration &&
+					{enrollment.has_finalized &&
 						enrollment.competition_info.competition_id && (
 							<Button
 								color="primary"
@@ -346,10 +392,10 @@ const EnrollmentView = () => {
 								View
 							</Button>
 						)}
-					{!enrollment.has_triggered_expiration && (
+					{!enrollment.has_finalized && (
 						<>
 							{enrollment.host === address && (
-								<TriggerButton
+								<FinalizeButton
 									enrollmentId={enrollment.id}
 									isExpired={enrollment.is_expired}
 									isFull={currentMembers >= maxMembers}
@@ -359,7 +405,7 @@ const EnrollmentView = () => {
 								enrollmentId={enrollment.id}
 								isFull={currentMembers >= maxMembers}
 								entryFee={enrollment.entry_fee}
-								groupContract={enrollment.group_contract}
+								groupContract={enrollment.competition_info.group_contract}
 							/>
 						</>
 					)}

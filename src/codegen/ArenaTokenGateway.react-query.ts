@@ -308,8 +308,8 @@ export interface ArenaTokenGatewayApplyMutation {
   client: ArenaTokenGatewayClient;
   msg: {
     description: string;
-    project_links: ProjectLink[];
-    requested_amount: Uint128;
+    projectLinks: ProjectLink[];
+    requestedAmount: Uint128;
     title: string;
   };
   args?: {

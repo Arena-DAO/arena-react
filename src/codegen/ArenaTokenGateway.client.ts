@@ -88,13 +88,13 @@ export interface ArenaTokenGatewayInterface extends ArenaTokenGatewayReadOnlyInt
   sender: string;
   apply: ({
     description,
-    project_links,
-    requested_amount,
+    projectLinks,
+    requestedAmount,
     title
   }: {
     description: string;
-    project_links: ProjectLink[];
-    requested_amount: Uint128;
+    projectLinks: ProjectLink[];
+    requestedAmount: Uint128;
     title: string;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   update: ({
@@ -147,20 +147,20 @@ export class ArenaTokenGatewayClient extends ArenaTokenGatewayQueryClient implem
   }
   apply = async ({
     description,
-    project_links,
-    requested_amount,
+    projectLinks,
+    requestedAmount,
     title
   }: {
     description: string;
-    project_links: ProjectLink[];
-    requested_amount: Uint128;
+    projectLinks: ProjectLink[];
+    requestedAmount: Uint128;
     title: string;
   }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       apply: {
         description,
-        project_links,
-        requested_amount,
+        project_links: projectLinks,
+        requested_amount: requestedAmount,
         title
       }
     }, fee_, memo_, funds_);

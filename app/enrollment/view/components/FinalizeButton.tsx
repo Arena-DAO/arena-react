@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import {
 	arenaCompetitionEnrollmentQueryKeys,
-	useArenaCompetitionEnrollmentTriggerExpirationMutation,
+	useArenaCompetitionEnrollmentFinalizeMutation,
 } from "~/codegen/ArenaCompetitionEnrollment.react-query";
 import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollment.types";
 import { useEnv } from "~/hooks/useEnv";
@@ -17,15 +17,15 @@ interface TriggerButtonProps {
 	isFull: boolean;
 }
 
-const TriggerButton: React.FC<TriggerButtonProps> = ({
+const FinalizeButton: React.FC<TriggerButtonProps> = ({
 	enrollmentId,
 	isExpired,
 	isFull,
 }) => {
 	const env = useEnv();
 	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
-	const triggerExpirationMutation =
-		useArenaCompetitionEnrollmentTriggerExpirationMutation();
+	const finalizeEnrollmentMutation =
+		useArenaCompetitionEnrollmentFinalizeMutation();
 	const queryClient = useQueryClient();
 
 	const handleTriggerExpiration = async () => {
@@ -37,7 +37,7 @@ const TriggerButton: React.FC<TriggerButtonProps> = ({
 		try {
 			const signingCosmWasmClient = await getSigningCosmWasmClient();
 
-			await triggerExpirationMutation.mutateAsync(
+			await finalizeEnrollmentMutation.mutateAsync(
 				{
 					client: new ArenaCompetitionEnrollmentClient(
 						signingCosmWasmClient,
@@ -46,7 +46,6 @@ const TriggerButton: React.FC<TriggerButtonProps> = ({
 					),
 					msg: {
 						id: enrollmentId,
-						escrowId: env.CODE_ID_ESCROW,
 					},
 				},
 				{
@@ -72,7 +71,7 @@ const TriggerButton: React.FC<TriggerButtonProps> = ({
 
 									return {
 										...old,
-										has_triggered_expiration: true,
+										has_finalized: true,
 										competition_info: {
 											...old.competition_info,
 											competition_id: competitionId,
@@ -91,7 +90,7 @@ const TriggerButton: React.FC<TriggerButtonProps> = ({
 
 									return {
 										...old,
-										has_triggered_expiration: true,
+										has_finalized: true,
 									};
 								},
 							);
@@ -115,11 +114,11 @@ const TriggerButton: React.FC<TriggerButtonProps> = ({
 			color="success"
 			variant="bordered"
 			onPress={handleTriggerExpiration}
-			isLoading={triggerExpirationMutation.isLoading}
+			isLoading={finalizeEnrollmentMutation.isLoading}
 		>
 			Finalize
 		</Button>
 	);
 };
 
-export default TriggerButton;
+export default FinalizeButton;

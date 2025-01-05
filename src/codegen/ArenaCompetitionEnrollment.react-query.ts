@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ExecuteMsg, Uint128, Binary, Decimal, Expiration, Timestamp, Uint64, CompetitionType, EliminationType, Admin, Action, CompetitionInfoMsg, FeeInformationForString, Coin, ModuleInstantiateInfo, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
+import { InstantiateMsg, ExecuteMsg, Uint128, Expiration, Timestamp, Uint64, CompetitionType, Decimal, EliminationType, EscrowContractInfo, Binary, Admin, Action, CompetitionInfoMsg, Coin, FeeInformationForString, ModuleInstantiateInfo, MemberMsgForString, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, FeeInformationForAddr, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
 import { ArenaCompetitionEnrollmentQueryClient, ArenaCompetitionEnrollmentClient } from "./ArenaCompetitionEnrollment.client";
 export const arenaCompetitionEnrollmentQueryKeys = {
   contract: ([{
@@ -205,6 +205,29 @@ export function useArenaCompetitionEnrollmentUpdateOwnershipMutation(options?: O
     } = {}
   }) => client.updateOwnership(msg, fee, memo, funds), options);
 }
+export interface ArenaCompetitionEnrollmentSetRankingsMutation {
+  client: ArenaCompetitionEnrollmentClient;
+  msg: {
+    id: Uint128;
+    rankings: MemberMsgForString[];
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaCompetitionEnrollmentSetRankingsMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaCompetitionEnrollmentSetRankingsMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaCompetitionEnrollmentSetRankingsMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.setRankings(msg, fee, memo, funds), options);
+}
 export interface ArenaCompetitionEnrollmentForceWithdrawMutation {
   client: ArenaCompetitionEnrollmentClient;
   msg: {
@@ -273,10 +296,9 @@ export function useArenaCompetitionEnrollmentEnrollMutation(options?: Omit<UseMu
     } = {}
   }) => client.enroll(msg, fee, memo, funds), options);
 }
-export interface ArenaCompetitionEnrollmentTriggerExpirationMutation {
+export interface ArenaCompetitionEnrollmentFinalizeMutation {
   client: ArenaCompetitionEnrollmentClient;
   msg: {
-    escrowId: number;
     id: Uint128;
   };
   args?: {
@@ -285,8 +307,8 @@ export interface ArenaCompetitionEnrollmentTriggerExpirationMutation {
     funds?: Coin[];
   };
 }
-export function useArenaCompetitionEnrollmentTriggerExpirationMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaCompetitionEnrollmentTriggerExpirationMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaCompetitionEnrollmentTriggerExpirationMutation>(({
+export function useArenaCompetitionEnrollmentFinalizeMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaCompetitionEnrollmentFinalizeMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaCompetitionEnrollmentFinalizeMutation>(({
     client,
     msg,
     args: {
@@ -294,7 +316,7 @@ export function useArenaCompetitionEnrollmentTriggerExpirationMutation(options?:
       memo,
       funds
     } = {}
-  }) => client.triggerExpiration(msg, fee, memo, funds), options);
+  }) => client.finalize(msg, fee, memo, funds), options);
 }
 export interface ArenaCompetitionEnrollmentCreateEnrollmentMutation {
   client: ArenaCompetitionEnrollmentClient;
@@ -303,11 +325,12 @@ export interface ArenaCompetitionEnrollmentCreateEnrollmentMutation {
     competitionInfo: CompetitionInfoMsg;
     competitionType: CompetitionType;
     entryFee?: Coin;
+    escrowContractInfo: EscrowContractInfo;
     expiration: Expiration;
     groupContractInfo: ModuleInstantiateInfo;
     maxMembers: Uint64;
     minMembers?: Uint64;
-    requireTeamSize?: number;
+    requiredTeamSize?: number;
   };
   args?: {
     fee?: number | StdFee | "auto";

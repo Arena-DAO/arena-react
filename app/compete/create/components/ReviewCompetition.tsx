@@ -214,6 +214,10 @@ const ReviewCompetition = () => {
 							{renderKeyValue("Min Members", values.enrollmentInfo.minMembers)}
 							{renderKeyValue("Max Members", values.enrollmentInfo.maxMembers)}
 							{renderKeyValue(
+								"Required Team Size",
+								values.enrollmentInfo.requiredTeamSize,
+							)}
+							{renderKeyValue(
 								"Entry Fee",
 								values.enrollmentInfo.entryFee && (
 									<div className="flex items-center">

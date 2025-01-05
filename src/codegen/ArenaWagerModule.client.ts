@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Decimal, Binary, Expiration, Timestamp, Uint64, GroupContractInfo, Admin, ExecuteExt, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatMsg, StatValue, StatAggregationType, StatValueType, Action, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, FeeInformationForString, ModuleInstantiateInfo, Coin, WagerInstantiateExt, MemberStatsMsg, StatType, QueryMsg, QueryExt, Null, Addr, CompetitionResponseForWagerExt, WagerExt, FeeInformationForAddr, ArrayOfCompetitionResponseForWagerExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, ArrayOfArrayOfStatMsg, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Decimal, EscrowContractInfo, Binary, Expiration, Timestamp, Uint64, GroupContractInfo, Admin, ExecuteExt, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatMsg, StatValue, StatAggregationType, StatValueType, Action, DistributionForString, MemberPercentageForString, FeeInformationForString, ModuleInstantiateInfo, Coin, WagerInstantiateExt, MemberStatsMsg, StatType, QueryMsg, QueryExt, MigrateBase, Null, Addr, CompetitionResponseForWagerExt, WagerExt, FeeInformationForAddr, ArrayOfCompetitionResponseForWagerExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, ArrayOfArrayOfStatMsg, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaWagerModule.types";
 export interface ArenaWagerModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForEmpty>;
@@ -271,23 +271,6 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
     title: string;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   activateCompetition: (fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
-  addCompetitionHook: ({
-    competitionId
-  }: {
-    competitionId: Uint128;
-  }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
-  removeCompetitionHook: ({
-    competitionId
-  }: {
-    competitionId: Uint128;
-  }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
-  executeCompetitionHook: ({
-    competitionId,
-    distribution
-  }: {
-    competitionId: Uint128;
-    distribution?: DistributionForString;
-  }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   createCompetition: ({
     banner,
     categoryId,
@@ -304,7 +287,7 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
     banner?: string;
     categoryId?: Uint128;
     description: string;
-    escrow?: EscrowInstantiateInfo;
+    escrow: EscrowContractInfo;
     expiration: Expiration;
     groupContract: GroupContractInfo;
     host?: string;
@@ -374,9 +357,6 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
     this.contractAddress = contractAddress;
     this.jailCompetition = this.jailCompetition.bind(this);
     this.activateCompetition = this.activateCompetition.bind(this);
-    this.addCompetitionHook = this.addCompetitionHook.bind(this);
-    this.removeCompetitionHook = this.removeCompetitionHook.bind(this);
-    this.executeCompetitionHook = this.executeCompetitionHook.bind(this);
     this.createCompetition = this.createCompetition.bind(this);
     this.submitEvidence = this.submitEvidence.bind(this);
     this.processCompetition = this.processCompetition.bind(this);
@@ -411,42 +391,6 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
       activate_competition: {}
     }, fee_, memo_, funds_);
   };
-  addCompetitionHook = async ({
-    competitionId
-  }: {
-    competitionId: Uint128;
-  }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
-    return await this.client.execute(this.sender, this.contractAddress, {
-      add_competition_hook: {
-        competition_id: competitionId
-      }
-    }, fee_, memo_, funds_);
-  };
-  removeCompetitionHook = async ({
-    competitionId
-  }: {
-    competitionId: Uint128;
-  }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
-    return await this.client.execute(this.sender, this.contractAddress, {
-      remove_competition_hook: {
-        competition_id: competitionId
-      }
-    }, fee_, memo_, funds_);
-  };
-  executeCompetitionHook = async ({
-    competitionId,
-    distribution
-  }: {
-    competitionId: Uint128;
-    distribution?: DistributionForString;
-  }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
-    return await this.client.execute(this.sender, this.contractAddress, {
-      execute_competition_hook: {
-        competition_id: competitionId,
-        distribution
-      }
-    }, fee_, memo_, funds_);
-  };
   createCompetition = async ({
     banner,
     categoryId,
@@ -463,7 +407,7 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
     banner?: string;
     categoryId?: Uint128;
     description: string;
-    escrow?: EscrowInstantiateInfo;
+    escrow: EscrowContractInfo;
     expiration: Expiration;
     groupContract: GroupContractInfo;
     host?: string;

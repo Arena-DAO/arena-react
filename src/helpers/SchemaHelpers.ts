@@ -4,7 +4,7 @@ import type { z } from "zod";
 import type { DistributionForString } from "~/codegen/ArenaCore.types";
 import type { InstantiateMsg as ArenaEscrowInstantiateMsg } from "~/codegen/ArenaEscrow.types";
 import type {
-	EscrowInstantiateInfo,
+	EscrowContractInfo,
 	Expiration,
 } from "~/codegen/ArenaWagerModule.types";
 import type { Duration } from "~/codegen/DaoDaoCore.types";
@@ -70,34 +70,38 @@ export function convertToEscrowInstantiate(
 	escrowCodeId: number,
 	dues: z.infer<typeof DueSchema>[],
 	additionalLayeredFees?: z.infer<typeof MemberPercentageSchema>[],
-): EscrowInstantiateInfo {
+	is_enrollment?: boolean,
+): EscrowContractInfo {
 	return {
-		code_id: escrowCodeId,
-		label: "Arena Escrow",
-		msg: toBinary({
-			dues: dues.map(({ addr, balance }) => {
-				return {
-					addr,
-					balance: {
-						native: balance.native?.map(({ denom, amount }) => ({
-							denom,
-							amount: amount.toString(),
-						})),
-						cw20: balance.cw20?.map(({ address, amount }) => ({
-							address,
-							amount: amount.toString(),
-						})),
-						cw721: balance.cw721,
-					},
-				};
-			}),
-		} as ArenaEscrowInstantiateMsg),
-		additional_layered_fees: additionalLayeredFees?.length
-			? additionalLayeredFees.map((fee) => ({
-					receiver: fee.addr,
-					tax: fee.percentage.toString(),
-				}))
-			: undefined,
+		new: {
+			code_id: escrowCodeId,
+			label: "Arena Escrow",
+			msg: toBinary({
+				dues: dues.map(({ addr, balance }) => {
+					return {
+						addr,
+						balance: {
+							native: balance.native?.map(({ denom, amount }) => ({
+								denom,
+								amount: amount.toString(),
+							})),
+							cw20: balance.cw20?.map(({ address, amount }) => ({
+								address,
+								amount: amount.toString(),
+							})),
+							cw721: balance.cw721,
+						},
+					};
+				}),
+				is_enrollment: is_enrollment ?? false,
+			} as ArenaEscrowInstantiateMsg),
+			additional_layered_fees: additionalLayeredFees?.length
+				? additionalLayeredFees.map((fee) => ({
+						receiver: fee.addr,
+						tax: fee.percentage.toString(),
+					}))
+				: undefined,
+		},
 	};
 }
 

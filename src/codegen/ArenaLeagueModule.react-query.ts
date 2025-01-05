@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Decimal, Binary, Expiration, Timestamp, Uint64, GroupContractInfo, Admin, ExecuteExt, MatchResult, Int128, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatMsg, StatValue, StatAggregationType, StatValueType, Action, DistributionForString, MemberPercentageForString, EscrowInstantiateInfo, FeeInformationForString, ModuleInstantiateInfo, Coin, LeagueInstantiateExt, MatchResultMsg, PointAdjustment, MemberStatsMsg, StatType, QueryMsg, LeagueQueryExt, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForLeagueExt, LeagueExt, FeeInformationForAddr, ArrayOfCompetitionResponseForLeagueExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, ArrayOfArrayOfStatMsg, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaLeagueModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Decimal, EscrowContractInfo, Binary, Expiration, Timestamp, Uint64, GroupContractInfo, Admin, ExecuteExt, MatchResult, Int128, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatMsg, StatValue, StatAggregationType, StatValueType, Action, DistributionForString, MemberPercentageForString, FeeInformationForString, ModuleInstantiateInfo, Coin, LeagueInstantiateExt, MatchResultMsg, PointAdjustment, MemberStatsMsg, StatType, QueryMsg, LeagueQueryExt, MigrateBase, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForLeagueExt, LeagueExt, FeeInformationForAddr, ArrayOfCompetitionResponseForLeagueExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, ArrayOfArrayOfStatMsg, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaLeagueModule.types";
 import { ArenaLeagueModuleQueryClient, ArenaLeagueModuleClient } from "./ArenaLeagueModule.client";
 export const arenaLeagueModuleQueryKeys = {
   contract: ([{
@@ -649,7 +649,7 @@ export interface ArenaLeagueModuleCreateCompetitionMutation {
     banner?: string;
     categoryId?: Uint128;
     description: string;
-    escrow?: EscrowInstantiateInfo;
+    escrow: EscrowContractInfo;
     expiration: Expiration;
     groupContract: GroupContractInfo;
     host?: string;
@@ -674,73 +674,6 @@ export function useArenaLeagueModuleCreateCompetitionMutation(options?: Omit<Use
       funds
     } = {}
   }) => client.createCompetition(msg, fee, memo, funds), options);
-}
-export interface ArenaLeagueModuleExecuteCompetitionHookMutation {
-  client: ArenaLeagueModuleClient;
-  msg: {
-    competitionId: Uint128;
-    distribution?: DistributionForString;
-  };
-  args?: {
-    fee?: number | StdFee | "auto";
-    memo?: string;
-    funds?: Coin[];
-  };
-}
-export function useArenaLeagueModuleExecuteCompetitionHookMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaLeagueModuleExecuteCompetitionHookMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaLeagueModuleExecuteCompetitionHookMutation>(({
-    client,
-    msg,
-    args: {
-      fee,
-      memo,
-      funds
-    } = {}
-  }) => client.executeCompetitionHook(msg, fee, memo, funds), options);
-}
-export interface ArenaLeagueModuleRemoveCompetitionHookMutation {
-  client: ArenaLeagueModuleClient;
-  msg: {
-    competitionId: Uint128;
-  };
-  args?: {
-    fee?: number | StdFee | "auto";
-    memo?: string;
-    funds?: Coin[];
-  };
-}
-export function useArenaLeagueModuleRemoveCompetitionHookMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaLeagueModuleRemoveCompetitionHookMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaLeagueModuleRemoveCompetitionHookMutation>(({
-    client,
-    msg,
-    args: {
-      fee,
-      memo,
-      funds
-    } = {}
-  }) => client.removeCompetitionHook(msg, fee, memo, funds), options);
-}
-export interface ArenaLeagueModuleAddCompetitionHookMutation {
-  client: ArenaLeagueModuleClient;
-  msg: {
-    competitionId: Uint128;
-  };
-  args?: {
-    fee?: number | StdFee | "auto";
-    memo?: string;
-    funds?: Coin[];
-  };
-}
-export function useArenaLeagueModuleAddCompetitionHookMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaLeagueModuleAddCompetitionHookMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaLeagueModuleAddCompetitionHookMutation>(({
-    client,
-    msg,
-    args: {
-      fee,
-      memo,
-      funds
-    } = {}
-  }) => client.addCompetitionHook(msg, fee, memo, funds), options);
 }
 export interface ArenaLeagueModuleActivateCompetitionMutation {
   client: ArenaLeagueModuleClient;

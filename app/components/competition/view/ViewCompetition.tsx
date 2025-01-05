@@ -2,7 +2,7 @@
 
 import Profile from "@/components/Profile";
 import RulesDisplay from "@/components/competition/RulesDisplay";
-import CategoryDisplay from "@/enrollment/view/components/CategoryDisplay";
+import CategoryDisplay from "@/components/competition/view/components/CategoryDisplay";
 import {
 	Button,
 	Card,
@@ -22,7 +22,6 @@ import {
 import type { PropsWithChildren } from "react";
 import { BsYinYang } from "react-icons/bs";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
-import { isJailed } from "~/helpers/ArenaHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import type { CompetitionResponse } from "~/types/CompetitionResponse";
 import type { CompetitionType } from "~/types/CompetitionType";
@@ -88,11 +87,19 @@ const ViewCompetition = ({
 							)}
 						</div>
 					</CardBody>
-					<CardFooter className="gap-2">
-						<GroupMembersModal groupContract={competition.group_contract} />
-						<StatsTableModal
+					<CardFooter className="justify-between gap-4 overflow-x-auto">
+						<div className="flex gap-2">
+							<GroupMembersModal groupContract={competition.group_contract} />
+							<StatsTableModal
+								moduleAddr={moduleAddr}
+								competitionId={competition.id}
+							/>
+						</div>
+						<CompetitionActions
+							competition={competition}
+							competitionType={competitionType}
 							moduleAddr={moduleAddr}
-							competitionId={competition.id}
+							hideProcess={hideProcess}
 						/>
 					</CardFooter>
 				</Card>
@@ -112,6 +119,43 @@ const ViewCompetition = ({
 					</CardBody>
 				</Card>
 			</div>
+
+			<EscrowSection
+				escrow={competition.escrow}
+				context={{
+					type: "competition",
+					competitionStatus: competition.status,
+					competitionType,
+					competitionId: competition.id,
+				}}
+			>
+				{competition.fees && competition.fees.length > 0 && (
+					<Card>
+						<CardHeader>
+							<h2 className="font-semibold text-xl">Additional Layered Fees</h2>
+						</CardHeader>
+						<CardBody>
+							<Table aria-label="Additional Fees" removeWrapper>
+								<TableHeader>
+									<TableColumn>Recipient</TableColumn>
+									<TableColumn>Percentage</TableColumn>
+								</TableHeader>
+								<TableBody emptyContent="No additional fees">
+									{competition.fees.map((x, i) => (
+										// biome-ignore lint/suspicious/noArrayIndexKey: best option
+										<TableRow key={i}>
+											<TableCell>
+												<Profile address={x.receiver} />
+											</TableCell>
+											<TableCell>{Number.parseFloat(x.tax) * 100}%</TableCell>
+										</TableRow>
+									))}
+								</TableBody>
+							</Table>
+						</CardBody>
+					</Card>
+				)}
+			</EscrowSection>
 
 			<Card>
 				<CardHeader>
@@ -143,7 +187,7 @@ const ViewCompetition = ({
 				</Card>
 			)}
 
-			{(isJailed(competition.status) || competition.status === "inactive") && (
+			{competition.status !== "pending" && (
 				<EvidenceSection
 					moduleAddr={moduleAddr}
 					competitionId={competition.id}
@@ -151,54 +195,10 @@ const ViewCompetition = ({
 				/>
 			)}
 
-			{competition.escrow && (
-				<EscrowSection
-					escrow={competition.escrow}
-					competitionStatus={competition.status}
-					competitionType={competitionType}
-					competitionId={competition.id}
-				>
-					{competition.fees && competition.fees.length > 0 && (
-						<Card>
-							<CardHeader>
-								<h2 className="font-semibold text-xl">
-									Additional Layered Fees
-								</h2>
-							</CardHeader>
-							<CardBody>
-								<Table aria-label="Additional Fees" removeWrapper>
-									<TableHeader>
-										<TableColumn>Recipient</TableColumn>
-										<TableColumn>Percentage</TableColumn>
-									</TableHeader>
-									<TableBody emptyContent="No additional fees">
-										{competition.fees.map((x, i) => (
-											// biome-ignore lint/suspicious/noArrayIndexKey: best option
-											<TableRow key={i}>
-												<TableCell>
-													<Profile address={x.receiver} />
-												</TableCell>
-												<TableCell>{Number.parseFloat(x.tax) * 100}%</TableCell>
-											</TableRow>
-										))}
-									</TableBody>
-								</Table>
-							</CardBody>
-						</Card>
-					)}
-				</EscrowSection>
-			)}
-
 			{competition.status === "inactive" && (
 				<ResultSection moduleAddr={moduleAddr} competitionId={competition.id} />
 			)}
 
-			<CompetitionActions
-				competition={competition}
-				hideProcess={hideProcess}
-				competitionType={competitionType}
-				moduleAddr={moduleAddr}
-			/>
 			{children}
 		</div>
 	);

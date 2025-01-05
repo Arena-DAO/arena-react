@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ExecuteMsg, Uint128, Binary, Decimal, Expiration, Timestamp, Uint64, CompetitionType, EliminationType, Admin, Action, CompetitionInfoMsg, FeeInformationForString, Coin, ModuleInstantiateInfo, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
+import { InstantiateMsg, ExecuteMsg, Uint128, Expiration, Timestamp, Uint64, CompetitionType, Decimal, EliminationType, EscrowContractInfo, Binary, Admin, Action, CompetitionInfoMsg, Coin, FeeInformationForString, ModuleInstantiateInfo, MemberMsgForString, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, FeeInformationForAddr, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
 export interface ArenaCompetitionEnrollmentReadOnlyInterface {
   contractAddress: string;
   enrollments: ({
@@ -106,27 +106,27 @@ export interface ArenaCompetitionEnrollmentInterface extends ArenaCompetitionEnr
     competitionInfo,
     competitionType,
     entryFee,
+    escrowContractInfo,
     expiration,
     groupContractInfo,
     maxMembers,
     minMembers,
-    requireTeamSize
+    requiredTeamSize
   }: {
     categoryId?: Uint128;
     competitionInfo: CompetitionInfoMsg;
     competitionType: CompetitionType;
     entryFee?: Coin;
+    escrowContractInfo: EscrowContractInfo;
     expiration: Expiration;
     groupContractInfo: ModuleInstantiateInfo;
     maxMembers: Uint64;
     minMembers?: Uint64;
-    requireTeamSize?: number;
+    requiredTeamSize?: number;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
-  triggerExpiration: ({
-    escrowId,
+  finalize: ({
     id
   }: {
-    escrowId: number;
     id: Uint128;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   enroll: ({
@@ -148,6 +148,13 @@ export interface ArenaCompetitionEnrollmentInterface extends ArenaCompetitionEnr
     id: Uint128;
     members: string[];
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
+  setRankings: ({
+    id,
+    rankings
+  }: {
+    id: Uint128;
+    rankings: MemberMsgForString[];
+  }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   updateOwnership: (action: Action, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
 }
 export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollmentQueryClient implements ArenaCompetitionEnrollmentInterface {
@@ -160,10 +167,11 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
     this.sender = sender;
     this.contractAddress = contractAddress;
     this.createEnrollment = this.createEnrollment.bind(this);
-    this.triggerExpiration = this.triggerExpiration.bind(this);
+    this.finalize = this.finalize.bind(this);
     this.enroll = this.enroll.bind(this);
     this.withdraw = this.withdraw.bind(this);
     this.forceWithdraw = this.forceWithdraw.bind(this);
+    this.setRankings = this.setRankings.bind(this);
     this.updateOwnership = this.updateOwnership.bind(this);
   }
   createEnrollment = async ({
@@ -171,21 +179,23 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
     competitionInfo,
     competitionType,
     entryFee,
+    escrowContractInfo,
     expiration,
     groupContractInfo,
     maxMembers,
     minMembers,
-    requireTeamSize
+    requiredTeamSize
   }: {
     categoryId?: Uint128;
     competitionInfo: CompetitionInfoMsg;
     competitionType: CompetitionType;
     entryFee?: Coin;
+    escrowContractInfo: EscrowContractInfo;
     expiration: Expiration;
     groupContractInfo: ModuleInstantiateInfo;
     maxMembers: Uint64;
     minMembers?: Uint64;
-    requireTeamSize?: number;
+    requiredTeamSize?: number;
   }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       create_enrollment: {
@@ -193,24 +203,22 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
         competition_info: competitionInfo,
         competition_type: competitionType,
         entry_fee: entryFee,
+        escrow_contract_info: escrowContractInfo,
         expiration,
         group_contract_info: groupContractInfo,
         max_members: maxMembers,
         min_members: minMembers,
-        require_team_size: requireTeamSize
+        required_team_size: requiredTeamSize
       }
     }, fee_, memo_, funds_);
   };
-  triggerExpiration = async ({
-    escrowId,
+  finalize = async ({
     id
   }: {
-    escrowId: number;
     id: Uint128;
   }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      trigger_expiration: {
-        escrow_id: escrowId,
+      finalize: {
         id
       }
     }, fee_, memo_, funds_);
@@ -251,6 +259,20 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
       force_withdraw: {
         id,
         members
+      }
+    }, fee_, memo_, funds_);
+  };
+  setRankings = async ({
+    id,
+    rankings
+  }: {
+    id: Uint128;
+    rankings: MemberMsgForString[];
+  }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      set_rankings: {
+        id,
+        rankings
       }
     }, fee_, memo_, funds_);
   };

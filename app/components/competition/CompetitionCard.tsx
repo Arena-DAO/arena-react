@@ -97,7 +97,7 @@ const Competition: React.FC<CompetitionProps> = ({
 						<CompetitionTypeDisplay type={competition.competition_type} />
 					)}
 				</div>
-				<p className="mb-3 text-sm">{description}</p>
+				<p className="mb-3 line-clamp-3 text-sm">{description}</p>
 				{!hideHost && (
 					<div className="mb-3">
 						<Profile address={competition.host} />
@@ -112,7 +112,7 @@ const Competition: React.FC<CompetitionProps> = ({
 								expiration={competition.competition_info.expiration}
 							/>
 							<EnrollmentStatusDisplay
-								hasTriggeredExpiration={competition.has_triggered_expiration}
+								hasTriggeredExpiration={competition.has_finalized}
 								isExpired={competition.is_expired}
 								currentMembers={Number(competition.current_members)}
 								maxMembers={Number(competition.max_members)}

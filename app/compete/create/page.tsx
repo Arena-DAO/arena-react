@@ -27,6 +27,7 @@ import {
 import { toast } from "react-toastify";
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import type { CompetitionType } from "~/codegen/ArenaCompetitionEnrollment.types";
+import type { InstantiateMsg as ArenaEscrowInstantiateMsg } from "~/codegen/ArenaEscrow.types";
 import type {
 	AddMemberMsg,
 	InstantiateMsg as GroupInstantiateMsg,
@@ -213,11 +214,6 @@ const CreateCompetitionPage = () => {
 						competitionType,
 						competitionInfo: {
 							...commonMsg,
-							additional_layered_fees: values.additionalLayeredFees?.map(
-								(x) => {
-									return { receiver: x.addr, tax: x.percentage.toString() };
-								},
-							),
 						},
 						maxMembers: values.enrollmentInfo.maxMembers.toString(),
 						minMembers: values.enrollmentInfo.minMembers?.toString(),
@@ -231,7 +227,22 @@ const CreateCompetitionPage = () => {
 							label: "Arena Group",
 							msg: toBinary({} as GroupInstantiateMsg),
 						},
-						requireTeamSize: values.enrollmentInfo.requiredTeamSize,
+						requiredTeamSize: values.enrollmentInfo.requiredTeamSize,
+						escrowContractInfo: {
+							new: {
+								code_id: env.CODE_ID_ESCROW,
+								label: "Arena Escrow",
+								additional_layered_fees: values.additionalLayeredFees?.map(
+									(x) => {
+										return { receiver: x.addr, tax: x.percentage.toString() };
+									},
+								),
+								msg: toBinary({
+									dues: [],
+									is_enrollment: true,
+								} as ArenaEscrowInstantiateMsg),
+							},
+						},
 					});
 
 					// Extract competition ID from the result
@@ -285,15 +296,11 @@ const CreateCompetitionPage = () => {
 						},
 					} as GroupContractInfo;
 
-					const escrow =
-						values.directParticipation.dues &&
-						values.directParticipation.dues.length > 0
-							? convertToEscrowInstantiate(
-									env.CODE_ID_ESCROW,
-									values.directParticipation.dues,
-									values.additionalLayeredFees,
-								)
-							: undefined;
+					const escrow = convertToEscrowInstantiate(
+						env.CODE_ID_ESCROW,
+						values.directParticipation.dues ?? [],
+						values.additionalLayeredFees,
+					);
 
 					switch (values.competitionType) {
 						case "wager": {
