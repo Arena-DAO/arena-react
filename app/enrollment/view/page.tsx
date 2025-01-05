@@ -5,6 +5,7 @@ import TokenInfo from "@/components/TokenInfo";
 import CompetitionTypeDisplay from "@/components/competition/CompetitionTypeDisplay";
 import EnrollmentStatusDisplay from "@/components/competition/EnrollmentStatusDisplay";
 import ExpirationDisplay from "@/components/competition/ExpirationDisplay";
+import EscrowSection from "@/components/competition/view/components/EscrowSection";
 import { useChain } from "@cosmos-kit/react";
 import {
 	Button,
@@ -145,6 +146,45 @@ const EnrollmentView = () => {
 						</CardBody>
 					</Card>
 				</div>
+
+				<EscrowSection
+					escrow={enrollment.competition_info.escrow}
+					context={{ type: "enrollment", enrollmentId: enrollment.id }}
+				>
+					{enrollment.competition_info.additional_layered_fees &&
+						enrollment.competition_info.additional_layered_fees.length > 0 && (
+							<Card>
+								<CardHeader>
+									<h2 className="font-semibold text-xl">
+										Additional Layered Fees
+									</h2>
+								</CardHeader>
+								<CardBody>
+									<Table aria-label="Additional Fees" removeWrapper>
+										<TableHeader>
+											<TableColumn>Recipient</TableColumn>
+											<TableColumn>Percentage</TableColumn>
+										</TableHeader>
+										<TableBody emptyContent="No additional fees">
+											{enrollment.competition_info.additional_layered_fees.map(
+												(x, i) => (
+													// biome-ignore lint/suspicious/noArrayIndexKey: best option
+													<TableRow key={i}>
+														<TableCell>
+															<Profile address={x.receiver} />
+														</TableCell>
+														<TableCell>
+															{Number.parseFloat(x.tax) * 100}%
+														</TableCell>
+													</TableRow>
+												),
+											)}
+										</TableBody>
+									</Table>
+								</CardBody>
+							</Card>
+						)}
+				</EscrowSection>
 
 				<Card>
 					<CardHeader>

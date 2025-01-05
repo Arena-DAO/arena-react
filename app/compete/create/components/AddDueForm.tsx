@@ -1,3 +1,5 @@
+"use client";
+
 import NFTInfo from "@/components/NFTInfo";
 import TokenInfo from "@/components/TokenInfo";
 import { useChain } from "@cosmos-kit/react";

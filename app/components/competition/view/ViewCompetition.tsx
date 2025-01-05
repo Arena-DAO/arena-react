@@ -120,6 +120,43 @@ const ViewCompetition = ({
 				</Card>
 			</div>
 
+			<EscrowSection
+				escrow={competition.escrow}
+				context={{
+					type: "competition",
+					competitionStatus: competition.status,
+					competitionType,
+					competitionId: competition.id,
+				}}
+			>
+				{competition.fees && competition.fees.length > 0 && (
+					<Card>
+						<CardHeader>
+							<h2 className="font-semibold text-xl">Additional Layered Fees</h2>
+						</CardHeader>
+						<CardBody>
+							<Table aria-label="Additional Fees" removeWrapper>
+								<TableHeader>
+									<TableColumn>Recipient</TableColumn>
+									<TableColumn>Percentage</TableColumn>
+								</TableHeader>
+								<TableBody emptyContent="No additional fees">
+									{competition.fees.map((x, i) => (
+										// biome-ignore lint/suspicious/noArrayIndexKey: best option
+										<TableRow key={i}>
+											<TableCell>
+												<Profile address={x.receiver} />
+											</TableCell>
+											<TableCell>{Number.parseFloat(x.tax) * 100}%</TableCell>
+										</TableRow>
+									))}
+								</TableBody>
+							</Table>
+						</CardBody>
+					</Card>
+				)}
+			</EscrowSection>
+
 			<Card>
 				<CardHeader>
 					<h2 className="font-semibold text-xl">Description</h2>
@@ -156,44 +193,6 @@ const ViewCompetition = ({
 					competitionId={competition.id}
 					hideIfEmpty={competition.status === "inactive"}
 				/>
-			)}
-
-			{competition.escrow && (
-				<EscrowSection
-					escrow={competition.escrow}
-					competitionStatus={competition.status}
-					competitionType={competitionType}
-					competitionId={competition.id}
-				>
-					{competition.fees && competition.fees.length > 0 && (
-						<Card>
-							<CardHeader>
-								<h2 className="font-semibold text-xl">
-									Additional Layered Fees
-								</h2>
-							</CardHeader>
-							<CardBody>
-								<Table aria-label="Additional Fees" removeWrapper>
-									<TableHeader>
-										<TableColumn>Recipient</TableColumn>
-										<TableColumn>Percentage</TableColumn>
-									</TableHeader>
-									<TableBody emptyContent="No additional fees">
-										{competition.fees.map((x, i) => (
-											// biome-ignore lint/suspicious/noArrayIndexKey: best option
-											<TableRow key={i}>
-												<TableCell>
-													<Profile address={x.receiver} />
-												</TableCell>
-												<TableCell>{Number.parseFloat(x.tax) * 100}%</TableCell>
-											</TableRow>
-										))}
-									</TableBody>
-								</Table>
-							</CardBody>
-						</Card>
-					)}
-				</EscrowSection>
 			)}
 
 			{competition.status === "inactive" && (

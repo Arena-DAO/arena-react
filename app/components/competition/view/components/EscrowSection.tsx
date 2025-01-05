@@ -35,6 +35,7 @@ import type { CompetitionResponse } from "~/types/CompetitionResponse";
 import type { CompetitionType } from "~/types/CompetitionType";
 import BalanceDisplay from "./BalanceDisplay";
 import BalancesModal from "./BalancesModal";
+import DonateModal from "./DonateModal";
 import DuesModal from "./DuesModal";
 import InitialDuesModal from "./InitialDuesModal";
 
@@ -42,20 +43,27 @@ interface PageData {
 	items: ArrayOfMemberBalanceChecked;
 }
 
-interface EscrowSectionProps extends PropsWithChildren {
-	escrow: string;
+// Types for the consolidated context
+type CompetitionContext = {
+	type: "competition";
 	competitionStatus: CompetitionStatus;
 	competitionType: CompetitionType;
 	competitionId: string;
+};
+
+type EnrollmentContext = {
+	type: "enrollment";
+	enrollmentId: string;
+};
+
+type EscrowContext = CompetitionContext | EnrollmentContext;
+
+interface EscrowSectionProps extends PropsWithChildren {
+	escrow: string;
+	context: EscrowContext;
 }
 
-const EscrowSection = ({
-	escrow,
-	competitionStatus,
-	competitionType,
-	competitionId,
-	children,
-}: EscrowSectionProps) => {
+const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
@@ -100,23 +108,30 @@ const EscrowSection = ({
 
 			toast.success("Funds have been successfully deposited");
 
-			if (
-				response.events.find((event) =>
-					event.attributes.find(
-						(attr) => attr.key === "action" && attr.value === "activate",
-					),
-				)
-			) {
-				queryClient.setQueryData<CompetitionResponse | undefined>(
-					getCompetitionQueryKey(env, competitionType, competitionId),
-					(old) => {
-						if (old) {
-							return { ...old, status: { active: { activation_height: 0 } } };
-						}
-						return old;
-					},
-				);
-				toast.success("The competition is now active");
+			// Handle competition activation if in competition context
+			if (context.type === "competition") {
+				if (
+					response.events.find((event) =>
+						event.attributes.find(
+							(attr) => attr.key === "action" && attr.value === "activate",
+						),
+					)
+				) {
+					queryClient.setQueryData<CompetitionResponse | undefined>(
+						getCompetitionQueryKey(
+							env,
+							context.competitionType,
+							context.competitionId,
+						),
+						(old) => {
+							if (old) {
+								return { ...old, status: { active: { activation_height: 0 } } };
+							}
+							return old;
+						},
+					);
+					toast.success("The competition is now active");
+				}
 			}
 
 			await queryClient.invalidateQueries(
@@ -256,11 +271,16 @@ const EscrowSection = ({
 				{children}
 			</CardBody>
 			<CardFooter className="gap-4">
-				{competitionStatus === "pending" && <DuesModal escrow={escrow} />}
-				{competitionStatus !== "pending" && (
-					<InitialDuesModal escrow={escrow} />
-				)}
+				{context.type === "competition" &&
+					context.competitionStatus === "pending" && (
+						<DuesModal escrow={escrow} />
+					)}
+				{context.type === "competition" &&
+					context.competitionStatus !== "pending" && (
+						<InitialDuesModal escrow={escrow} />
+					)}
 				<BalancesModal escrow={escrow} />
+				<DonateModal escrow={escrow} />
 			</CardFooter>
 		</Card>
 	);
