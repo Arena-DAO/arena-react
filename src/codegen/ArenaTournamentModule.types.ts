@@ -25,9 +25,10 @@ export type ExecuteMsg = {
   create_competition: {
     banner?: string | null;
     category_id?: Uint128 | null;
+    date: Timestamp;
     description: string;
+    duration: number;
     escrow: EscrowContractInfo;
-    expiration: Expiration;
     group_contract: GroupContractInfo;
     host?: string | null;
     instantiate_extension: TournamentInstantiateExt;
@@ -73,6 +74,8 @@ export type ExecuteMsg = {
 };
 export type Uint128 = string;
 export type Decimal = string;
+export type Timestamp = Uint64;
+export type Uint64 = string;
 export type EscrowContractInfo = {
   existing: {
     additional_layered_fees?: FeeInformationForString[] | null;
@@ -87,15 +90,6 @@ export type EscrowContractInfo = {
   };
 };
 export type Binary = string;
-export type Expiration = {
-  at_height: number;
-} | {
-  at_time: Timestamp;
-} | {
-  never: {};
-};
-export type Timestamp = Uint64;
-export type Uint64 = string;
 export type GroupContractInfo = {
   existing: {
     addr: string;
@@ -174,6 +168,13 @@ export type Action = {
     new_owner: string;
   };
 } | "accept_ownership" | "renounce_ownership";
+export type Expiration = {
+  at_height: number;
+} | {
+  at_time: Timestamp;
+} | {
+  never: {};
+};
 export interface DistributionForString {
   member_percentages: MemberPercentageForString[];
   remainder_addr: string;
@@ -290,9 +291,7 @@ export type QueryExt = {
 export type MigrateBase = {
   from_compatible: {};
 } | {
-  from_v2_2: {
-    escrow_id: number;
-  };
+  from_v2_3: {};
 };
 export type Addr = string;
 export interface SudoMsg {
@@ -311,15 +310,15 @@ export type Null = null;
 export interface CompetitionResponseForTournamentExt {
   banner?: string | null;
   category_id?: Uint128 | null;
+  date: Timestamp;
   description: string;
+  duration: number;
   escrow: Addr;
-  expiration: Expiration;
   extension: TournamentExt;
   fees?: FeeInformationForAddr[] | null;
   group_contract: Addr;
   host: Addr;
   id: Uint128;
-  is_expired: boolean;
   name: string;
   rules?: string[] | null;
   rulesets?: Uint128[] | null;

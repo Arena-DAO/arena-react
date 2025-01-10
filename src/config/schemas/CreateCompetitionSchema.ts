@@ -1,43 +1,53 @@
 import { z } from "zod";
 import AddressSchema from "./AddressSchema";
 import DueSchema from "./DueSchema";
-import ExpirationSchema from "./ExpirationSchema";
 import MemberPercentageSchema from "./MemberPercentageSchema";
 import PercentageListSchema from "./PercentageListSchema";
 import RulesSchema from "./RulesSchema";
 import RulesetsSchema from "./RulesetsSchema";
+import DurationSchema from "./DurationSchema";
+import { TimestampSchema } from "./TimestampSchema";
 
-const EnrollmentInfoSchema = z
+export const EnrollmentInfoSchema = z
 	.object({
-		maxMembers: z
+		maxMembers: z.coerce
 			.number()
 			.int()
-			.min(2, { message: "At least 2 members are required" }),
-		minMembers: z
+			.positive()
+			.transform((x) => x.toString()),
+		minMembers: z.coerce
 			.number()
 			.int()
-			.min(2, { message: "At least 2 members are required" })
-			.optional(),
+			.positive()
+			.optional()
+			.transform((x) => x?.toString()),
 		entryFee: z
 			.object({
-				amount: z.string().min(1, { message: "Entry fee amount is required" }),
+				amount: z.coerce.number().transform((x) => x.toString()),
 				denom: z
 					.string()
 					.min(1, { message: "Entry fee denomination is required" }),
 			})
 			.optional(),
-		enrollment_expiration: ExpirationSchema,
+		duration_before: DurationSchema,
 		isCreatorMember: z.boolean().optional(),
-		requiredTeamSize: z
+		requiredTeamSize: z.coerce
 			.number()
+			.int()
+			.positive()
 			.min(1, "1 is the min team size")
 			.max(30, "30 is the max team size")
-			.optional(),
+			.optional()
+			.transform((x) => x?.toString()),
 	})
-	.refine((data) => !data.minMembers || data.minMembers <= data.maxMembers, {
-		message: "Minimum members must be less than or equal to maximum members",
-		path: ["minMembers"],
-	});
+	.refine(
+		(data) =>
+			!data.minMembers || Number(data.minMembers) <= Number(data.maxMembers),
+		{
+			message: "Minimum members must be less than or equal to maximum members",
+			path: ["minMembers"],
+		},
+	);
 
 const DirectParticipationSchema = z.object({
 	dues: z.array(DueSchema).optional(),
@@ -51,7 +61,8 @@ const BaseCreateCompetitionSchema = z.object({
 		.string()
 		.min(1, { message: "Description is required" })
 		.max(1000, { message: "Description must be 1000 characters or less" }),
-	expiration: ExpirationSchema,
+	date: TimestampSchema,
+	duration: DurationSchema,
 	name: z
 		.string()
 		.min(1, { message: "Name is required" })
@@ -63,15 +74,15 @@ const BaseCreateCompetitionSchema = z.object({
 
 const LeagueSchema = z
 	.object({
-		matchWinPoints: z
+		matchWinPoints: z.coerce
 			.number()
 			.int()
 			.min(0, { message: "Win points must be non-negative" }),
-		matchDrawPoints: z
+		matchDrawPoints: z.coerce
 			.number()
 			.int()
 			.min(0, { message: "Draw points must be non-negative" }),
-		matchLosePoints: z
+		matchLosePoints: z.coerce
 			.number()
 			.int()
 			.min(0, { message: "Lose points must be non-negative" }),
@@ -105,7 +116,7 @@ const CreateCompetitionSchema = BaseCreateCompetitionSchema.extend({
 	if (data.useEnrollments && !data.enrollmentInfo) {
 		ctx.addIssue({
 			code: z.ZodIssueCode.custom,
-			message: "Enrollment information is required when using crowdfunding",
+			message: "Enrollment information is required when using enrollments",
 			path: ["enrollmentInfo"],
 		});
 	}
@@ -113,7 +124,7 @@ const CreateCompetitionSchema = BaseCreateCompetitionSchema.extend({
 		ctx.addIssue({
 			code: z.ZodIssueCode.custom,
 			message:
-				"Direct participation information is required when not using crowdfunding",
+				"Direct participation information is required when not using enrollments",
 			path: ["directParticipation"],
 		});
 	}

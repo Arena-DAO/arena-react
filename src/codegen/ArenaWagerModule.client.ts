@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Decimal, EscrowContractInfo, Binary, Expiration, Timestamp, Uint64, GroupContractInfo, Admin, ExecuteExt, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatMsg, StatValue, StatAggregationType, StatValueType, Action, DistributionForString, MemberPercentageForString, FeeInformationForString, ModuleInstantiateInfo, Coin, WagerInstantiateExt, MemberStatsMsg, StatType, QueryMsg, QueryExt, MigrateBase, Null, Addr, CompetitionResponseForWagerExt, WagerExt, FeeInformationForAddr, ArrayOfCompetitionResponseForWagerExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, ArrayOfArrayOfStatMsg, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaWagerModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Decimal, Timestamp, Uint64, EscrowContractInfo, Binary, GroupContractInfo, Admin, ExecuteExt, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatMsg, StatValue, StatAggregationType, StatValueType, Action, Expiration, DistributionForString, MemberPercentageForString, FeeInformationForString, ModuleInstantiateInfo, Coin, WagerInstantiateExt, MemberStatsMsg, StatType, QueryMsg, QueryExt, MigrateBase, Null, Addr, CompetitionResponseForWagerExt, WagerExt, FeeInformationForAddr, ArrayOfCompetitionResponseForWagerExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, ArrayOfArrayOfStatMsg, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaWagerModule.types";
 export interface ArenaWagerModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForEmpty>;
@@ -274,9 +274,10 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
   createCompetition: ({
     banner,
     categoryId,
+    date,
     description,
+    duration,
     escrow,
-    expiration,
     groupContract,
     host,
     instantiateExtension,
@@ -286,9 +287,10 @@ export interface ArenaWagerModuleInterface extends ArenaWagerModuleReadOnlyInter
   }: {
     banner?: string;
     categoryId?: Uint128;
+    date: Timestamp;
     description: string;
+    duration: number;
     escrow: EscrowContractInfo;
-    expiration: Expiration;
     groupContract: GroupContractInfo;
     host?: string;
     instantiateExtension: WagerInstantiateExt;
@@ -394,9 +396,10 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
   createCompetition = async ({
     banner,
     categoryId,
+    date,
     description,
+    duration,
     escrow,
-    expiration,
     groupContract,
     host,
     instantiateExtension,
@@ -406,9 +409,10 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
   }: {
     banner?: string;
     categoryId?: Uint128;
+    date: Timestamp;
     description: string;
+    duration: number;
     escrow: EscrowContractInfo;
-    expiration: Expiration;
     groupContract: GroupContractInfo;
     host?: string;
     instantiateExtension: WagerInstantiateExt;
@@ -420,9 +424,10 @@ export class ArenaWagerModuleClient extends ArenaWagerModuleQueryClient implemen
       create_competition: {
         banner,
         category_id: categoryId,
+        date,
         description,
+        duration,
         escrow,
-        expiration,
         group_contract: groupContract,
         host,
         instantiate_extension: instantiateExtension,

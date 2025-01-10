@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Decimal, EscrowContractInfo, Binary, Expiration, Timestamp, Uint64, GroupContractInfo, Admin, ExecuteExt, MatchResult, Int128, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatMsg, StatValue, StatAggregationType, StatValueType, Action, DistributionForString, MemberPercentageForString, FeeInformationForString, ModuleInstantiateInfo, Coin, LeagueInstantiateExt, MatchResultMsg, PointAdjustment, MemberStatsMsg, StatType, QueryMsg, LeagueQueryExt, MigrateBase, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForLeagueExt, LeagueExt, FeeInformationForAddr, ArrayOfCompetitionResponseForLeagueExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, ArrayOfArrayOfStatMsg, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaLeagueModule.types";
+import { InstantiateMsg, Empty, ExecuteMsg, Uint128, Decimal, Timestamp, Uint64, EscrowContractInfo, Binary, GroupContractInfo, Admin, ExecuteExt, MatchResult, Int128, MigrateMsg, CompetitionsFilter, CompetitionStatus, StatMsg, StatValue, StatAggregationType, StatValueType, Action, Expiration, DistributionForString, MemberPercentageForString, FeeInformationForString, ModuleInstantiateInfo, Coin, LeagueInstantiateExt, MatchResultMsg, PointAdjustment, MemberStatsMsg, StatType, QueryMsg, LeagueQueryExt, MigrateBase, Addr, SudoMsg, MemberPoints, RoundResponse, Match, Null, CompetitionResponseForLeagueExt, LeagueExt, FeeInformationForAddr, ArrayOfCompetitionResponseForLeagueExt, ConfigForEmpty, String, ArrayOfEvidence, Evidence, ArrayOfArrayOfStatMsg, OwnershipForString, NullableString, NullableDistributionForString, NullableArrayOfStatType, ArrayOfStatTableEntry, StatTableEntry } from "./ArenaLeagueModule.types";
 export interface ArenaLeagueModuleReadOnlyInterface {
   contractAddress: string;
   config: () => Promise<ConfigForEmpty>;
@@ -274,9 +274,10 @@ export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInt
   createCompetition: ({
     banner,
     categoryId,
+    date,
     description,
+    duration,
     escrow,
-    expiration,
     groupContract,
     host,
     instantiateExtension,
@@ -286,9 +287,10 @@ export interface ArenaLeagueModuleInterface extends ArenaLeagueModuleReadOnlyInt
   }: {
     banner?: string;
     categoryId?: Uint128;
+    date: Timestamp;
     description: string;
+    duration: number;
     escrow: EscrowContractInfo;
-    expiration: Expiration;
     groupContract: GroupContractInfo;
     host?: string;
     instantiateExtension: LeagueInstantiateExt;
@@ -394,9 +396,10 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
   createCompetition = async ({
     banner,
     categoryId,
+    date,
     description,
+    duration,
     escrow,
-    expiration,
     groupContract,
     host,
     instantiateExtension,
@@ -406,9 +409,10 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
   }: {
     banner?: string;
     categoryId?: Uint128;
+    date: Timestamp;
     description: string;
+    duration: number;
     escrow: EscrowContractInfo;
-    expiration: Expiration;
     groupContract: GroupContractInfo;
     host?: string;
     instantiateExtension: LeagueInstantiateExt;
@@ -420,9 +424,10 @@ export class ArenaLeagueModuleClient extends ArenaLeagueModuleQueryClient implem
       create_competition: {
         banner,
         category_id: categoryId,
+        date,
         description,
+        duration,
         escrow,
-        expiration,
         group_contract: groupContract,
         host,
         instantiate_extension: instantiateExtension,

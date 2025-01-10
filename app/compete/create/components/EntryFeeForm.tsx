@@ -22,7 +22,10 @@ import { useEnv } from "~/hooks/useEnv";
 
 const EntryFeeSchema = z.object({
 	denom: z.string().min(1, { message: "Denom is required" }),
-	amount: z.number().positive({ message: "Amount must be positive" }),
+	amount: z.coerce
+		.number()
+		.positive({ message: "Amount must be positive" })
+		.transform((x) => x.toString()),
 });
 
 type EntryFeeFormValues = z.infer<typeof EntryFeeSchema>;
@@ -52,7 +55,7 @@ const EntryFeeForm: React.FC<EntryFeeFormProps> = ({
 	} = useForm<EntryFeeFormValues>({
 		resolver: zodResolver(EntryFeeSchema),
 		defaultValues: {
-			denom: env.DEFAULT_NATIVE,
+			denom: env.DEFAULT_NATIVE.toUpperCase(),
 		},
 	});
 
@@ -132,10 +135,6 @@ const EntryFeeForm: React.FC<EntryFeeFormProps> = ({
 								placeholder="Enter amount"
 								isInvalid={!!errors.amount}
 								errorMessage={errors.amount?.message}
-								value={field.value?.toString() || ""}
-								onChange={(e) =>
-									field.onChange(Number.parseFloat(e.target.value))
-								}
 							/>
 						)}
 					/>

@@ -76,7 +76,7 @@ const CreateTeamSchema = z.object({
 		.refine(
 			(members) => {
 				const total = members.reduce(
-					(sum, member) => sum + member.percentage,
+					(sum, member) => sum + Number(member.percentage),
 					0,
 				);
 				return total === 1;
@@ -105,7 +105,7 @@ const CreateTeam = () => {
 			description: "",
 			teamImageUrl: "",
 			bannerUrl: "",
-			members: [{ addr: address, percentage: 0 }],
+			members: [{ addr: address, percentage: "0" }],
 		},
 	});
 
@@ -293,7 +293,7 @@ const CreateTeam = () => {
 									<h2 className="font-semibold text-xl">Team Members</h2>
 									<Button
 										color="primary"
-										onPress={() => append({ addr: "", percentage: 0 })}
+										onPress={() => append({ addr: "", percentage: "0" })}
 									>
 										Add Member
 									</Button>
@@ -337,10 +337,6 @@ const CreateTeam = () => {
 																type="number"
 																label="Payout %"
 																isDisabled={isSubmitting}
-																value={field.value?.toString()}
-																onChange={(e) =>
-																	onChange(Number.parseFloat(e.target.value))
-																}
 																errorMessage={
 																	errors.members?.[index]?.percentage?.message
 																}
@@ -370,7 +366,10 @@ const CreateTeam = () => {
 								)}
 
 								<Progress
-									value={members.reduce((acc, x) => acc + x.percentage, 0)}
+									value={members.reduce(
+										(acc, x) => acc + Number(x.percentage),
+										0,
+									)}
 									color="primary"
 									showValueLabel
 								/>

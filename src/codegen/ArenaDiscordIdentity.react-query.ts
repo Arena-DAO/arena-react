@@ -32,6 +32,11 @@ export const arenaDiscordIdentityQueryKeys = {
     method: "discord_connections",
     args
   }] as const),
+  userCount: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
+    ...arenaDiscordIdentityQueryKeys.address(contractAddress)[0],
+    method: "user_count",
+    args
+  }] as const),
   ownership: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
     ...arenaDiscordIdentityQueryKeys.address(contractAddress)[0],
     method: "ownership",
@@ -75,6 +80,15 @@ export const arenaDiscordIdentityQueries = {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   }),
+  userCount: <TData = Uint128,>({
+    client,
+    options
+  }: ArenaDiscordIdentityUserCountQuery<TData>): UseQueryOptions<Uint128, Error, TData> => ({
+    queryKey: arenaDiscordIdentityQueryKeys.userCount(client?.contractAddress),
+    queryFn: () => client ? client.userCount() : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
   ownership: <TData = OwnershipForString,>({
     client,
     options
@@ -97,6 +111,16 @@ export function useArenaDiscordIdentityOwnershipQuery<TData = OwnershipForString
   options
 }: ArenaDiscordIdentityOwnershipQuery<TData>) {
   return useQuery<OwnershipForString, Error, TData>(arenaDiscordIdentityQueryKeys.ownership(client?.contractAddress), () => client ? client.ownership() : Promise.reject(new Error("Invalid client")), {
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
+}
+export interface ArenaDiscordIdentityUserCountQuery<TData> extends ArenaDiscordIdentityReactQuery<Uint128, TData> {}
+export function useArenaDiscordIdentityUserCountQuery<TData = Uint128>({
+  client,
+  options
+}: ArenaDiscordIdentityUserCountQuery<TData>) {
+  return useQuery<Uint128, Error, TData>(arenaDiscordIdentityQueryKeys.userCount(client?.contractAddress), () => client ? client.userCount() : Promise.reject(new Error("Invalid client")), {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });

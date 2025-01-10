@@ -1,108 +1,139 @@
-import TokenInfo from "@/components/TokenInfo";
-import {
-	getLocalTimeZone,
-	now,
-	parseAbsoluteToLocal,
-} from "@internationalized/date";
 import {
 	Button,
 	ButtonGroup,
-	DatePicker,
 	Input,
+	Select,
+	SelectItem,
 	useDisclosure,
 } from "@nextui-org/react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
-import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
-import { preprocessInput } from "~/helpers/SchemaHelpers";
+import TokenInfo from "@/components/TokenInfo";
 import EntryFeeForm from "./EntryFeeForm";
+import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
+import { DurationUnits } from "~/config/schemas/DurationSchema";
 
 const EnrollmentInformationForm = () => {
-	const { control, setValue } = useFormContext<CreateCompetitionFormValues>();
+	const {
+		control,
+		setValue,
+		formState: { isSubmitting },
+	} = useFormContext<CreateCompetitionFormValues>();
+	const entryFee = useWatch({ control, name: "enrollmentInfo.entryFee" });
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-	const entryFee = useWatch({ control, name: "enrollmentInfo.entryFee" });
-	const competitionExpiration = useWatch({
-		control,
-		name: "expiration.at_time",
-	});
-
-	console.log(competitionExpiration);
-
 	return (
-		<div className="space-y-6">
-			<h2 className="font-semibold text-lg">Enrollment Information</h2>
-			<div className="space-y-6">
-				<div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+		<div className="flex flex-col gap-6">
+			<div className="flex flex-col gap-4">
+				{/* Member Limits */}
+				<Controller
+					name="enrollmentInfo.minMembers"
+					control={control}
+					render={({ field, fieldState: { error } }) => (
+						<Input
+							{...field}
+							type="number"
+							label="Minimum Members"
+							placeholder="Enter the minimum number of members"
+							isDisabled={isSubmitting}
+							isInvalid={!!error}
+							errorMessage={error?.message}
+						/>
+					)}
+				/>
+
+				<Controller
+					name="enrollmentInfo.maxMembers"
+					control={control}
+					render={({ field, fieldState: { error } }) => (
+						<Input
+							{...field}
+							type="number"
+							label="Maximum Members"
+							placeholder="Enter the maximum number of members"
+							isDisabled={isSubmitting}
+							isInvalid={!!error}
+							errorMessage={error?.message}
+							isRequired
+						/>
+					)}
+				/>
+
+				<Controller
+					name="enrollmentInfo.requiredTeamSize"
+					control={control}
+					render={({ field, fieldState: { error } }) => (
+						<Input
+							{...field}
+							max="30"
+							type="number"
+							label="Required Team Size"
+							placeholder="Enter the required team size"
+							isDisabled={isSubmitting}
+							isInvalid={!!error}
+							errorMessage={error?.message}
+						/>
+					)}
+				/>
+
+				{/* Duration Before */}
+				<div className="flex flex-row gap-4">
 					<Controller
-						name="enrollmentInfo.minMembers"
 						control={control}
+						name="enrollmentInfo.duration_before.amount"
 						render={({ field, fieldState: { error } }) => (
 							<Input
 								{...field}
 								type="number"
-								label="Minimum Members"
-								placeholder="Enter minimum members"
+								label="Registration Deadline"
+								description="The time before the competition"
+								isDisabled={isSubmitting}
 								isInvalid={!!error}
 								errorMessage={error?.message}
-								description="The minimum number of participants required"
 								value={field.value?.toString()}
-								onChange={(e) =>
-									field.onChange(preprocessInput(e.target.value))
-								}
+								onChange={(e) => field.onChange(Number(e.target.value))}
+								isRequired
+								className="flex-1"
 							/>
 						)}
 					/>
+
 					<Controller
-						name="enrollmentInfo.maxMembers"
 						control={control}
+						name="enrollmentInfo.duration_before.units"
 						render={({ field, fieldState: { error } }) => (
-							<Input
+							<Select
 								{...field}
-								type="number"
-								label="Maximum Members"
-								placeholder="Enter maximum members"
+								label="Duration Units"
+								isDisabled={isSubmitting}
 								isInvalid={!!error}
 								errorMessage={error?.message}
 								isRequired
-								description="The maximum number of participants allowed"
-								value={field.value.toString()}
-								onChange={(e) =>
-									field.onChange(Number.parseInt(e.target.value))
-								}
-							/>
-						)}
-					/>
-					<Controller
-						name="enrollmentInfo.requiredTeamSize"
-						control={control}
-						render={({ field, fieldState: { error } }) => (
-							<Input
-								{...field}
-								max="30"
-								type="number"
-								label="Require Team Size"
-								placeholder="Enter the required team size"
-								isInvalid={!!error}
-								errorMessage={error?.message}
-								description="The number of members per team"
-								value={field.value?.toString()}
-								onChange={(e) =>
-									field.onChange(preprocessInput(e.target.value))
-								}
-							/>
+								className="flex-1"
+								selectedKeys={[field.value]}
+							>
+								{DurationUnits.map((unit) => (
+									<SelectItem key={unit} value={unit}>
+										{unit.charAt(0).toUpperCase() + unit.slice(1)}
+									</SelectItem>
+								))}
+							</Select>
 						)}
 					/>
 				</div>
-				<div>
-					<h3 className="mb-2 font-medium text-md">Entry Fee</h3>
+			</div>
+
+			{/* Entry Fee */}
+			<div className="flex flex-col gap-2">
+				<h3 className="font-medium">Entry Fee</h3>
+				<div className="flex items-center justify-between">
 					{entryFee ? (
-						<div className="flex items-center justify-between">
+						<>
 							<TokenInfo
 								amount={BigInt(entryFee.amount)}
 								denomOrAddress={entryFee.denom}
 								isNative={true}
 							/>
-							<ButtonGroup>
+							<ButtonGroup isDisabled={isSubmitting}>
 								<Button
 									onPress={() => setValue("enrollmentInfo.entryFee", undefined)}
 								>
@@ -110,34 +141,15 @@ const EnrollmentInformationForm = () => {
 								</Button>
 								<Button onPress={onOpen}>Update Fee</Button>
 							</ButtonGroup>
-						</div>
+						</>
 					) : (
-						<Button onPress={onOpen}>Set Entry Fee</Button>
+						<Button onPress={onOpen} isDisabled={isSubmitting}>
+							Set Entry Fee
+						</Button>
 					)}
 				</div>
-
-				<div>
-					<Controller
-						name="enrollmentInfo.enrollment_expiration.at_time"
-						control={control}
-						render={({ field, fieldState: { error } }) => (
-							<DatePicker
-								showMonthAndYearPickers
-								label="Enrollment Expiration"
-								value={parseAbsoluteToLocal(field.value)}
-								onChange={(x) => field.onChange(x?.toAbsoluteString())}
-								minValue={now(getLocalTimeZone())}
-								maxValue={parseAbsoluteToLocal(competitionExpiration)}
-								isInvalid={!!error}
-								errorMessage={error?.message}
-								isRequired
-								description="The deadline for enrolling in the competition"
-								className="max-w-xs"
-							/>
-						)}
-					/>
-				</div>
 			</div>
+
 			<EntryFeeForm
 				isOpen={isOpen}
 				onOpenChange={onOpenChange}

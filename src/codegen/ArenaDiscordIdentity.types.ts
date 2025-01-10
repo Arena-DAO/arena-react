@@ -71,12 +71,16 @@ export type QueryMsg = {
     addr: string;
   };
 } | {
+  user_count: {};
+} | {
   ownership: {};
 };
 export type MigrateMsg = {
   from_compatible: {};
 } | {
   set_has_received: {};
+} | {
+  set_user_count: {};
 };
 export type Addr = string;
 export type ArrayOfAddr = Addr[];

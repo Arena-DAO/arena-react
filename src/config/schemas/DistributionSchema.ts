@@ -17,7 +17,7 @@ const DistributionSchema = z
 				});
 			}
 			const sum = val.member_percentages.reduce(
-				(acc, cur) => acc + cur.percentage,
+				(acc, cur) => acc + Number(cur.percentage),
 				0,
 			);
 			if (Math.abs(sum - 1) > 0.000001) {

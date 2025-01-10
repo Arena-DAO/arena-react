@@ -21,7 +21,8 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import type React from "react";
+import { useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { BsPercent } from "react-icons/bs";
 import { FiPlus, FiTrash } from "react-icons/fi";
@@ -113,20 +114,6 @@ const PaymentRegistry: React.FC = () => {
 		control,
 		name: "distribution.remainder_addr",
 	});
-
-	React.useEffect(() => {
-		if (distribution) {
-			reset({
-				distribution: {
-					...distribution,
-					member_percentages: distribution.member_percentages.map((mp) => ({
-						...mp,
-						percentage: Number(mp.percentage) * 100,
-					})),
-				},
-			});
-		}
-	}, [distribution, reset]);
 
 	const onSubmit = async (values: PaymentRegistryFormValues) => {
 		try {
@@ -388,12 +375,6 @@ const PaymentRegistry: React.FC = () => {
 															endContent={<BsPercent />}
 															classNames={{ input: "text-right" }}
 															{...field}
-															value={field.value?.toString()}
-															onChange={(e) =>
-																field.onChange(
-																	Number.parseFloat(e.target.value),
-																)
-															}
 															className="min-w-32 max-w-40"
 														/>
 													)}
@@ -422,7 +403,7 @@ const PaymentRegistry: React.FC = () => {
 							<Progress
 								aria-label="Total Percentage"
 								value={percentages.reduce(
-									(acc, x) => acc + (x.percentage as number),
+									(acc, x) => acc + Number(x.percentage),
 									0,
 								)}
 								color="primary"
@@ -431,7 +412,7 @@ const PaymentRegistry: React.FC = () => {
 						</CardBody>
 						<CardFooter className="flex justify-between">
 							<Button
-								onPress={() => append({ addr: "", percentage: 0 })}
+								onPress={() => append({ addr: "", percentage: "0" })}
 								aria-label="Add Recipient"
 								startContent={<FiPlus />}
 								isDisabled={isSubmitting}

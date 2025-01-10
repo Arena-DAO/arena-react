@@ -128,17 +128,13 @@ const LeagueInformationForm = () => {
 									</div>
 								}
 								classNames={{ input: "text-right" }}
-								value={field.value?.toString()}
-								onChange={(e) =>
-									field.onChange(Number.parseFloat(e.target.value))
-								}
 								description={`Percentage of the prize pool for the ${getNumberWithOrdinal(index + 1)} place`}
 							/>
 						)}
 					/>
 				))}
 				<Button
-					onPress={() => append({ percent: 0 })}
+					onPress={() => append({ percent: "0" })}
 					startContent={<FiPlus />}
 				>
 					Add Distribution

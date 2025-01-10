@@ -12,9 +12,9 @@ export type ExecuteMsg = {
     category_id?: Uint128 | null;
     competition_info: CompetitionInfoMsg;
     competition_type: CompetitionType;
+    duration_before: number;
     entry_fee?: Coin | null;
     escrow_contract_info: EscrowContractInfo;
-    expiration: Expiration;
     group_contract_info: ModuleInstantiateInfo;
     max_members: Uint64;
     min_members?: Uint64 | null;
@@ -47,13 +47,6 @@ export type ExecuteMsg = {
   update_ownership: Action;
 };
 export type Uint128 = string;
-export type Expiration = {
-  at_height: number;
-} | {
-  at_time: Timestamp;
-} | {
-  never: {};
-};
 export type Timestamp = Uint64;
 export type Uint64 = string;
 export type CompetitionType = {
@@ -104,10 +97,18 @@ export type Action = {
     new_owner: string;
   };
 } | "accept_ownership" | "renounce_ownership";
+export type Expiration = {
+  at_height: number;
+} | {
+  at_time: Timestamp;
+} | {
+  never: {};
+};
 export interface CompetitionInfoMsg {
   banner?: string | null;
+  date: Timestamp;
   description: string;
-  expiration: Expiration;
+  duration: number;
   name: string;
   rules?: string[] | null;
   rulesets?: Uint128[] | null;
@@ -168,9 +169,7 @@ export type MigrateMsg = {
     enrollment_id: Uint128;
   };
 } | {
-  from_v2_2: {
-    escrow_id: number;
-  };
+  from_v2_3: {};
 };
 export type Addr = string;
 export interface SudoMsg {
@@ -182,12 +181,11 @@ export interface EnrollmentEntryResponse {
   competition_module: Addr;
   competition_type: CompetitionType;
   current_members: Uint64;
+  duration_before: number;
   entry_fee?: Coin | null;
-  expiration: Expiration;
   has_finalized: boolean;
   host: Addr;
   id: Uint128;
-  is_expired: boolean;
   max_members: Uint64;
   min_members?: Uint64 | null;
   require_team_size?: number | null;
@@ -196,9 +194,10 @@ export interface CompetitionInfoResponse {
   additional_layered_fees?: FeeInformationForAddr[] | null;
   banner?: string | null;
   competition_id?: Uint128 | null;
+  date: Timestamp;
   description: string;
+  duration: number;
   escrow: Addr;
-  expiration: Expiration;
   group_contract: Addr;
   name: string;
   rules?: string[] | null;
