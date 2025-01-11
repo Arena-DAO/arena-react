@@ -74,7 +74,7 @@ const TournamentInformationForm = () => {
 						render={({ field }) => (
 							<Switch
 								{...field}
-								value={field?.value?.toString()}
+								value={field.value?.toString()}
 								isSelected={field.value}
 								onChange={field.onChange}
 								isDisabled={isSubmitting}
