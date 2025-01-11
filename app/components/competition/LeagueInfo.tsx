@@ -13,7 +13,7 @@ const LeagueInfo: React.FC<LeagueInfoProps> = ({ league }) => {
 		100;
 
 	return (
-		<div className="flex flex-col gap-3">
+		<div className="flex flex-col gap-2">
 			<div className="flex justify-between text-sm">
 				<span>
 					<span className="font-semibold">Teams:</span> {league.extension.teams}

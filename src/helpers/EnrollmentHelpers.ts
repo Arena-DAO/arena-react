@@ -13,7 +13,7 @@ export const calculateCurrentPool = (
 
 export const calculateMinMembers = (type: CompetitionType): number => {
 	if ("wager" in type) return 2;
-	if ("league" in type) return Math.max(type.league.distribution.length, 2);
+	if ("league" in type) return Math.max(type.league.distribution.length, 3);
 	if ("tournament" in type) {
 		const eliminationType = type.tournament.elimination_type;
 		return "double_elimination" === eliminationType

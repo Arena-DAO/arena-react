@@ -103,10 +103,17 @@ const ViewCompetition = ({
 					</CardFooter>
 				</Card>
 
-				<CompetitionDates
-					competitionDateNanos={competition.date}
-					duration={competition.duration}
-				/>
+				<Card>
+					<CardHeader>
+						<h2 className="font-semibold text-xl">Competition Dates</h2>
+					</CardHeader>
+					<CardBody>
+						<CompetitionDates
+							competitionDateNanos={competition.date}
+							duration={competition.duration}
+						/>
+					</CardBody>
+				</Card>
 			</div>
 
 			<EscrowSection

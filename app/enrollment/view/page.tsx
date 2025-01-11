@@ -119,11 +119,18 @@ const EnrollmentView = () => {
 						</CardFooter>
 					</Card>
 
-					<CompetitionDates
-						competitionDateNanos={enrollment.competition_info.date}
-						duration={enrollment.competition_info.duration}
-						deadlineBefore={enrollment.duration_before}
-					/>
+					<Card>
+						<CardHeader>
+							<h2 className="font-semibold text-xl">Competition Dates</h2>
+						</CardHeader>
+						<CardBody className="gap-4">
+							<CompetitionDates
+								competitionDateNanos={enrollment.competition_info.date}
+								duration={enrollment.competition_info.duration}
+								deadlineBefore={enrollment.duration_before}
+							/>
+						</CardBody>
+					</Card>
 				</div>
 
 				<EscrowSection
