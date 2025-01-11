@@ -24,6 +24,7 @@ export interface ArenaDiscordIdentityReadOnlyInterface {
   }: {
     addr: string;
   }) => Promise<ArrayOfDiscordConnection>;
+  userCount: () => Promise<Uint128>;
   ownership: () => Promise<OwnershipForString>;
 }
 export class ArenaDiscordIdentityQueryClient implements ArenaDiscordIdentityReadOnlyInterface {
@@ -35,6 +36,7 @@ export class ArenaDiscordIdentityQueryClient implements ArenaDiscordIdentityRead
     this.discordProfile = this.discordProfile.bind(this);
     this.connectedWallets = this.connectedWallets.bind(this);
     this.discordConnections = this.discordConnections.bind(this);
+    this.userCount = this.userCount.bind(this);
     this.ownership = this.ownership.bind(this);
   }
   discordProfile = async ({
@@ -68,6 +70,11 @@ export class ArenaDiscordIdentityQueryClient implements ArenaDiscordIdentityRead
       discord_connections: {
         addr
       }
+    });
+  };
+  userCount = async (): Promise<Uint128> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      user_count: {}
     });
   };
   ownership = async (): Promise<OwnershipForString> => {

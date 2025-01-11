@@ -67,12 +67,10 @@ const MembersAndDuesForm = () => {
 					onRemove={() => removeDue(index)}
 				/>
 			))}
-			<div className="flex flex-col space-y-4">
-				<div className="flex">
-					<Button onPress={handleAddDue} startContent={<FiPlus />}>
-						Add Due
-					</Button>
-				</div>
+			<div className="flex">
+				<Button onPress={handleAddDue} startContent={<FiPlus />}>
+					Add Due
+				</Button>
 			</div>
 
 			<Controller
@@ -81,7 +79,7 @@ const MembersAndDuesForm = () => {
 				render={({ field }) => (
 					<Switch
 						{...field}
-						value={field?.value?.toString()}
+						value={field.value?.toString()}
 						isSelected={field.value}
 						onValueChange={field.onChange}
 					>
@@ -108,7 +106,7 @@ const MembersAndDuesForm = () => {
 							onRemove={() => removeMember(index)}
 						/>
 					))}
-					<div className="flex flex-col space-y-4">
+					<div className="flex">
 						<Button
 							onPress={() => appendMember({ address: "" })}
 							startContent={<FiPlus />}

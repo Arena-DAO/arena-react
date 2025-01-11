@@ -23,12 +23,13 @@ import type { PropsWithChildren } from "react";
 import { BsYinYang } from "react-icons/bs";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { useEnv } from "~/hooks/useEnv";
+import { useIsExpired } from "~/hooks/useIsExpired";
 import type { CompetitionResponse } from "~/types/CompetitionResponse";
 import type { CompetitionType } from "~/types/CompetitionType";
 import CompetitionStatusDisplay from "../CompetitionStatusDisplay";
-import ExpirationDisplay from "../ExpirationDisplay";
 import GroupMembersModal from "../GroupMembersModal";
 import CompetitionActions from "./components/CompetitionActions";
+import CompetitionDates from "./components/CompetitionDates";
 import EscrowSection from "./components/EscrowSection";
 import EvidenceSection from "./components/EvidenceSection";
 import ResultSection from "./components/ResultSection";
@@ -49,6 +50,7 @@ const ViewCompetition = ({
 	children,
 }: ViewCompetitionProps) => {
 	const env = useEnv();
+	const isExpired = useIsExpired(competition.date, competition.duration);
 
 	return (
 		<div className="space-y-6">
@@ -106,17 +108,20 @@ const ViewCompetition = ({
 
 				<Card>
 					<CardHeader>
-						<h2 className="font-semibold text-xl">Expiration</h2>
+						<h2 className="font-semibold text-xl">Competition Dates</h2>
 					</CardHeader>
 					<CardBody>
-						<div className="flex items-center justify-between">
-							<ExpirationDisplay expiration={competition.expiration} />
-							<CompetitionStatusDisplay
-								status={competition.status}
-								isExpired={competition.is_expired}
-							/>
-						</div>
+						<CompetitionDates
+							competitionDateNanos={competition.date}
+							duration={competition.duration}
+						/>
 					</CardBody>
+					<CardFooter>
+						<CompetitionStatusDisplay
+							status={competition.status}
+							isExpired={isExpired}
+						/>
+					</CardFooter>
 				</Card>
 			</div>
 

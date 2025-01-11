@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ExecuteMsg, Uint128, Expiration, Timestamp, Uint64, CompetitionType, Decimal, EliminationType, EscrowContractInfo, Binary, Admin, Action, CompetitionInfoMsg, Coin, FeeInformationForString, ModuleInstantiateInfo, MemberMsgForString, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, FeeInformationForAddr, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
+import { InstantiateMsg, ExecuteMsg, Uint128, Timestamp, Uint64, CompetitionType, Decimal, EliminationType, EscrowContractInfo, Binary, Admin, Action, Expiration, CompetitionInfoMsg, Coin, FeeInformationForString, ModuleInstantiateInfo, MemberMsgForString, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, FeeInformationForAddr, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
 import { ArenaCompetitionEnrollmentQueryClient, ArenaCompetitionEnrollmentClient } from "./ArenaCompetitionEnrollment.client";
 export const arenaCompetitionEnrollmentQueryKeys = {
   contract: ([{
@@ -255,6 +255,7 @@ export interface ArenaCompetitionEnrollmentWithdrawMutation {
   client: ArenaCompetitionEnrollmentClient;
   msg: {
     id: Uint128;
+    team?: string;
   };
   args?: {
     fee?: number | StdFee | "auto";
@@ -324,9 +325,9 @@ export interface ArenaCompetitionEnrollmentCreateEnrollmentMutation {
     categoryId?: Uint128;
     competitionInfo: CompetitionInfoMsg;
     competitionType: CompetitionType;
+    durationBefore: number;
     entryFee?: Coin;
     escrowContractInfo: EscrowContractInfo;
-    expiration: Expiration;
     groupContractInfo: ModuleInstantiateInfo;
     maxMembers: Uint64;
     minMembers?: Uint64;

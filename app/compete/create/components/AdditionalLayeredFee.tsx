@@ -43,8 +43,6 @@ const AdditionalLayeredFeeItem: React.FC<AdditionalLayeredFeeProps> = ({
 				render={({ field, fieldState: { error } }) => (
 					<Input
 						{...field}
-						value={field.value?.toString()}
-						onChange={(e) => field.onChange(Number.parseFloat(e.target.value))}
 						type="number"
 						label="Percentage"
 						placeholder="Enter percentage"

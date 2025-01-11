@@ -49,7 +49,6 @@ const TournamentInformationForm = () => {
 
 	return (
 		<div className="space-y-6">
-			<h3 className="font-semibold text-lg">Tournament Info</h3>
 			<div className="space-y-4">
 				<Controller
 					name="tournamentInfo.eliminationType"
@@ -75,7 +74,7 @@ const TournamentInformationForm = () => {
 						render={({ field }) => (
 							<Switch
 								{...field}
-								value={field?.value?.toString()}
+								value={field.value?.toString()}
 								isSelected={field.value}
 								onChange={field.onChange}
 								isDisabled={isSubmitting}
@@ -117,17 +116,13 @@ const TournamentInformationForm = () => {
 									</div>
 								}
 								classNames={{ input: "text-right" }}
-								value={field.value?.toString()}
-								onChange={(e) =>
-									field.onChange(Number.parseFloat(e.target.value))
-								}
 								isDisabled={isSubmitting}
 							/>
 						)}
 					/>
 				))}
 				<Button
-					onPress={() => append({ percent: 0 })}
+					onPress={() => append({ percent: "0" })}
 					startContent={<FiPlus />}
 					isDisabled={isSubmitting}
 				>

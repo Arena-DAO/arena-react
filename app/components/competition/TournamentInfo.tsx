@@ -13,7 +13,7 @@ const TournamentInfo: React.FC<TournamentInfoProps> = ({ tournament }) => {
 		100;
 
 	return (
-		<div className="flex flex-col gap-3">
+		<div className="flex flex-col gap-2">
 			<div className="text-sm">
 				<span className="font-semibold">Elimination Type:</span>{" "}
 				{tournament.extension.elimination_type === "double_elimination"

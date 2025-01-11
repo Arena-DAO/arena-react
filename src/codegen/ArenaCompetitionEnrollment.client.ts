@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ExecuteMsg, Uint128, Expiration, Timestamp, Uint64, CompetitionType, Decimal, EliminationType, EscrowContractInfo, Binary, Admin, Action, CompetitionInfoMsg, Coin, FeeInformationForString, ModuleInstantiateInfo, MemberMsgForString, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, FeeInformationForAddr, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
+import { InstantiateMsg, ExecuteMsg, Uint128, Timestamp, Uint64, CompetitionType, Decimal, EliminationType, EscrowContractInfo, Binary, Admin, Action, Expiration, CompetitionInfoMsg, Coin, FeeInformationForString, ModuleInstantiateInfo, MemberMsgForString, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, FeeInformationForAddr, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
 export interface ArenaCompetitionEnrollmentReadOnlyInterface {
   contractAddress: string;
   enrollments: ({
@@ -105,9 +105,9 @@ export interface ArenaCompetitionEnrollmentInterface extends ArenaCompetitionEnr
     categoryId,
     competitionInfo,
     competitionType,
+    durationBefore,
     entryFee,
     escrowContractInfo,
-    expiration,
     groupContractInfo,
     maxMembers,
     minMembers,
@@ -116,9 +116,9 @@ export interface ArenaCompetitionEnrollmentInterface extends ArenaCompetitionEnr
     categoryId?: Uint128;
     competitionInfo: CompetitionInfoMsg;
     competitionType: CompetitionType;
+    durationBefore: number;
     entryFee?: Coin;
     escrowContractInfo: EscrowContractInfo;
-    expiration: Expiration;
     groupContractInfo: ModuleInstantiateInfo;
     maxMembers: Uint64;
     minMembers?: Uint64;
@@ -137,9 +137,11 @@ export interface ArenaCompetitionEnrollmentInterface extends ArenaCompetitionEnr
     team?: string;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   withdraw: ({
-    id
+    id,
+    team
   }: {
     id: Uint128;
+    team?: string;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   forceWithdraw: ({
     id,
@@ -178,9 +180,9 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
     categoryId,
     competitionInfo,
     competitionType,
+    durationBefore,
     entryFee,
     escrowContractInfo,
-    expiration,
     groupContractInfo,
     maxMembers,
     minMembers,
@@ -189,9 +191,9 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
     categoryId?: Uint128;
     competitionInfo: CompetitionInfoMsg;
     competitionType: CompetitionType;
+    durationBefore: number;
     entryFee?: Coin;
     escrowContractInfo: EscrowContractInfo;
-    expiration: Expiration;
     groupContractInfo: ModuleInstantiateInfo;
     maxMembers: Uint64;
     minMembers?: Uint64;
@@ -202,9 +204,9 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
         category_id: categoryId,
         competition_info: competitionInfo,
         competition_type: competitionType,
+        duration_before: durationBefore,
         entry_fee: entryFee,
         escrow_contract_info: escrowContractInfo,
-        expiration,
         group_contract_info: groupContractInfo,
         max_members: maxMembers,
         min_members: minMembers,
@@ -238,13 +240,16 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
     }, fee_, memo_, funds_);
   };
   withdraw = async ({
-    id
+    id,
+    team
   }: {
     id: Uint128;
+    team?: string;
   }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       withdraw: {
-        id
+        id,
+        team
       }
     }, fee_, memo_, funds_);
   };

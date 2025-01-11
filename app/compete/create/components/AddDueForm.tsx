@@ -42,13 +42,17 @@ const DueFormSchema = z
 		denomOrAddress: z
 			.string()
 			.min(1, { message: "Denom or address is required" }),
-		amount: z.number().positive().optional(),
+		amount: z.coerce
+			.number()
+			.positive()
+			.optional()
+			.transform((x) => x?.toString()),
 		tokenIds: z.array(z.object({ id: z.string() })).optional(),
 	})
 	.superRefine((value, context) => {
 		if (
 			(value.tokenType === "cw20" || value.tokenType === "native") &&
-			(!value.amount || value.amount <= 0)
+			Number.isNaN(value.amount)
 		) {
 			context.addIssue({
 				path: ["amount"],
@@ -118,7 +122,7 @@ const AddDueForm: React.FC<AddDueFormProps> = ({
 		resolver: zodResolver(DueFormSchema),
 		defaultValues: {
 			tokenType: "native",
-			denomOrAddress: env.DEFAULT_NATIVE,
+			denomOrAddress: env.DEFAULT_NATIVE.toUpperCase(),
 			tokenIds: [],
 		},
 	});
@@ -200,7 +204,7 @@ const AddDueForm: React.FC<AddDueFormProps> = ({
 			{ denom: values.denomOrAddress, amount: values.amount.toString() },
 			cw20,
 		);
-		appendCw20({ address: token.denom, amount: BigInt(token.amount) });
+		appendCw20({ address: token.denom, amount: token.amount });
 	};
 
 	const handleNativeSubmission = async (values: DueFormValues) => {
@@ -223,7 +227,7 @@ const AddDueForm: React.FC<AddDueFormProps> = ({
 			{ denom: values.denomOrAddress, amount: values.amount.toString() },
 			native,
 		);
-		appendNative({ denom: token.denom, amount: BigInt(token.amount) });
+		appendNative({ denom: token.denom, amount: token.amount });
 	};
 
 	const handleCw721Submission = async (values: DueFormValues) => {
@@ -302,10 +306,6 @@ const AddDueForm: React.FC<AddDueFormProps> = ({
 									isDisabled={isSubmitting}
 									isInvalid={!!errors.amount}
 									errorMessage={errors.amount?.message}
-									value={field.value?.toString() || ""}
-									onChange={(e) =>
-										field.onChange(Number.parseFloat(e.target.value))
-									}
 								/>
 							)}
 						/>

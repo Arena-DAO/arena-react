@@ -1,93 +1,56 @@
+"use client";
+
+import { getLocalTimeZone, now } from "@internationalized/date";
 import {
-	type ZonedDateTime,
-	getLocalTimeZone,
-	now,
-	parseAbsoluteToLocal,
-} from "@internationalized/date";
-import {
-	Accordion,
-	AccordionItem,
 	Button,
 	DatePicker,
-	Image,
 	Input,
-	Radio,
-	RadioGroup,
+	Select,
+	SelectItem,
 	Textarea,
-	Tooltip,
 } from "@nextui-org/react";
-import NextImage from "next/image";
-import {
-	Controller,
-	useFieldArray,
-	useFormContext,
-	useWatch,
-} from "react-hook-form";
-import { FiInfo, FiPlus } from "react-icons/fi";
-import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
-import { withIpfsSupport } from "~/helpers/IPFSHelpers";
-import AdditionalLayeredFeeItem from "./AdditionalLayeredFee";
+import { Controller, useFormContext } from "react-hook-form";
+import { DurationUnits } from "~/config/schemas/DurationSchema";
 
-const BasicInformationForm = () => {
+const BasicInformationSection = () => {
 	const {
 		control,
 		formState: { isSubmitting },
-	} = useFormContext<CreateCompetitionFormValues>();
-	const competitionExpiration = useWatch({ control, name: "expiration" });
-	const {
-		fields: additionalFeeFields,
-		append: appendFee,
-		remove: removeFee,
-	} = useFieldArray({
-		control,
-		name: "additionalLayeredFees",
-	});
-	const bannerUrl = useWatch({ control, name: "banner" });
+	} = useFormContext();
 
 	return (
-		<div className="space-y-6">
+		<div className="flex flex-col gap-6">
 			<Controller
 				name="banner"
 				control={control}
 				render={({ field, fieldState: { error } }) => (
-					<div className="space-y-2">
-						<Input
-							{...field}
-							label="Banner URL"
-							placeholder="Enter banner image URL"
-							isInvalid={!!error}
-							errorMessage={error?.message}
-							description="Provide a URL for the banner image (aspect ratio 16:9 recommended)"
-						/>
-						{bannerUrl && (
-							<Image
-								as={NextImage}
-								removeWrapper
-								width="320"
-								height="180"
-								alt="Competition Banner"
-								// biome-ignore lint/style/noNonNullAssertion: not null
-								src={withIpfsSupport(bannerUrl)!}
-							/>
-						)}
-					</div>
+					<Input
+						{...field}
+						label="Banner Image URL"
+						placeholder="Enter the URL for your banner image (16:9 recommended)"
+						isDisabled={isSubmitting}
+						isInvalid={!!error}
+						errorMessage={error?.message}
+					/>
 				)}
 			/>
+
 			<Controller
 				name="name"
 				control={control}
 				render={({ field, fieldState: { error } }) => (
 					<Input
 						{...field}
-						label="Name"
-						placeholder="Enter competition name"
+						label="Competition Name"
+						placeholder="Enter a unique and memorable name"
 						isRequired
+						isDisabled={isSubmitting}
 						isInvalid={!!error}
 						errorMessage={error?.message}
-						description="Provide a unique and descriptive name for your competition"
 					/>
 				)}
 			/>
+
 			<Controller
 				name="description"
 				control={control}
@@ -96,154 +59,129 @@ const BasicInformationForm = () => {
 						{...field}
 						label="Description"
 						placeholder="Describe your competition"
+						isDisabled={isSubmitting}
 						isRequired
 						isInvalid={!!error}
 						errorMessage={error?.message}
-						description="Provide details about the competition"
+						minRows={4}
 					/>
 				)}
 			/>
+
 			<Controller
+				name="date"
 				control={control}
-				name="expiration"
-				render={({
-					field,
-					fieldState: { error },
-					formState: { defaultValues },
-				}) => (
-					<RadioGroup
-						label="Expiration"
-						orientation="horizontal"
+				render={({ field, fieldState: { error } }) => (
+					<DatePicker
+						{...field}
+						showMonthAndYearPickers
+						minValue={now(getLocalTimeZone())}
+						placeholderValue={now(getLocalTimeZone())}
 						isDisabled={isSubmitting}
-						defaultValue="at_time"
+						granularity="minute"
+						label="Date"
+						isRequired
 						isInvalid={!!error}
 						errorMessage={error?.message}
-						onValueChange={(value: string) => {
-							switch (value) {
-								case "never":
-									field.onChange({ never: {} });
-									break;
-								case "at_time":
-									field.onChange({
-										at_time:
-											defaultValues?.expiration &&
-											"at_time" in defaultValues.expiration &&
-											defaultValues.expiration.at_time
-												? defaultValues.expiration.at_time
-												: new Date().toString(),
-									});
-									break;
-								case "at_height":
-									field.onChange({ at_height: 0 });
-									break;
-							}
-						}}
-						description="Select when the competition should expire"
-					>
-						<Radio value="at_time">At Time</Radio>
-						<Radio value="at_height">At Height</Radio>
-						<Radio value="never">Never</Radio>
-					</RadioGroup>
+					/>
 				)}
 			/>
-			{"at_height" in competitionExpiration && (
+
+			<div className="flex flex-row gap-4">
 				<Controller
 					control={control}
-					name="expiration.at_height"
+					name="duration.amount"
 					render={({ field, fieldState: { error } }) => (
 						<Input
-							className="col-span-12 sm:col-span-6 lg:col-span-4"
-							label="Height"
+							{...field}
 							type="number"
+							label="Duration"
+							description="Duration needed for competition to be fully processed"
 							isDisabled={isSubmitting}
 							isInvalid={!!error}
 							errorMessage={error?.message}
 							isRequired
-							{...field}
-							value={field.value.toString()}
-							onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-								field.onChange(Number.parseInt(e.target.value))
-							}
-							description="Specify the block height at which the competition should expire"
+							className="flex-1"
+							step="1"
+							min="1"
 						/>
 					)}
 				/>
-			)}
-			{"at_time" in competitionExpiration && (
+
 				<Controller
 					control={control}
-					name="expiration.at_time"
+					name="duration.units"
 					render={({ field, fieldState: { error } }) => (
-						<DatePicker
-							showMonthAndYearPickers
-							className="col-span-12 sm:col-span-6 lg:col-span-4"
-							label="Time"
+						<Select
+							{...field}
+							label="Units"
 							isDisabled={isSubmitting}
 							isInvalid={!!error}
 							errorMessage={error?.message}
 							isRequired
-							minValue={parseAbsoluteToLocal(
-								now(getLocalTimeZone()).toAbsoluteString(),
-							)}
-							{...field}
-							value={parseAbsoluteToLocal(field.value)}
-							onChange={(x: ZonedDateTime | null) =>
-								field.onChange(x?.toAbsoluteString())
-							}
-							description="Select the date and time when the competition should expire"
-						/>
+							className="flex-1"
+							selectedKeys={[field.value]}
+						>
+							{DurationUnits.map((unit) => (
+								<SelectItem key={unit} value={unit}>
+									{unit.charAt(0).toUpperCase() + unit.slice(1)}
+								</SelectItem>
+							))}
+						</Select>
 					)}
 				/>
-			)}
-			<Accordion variant="bordered">
-				<AccordionItem
-					key="1"
-					aria-label="Additional Layered Fees"
-					title={
-						<div className="flex items-center">
-							Additional Layered Fees
-							<Tooltip content="Allocate layered fees after the platform tax">
-								<span className="ml-2 cursor-help">
-									<FiInfo />
-								</span>
-							</Tooltip>
-						</div>
-					}
-					classNames={{ title: "text-medium", content: "gap-2" }}
-				>
-					{additionalFeeFields.map((field, index) => (
-						<AdditionalLayeredFeeItem
-							key={field.id}
-							index={index}
-							remove={removeFee}
-						/>
-					))}
-					<Button
-						onPress={() => appendFee({ addr: "", percentage: 0 })}
-						startContent={<FiPlus />}
-					>
-						Add Fee
-					</Button>
-				</AccordionItem>
-			</Accordion>
+			</div>
 			<Controller
 				name="competitionType"
 				control={control}
 				render={({ field }) => (
-					<RadioGroup
-						{...field}
-						label="Type"
-						orientation="horizontal"
-						description="Choose the format of your competition"
-					>
-						<Radio value="wager">Wager</Radio>
-						<Radio value="league">League</Radio>
-						<Radio value="tournament">Tournament</Radio>
-					</RadioGroup>
+					<div className="space-y-2">
+						<div className="block font-medium text-sm">Competition Type</div>
+						<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+							{[
+								{
+									value: "wager",
+									label: "Wager",
+									emoji: "🎲",
+									desc: "Simple competition with wagering",
+								},
+								{
+									value: "league",
+									label: "League",
+									emoji: "🥇",
+									desc: "Round-robin style matches",
+								},
+								{
+									value: "tournament",
+									label: "Tournament",
+									emoji: "🏆",
+									desc: "Elimination brackets",
+								},
+							].map(({ value, label, emoji, desc }) => (
+								<Button
+									key={value}
+									isDisabled={isSubmitting}
+									onPress={() => field.onChange(value)}
+									variant="bordered"
+									className={`flex min-h-40 flex-col items-center rounded-xl border-2 p-6 transition-all ${
+										field.value === value
+											? "border-primary bg-primary/10"
+											: "border-default-200 hover:border-primary/50"
+									}`}
+								>
+									<span className="mb-3 text-4xl">{emoji}</span>
+									<h3 className="font-semibold text-lg">{label}</h3>
+									<p className="mt-1 text-center text-default-500 text-sm">
+										{desc}
+									</p>
+								</Button>
+							))}
+						</div>
+					</div>
 				)}
 			/>
 		</div>
 	);
 };
 
-export default BasicInformationForm;
+export default BasicInformationSection;

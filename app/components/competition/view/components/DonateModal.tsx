@@ -31,7 +31,10 @@ import { useEnv } from "~/hooks/useEnv";
 
 const donateFormSchema = z.object({
 	denom: z.string().min(1, "Denom is required"),
-	amount: z.number().positive("Amount must be greater than 0"),
+	amount: z.coerce
+		.number()
+		.positive("Amount must be greater than 0")
+		.transform((x) => x.toString()),
 });
 
 type DonateFormData = z.infer<typeof donateFormSchema>;
@@ -170,10 +173,6 @@ const DonateModal: React.FC<DonateModalProps> = ({ escrow }) => {
 										errorMessage={errors.amount?.message}
 										isInvalid={!!errors.amount}
 										isDisabled={isSubmitting}
-										value={field.value?.toString() || ""}
-										onChange={(e) =>
-											field.onChange(Number.parseFloat(e.target.value))
-										}
 									/>
 								)}
 							/>

@@ -4,6 +4,7 @@ import { useChain } from "@cosmos-kit/react";
 import type React from "react";
 import { isActive } from "~/helpers/ArenaHelpers";
 import { useEnv } from "~/hooks/useEnv";
+import { useIsExpired } from "~/hooks/useIsExpired";
 import type { CompetitionResponse } from "~/types/CompetitionResponse";
 import type { CompetitionType } from "~/types/CompetitionType";
 import EditStatTypes from "./EditStatTypes";
@@ -25,6 +26,7 @@ const CompetitionActions: React.FC<CompetitionActionsProps> = ({
 }) => {
 	const env = useEnv();
 	const { address } = useChain(env.CHAIN);
+	const isExpired = useIsExpired(competition.date, competition.duration);
 
 	const showEditStatTypes =
 		(address === competition.host || address === env.ARENA_DAO_ADDRESS) &&
@@ -39,7 +41,7 @@ const CompetitionActions: React.FC<CompetitionActionsProps> = ({
 		address === competition.host || address === env.ARENA_DAO_ADDRESS;
 
 	const showExpiredProcessForm =
-		competition.is_expired &&
+		isExpired &&
 		competition.status !== "inactive" &&
 		competition.status !== "pending";
 

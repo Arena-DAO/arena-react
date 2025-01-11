@@ -1,9 +1,9 @@
-import { Badge, Chip } from "@nextui-org/react";
+import { Badge, Chip, type ChipProps } from "@nextui-org/react";
 import type React from "react";
 import { BsHourglassBottom } from "react-icons/bs";
 
-interface EnrollmentStatusDisplayProps {
-	hasTriggeredExpiration: boolean;
+interface EnrollmentStatusDisplayProps extends ChipProps {
+	hasFinalized: boolean;
 	isExpired: boolean;
 	currentMembers: number;
 	maxMembers: number;
@@ -11,11 +11,12 @@ interface EnrollmentStatusDisplayProps {
 }
 
 const EnrollmentStatusDisplay: React.FC<EnrollmentStatusDisplayProps> = ({
-	hasTriggeredExpiration,
+	hasFinalized: hasTriggeredExpiration,
 	isExpired,
 	currentMembers,
 	maxMembers,
 	competitionId,
+	...chipProps
 }) => {
 	let status = "Open";
 	let color: "secondary" | "success" | "default" | "warning" = "secondary";
@@ -41,7 +42,9 @@ const EnrollmentStatusDisplay: React.FC<EnrollmentStatusDisplayProps> = ({
 			aria-label="Expired"
 			isInvisible={!isExpired || hasTriggeredExpiration}
 		>
-			<Chip color={color}>{status}</Chip>
+			<Chip color={color} {...chipProps}>
+				{status}
+			</Chip>
 		</Badge>
 	);
 };

@@ -1,4 +1,4 @@
-import { Badge, Chip } from "@nextui-org/react";
+import { Badge, Chip, type ChipProps } from "@nextui-org/react";
 import type React from "react";
 import { BsHourglassBottom } from "react-icons/bs";
 import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
@@ -8,7 +8,7 @@ import {
 	isActive,
 } from "~/helpers/ArenaHelpers";
 
-interface CompetitionStatusDisplayProps {
+interface CompetitionStatusDisplayProps extends ChipProps {
 	status: CompetitionStatus;
 	isExpired: boolean;
 }
@@ -16,6 +16,7 @@ interface CompetitionStatusDisplayProps {
 const CompetitionStatusDisplay: React.FC<CompetitionStatusDisplayProps> = ({
 	status,
 	isExpired,
+	...chipProps
 }) => {
 	return (
 		<Badge
@@ -25,7 +26,9 @@ const CompetitionStatusDisplay: React.FC<CompetitionStatusDisplayProps> = ({
 			aria-label="Expired"
 			isInvisible={!(isExpired && (isActive(status) || status === "pending"))}
 		>
-			<Chip color={getStatusColor(status)}>{getStatusName(status)}</Chip>
+			<Chip color={getStatusColor(status)} {...chipProps}>
+				{getStatusName(status)}
+			</Chip>
 		</Badge>
 	);
 };

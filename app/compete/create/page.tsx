@@ -1,29 +1,24 @@
 "use client";
 
-import { type ExecuteResult, toBinary } from "@cosmjs/cosmwasm-stargate";
+import {
+	type ExecuteResult,
+	type SigningCosmWasmClient,
+	toBinary,
+} from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {} from "@internationalized/date";
 import {
 	Button,
 	Card,
 	CardBody,
-	Divider,
+	CardHeader,
 	Switch,
-	Tab,
-	Tabs,
+	Tooltip,
 } from "@nextui-org/react";
-import { addMonths, addWeeks } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import {
-	FiAward,
-	FiBookOpen,
-	FiChevronLeft,
-	FiChevronRight,
-	FiSettings,
-	FiUsers,
-} from "react-icons/fi";
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import { FiInfo } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import type { CompetitionType } from "~/codegen/ArenaCompetitionEnrollment.types";
@@ -40,25 +35,21 @@ import {
 	type CreateCompetitionFormValues,
 	CreateCompetitionSchema,
 } from "~/config/schemas/CreateCompetitionSchema";
+import { parseToNanos } from "~/config/schemas/TimestampSchema";
 import {
 	CategoryProvider,
 	useCategoryContext,
 } from "~/contexts/CategoryContext";
-import {
-	convertToEscrowInstantiate,
-	convertToExpiration,
-} from "~/helpers/SchemaHelpers";
+import { convertToEscrowInstantiate } from "~/helpers/SchemaHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import BasicInformationForm from "./components/BasicInformationForm";
 import MembersAndDuesForm from "./components/DirectParticipationForm";
 import EnrollmentInformationForm from "./components/EnrollmentInformationForm";
 import LeagueInformationForm from "./components/LeagueInformationForm";
-import ReviewCompetition from "./components/ReviewCompetition";
 import RulesAndRulesetsForm from "./components/RulesAndRulesetsForm";
 import TournamentInformationForm from "./components/TournamentInformationForm";
 
 const CreateCompetitionPage = () => {
-	const [activeTab, setActiveTab] = useState(0);
 	const env = useEnv();
 	const params = useSearchParams();
 	const category = useCategoryContext(params.get("category"));
@@ -69,449 +60,400 @@ const CreateCompetitionPage = () => {
 		resolver: zodResolver(CreateCompetitionSchema),
 		defaultValues: {
 			competitionType: "wager",
-			useEnrollments: false,
+			useEnrollments: true,
 			name: "",
 			description: "",
-			expiration: { at_time: addMonths(new Date(), 1).toISOString() },
+			duration: { units: "days", amount: "1" },
 			rules: [{ rule: "" }],
 			rulesets: [],
 			additionalLayeredFees: [],
-			directParticipation: {
-				membersFromDues: true,
-			},
 			leagueInfo: {
 				matchWinPoints: 3,
 				matchDrawPoints: 1,
 				matchLosePoints: 0,
-				distribution: [{ percent: 100 }],
+				distribution: [{ percent: "100" }],
 			},
 			tournamentInfo: {
 				eliminationType: "single",
 				playThirdPlace: true,
-				distribution: [{ percent: 100 }],
+				distribution: [{ percent: "100" }],
 			},
 			enrollmentInfo: {
-				maxMembers: 10,
-				enrollment_expiration: {
-					at_time: addWeeks(new Date(), 1).toISOString(),
-				},
+				maxMembers: "16",
+				duration_before: { units: "minutes", amount: "30" },
 			},
 		},
 	});
 
-	const { handleSubmit, watch, setValue } = formMethods;
-
-	const useEnrollments = watch("useEnrollments");
+	const {
+		handleSubmit,
+		watch,
+		formState: { isSubmitting, isLoading },
+	} = formMethods;
 	const competitionType = watch("competitionType");
+	const useEnrollments = watch("useEnrollments");
 
-	const tabs = [
-		{ key: "basics", icon: FiAward, title: "Basics" },
-		{ key: "rules", icon: FiBookOpen, title: "Rules" },
-		{ key: "participants", icon: FiUsers, title: "Participants" },
-		{ key: "review", icon: FiSettings, title: "Review" },
-	];
-
-	const handleTabChange = (index: number) => {
-		setActiveTab(index);
-	};
-
-	const handleNext = () => {
-		if (activeTab < tabs.length - 1) {
-			setActiveTab(activeTab + 1);
+	const handleEnrollmentSubmission = async (
+		client: SigningCosmWasmClient,
+		values: CreateCompetitionFormValues,
+		address: string,
+		categoryId?: string,
+	) => {
+		if (!values.enrollmentInfo) {
+			throw new Error("Enrollment information is required");
 		}
-	};
 
-	const handlePrevious = () => {
-		if (activeTab > 0) {
-			setActiveTab(activeTab - 1);
-		}
-	};
+		const enrollmentClient = new ArenaCompetitionEnrollmentClient(
+			client,
+			address,
+			env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+		);
 
-	const onSubmit = useCallback(
-		async (values: CreateCompetitionFormValues) => {
-			try {
-				const client = await getSigningCosmWasmClient();
-				if (!address) throw new Error("Could not get user address");
-
-				let result: ExecuteResult;
-
-				const categoryId = category?.category_id?.toString();
-				const commonMsg = {
-					name: values.name,
-					description: values.description,
-					expiration: convertToExpiration(values.expiration),
-					rules: values.rules.map((r) => r.rule),
-					rulesets: values.rulesets.map((r) => r.ruleset_id.toString()),
-					banner: values.banner,
-				};
-
-				if (values.useEnrollments) {
-					if (!values.enrollmentInfo) {
-						throw new Error("Enrollment information is required");
-					}
-
-					const enrollmentClient = new ArenaCompetitionEnrollmentClient(
-						client,
-						address,
-						env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
-					);
-
-					let competitionType: CompetitionType;
-					switch (values.competitionType) {
-						case "wager":
-							competitionType = { wager: {} };
-							break;
-						case "league":
-							if (!values.leagueInfo) {
-								throw new Error(
-									"League information is required for league competitions",
-								);
-							}
-							competitionType = {
-								league: {
-									distribution: values.leagueInfo.distribution.map((mp) =>
-										mp.percent.toString(),
-									),
-									match_win_points: values.leagueInfo.matchWinPoints.toString(),
-									match_draw_points:
-										values.leagueInfo.matchDrawPoints.toString(),
-									match_lose_points:
-										values.leagueInfo.matchLosePoints.toString(),
-								},
-							};
-							break;
-						case "tournament":
-							if (!values.tournamentInfo) {
-								throw new Error(
-									"Tournament information is required for tournament competitions",
-								);
-							}
-							competitionType = {
-								tournament: {
-									distribution: values.tournamentInfo.distribution.map((mp) =>
-										mp.percent.toString(),
-									),
-									elimination_type:
-										values.tournamentInfo.eliminationType === "single"
-											? {
-													single_elimination: {
-														play_third_place_match:
-															values.tournamentInfo.playThirdPlace ?? false,
-													},
-												}
-											: "double_elimination",
-								},
-							};
-							break;
-						default:
-							throw new Error(
-								`Invalid competition type: ${values.competitionType}`,
-							);
-					}
-
-					result = await enrollmentClient.createEnrollment({
-						categoryId,
-						competitionType,
-						competitionInfo: {
-							...commonMsg,
-						},
-						maxMembers: values.enrollmentInfo.maxMembers.toString(),
-						minMembers: values.enrollmentInfo.minMembers?.toString(),
-						entryFee: values.enrollmentInfo.entryFee,
-						expiration: convertToExpiration(
-							values.enrollmentInfo.enrollment_expiration,
+		let competitionType: CompetitionType;
+		switch (values.competitionType) {
+			case "wager":
+				competitionType = { wager: {} };
+				break;
+			case "league":
+				if (!values.leagueInfo) {
+					throw new Error("League information is required");
+				}
+				competitionType = {
+					league: {
+						distribution: values.leagueInfo.distribution.map((mp) =>
+							mp.percent.toString(),
 						),
-						groupContractInfo: {
-							code_id: env.CODE_ID_GROUP,
-							funds: [],
-							label: "Arena Group",
-							msg: toBinary({} as GroupInstantiateMsg),
-						},
-						requiredTeamSize: values.enrollmentInfo.requiredTeamSize,
-						escrowContractInfo: {
-							new: {
-								code_id: env.CODE_ID_ESCROW,
-								label: "Arena Escrow",
-								additional_layered_fees: values.additionalLayeredFees?.map(
-									(x) => {
-										return { receiver: x.addr, tax: x.percentage.toString() };
-									},
-								),
-								msg: toBinary({
-									dues: [],
-									is_enrollment: true,
-								} as ArenaEscrowInstantiateMsg),
-							},
-						},
-					});
+						match_win_points: values.leagueInfo.matchWinPoints.toString(),
+						match_draw_points: values.leagueInfo.matchDrawPoints.toString(),
+						match_lose_points: values.leagueInfo.matchLosePoints.toString(),
+					},
+				};
+				break;
+			case "tournament":
+				if (!values.tournamentInfo) {
+					throw new Error("Tournament information is required");
+				}
+				competitionType = {
+					tournament: {
+						distribution: values.tournamentInfo.distribution.map((mp) =>
+							mp.percent.toString(),
+						),
+						elimination_type:
+							values.tournamentInfo.eliminationType === "single"
+								? {
+										single_elimination: {
+											play_third_place_match:
+												values.tournamentInfo.playThirdPlace ?? false,
+										},
+									}
+								: "double_elimination",
+					},
+				};
+				break;
+			default:
+				throw new Error(`Invalid competition type: ${values.competitionType}`);
+		}
 
-					// Extract competition ID from the result
-					let enrollmentId: string | undefined;
-					for (const event of result.events) {
-						for (const attribute of event.attributes) {
-							if (attribute.key === "id") {
-								enrollmentId = attribute.value;
-								break;
-							}
-						}
-						if (enrollmentId) break;
-					}
+		const result = await enrollmentClient.createEnrollment({
+			categoryId,
+			competitionType,
+			competitionInfo: {
+				name: values.name,
+				description: values.description,
+				date: parseToNanos(values.date),
+				duration: values.duration.toSeconds(),
+				rules: values.rules.map((r) => r.rule),
+				rulesets: values.rulesets.map((r) => r.ruleset_id.toString()),
+				banner: values.banner,
+			},
+			maxMembers: values.enrollmentInfo.maxMembers.toString(),
+			minMembers: values.enrollmentInfo.minMembers?.toString(),
+			entryFee: values.enrollmentInfo.entryFee,
+			durationBefore: values.enrollmentInfo.duration_before.toSeconds(),
+			groupContractInfo: {
+				code_id: env.CODE_ID_GROUP,
+				funds: [],
+				label: "Arena Group",
+				msg: toBinary({} as GroupInstantiateMsg),
+			},
+			requiredTeamSize: values.enrollmentInfo.requiredTeamSize
+				? Number(values.enrollmentInfo.requiredTeamSize)
+				: undefined,
+			escrowContractInfo: {
+				new: {
+					code_id: env.CODE_ID_ESCROW,
+					label: "Arena Escrow",
+					additional_layered_fees: values.additionalLayeredFees?.map((x) => ({
+						receiver: x.addr,
+						tax: x.percentage.toString(),
+					})),
+					msg: toBinary({
+						dues: [],
+						is_enrollment: true,
+					} as ArenaEscrowInstantiateMsg),
+				},
+			},
+		});
 
-					// Redirect to the appropriate page
-					if (enrollmentId) {
-						router.push(`/enrollment/view?enrollmentId=${enrollmentId}`);
-					} else {
-						console.warn("Enrollment created but ID not found in the result");
-					}
-				} else {
-					if (!values.directParticipation) {
-						throw new Error(
-							"Direct participation information is required for crowdfunding",
-						);
-					}
+		return result;
+	};
 
-					// Construct the members array based on the logic
-					let members: AddMemberMsg[] = [];
-					if (values.directParticipation.membersFromDues) {
-						members = values.directParticipation.dues
-							? values.directParticipation.dues.map((due) => ({
-									addr: due.addr,
-								}))
-							: [];
-					} else if (values.directParticipation.members) {
-						members = values.directParticipation.members.map((member) => ({
-							addr: member.address,
-						}));
-					}
+	const handleDirectSubmission = async (
+		client: SigningCosmWasmClient,
+		values: CreateCompetitionFormValues,
+		address: string,
+		categoryId?: string,
+	) => {
+		if (!values.directParticipation) {
+			throw new Error("Direct participation information is required");
+		}
 
-					const groupContract = {
-						new: {
-							info: {
-								code_id: env.CODE_ID_GROUP,
-								label: "Arena Group",
-								funds: [],
-								msg: toBinary({ members }),
-								admin: { address: { addr: env.ARENA_DAO_ADDRESS } },
-							},
-						},
-					} as GroupContractInfo;
+		const members: AddMemberMsg[] = values.directParticipation.membersFromDues
+			? (values.directParticipation.dues?.map((due) => ({ addr: due.addr })) ??
+				[])
+			: (values.directParticipation.members?.map((member) => ({
+					addr: member.address,
+				})) ?? []);
 
-					const escrow = convertToEscrowInstantiate(
-						env.CODE_ID_ESCROW,
-						values.directParticipation.dues ?? [],
-						values.additionalLayeredFees,
-					);
+		const groupContract = {
+			new: {
+				info: {
+					code_id: env.CODE_ID_GROUP,
+					label: "Arena Group",
+					funds: [],
+					msg: toBinary({ members }),
+					admin: { address: { addr: env.ARENA_DAO_ADDRESS } },
+				},
+			},
+		} as GroupContractInfo;
 
-					switch (values.competitionType) {
-						case "wager": {
-							const wagerClient = new ArenaWagerModuleClient(
-								client,
-								address,
-								env.ARENA_WAGER_MODULE_ADDRESS,
-							);
-							result = await wagerClient.createCompetition({
-								...commonMsg,
-								categoryId,
-								escrow,
-								instantiateExtension: {},
-								groupContract,
-							});
-							break;
-						}
-						case "league": {
-							if (!values.leagueInfo) {
-								throw new Error(
-									"League information is required for league competitions",
-								);
-							}
-							const leagueClient = new ArenaLeagueModuleClient(
-								client,
-								address,
-								env.ARENA_LEAGUE_MODULE_ADDRESS,
-							);
-							result = await leagueClient.createCompetition({
-								...commonMsg,
-								categoryId,
-								escrow,
-								instantiateExtension: {
-									distribution: values.leagueInfo.distribution.map((mp) =>
-										mp.percent.toString(),
-									),
-									match_win_points: values.leagueInfo.matchWinPoints.toString(),
-									match_draw_points:
-										values.leagueInfo.matchDrawPoints.toString(),
-									match_lose_points:
-										values.leagueInfo.matchLosePoints.toString(),
-								},
-								groupContract,
-							});
-							break;
-						}
-						case "tournament": {
-							if (!values.tournamentInfo) {
-								throw new Error(
-									"Tournament information is required for tournament competitions",
-								);
-							}
-							const tournamentClient = new ArenaTournamentModuleClient(
-								client,
-								address,
-								env.ARENA_TOURNAMENT_MODULE_ADDRESS,
-							);
+		const escrow = convertToEscrowInstantiate(
+			env.CODE_ID_ESCROW,
+			values.directParticipation.dues ?? [],
+			values.additionalLayeredFees,
+		);
 
-							result = await tournamentClient.createCompetition({
-								...commonMsg,
-								escrow,
-								categoryId,
-								instantiateExtension: {
-									distribution: values.tournamentInfo.distribution.map((mp) =>
-										mp.percent.toString(),
-									),
-									elimination_type:
-										values.tournamentInfo.eliminationType === "single"
-											? {
-													single_elimination: {
-														play_third_place_match:
-															values.tournamentInfo.playThirdPlace ?? false,
-													},
-												}
-											: "double_elimination",
-								},
-								groupContract,
-							});
-							break;
-						}
-						default:
-							throw new Error(
-								`Invalid competition type: ${values.competitionType}`,
-							);
-					}
+		const commonMsg = {
+			name: values.name,
+			description: values.description,
+			date: parseToNanos(values.date),
+			duration: values.duration.toSeconds(),
+			rules: values.rules.map((r) => r.rule),
+			rulesets: values.rulesets.map((r) => r.ruleset_id.toString()),
+			banner: values.banner,
+			categoryId,
+			escrow,
+			groupContract,
+		};
 
-					// Extract competition ID from the result
-					let competitionId: string | undefined;
-					for (const event of result.events) {
-						for (const attribute of event.attributes) {
-							if (attribute.key === "competition_id") {
-								competitionId = attribute.value;
-								break;
-							}
-						}
-						if (competitionId) break;
-					}
+		let result: ExecuteResult;
 
-					// Redirect to the appropriate page
-					if (competitionId) {
-						router.push(
-							`/${competitionType}/view?competitionId=${competitionId}`,
-						);
-					} else {
-						console.warn("Competition created but ID not found in the result");
+		switch (values.competitionType) {
+			case "wager": {
+				const wagerClient = new ArenaWagerModuleClient(
+					client,
+					address,
+					env.ARENA_WAGER_MODULE_ADDRESS,
+				);
+				result = await wagerClient.createCompetition({
+					...commonMsg,
+					instantiateExtension: {},
+				});
+				break;
+			}
+			case "league": {
+				if (!values.leagueInfo)
+					throw new Error("League information is required");
+				const leagueClient = new ArenaLeagueModuleClient(
+					client,
+					address,
+					env.ARENA_LEAGUE_MODULE_ADDRESS,
+				);
+				result = await leagueClient.createCompetition({
+					...commonMsg,
+					instantiateExtension: {
+						distribution: values.leagueInfo.distribution.map((mp) =>
+							mp.percent.toString(),
+						),
+						match_win_points: values.leagueInfo.matchWinPoints.toString(),
+						match_draw_points: values.leagueInfo.matchDrawPoints.toString(),
+						match_lose_points: values.leagueInfo.matchLosePoints.toString(),
+					},
+				});
+				break;
+			}
+			case "tournament": {
+				if (!values.tournamentInfo)
+					throw new Error("Tournament information is required");
+				const tournamentClient = new ArenaTournamentModuleClient(
+					client,
+					address,
+					env.ARENA_TOURNAMENT_MODULE_ADDRESS,
+				);
+				result = await tournamentClient.createCompetition({
+					...commonMsg,
+					instantiateExtension: {
+						distribution: values.tournamentInfo.distribution.map((mp) =>
+							mp.percent.toString(),
+						),
+						elimination_type:
+							values.tournamentInfo.eliminationType === "single"
+								? {
+										single_elimination: {
+											play_third_place_match:
+												values.tournamentInfo.playThirdPlace ?? false,
+										},
+									}
+								: "double_elimination",
+					},
+				});
+				break;
+			}
+			default:
+				throw new Error(`Invalid competition type: ${values.competitionType}`);
+		}
+
+		return result;
+	};
+
+	const onSubmit = async (values: CreateCompetitionFormValues) => {
+		try {
+			const client = await getSigningCosmWasmClient();
+			if (!address) throw new Error("Could not get user address");
+
+			const categoryId = category?.category_id?.toString();
+			const result = values.useEnrollments
+				? await handleEnrollmentSubmission(client, values, address, categoryId)
+				: await handleDirectSubmission(client, values, address, categoryId);
+
+			// Extract ID from result
+			let id: string | undefined;
+			for (const event of result.events) {
+				for (const attribute of event.attributes) {
+					if (
+						attribute.key === (values.useEnrollments ? "id" : "competition_id")
+					) {
+						id = attribute.value;
+						break;
 					}
 				}
-
-				toast.success(`The ${values.competitionType} was created successfully`);
-			} catch (e) {
-				console.error(e);
-				toast.error((e as Error).toString());
+				if (id) break;
 			}
-		},
-		[getSigningCosmWasmClient, address, category, env, router, competitionType],
-	);
+
+			if (id) {
+				router.push(
+					values.useEnrollments
+						? `/enrollment/view?enrollmentId=${id}`
+						: `/${values.competitionType}/view?competitionId=${id}`,
+				);
+				toast.success(`The ${values.competitionType} was created successfully`);
+			} else {
+				console.warn("Competition created but ID not found in the result");
+				toast.warning("Competition created but redirect failed");
+			}
+		} catch (e) {
+			console.error(e);
+			toast.error((e as Error).toString());
+		}
+	};
 
 	return (
 		<CategoryProvider value={category?.url}>
-			<div className="container mx-auto space-y-4 p-4">
-				<h1 className="pb-6 text-center text-5xl">Create a Competition</h1>
+			<div className="container mx-auto max-w-6xl px-4 py-8">
+				<h1 className="mb-8 text-center font-bold text-4xl">
+					Create a Competition
+				</h1>
 
 				<FormProvider {...formMethods}>
 					<form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-						<Tabs
-							aria-label="Competition Creation Tabs"
-							color="primary"
-							variant="bordered"
-							selectedKey={tabs[activeTab]?.key}
-							onSelectionChange={(key) =>
-								handleTabChange(tabs.findIndex((tab) => tab.key === key))
-							}
-						>
-							{tabs.map((tab) => (
-								<Tab
-									key={tab.key}
-									title={
-										<div className="flex items-center space-x-2">
-											<tab.icon />
-											<span>{tab.title}</span>
-										</div>
-									}
-								>
-									{tab.key === "review" ? (
-										<ReviewCompetition />
-									) : (
-										<Card>
-											<CardBody>
-												{tab.key === "basics" && (
-													<>
-														<div className="flex flex-col items-start justify-between gap-2 pb-4 sm:flex-row sm:items-center sm:gap-0">
-															<h3>Competition Info</h3>
-															{category && <h3>Category: {category.title}</h3>}
-														</div>
-														<BasicInformationForm />
-														{competitionType === "league" && (
-															<>
-																<Divider className="my-6" />
-																<LeagueInformationForm />
-															</>
-														)}
-														{competitionType === "tournament" && (
-															<>
-																<Divider className="my-6" />
-																<TournamentInformationForm />
-															</>
-														)}
-													</>
-												)}
-												{tab.key === "rules" && <RulesAndRulesetsForm />}
-												{tab.key === "participants" && (
-													<>
-														<div className="flex flex-col items-start justify-between gap-2 pb-4 sm:flex-row sm:items-center sm:gap-0">
-															<h3>Participation Details</h3>
-															<Switch
-																isSelected={useEnrollments}
-																onValueChange={(checked) =>
-																	setValue("useEnrollments", checked)
-																}
-															>
-																Use Enrollments
-															</Switch>
-														</div>
-														{useEnrollments ? (
-															<EnrollmentInformationForm />
-														) : (
-															<MembersAndDuesForm />
-														)}
-													</>
-												)}
-											</CardBody>
-										</Card>
-									)}
-								</Tab>
-							))}
-						</Tabs>
+						<Card>
+							<CardHeader>
+								<h2 className="font-semibold text-2xl">
+									Competition Information
+								</h2>
+							</CardHeader>
+							<CardBody>
+								<BasicInformationForm />
+							</CardBody>
+						</Card>
 
-						<div className="mt-8 flex justify-between">
+						{competitionType === "league" && (
+							<Card>
+								<CardHeader>
+									<h2 className="font-semibold text-2xl">League Settings</h2>
+								</CardHeader>
+								<CardBody>
+									<LeagueInformationForm />
+								</CardBody>
+							</Card>
+						)}
+
+						{competitionType === "tournament" && (
+							<Card>
+								<CardHeader>
+									<h2 className="font-semibold text-2xl">
+										Tournament Settings
+									</h2>
+								</CardHeader>
+								<CardBody>
+									<TournamentInformationForm />
+								</CardBody>
+							</Card>
+						)}
+
+						<Card>
+							<CardHeader>
+								<h3 className="mb-2 flex items-center font-semibold text-2xl">
+									Rules
+									<Tooltip content="The competition's rules and rulesets if applicable">
+										<span className="ml-2 cursor-help">
+											<FiInfo />
+										</span>
+									</Tooltip>
+								</h3>
+							</CardHeader>
+							<CardBody>
+								<RulesAndRulesetsForm />
+							</CardBody>
+						</Card>
+
+						<Card>
+							<CardBody>
+								<div className="mb-6 flex flex-wrap items-center justify-between gap-2">
+									<h2 className="font-semibold text-2xl">
+										Participation Details
+									</h2>
+									<Controller
+										name="useEnrollments"
+										render={({ field }) => (
+											<Switch
+												{...field}
+												isSelected={field.value}
+												isDisabled={isSubmitting}
+											>
+												Enable Enrollments
+											</Switch>
+										)}
+									/>
+								</div>
+								{useEnrollments ? (
+									<EnrollmentInformationForm />
+								) : (
+									<MembersAndDuesForm />
+								)}
+							</CardBody>
+						</Card>
+
+						<div className="mt-8 flex justify-end">
 							<Button
-								onPress={handlePrevious}
-								isDisabled={activeTab === 0}
-								startContent={<FiChevronLeft />}
+								type="submit"
+								color="primary"
+								size="lg"
+								className="px-8"
+								isLoading={isLoading}
+								isDisabled={isSubmitting}
 							>
-								Previous
-							</Button>
-							<Button
-								onPress={handleNext}
-								isDisabled={activeTab === tabs.length - 1}
-								endContent={<FiChevronRight />}
-							>
-								Next
+								Create Competition
 							</Button>
 						</div>
 					</form>
