@@ -1,3 +1,4 @@
+import TokenInfo from "@/components/TokenInfo";
 import {
 	Button,
 	ButtonGroup,
@@ -7,10 +8,9 @@ import {
 	useDisclosure,
 } from "@nextui-org/react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
-import TokenInfo from "@/components/TokenInfo";
-import EntryFeeForm from "./EntryFeeForm";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 import { DurationUnits } from "~/config/schemas/DurationSchema";
+import EntryFeeForm from "./EntryFeeForm";
 
 const EnrollmentInformationForm = () => {
 	const {

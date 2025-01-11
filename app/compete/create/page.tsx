@@ -7,6 +7,7 @@ import {
 } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {} from "@internationalized/date";
 import {
 	Button,
 	Card,
@@ -17,6 +18,7 @@ import {
 } from "@nextui-org/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Controller, FormProvider, useForm } from "react-hook-form";
+import { FiInfo } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import type { CompetitionType } from "~/codegen/ArenaCompetitionEnrollment.types";
@@ -33,21 +35,19 @@ import {
 	type CreateCompetitionFormValues,
 	CreateCompetitionSchema,
 } from "~/config/schemas/CreateCompetitionSchema";
+import { parseToNanos } from "~/config/schemas/TimestampSchema";
 import {
 	CategoryProvider,
 	useCategoryContext,
 } from "~/contexts/CategoryContext";
 import { convertToEscrowInstantiate } from "~/helpers/SchemaHelpers";
 import { useEnv } from "~/hooks/useEnv";
-import RulesAndRulesetsForm from "./components/RulesAndRulesetsForm";
-import LeagueInformationForm from "./components/LeagueInformationForm";
-import TournamentInformationForm from "./components/TournamentInformationForm";
+import BasicInformationForm from "./components/BasicInformationForm";
 import MembersAndDuesForm from "./components/DirectParticipationForm";
 import EnrollmentInformationForm from "./components/EnrollmentInformationForm";
-import BasicInformationForm from "./components/BasicInformationForm";
-import { FiInfo } from "react-icons/fi";
-import {} from "@internationalized/date";
-import { parseToNanos } from "~/config/schemas/TimestampSchema";
+import LeagueInformationForm from "./components/LeagueInformationForm";
+import RulesAndRulesetsForm from "./components/RulesAndRulesetsForm";
+import TournamentInformationForm from "./components/TournamentInformationForm";
 
 const CreateCompetitionPage = () => {
 	const env = useEnv();

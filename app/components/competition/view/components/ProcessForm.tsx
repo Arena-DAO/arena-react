@@ -460,14 +460,17 @@ const ProcessForm = ({
 								</div>
 								<Progress
 									aria-label="Total Percentage"
-									value={percentages.reduce((acc, x) => acc + x.percentage, 0)}
+									value={percentages.reduce(
+										(acc, x) => acc + Number(x.percentage),
+										0,
+									)}
 									color="primary"
 									showValueLabel
 								/>
 							</CardBody>
 							<CardFooter>
 								<Button
-									onPress={() => append({ addr: "", percentage: 0 })}
+									onPress={() => append({ addr: "", percentage: "0" })}
 									aria-label="Add Recipient"
 									startContent={<FiPlus />}
 									isDisabled={isSubmitting}

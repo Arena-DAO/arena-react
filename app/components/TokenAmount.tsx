@@ -5,7 +5,7 @@ import { getDisplayToken } from "~/helpers/TokenHelpers";
 import { useToken } from "~/hooks/useToken";
 
 interface TokenAmountProps {
-	amount: bigint;
+	amount: bigint | string;
 	denomOrAddress: string;
 	isNative?: boolean;
 	className?: string;

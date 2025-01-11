@@ -1,11 +1,11 @@
 import { z } from "zod";
 import AddressSchema from "./AddressSchema";
 import DueSchema from "./DueSchema";
+import DurationSchema from "./DurationSchema";
 import MemberPercentageSchema from "./MemberPercentageSchema";
 import PercentageListSchema from "./PercentageListSchema";
 import RulesSchema from "./RulesSchema";
 import RulesetsSchema from "./RulesetsSchema";
-import DurationSchema from "./DurationSchema";
 import { TimestampSchema } from "./TimestampSchema";
 
 export const EnrollmentInfoSchema = z

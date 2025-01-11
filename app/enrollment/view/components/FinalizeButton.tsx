@@ -1,5 +1,6 @@
+"use client";
+
 import { useChain } from "@cosmos-kit/react";
-// TriggerButton.tsx
 import { Button } from "@nextui-org/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
@@ -9,17 +10,21 @@ import {
 	useArenaCompetitionEnrollmentFinalizeMutation,
 } from "~/codegen/ArenaCompetitionEnrollment.react-query";
 import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollment.types";
+import type { Timestamp } from "~/codegen/ArenaWagerModule.types";
 import { useEnv } from "~/hooks/useEnv";
+import { useIsExpired } from "~/hooks/useIsExpired";
 
 interface TriggerButtonProps {
 	enrollmentId: string;
-	isExpired: boolean;
+	competitionDate: Timestamp;
+	deadlineBefore: number;
 	isFull: boolean;
 }
 
 const FinalizeButton: React.FC<TriggerButtonProps> = ({
 	enrollmentId,
-	isExpired,
+	competitionDate,
+	deadlineBefore,
 	isFull,
 }) => {
 	const env = useEnv();
@@ -27,6 +32,7 @@ const FinalizeButton: React.FC<TriggerButtonProps> = ({
 	const finalizeEnrollmentMutation =
 		useArenaCompetitionEnrollmentFinalizeMutation();
 	const queryClient = useQueryClient();
+	const isExpired = useIsExpired(competitionDate, undefined, deadlineBefore);
 
 	const handleTriggerExpiration = async () => {
 		if (!address) {

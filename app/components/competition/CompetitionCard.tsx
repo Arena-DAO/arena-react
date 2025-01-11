@@ -5,14 +5,15 @@ import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollme
 import type { CompetitionResponseForLeagueExt } from "~/codegen/ArenaLeagueModule.types";
 import type { CompetitionResponseForTournamentExt } from "~/codegen/ArenaTournamentModule.types";
 import type { CompetitionResponseForWagerExt } from "~/codegen/ArenaWagerModule.types";
+import { useIsExpired } from "~/hooks/useIsExpired";
 import Profile from "../Profile";
 import CompetitionStatusDisplay from "./CompetitionStatusDisplay";
 import CompetitionTypeDisplay from "./CompetitionTypeDisplay";
 import EnrollmentInfo from "./EnrollmentInfo";
 import EnrollmentStatusDisplay from "./EnrollmentStatusDisplay";
-import ExpirationDisplay from "./ExpirationDisplay";
 import LeagueInfo from "./LeagueInfo";
 import TournamentInfo from "./TournamentInfo";
+import CompetitionDates from "./view/components/CompetitionDates";
 
 type Competition =
 	| CompetitionResponseForWagerExt
@@ -59,17 +60,25 @@ const Competition: React.FC<CompetitionProps> = ({
 	hideHost = false,
 }) => {
 	const router = useRouter();
-	const banner = isEnrollment(competition)
+	const isEnrollmentCompetition = isEnrollment(competition);
+	const isExpired = isEnrollmentCompetition
+		? useIsExpired(
+				competition.competition_info.date,
+				undefined,
+				competition.duration_before,
+			)
+		: useIsExpired(competition.date, competition.duration);
+	const banner = isEnrollmentCompetition
 		? competition.competition_info.banner
 		: competition.banner;
-	const name = isEnrollment(competition)
+	const name = isEnrollmentCompetition
 		? competition.competition_info.name
 		: competition.name;
-	const description = isEnrollment(competition)
+	const description = isEnrollmentCompetition
 		? competition.competition_info.description
 		: competition.description;
 	const renderCompetitionInfo = () => {
-		if (isEnrollment(competition))
+		if (isEnrollmentCompetition)
 			return <EnrollmentInfo enrollment={competition} />;
 		if (isLeague(competition)) return <LeagueInfo league={competition} />;
 		if (isTournament(competition))
@@ -108,12 +117,14 @@ const Competition: React.FC<CompetitionProps> = ({
 				<div className="mt-3 flex items-center justify-between">
 					{isEnrollment(competition) ? (
 						<>
-							<ExpirationDisplay
-								expiration={competition.competition_info.expiration}
+							<CompetitionDates
+								competitionDateNanos={competition.competition_info.date}
+								duration={competition.competition_info.duration}
+								deadlineBefore={competition.duration_before}
 							/>
 							<EnrollmentStatusDisplay
 								hasTriggeredExpiration={competition.has_finalized}
-								isExpired={competition.is_expired}
+								isExpired={isExpired}
 								currentMembers={Number(competition.current_members)}
 								maxMembers={Number(competition.max_members)}
 								competitionId={competition.competition_info.competition_id}
@@ -121,10 +132,13 @@ const Competition: React.FC<CompetitionProps> = ({
 						</>
 					) : (
 						<>
-							<ExpirationDisplay expiration={competition.expiration} />
+							<CompetitionDates
+								competitionDateNanos={competition.date}
+								duration={competition.duration}
+							/>
 							<CompetitionStatusDisplay
 								status={competition.status}
-								isExpired={competition.is_expired}
+								isExpired={isExpired}
 							/>
 						</>
 					)}

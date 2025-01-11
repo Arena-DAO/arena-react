@@ -3,8 +3,7 @@
 import Profile from "@/components/Profile";
 import TokenInfo from "@/components/TokenInfo";
 import CompetitionTypeDisplay from "@/components/competition/CompetitionTypeDisplay";
-import EnrollmentStatusDisplay from "@/components/competition/EnrollmentStatusDisplay";
-import ExpirationDisplay from "@/components/competition/ExpirationDisplay";
+import CompetitionDates from "@/components/competition/view/components/CompetitionDates";
 import EscrowSection from "@/components/competition/view/components/EscrowSection";
 import { useChain } from "@cosmos-kit/react";
 import {
@@ -120,31 +119,11 @@ const EnrollmentView = () => {
 						</CardFooter>
 					</Card>
 
-					<Card>
-						<CardHeader>
-							<h2>Expiration</h2>
-						</CardHeader>
-						<CardBody>
-							<div className="flex items-center justify-between">
-								<div className="flex flex-col gap-4">
-									<ExpirationDisplay
-										tooltip="Registration Deadline"
-										expiration={enrollment.expiration}
-									/>
-									<ExpirationDisplay
-										expiration={enrollment.competition_info.expiration}
-									/>
-								</div>
-								<EnrollmentStatusDisplay
-									hasTriggeredExpiration={enrollment.has_finalized}
-									isExpired={enrollment.is_expired}
-									currentMembers={Number(enrollment.current_members)}
-									maxMembers={Number(enrollment.max_members)}
-									competitionId={enrollment.competition_info.competition_id}
-								/>
-							</div>
-						</CardBody>
-					</Card>
+					<CompetitionDates
+						competitionDateNanos={enrollment.competition_info.date}
+						duration={enrollment.competition_info.duration}
+						deadlineBefore={enrollment.duration_before}
+					/>
 				</div>
 
 				<EscrowSection
@@ -397,7 +376,8 @@ const EnrollmentView = () => {
 							{enrollment.host === address && (
 								<FinalizeButton
 									enrollmentId={enrollment.id}
-									isExpired={enrollment.is_expired}
+									competitionDate={enrollment.competition_info.date}
+									deadlineBefore={enrollment.duration_before}
 									isFull={currentMembers >= maxMembers}
 								/>
 							)}
