@@ -23,8 +23,10 @@ import type { PropsWithChildren } from "react";
 import { BsYinYang } from "react-icons/bs";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { useEnv } from "~/hooks/useEnv";
+import { useIsExpired } from "~/hooks/useIsExpired";
 import type { CompetitionResponse } from "~/types/CompetitionResponse";
 import type { CompetitionType } from "~/types/CompetitionType";
+import CompetitionStatusDisplay from "../CompetitionStatusDisplay";
 import GroupMembersModal from "../GroupMembersModal";
 import CompetitionActions from "./components/CompetitionActions";
 import CompetitionDates from "./components/CompetitionDates";
@@ -48,6 +50,7 @@ const ViewCompetition = ({
 	children,
 }: ViewCompetitionProps) => {
 	const env = useEnv();
+	const isExpired = useIsExpired(competition.date, competition.duration);
 
 	return (
 		<div className="space-y-6">
@@ -113,6 +116,12 @@ const ViewCompetition = ({
 							duration={competition.duration}
 						/>
 					</CardBody>
+					<CardFooter>
+						<CompetitionStatusDisplay
+							status={competition.status}
+							isExpired={isExpired}
+						/>
+					</CardFooter>
 				</Card>
 			</div>
 

@@ -51,7 +51,7 @@ export const EnrollmentInfoSchema = z
 
 const DirectParticipationSchema = z.object({
 	dues: z.array(DueSchema).optional(),
-	membersFromDues: z.boolean(),
+	membersFromDues: z.boolean().default(false),
 	members: z.array(z.object({ address: AddressSchema })),
 });
 
