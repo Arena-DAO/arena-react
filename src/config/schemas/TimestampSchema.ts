@@ -1,10 +1,9 @@
 import {
 	type ZonedDateTime,
+	fromDate,
 	getLocalTimeZone,
 	now,
-	parseAbsolute,
 	parseZonedDateTime,
-	toZoned,
 } from "@internationalized/date";
 import { z } from "zod";
 
@@ -26,14 +25,21 @@ export const dateToNanos = (date: Date): bigint => {
 };
 
 export const nanosToZonedDateTime = (nanos: bigint): ZonedDateTime => {
-	// Convert nanoseconds to milliseconds and create an Absolute time
-	const absolute = parseAbsolute((nanos / BigInt(1_000_000)).toString(), "UTC");
+	// Convert nanoseconds to milliseconds (BigInt to number)
+	const millis = Number(nanos / BigInt(1_000_000));
 
-	// Get the user's local timezone
-	const localTimeZone = getLocalTimeZone();
+	// Create a Date object from milliseconds
+	const date = new Date(millis);
 
-	// Convert to a ZonedDateTime in the user's local timezone
-	return toZoned(absolute, localTimeZone);
+	// Ensure the date is valid
+	if (Number.isNaN(date.getTime())) {
+		throw new Error(
+			"Invalid timestamp: cannot convert nanoseconds to a valid date.",
+		);
+	}
+
+	// Convert to ZonedDateTime using the local time zone
+	return fromDate(date, getLocalTimeZone());
 };
 
 // For working with ZonedDateTime
