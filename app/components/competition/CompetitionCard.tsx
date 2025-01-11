@@ -122,15 +122,15 @@ const Competition: React.FC<CompetitionProps> = ({
 					/>
 				) : (
 					<>
-						<CompetitionDates
-							competitionDateNanos={competition.date}
-							duration={competition.duration}
-							hideExpiration
-						/>
 						<CompetitionStatusDisplay
 							status={competition.status}
 							isExpired={isExpired}
 							className="ml-auto"
+						/>
+						<CompetitionDates
+							competitionDateNanos={competition.date}
+							duration={competition.duration}
+							hideExpiration
 						/>
 					</>
 				)}
