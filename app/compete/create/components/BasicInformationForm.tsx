@@ -74,7 +74,6 @@ const BasicInformationSection = () => {
 				render={({ field, fieldState: { error } }) => (
 					<DatePicker
 						{...field}
-						hideTimeZone
 						showMonthAndYearPickers
 						minValue={now(getLocalTimeZone())}
 						placeholderValue={now(getLocalTimeZone())}
@@ -96,13 +95,15 @@ const BasicInformationSection = () => {
 						<Input
 							{...field}
 							type="number"
-							label="Duration Amount"
-							description="Duration of competition before expiration"
+							label="Duration"
+							description="Duration needed for competition to be fully processed"
 							isDisabled={isSubmitting}
 							isInvalid={!!error}
 							errorMessage={error?.message}
 							isRequired
 							className="flex-1"
+							step="1"
+							min="1"
 						/>
 					)}
 				/>
@@ -113,7 +114,7 @@ const BasicInformationSection = () => {
 					render={({ field, fieldState: { error } }) => (
 						<Select
 							{...field}
-							label="Duration Units"
+							label="Units"
 							isDisabled={isSubmitting}
 							isInvalid={!!error}
 							errorMessage={error?.message}

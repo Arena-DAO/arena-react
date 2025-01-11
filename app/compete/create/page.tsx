@@ -419,7 +419,7 @@ const CreateCompetitionPage = () => {
 
 						<Card>
 							<CardBody>
-								<div className="mb-6 flex items-center justify-between">
+								<div className="mb-6 flex flex-wrap items-center justify-between gap-2">
 									<h2 className="font-semibold text-2xl">
 										Participation Details
 									</h2>

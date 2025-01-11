@@ -85,7 +85,7 @@ const EnrollmentInformationForm = () => {
 								{...field}
 								type="number"
 								label="Registration Deadline"
-								description="The time before the competition"
+								description="The time before the competition's start time when registration will close."
 								isDisabled={isSubmitting}
 								isInvalid={!!error}
 								errorMessage={error?.message}
@@ -93,6 +93,8 @@ const EnrollmentInformationForm = () => {
 								onChange={(e) => field.onChange(Number(e.target.value))}
 								isRequired
 								className="flex-1"
+								step="1"
+								min="1"
 							/>
 						)}
 					/>
@@ -103,7 +105,7 @@ const EnrollmentInformationForm = () => {
 						render={({ field, fieldState: { error } }) => (
 							<Select
 								{...field}
-								label="Duration Units"
+								label="Units"
 								isDisabled={isSubmitting}
 								isInvalid={!!error}
 								errorMessage={error?.message}
