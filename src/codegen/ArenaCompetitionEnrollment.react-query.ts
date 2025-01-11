@@ -255,6 +255,7 @@ export interface ArenaCompetitionEnrollmentWithdrawMutation {
   client: ArenaCompetitionEnrollmentClient;
   msg: {
     id: Uint128;
+    team?: string;
   };
   args?: {
     fee?: number | StdFee | "auto";

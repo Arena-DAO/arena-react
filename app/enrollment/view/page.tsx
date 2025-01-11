@@ -181,10 +181,10 @@ const EnrollmentView = () => {
 							<CategoryDisplay />
 							<CompetitionTypeDisplay type={enrollment.competition_type} />
 						</div>
-						{enrollment.require_team_size && (
+						{enrollment.required_team_size && (
 							<div>
 								<span className="font-medium">Required Team Size:</span>{" "}
-								{enrollment.require_team_size}
+								{enrollment.required_team_size}
 							</div>
 						)}
 						{"league" in enrollment.competition_type && (

@@ -137,9 +137,11 @@ export interface ArenaCompetitionEnrollmentInterface extends ArenaCompetitionEnr
     team?: string;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   withdraw: ({
-    id
+    id,
+    team
   }: {
     id: Uint128;
+    team?: string;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   forceWithdraw: ({
     id,
@@ -238,13 +240,16 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
     }, fee_, memo_, funds_);
   };
   withdraw = async ({
-    id
+    id,
+    team
   }: {
     id: Uint128;
+    team?: string;
   }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       withdraw: {
-        id
+        id,
+        team
       }
     }, fee_, memo_, funds_);
   };

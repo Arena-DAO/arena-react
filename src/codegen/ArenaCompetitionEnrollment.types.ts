@@ -32,6 +32,7 @@ export type ExecuteMsg = {
 } | {
   withdraw: {
     id: Uint128;
+    team?: string | null;
   };
 } | {
   force_withdraw: {
@@ -188,7 +189,7 @@ export interface EnrollmentEntryResponse {
   id: Uint128;
   max_members: Uint64;
   min_members?: Uint64 | null;
-  require_team_size?: number | null;
+  required_team_size?: number | null;
 }
 export interface CompetitionInfoResponse {
   additional_layered_fees?: FeeInformationForAddr[] | null;
