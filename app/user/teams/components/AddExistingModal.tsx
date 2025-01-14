@@ -46,7 +46,6 @@ const AddExistingTeamModal: React.FC<AddExistingTeamModalProps> = ({
 	} = useForm<AddressFormValues>({
 		resolver: zodResolver(AddressFormSchema),
 	});
-	console.log(errors);
 	const onSubmit = async (data: AddressFormValues) => {
 		try {
 			if (!address) throw Error("Wallet is not connected");
