@@ -40,7 +40,7 @@ import GroupMembersModal from "../../components/competition/GroupMembersModal";
 import RulesDisplay from "../../components/competition/RulesDisplay";
 import CategoryDisplay from "../../components/competition/view/components/CategoryDisplay";
 import DistributionDisplay from "./components/DistributionDisplay";
-import EnrollButton from "./components/EnrollButton";
+import EnrollmentActionsButton from "./components/EnrollmentActionsButton";
 import FinalizeButton from "./components/FinalizeButton";
 
 const EnrollmentView = () => {
@@ -387,7 +387,7 @@ const EnrollmentView = () => {
 							</Button>
 						)}
 					{!enrollment.has_finalized && (
-						<EnrollButton
+						<EnrollmentActionsButton
 							enrollmentId={enrollment.id}
 							isFull={currentMembers >= maxMembers}
 							entryFee={enrollment.entry_fee}
