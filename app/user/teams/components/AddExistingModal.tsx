@@ -8,8 +8,10 @@ import {
 	ModalContent,
 	ModalFooter,
 	ModalHeader,
+	useDraggable,
 } from "@nextui-org/react";
 import type React from "react";
+import { useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { z } from "zod";
@@ -38,6 +40,8 @@ const AddExistingTeamModal: React.FC<AddExistingTeamModalProps> = ({
 	const env = useEnv();
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
 	const teamStore = useTeamStore();
+	const targetRef = useRef(null);
+	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 	const {
 		control,
 		handleSubmit,
@@ -83,10 +87,10 @@ const AddExistingTeamModal: React.FC<AddExistingTeamModalProps> = ({
 	};
 
 	return (
-		<Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+		<Modal isOpen={isOpen} onOpenChange={onOpenChange} ref={targetRef}>
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<ModalContent>
-					<ModalHeader>Add Existing Team</ModalHeader>
+					<ModalHeader {...moveProps}>Add Existing Team</ModalHeader>
 					<ModalBody>
 						<Controller
 							name="address"
