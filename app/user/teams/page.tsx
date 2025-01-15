@@ -27,20 +27,21 @@ import { getStringSet } from "~/helpers/ReactHookHelpers";
 import { useTeamStore } from "~/store/teamStore";
 import AddExistingTeamModal from "./components/AddExistingModal";
 
+const labelsMap = {
+	create: "Create Team",
+	add: "Add Existing Team",
+};
+const descriptionsMap = {
+	create: "Create a new team with a prize reward payment flow",
+	add: "Add an existing team to your teams list",
+};
+
 const TeamsPage = () => {
 	const teamStore = useTeamStore();
 	const router = useRouter();
 	const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
 	const [selectedOption, setSelectedOption] = useState(new Set(["create"]));
-	const labelsMap = {
-		create: "Create Team",
-		add: "Add Existing Team",
-	};
-	const descriptionsMap = {
-		create: "Create a new team with a prize reward payment flow",
-		add: "Add an existing team to your teams list",
-	};
 	const selectedOptionValue = Array.from(selectedOption)[0] ?? "create";
 
 	return (

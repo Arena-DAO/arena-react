@@ -15,3 +15,9 @@ const AddressSchema = z
 	);
 
 export default AddressSchema;
+
+export const AddressFormSchema = z.object({
+	address: AddressSchema,
+});
+
+export type AddressFormValues = z.infer<typeof AddressFormSchema>;

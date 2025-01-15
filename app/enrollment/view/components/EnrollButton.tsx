@@ -1,7 +1,18 @@
 import { useChain } from "@cosmos-kit/react";
-import { Button, Tooltip } from "@nextui-org/react";
+import {
+	Button,
+	ButtonGroup,
+	Dropdown,
+	DropdownItem,
+	DropdownMenu,
+	DropdownTrigger,
+	Tooltip,
+	useDisclosure,
+} from "@nextui-org/react";
 import { useQueryClient } from "@tanstack/react-query";
 import type React from "react";
+import { useState } from "react";
+import { BsChevronDown } from "react-icons/bs";
 import { toast } from "react-toastify";
 import {
 	ArenaCompetitionEnrollmentClient,
@@ -15,8 +26,10 @@ import {
 } from "~/codegen/ArenaCompetitionEnrollment.react-query";
 import type { Coin } from "~/codegen/ArenaCompetitionEnrollment.types";
 import { arenaGroupQueryKeys } from "~/codegen/ArenaGroup.react-query";
+import { getStringSet } from "~/helpers/ReactHookHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
+import TeamActionModal from "./TeamActionModal";
 
 interface EnrollButtonProps {
 	entryFee?: Coin | null;
@@ -24,6 +37,15 @@ interface EnrollButtonProps {
 	isFull: boolean;
 	groupContract: string;
 }
+
+const enrollLabelsMap = {
+	enroll: "Enroll",
+	enrollTeam: "Enroll Team",
+};
+const enrollDescriptionsMap = {
+	enroll: "Enroll yourself into the competition",
+	enrollTeam: "Enroll your team into the competition",
+};
 
 const EnrollButton: React.FC<EnrollButtonProps> = ({
 	enrollmentId,
@@ -35,6 +57,14 @@ const EnrollButton: React.FC<EnrollButtonProps> = ({
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
 	const queryClient = useQueryClient();
+
+	const [enrollSelectedOption, setEnrollSelectedOption] = useState(
+		new Set(["enroll"]),
+	);
+	const selectedEnrollOptionValue =
+		Array.from(enrollSelectedOption)[0] ?? "enroll";
+
+	const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
 	const { data: isMember, isLoading } =
 		useArenaCompetitionEnrollmentIsMemberQuery({
@@ -56,7 +86,7 @@ const EnrollButton: React.FC<EnrollButtonProps> = ({
 	const enrollMutation = useArenaCompetitionEnrollmentEnrollMutation();
 	const withdrawMutation = useArenaCompetitionEnrollmentWithdrawMutation();
 
-	const handleEnroll = async () => {
+	const handleEnroll = async (team?: string) => {
 		if (!address) {
 			toast.error("Please connect your wallet to enroll.");
 			return;
@@ -73,7 +103,7 @@ const EnrollButton: React.FC<EnrollButtonProps> = ({
 			await enrollMutation.mutateAsync(
 				{
 					client: enrollmentClient,
-					msg: { id: enrollmentId },
+					msg: { id: enrollmentId, team },
 					args: {
 						funds: entryFee ? [entryFee] : undefined,
 					},
@@ -101,7 +131,7 @@ const EnrollButton: React.FC<EnrollButtonProps> = ({
 		}
 	};
 
-	const handleWithdraw = async () => {
+	const handleWithdraw = async (team?: string) => {
 		if (!address) {
 			toast.error("Please connect your wallet to withdraw.");
 			return;
@@ -118,7 +148,7 @@ const EnrollButton: React.FC<EnrollButtonProps> = ({
 			await withdrawMutation.mutateAsync(
 				{
 					client: enrollmentClient,
-					msg: { id: enrollmentId },
+					msg: { id: enrollmentId, team },
 				},
 				{
 					onSuccess: async () => {
@@ -166,7 +196,10 @@ const EnrollButton: React.FC<EnrollButtonProps> = ({
 	if (isMember) {
 		return (
 			<Tooltip content="Withdraw from the competition">
-				<Button onPress={handleWithdraw} isLoading={withdrawMutation.isLoading}>
+				<Button
+					onPress={() => handleWithdraw()}
+					isLoading={withdrawMutation.isLoading}
+				>
 					Withdraw
 				</Button>
 			</Tooltip>
@@ -174,22 +207,71 @@ const EnrollButton: React.FC<EnrollButtonProps> = ({
 	}
 
 	return (
-		<Tooltip
-			content={
-				isFull
-					? "This competition enrollment is full"
-					: "Enroll in this competition"
-			}
-		>
-			<Button
-				color="primary"
-				onPress={handleEnroll}
-				isDisabled={isFull}
-				isLoading={enrollMutation.isLoading}
+		<>
+			<Tooltip
+				content={
+					isFull
+						? "This competition enrollment is full"
+						: "Register for this competition"
+				}
 			>
-				Enroll
-			</Button>
-		</Tooltip>
+				<ButtonGroup color="primary" className="ml-auto">
+					<Button
+						color="primary"
+						onPress={() => {
+							if (enrollSelectedOption.has("enroll")) {
+								handleEnroll();
+							} else if (enrollSelectedOption.has("enrollTeam")) {
+								onOpen();
+							}
+						}}
+						isDisabled={isFull}
+						isLoading={enrollMutation.isLoading}
+					>
+						{
+							enrollLabelsMap[
+								selectedEnrollOptionValue as keyof typeof enrollLabelsMap
+							]
+						}
+					</Button>
+					<Dropdown placement="bottom-end">
+						<DropdownTrigger>
+							<Button isIconOnly>
+								<BsChevronDown />
+							</Button>
+						</DropdownTrigger>
+						<DropdownMenu
+							disallowEmptySelection
+							aria-label="Enroll buttons"
+							selectedKeys={enrollSelectedOption}
+							selectionMode="single"
+							onSelectionChange={(keys) =>
+								setEnrollSelectedOption(getStringSet(keys))
+							}
+						>
+							<DropdownItem
+								key="enroll"
+								description={enrollDescriptionsMap.enroll}
+							>
+								{enrollLabelsMap.enroll}
+							</DropdownItem>
+							<DropdownItem
+								key="enrollTeam"
+								description={enrollDescriptionsMap.enrollTeam}
+							>
+								{enrollLabelsMap.enrollTeam}
+							</DropdownItem>
+						</DropdownMenu>
+					</Dropdown>
+				</ButtonGroup>
+			</Tooltip>
+			<TeamActionModal
+				isOpen={isOpen}
+				onClose={onClose}
+				onOpenChange={onOpenChange}
+				action={handleEnroll}
+			/>
+		</>
 	);
 };
 

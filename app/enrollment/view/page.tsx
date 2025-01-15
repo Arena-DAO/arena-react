@@ -109,13 +109,21 @@ const EnrollmentView = () => {
 								<Profile address={enrollment.host} />
 							</div>
 						</CardBody>
-						<CardFooter>
+						<CardFooter className="justify-between gap-2">
 							<GroupMembersModal
 								groupContract={enrollment.competition_info.group_contract}
 								forceWithdrawEnrollmentId={
 									address === enrollment.host ? enrollment.id : undefined
 								}
 							/>
+							{!enrollment.has_finalized && enrollment.host === address && (
+								<FinalizeButton
+									enrollmentId={enrollment.id}
+									competitionDate={enrollment.competition_info.date}
+									deadlineBefore={enrollment.duration_before}
+									isFull={currentMembers >= maxMembers}
+								/>
+							)}
 						</CardFooter>
 					</Card>
 
@@ -379,22 +387,12 @@ const EnrollmentView = () => {
 							</Button>
 						)}
 					{!enrollment.has_finalized && (
-						<>
-							{enrollment.host === address && (
-								<FinalizeButton
-									enrollmentId={enrollment.id}
-									competitionDate={enrollment.competition_info.date}
-									deadlineBefore={enrollment.duration_before}
-									isFull={currentMembers >= maxMembers}
-								/>
-							)}
-							<EnrollButton
-								enrollmentId={enrollment.id}
-								isFull={currentMembers >= maxMembers}
-								entryFee={enrollment.entry_fee}
-								groupContract={enrollment.competition_info.group_contract}
-							/>
-						</>
+						<EnrollButton
+							enrollmentId={enrollment.id}
+							isFull={currentMembers >= maxMembers}
+							entryFee={enrollment.entry_fee}
+							groupContract={enrollment.competition_info.group_contract}
+						/>
 					)}
 				</div>
 			</div>
