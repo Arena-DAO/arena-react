@@ -105,13 +105,19 @@ function HomePage() {
 						<span className="whitespace-nowrap text-primary">The Arena</span>
 					</div>
 					<div className="text-center text-[100%] sm:text-[120%] md:text-left md:text-[150%]">
-						⚔️ Empower Communities to Compete, Govern, and Win ⚔️
+						⚔️ Empowering Communities to Compete, Govern, and Win ⚔️
 					</div>
 					<div className="mt-2 flex justify-center gap-4 md:justify-normal">
 						<Button as={Link} href="/compete" color="primary">
 							Compete
 						</Button>
-						<Button as={Link} href={env.DOCS_URL} color="secondary" isExternal>
+						<Button
+							as={Link}
+							href={env.DOCS_URL}
+							color="primary"
+							variant="faded"
+							isExternal
+						>
 							Learn More
 						</Button>
 					</div>

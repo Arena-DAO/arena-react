@@ -150,10 +150,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.50.47":
-  version: 0.50.47
-  resolution: "@chain-registry/types@npm:0.50.47"
-  checksum: 10c0/2b3516600124efedde4911521a66178c81811a5374a4b83a0050a68bbd4625011f99b1fba967c1d7e96cc70d4d19c429899de7b203969fd26b84bd30ef761e31
+"@chain-registry/types@npm:^0.50.50":
+  version: 0.50.50
+  resolution: "@chain-registry/types@npm:0.50.50"
+  checksum: 10c0/2f21c6a43dfc35e930266dc37f946b7a674a0b70ce7ded29d0d030cf8ed36ad86af6b999df1c29d572417081cf23b216ba881da516dae319d38525e5a8ccd430
   languageName: node
   linkType: hard
 
@@ -5559,12 +5559,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.10.6":
-  version: 22.10.6
-  resolution: "@types/node@npm:22.10.6"
+"@types/node@npm:^22.10.7":
+  version: 22.10.7
+  resolution: "@types/node@npm:22.10.7"
   dependencies:
     undici-types: "npm:~6.20.0"
-  checksum: 10c0/8b67affc211e5f9c74f7949cda04ca669721e50b83d71b8772a7bed7a4a3c41d663b3a794413f618e763ca6c5da8c234c25ffebcb0737983fc3e7415818ab9a7
+  checksum: 10c0/c941b4689dfc4044b64a5f601306cbcb0c7210be853ba378a5dd44137898c45accedd796ee002ad9407024cac7ecaf5049304951cb1d80ce3d7cebbbae56f20e
   languageName: node
   linkType: hard
 
@@ -6033,7 +6033,7 @@ __metadata:
   resolution: "arena-react@workspace:."
   dependencies:
     "@biomejs/biome": "npm:1.9.4"
-    "@chain-registry/types": "npm:^0.50.47"
+    "@chain-registry/types": "npm:^0.50.50"
     "@cosmjs/amino": "npm:^0.32.4"
     "@cosmjs/cosmwasm-stargate": "npm:0.32.4"
     "@cosmjs/encoding": "npm:^0.32.4"
@@ -6052,11 +6052,11 @@ __metadata:
     "@nextui-org/theme": "npm:^2.4.5"
     "@tanstack/react-query": "npm:4.36.1"
     "@types/lodash": "npm:^4.17.14"
-    "@types/node": "npm:^22.10.6"
+    "@types/node": "npm:^22.10.7"
     "@types/react": "npm:18.3.18"
     "@types/react-dom": "npm:^18.3.5"
     autoprefixer: "npm:^10.4.20"
-    chain-registry: "npm:1.69.91"
+    chain-registry: "npm:1.69.94"
     clsx: "npm:^2.1.1"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^7.0.6"
@@ -6069,7 +6069,7 @@ __metadata:
     next: "npm:15.1.4"
     next-themes: "npm:^0.4.4"
     pino-pretty: "npm:^13.0.0"
-    postcss: "npm:^8.5.0"
+    postcss: "npm:^8.5.1"
     postcss-import: "npm:^16.1.0"
     react: "npm:19.0.0"
     react-dom: "npm:19.0.0"
@@ -6390,12 +6390,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.69.91":
-  version: 1.69.91
-  resolution: "chain-registry@npm:1.69.91"
+"chain-registry@npm:1.69.94":
+  version: 1.69.94
+  resolution: "chain-registry@npm:1.69.94"
   dependencies:
-    "@chain-registry/types": "npm:^0.50.47"
-  checksum: 10c0/bd50a16d8c62a34a2bbe675007351a7539e36b1ec497ec559aab9627499217ea890573d58d52112bae438918fae879d1ea5395300702cd8dbe27bc42dc397a62
+    "@chain-registry/types": "npm:^0.50.50"
+  checksum: 10c0/1dd7a86fabe61a670cbc66493c2d50e33fa2f7d3b8e89f19d346c7df7d887ee6515daabe8b81099f1111f572f8e3ad1bf87000aa8d1352af35092b2793735cd5
   languageName: node
   linkType: hard
 
@@ -9528,14 +9528,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.5.0":
-  version: 8.5.0
-  resolution: "postcss@npm:8.5.0"
+"postcss@npm:^8.5.1":
+  version: 8.5.1
+  resolution: "postcss@npm:8.5.1"
   dependencies:
     nanoid: "npm:^3.3.8"
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
-  checksum: 10c0/ce4fb520808a932566a0fd97be905b43e219b55a3752fc8daa944082a35848fa8aff300b89b77dc52c8c3bb5cd53e77182ddb37addc6cacf586f1ef42a34ef45
+  checksum: 10c0/c4d90c59c98e8a0c102b77d3f4cac190f883b42d63dc60e2f3ed840f16197c0c8e25a4327d2e9a847b45a985612317dc0534178feeebd0a1cf3eb0eecf75cae4
   languageName: node
   linkType: hard
 

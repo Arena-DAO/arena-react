@@ -90,6 +90,7 @@ export default function AppNavbar() {
 						width="48"
 						height="48"
 						removeWrapper
+						radius="none"
 					/>
 				</div>
 				<p className="ml-2 font-bold text-inherit">Arena DAO</p>
