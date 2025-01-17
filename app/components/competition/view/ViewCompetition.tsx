@@ -18,7 +18,7 @@ import {
 	TableHeader,
 	TableRow,
 	Tooltip,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import type { PropsWithChildren } from "react";
 import { BsYinYang } from "react-icons/bs";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
@@ -55,7 +55,6 @@ const ViewCompetition = ({
 	return (
 		<div className="space-y-6">
 			<h1 className="text-center font-bold text-4xl">{competition.name}</h1>
-
 			{competition.banner && (
 				<Image
 					src={competition.banner}
@@ -64,7 +63,6 @@ const ViewCompetition = ({
 					removeWrapper
 				/>
 			)}
-
 			<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 				<Card>
 					<CardHeader>
@@ -124,7 +122,6 @@ const ViewCompetition = ({
 					</CardFooter>
 				</Card>
 			</div>
-
 			<EscrowSection
 				escrow={competition.escrow}
 				context={{
@@ -161,7 +158,6 @@ const ViewCompetition = ({
 					</Card>
 				)}
 			</EscrowSection>
-
 			<Card>
 				<CardHeader>
 					<h2 className="font-semibold text-xl">Description</h2>
@@ -176,7 +172,6 @@ const ViewCompetition = ({
 					</div>
 				</CardFooter>
 			</Card>
-
 			{((competition.rules && competition.rules.length > 0) ||
 				(competition.rulesets && competition.rulesets.length > 0)) && (
 				<Card>
@@ -191,7 +186,6 @@ const ViewCompetition = ({
 					</CardBody>
 				</Card>
 			)}
-
 			{competition.status !== "pending" && (
 				<EvidenceSection
 					moduleAddr={moduleAddr}
@@ -199,11 +193,9 @@ const ViewCompetition = ({
 					hideIfEmpty={competition.status === "inactive"}
 				/>
 			)}
-
 			{competition.status === "inactive" && (
 				<ResultSection moduleAddr={moduleAddr} competitionId={competition.id} />
 			)}
-
 			{children}
 		</div>
 	);

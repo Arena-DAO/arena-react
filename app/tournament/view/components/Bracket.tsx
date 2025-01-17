@@ -22,7 +22,7 @@ import { useEnv } from "~/hooks/useEnv";
 import "reactflow/dist/style.css";
 import { useChain } from "@cosmos-kit/react";
 import dagre from "@dagrejs/dagre";
-import { Button, ButtonGroup } from "@nextui-org/react";
+import { Button, ButtonGroup } from "@heroui/react";
 import {
 	type QueryClient,
 	useInfiniteQuery,

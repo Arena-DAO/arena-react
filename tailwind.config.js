@@ -1,18 +1,18 @@
-import { nextui } from "@nextui-org/react";
+import { heroui } from "@heroui/react";
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
 	content: [
 		"./app/**/*.{js,ts,jsx,tsx,mdx,mjs}",
 		"./src/**/*.{js,ts,jsx,tsx,mdx,mjs}",
-		"./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx,mjs}",
+		"./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx,mjs}",
 	],
 	theme: {
 		extend: {},
 	},
 	darkMode: "class",
 	plugins: [
-		nextui({
+		heroui({
 			layout: {
 				fontSize: {
 					large: "1.6rem",

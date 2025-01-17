@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, type ButtonProps } from "@nextui-org/react";
+import { Button, type ButtonProps } from "@heroui/react";
 import { FiCheck, FiClipboard } from "react-icons/fi";
 import useClipboard from "react-use-clipboard";
 

@@ -5,7 +5,7 @@ import {
 	CardBody,
 	CardFooter,
 	type CardProps,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useState } from "react";
 import type { CompetitionResponseForLeagueExt } from "~/codegen/ArenaLeagueModule.types";
 import RoundDisplay from "./RoundDisplay";

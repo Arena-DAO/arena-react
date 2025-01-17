@@ -1,7 +1,7 @@
 "use client";
 
-import { Card, CardFooter, type CardProps } from "@nextui-org/react";
-import { Image } from "@nextui-org/react";
+import { Card, CardFooter, type CardProps } from "@heroui/react";
+import { Image } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import type { SubCategory } from "~/hooks/useCategoryMap";
 import { useEnv } from "~/hooks/useEnv";

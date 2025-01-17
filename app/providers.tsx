@@ -6,7 +6,7 @@ import { wallets as metamaskExtensionWallets } from "@cosmos-kit/cosmos-extensio
 import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { ChainProvider } from "@cosmos-kit/react";
-import { NextUIProvider } from "@nextui-org/react";
+import { HeroUIProvider } from "@heroui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
 	assets as mainnetAssets,
@@ -84,11 +84,11 @@ export function Providers({ children }: PropsWithChildren) {
 
 	return (
 		<QueryClientProvider client={queryClient}>
-			<NextUIProvider navigate={router.push}>
+			<HeroUIProvider navigate={router.push}>
 				<NextThemesProvider attribute="class" defaultTheme="dark">
 					<InnerProviders>{children}</InnerProviders>
 				</NextThemesProvider>
-			</NextUIProvider>
+			</HeroUIProvider>
 		</QueryClientProvider>
 	);
 }

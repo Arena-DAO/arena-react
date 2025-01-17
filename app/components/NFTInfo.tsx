@@ -1,5 +1,5 @@
 // components/NFTInfo.tsx
-import { Card, CardBody, Image } from "@nextui-org/react";
+import { Card, CardBody, Image } from "@heroui/react";
 
 interface NFTInfoProps {
 	address: string;

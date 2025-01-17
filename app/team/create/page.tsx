@@ -2,7 +2,6 @@
 import { ProfileInput } from "@/components/ProfileInput";
 import { toBinary } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	Button,
 	Card,
@@ -17,7 +16,8 @@ import {
 	TableHeader,
 	TableRow,
 	Textarea,
-} from "@nextui-org/react";
+} from "@heroui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";

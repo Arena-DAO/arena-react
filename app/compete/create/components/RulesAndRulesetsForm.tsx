@@ -1,4 +1,4 @@
-import { Accordion, AccordionItem, Button, Input } from "@nextui-org/react";
+import { Accordion, AccordionItem, Button, Input } from "@heroui/react";
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 import { FiMinus, FiPlus } from "react-icons/fi";
 import { useCategoryContext } from "~/contexts/CategoryContext";

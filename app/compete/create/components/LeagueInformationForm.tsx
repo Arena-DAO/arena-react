@@ -1,4 +1,4 @@
-import { Button, Input, Progress } from "@nextui-org/react";
+import { Button, Input, Progress } from "@heroui/react";
 import { useMemo } from "react";
 import {
 	Controller,

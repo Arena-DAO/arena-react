@@ -18,7 +18,7 @@ import {
 	TableHeader,
 	TableRow,
 	Tabs,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useSearchParams } from "next/navigation";
 import { ArenaLeagueModuleQueryClient } from "~/codegen/ArenaLeagueModule.client";
 import { useArenaLeagueModuleCompetitionQuery } from "~/codegen/ArenaLeagueModule.react-query";

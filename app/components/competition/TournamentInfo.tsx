@@ -1,4 +1,4 @@
-import { Progress } from "@nextui-org/react";
+import { Progress } from "@heroui/react";
 import type React from "react";
 import type { CompetitionResponseForTournamentExt } from "~/codegen/ArenaTournamentModule.types";
 

@@ -2,7 +2,7 @@ import {
 	Autocomplete,
 	AutocompleteItem,
 	type AutocompleteProps,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useMemo } from "react";
 import type { FieldError, FieldValues } from "react-hook-form";
 import { useEnv } from "~/hooks/useEnv";

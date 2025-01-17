@@ -2,7 +2,7 @@
 
 import TokenInfo from "@/components/TokenInfo";
 import type { Asset } from "@chain-registry/types";
-import { Card, CardBody } from "@nextui-org/react";
+import { Card, CardBody } from "@heroui/react";
 import { useMemo } from "react";
 import { BsTrophyFill } from "react-icons/bs";
 import {

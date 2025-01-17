@@ -6,7 +6,7 @@ import {
 	Select,
 	SelectItem,
 	useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 import { DurationUnits } from "~/config/schemas/DurationSchema";

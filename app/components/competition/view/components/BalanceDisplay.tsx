@@ -9,7 +9,7 @@ import {
 	TableColumn,
 	TableHeader,
 	TableRow,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import type { BalanceVerified } from "~/codegen/ArenaEscrow.types";
 
 interface BalanceDisplayProps {

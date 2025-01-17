@@ -3,7 +3,6 @@
 import MaybeLink from "@/components/MaybeLink";
 import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	Accordion,
 	AccordionItem,
@@ -27,7 +26,8 @@ import {
 	Tooltip,
 	useDisclosure,
 	useDraggable,
-} from "@nextui-org/react";
+} from "@heroui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	type InfiniteData,
 	useInfiniteQuery,

@@ -8,7 +8,7 @@ import {
 	Select,
 	SelectItem,
 	type SelectedItems,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import clsx from "clsx";
 import { memo } from "react";
 import { Handle, type NodeProps, Position } from "reactflow";

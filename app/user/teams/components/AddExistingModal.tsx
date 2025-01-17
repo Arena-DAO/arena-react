@@ -1,6 +1,5 @@
 import { ProfileInput } from "@/components/ProfileInput";
 import { useChain } from "@cosmos-kit/react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	Button,
 	Modal,
@@ -9,7 +8,8 @@ import {
 	ModalFooter,
 	ModalHeader,
 	useDraggable,
-} from "@nextui-org/react";
+} from "@heroui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import type React from "react";
 import { useRef } from "react";
 import { Controller, useForm } from "react-hook-form";

@@ -1,6 +1,6 @@
 "use client";
 
-import { Skeleton, User, type UserProps } from "@nextui-org/react";
+import { Skeleton, User, type UserProps } from "@heroui/react";
 import { getDisplayToken } from "~/helpers/TokenHelpers";
 import { useToken } from "~/hooks/useToken";
 

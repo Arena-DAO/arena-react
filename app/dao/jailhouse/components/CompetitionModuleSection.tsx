@@ -10,7 +10,7 @@ import {
 	TableColumn,
 	TableHeader,
 	TableRow,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { arenaWagerModuleQueryKeys } from "~/codegen/ArenaWagerModule.react-query";

@@ -1,4 +1,4 @@
-import type { SharedSelection } from "@nextui-org/react";
+import type { SharedSelection } from "@heroui/react";
 
 export function getStringSet(sharedSelection: SharedSelection): Set<string> {
 	// Check if the sharedSelection is a Set

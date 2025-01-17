@@ -24,7 +24,7 @@ import {
 	TableHeader,
 	TableRow,
 	Tooltip,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useSearchParams } from "next/navigation";
 import { FiUsers } from "react-icons/fi";
 import { ArenaCompetitionEnrollmentQueryClient } from "~/codegen/ArenaCompetitionEnrollment.client";

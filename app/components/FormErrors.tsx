@@ -1,4 +1,4 @@
-import { Card, CardBody, CardHeader } from "@nextui-org/react";
+import { Card, CardBody, CardHeader } from "@heroui/react";
 import type React from "react";
 import type { FieldErrors } from "react-hook-form";
 import { FiAlertTriangle } from "react-icons/fi";

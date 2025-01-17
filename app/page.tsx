@@ -2,7 +2,7 @@
 
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
-import { Button, Link } from "@nextui-org/react";
+import { Button, Link } from "@heroui/react";
 import { useState } from "react";
 import { useEnv } from "~/hooks/useEnv";
 import LandingPageSections from "./components/LandingPageSections";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useChain } from "@cosmos-kit/react";
-import { Card, CardBody, CardHeader, Spinner } from "@nextui-org/react";
+import { Card, CardBody, CardHeader, Spinner } from "@heroui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";

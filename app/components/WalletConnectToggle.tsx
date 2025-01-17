@@ -8,7 +8,7 @@ import {
 	DropdownMenu,
 	DropdownTrigger,
 	Tooltip,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useMemo } from "react";
 import { BsDiscord, BsWallet } from "react-icons/bs";
 import { toast } from "react-toastify";

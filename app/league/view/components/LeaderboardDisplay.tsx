@@ -11,7 +11,7 @@ import {
 	TableColumn,
 	TableHeader,
 	TableRow,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useMemo } from "react";
 import { ArenaLeagueModuleQueryClient } from "~/codegen/ArenaLeagueModule.client";
 import { useArenaLeagueModuleQueryExtensionQuery } from "~/codegen/ArenaLeagueModule.react-query";

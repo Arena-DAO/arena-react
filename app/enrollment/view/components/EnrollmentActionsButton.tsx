@@ -9,7 +9,7 @@ import {
 	DropdownMenu,
 	DropdownTrigger,
 	useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import type React from "react";
 import { useEffect, useState } from "react";

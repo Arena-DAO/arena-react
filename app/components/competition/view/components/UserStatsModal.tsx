@@ -15,7 +15,7 @@ import {
 	TableRow,
 	useDisclosure,
 	useDraggable,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import React from "react";
 import { useMemo } from "react";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";

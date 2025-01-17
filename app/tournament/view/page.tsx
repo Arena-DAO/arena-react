@@ -19,7 +19,7 @@ import {
 	TableHeader,
 	TableRow,
 	Tabs,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useSearchParams } from "next/navigation";
 import { ReactFlowProvider } from "reactflow";
 import { ArenaTournamentModuleQueryClient } from "~/codegen/ArenaTournamentModule.client";

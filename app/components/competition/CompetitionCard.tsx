@@ -1,4 +1,4 @@
-import { Card, CardBody, Image } from "@nextui-org/react";
+import { Card, CardBody, Image } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import type React from "react";
 import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollment.types";

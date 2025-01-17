@@ -1,4 +1,4 @@
-import { Badge, Chip, type ChipProps } from "@nextui-org/react";
+import { Badge, Chip, type ChipProps } from "@heroui/react";
 import type React from "react";
 import { BsHourglassBottom } from "react-icons/bs";
 import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";

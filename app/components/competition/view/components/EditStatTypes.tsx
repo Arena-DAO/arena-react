@@ -1,7 +1,6 @@
 "use client";
 
 import { useChain } from "@cosmos-kit/react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	Button,
 	Card,
@@ -26,7 +25,8 @@ import {
 	Tooltip,
 	useDisclosure,
 	useDraggable,
-} from "@nextui-org/react";
+} from "@heroui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useMemo } from "react";
 import {

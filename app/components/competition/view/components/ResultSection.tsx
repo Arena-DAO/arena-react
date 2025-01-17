@@ -13,7 +13,7 @@ import {
 	TableColumn,
 	TableHeader,
 	TableRow,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { useArenaWagerModuleResultQuery } from "~/codegen/ArenaWagerModule.react-query";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";

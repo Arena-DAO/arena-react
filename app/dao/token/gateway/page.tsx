@@ -4,7 +4,6 @@ import Profile from "@/components/Profile";
 import TokenInfo from "@/components/TokenInfo";
 import { coins } from "@cosmjs/amino";
 import { useChain } from "@cosmos-kit/react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	Button,
 	Card,
@@ -27,7 +26,8 @@ import {
 	Textarea,
 	Tooltip,
 	useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import type React from "react";
 import { useMemo, useState } from "react";

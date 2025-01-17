@@ -6,8 +6,6 @@ import {
 	toBinary,
 } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {} from "@internationalized/date";
 import {
 	Button,
 	Card,
@@ -15,7 +13,9 @@ import {
 	CardHeader,
 	Switch,
 	Tooltip,
-} from "@nextui-org/react";
+} from "@heroui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {} from "@internationalized/date";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { FiInfo } from "react-icons/fi";

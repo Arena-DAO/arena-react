@@ -1,7 +1,7 @@
 "use client";
 
 import { useModalTheme } from "@cosmos-kit/react";
-import { Switch } from "@nextui-org/react";
+import { Switch } from "@heroui/react";
 import { useTheme } from "next-themes";
 import { BsCloudMoonFill, BsSunFill } from "react-icons/bs";
 

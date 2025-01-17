@@ -17,7 +17,7 @@ import {
 	TableRow,
 	useDisclosure,
 	useDraggable,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { useCallback, useMemo } from "react";

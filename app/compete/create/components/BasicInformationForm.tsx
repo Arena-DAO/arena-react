@@ -1,6 +1,5 @@
 "use client";
 
-import { getLocalTimeZone, now } from "@internationalized/date";
 import {
 	Button,
 	DatePicker,
@@ -8,7 +7,8 @@ import {
 	Select,
 	SelectItem,
 	Textarea,
-} from "@nextui-org/react";
+} from "@heroui/react";
+import { getLocalTimeZone, now } from "@internationalized/date";
 import { Controller, useFormContext } from "react-hook-form";
 import { DurationUnits } from "~/config/schemas/DurationSchema";
 

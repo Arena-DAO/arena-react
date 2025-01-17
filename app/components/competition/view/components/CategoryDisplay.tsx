@@ -1,4 +1,4 @@
-import { Spacer } from "@nextui-org/react";
+import { Spacer } from "@heroui/react";
 import type React from "react";
 import { useCategoryContext } from "~/contexts/CategoryContext";
 

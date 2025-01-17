@@ -19,7 +19,7 @@ import {
 	TableHeader,
 	TableRow,
 	useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { BsChevronDown, BsTrash } from "react-icons/bs";

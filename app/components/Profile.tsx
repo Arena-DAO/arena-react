@@ -12,7 +12,7 @@ import {
 	Tooltip,
 	User,
 	type UserProps,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useMemo } from "react";
 import { ArenaCoreQueryClient } from "~/codegen/ArenaCore.client";
 import { useArenaCoreQueryExtensionQuery } from "~/codegen/ArenaCore.react-query";

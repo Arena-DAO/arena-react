@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, ButtonGroup, Link } from "@nextui-org/react";
+import { Button, ButtonGroup, Link } from "@heroui/react";
 import { BsDiscord, BsGithub, BsTwitterX, BsYinYang } from "react-icons/bs";
 import { useEnv } from "~/hooks/useEnv";
 

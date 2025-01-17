@@ -1,6 +1,6 @@
 "use client";
 
-import { Spinner } from "@nextui-org/react";
+import { Spinner } from "@heroui/react";
 import { getDisplayToken } from "~/helpers/TokenHelpers";
 import { useToken } from "~/hooks/useToken";
 

@@ -2,7 +2,6 @@
 
 import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	Button,
 	Card,
@@ -24,7 +23,8 @@ import {
 	Textarea,
 	useDisclosure,
 	useDraggable,
-} from "@nextui-org/react";
+} from "@heroui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import type {} from "react";
 import React from "react";

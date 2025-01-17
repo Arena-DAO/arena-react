@@ -11,12 +11,12 @@ import {
 	NavbarMenuItem,
 	NavbarMenuToggle,
 	cn,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import dynamic from "next/dynamic";
 const ColorModeSwitch = dynamic(() => import("./ColorModeSwitch"), {
 	ssr: false,
 });
-import { Image } from "@nextui-org/react";
+import { Image } from "@heroui/react";
 import NextImage from "next/image";
 import NextLink from "next/link";
 import { useMemo, useState } from "react";

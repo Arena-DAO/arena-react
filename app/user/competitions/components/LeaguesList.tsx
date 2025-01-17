@@ -1,5 +1,5 @@
 import CompetitionCard from "@/components/competition/CompetitionCard";
-import { Button, Spinner } from "@nextui-org/react";
+import { Button, Spinner } from "@heroui/react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 // components/LeaguesList.tsx
 import type React from "react";

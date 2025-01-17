@@ -1,5 +1,5 @@
 import Profile from "@/components/Profile";
-import { Button, Input } from "@nextui-org/react";
+import { Button, Input } from "@heroui/react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { FiMinus } from "react-icons/fi";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";

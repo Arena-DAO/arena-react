@@ -1,5 +1,5 @@
 import TokenInfo from "@/components/TokenInfo";
-import { Slider, Tooltip } from "@nextui-org/react";
+import { Slider, Tooltip } from "@heroui/react";
 import type React from "react";
 import { FiUsers } from "react-icons/fi";
 import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollment.types";

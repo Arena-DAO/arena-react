@@ -1,12 +1,6 @@
 "use client";
 
-import {
-	Button,
-	Divider,
-	Switch,
-	Tooltip,
-	useDisclosure,
-} from "@nextui-org/react";
+import { Button, Divider, Switch, Tooltip, useDisclosure } from "@heroui/react";
 import { useState } from "react";
 import {
 	Controller,

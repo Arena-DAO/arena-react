@@ -1,6 +1,5 @@
 import TokenInfo from "@/components/TokenInfo";
 import { useChain } from "@cosmos-kit/react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	Button,
 	Input,
@@ -11,7 +10,8 @@ import {
 	ModalHeader,
 	Spinner,
 	useDraggable,
-} from "@nextui-org/react";
+} from "@heroui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import _ from "lodash";
 import React from "react";
 import { useEffect, useState } from "react";

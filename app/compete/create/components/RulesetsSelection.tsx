@@ -11,7 +11,7 @@ import {
 	TableColumn,
 	TableHeader,
 	TableRow,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import type React from "react";
 import { useMemo } from "react";

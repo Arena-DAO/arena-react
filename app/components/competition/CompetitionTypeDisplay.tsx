@@ -1,4 +1,4 @@
-import { Chip } from "@nextui-org/react";
+import { Chip } from "@heroui/react";
 import type React from "react";
 import type { CompetitionType } from "~/codegen/ArenaCompetitionEnrollment.types";
 

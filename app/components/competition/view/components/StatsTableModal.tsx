@@ -18,7 +18,7 @@ import {
 	getKeyValue,
 	useDisclosure,
 	useDraggable,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React from "react";
 import { useMemo } from "react";

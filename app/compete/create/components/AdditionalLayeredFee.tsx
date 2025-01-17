@@ -1,5 +1,5 @@
 import Profile from "@/components/Profile"; // Adjust the import path as needed
-import { Button, Input } from "@nextui-org/react";
+import { Button, Input } from "@heroui/react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { BsPercent } from "react-icons/bs";
 import { FiMinus } from "react-icons/fi";

@@ -1,5 +1,5 @@
 import MaybeLink from "@/components/MaybeLink";
-import { Accordion, AccordionItem } from "@nextui-org/react";
+import { Accordion, AccordionItem } from "@heroui/react";
 import type React from "react";
 import { useMemo } from "react";
 import { ArenaCoreQueryClient } from "~/codegen/ArenaCore.client";

@@ -1,6 +1,6 @@
 "use client";
 
-import { DateInput, DateRangePicker } from "@nextui-org/react";
+import { DateInput, DateRangePicker } from "@heroui/react";
 import React from "react";
 import type { Timestamp } from "~/codegen/ArenaWagerModule.types";
 import { nanosToZonedDateTime } from "~/config/schemas/TimestampSchema";

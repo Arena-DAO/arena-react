@@ -12,7 +12,7 @@ import {
 	TableHeader,
 	TableRow,
 	Tooltip,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import type React from "react";
 import {
 	Controller,

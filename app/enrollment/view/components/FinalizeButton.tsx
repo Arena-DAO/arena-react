@@ -1,7 +1,7 @@
 "use client";
 
 import { useChain } from "@cosmos-kit/react";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";

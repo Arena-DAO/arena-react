@@ -19,7 +19,7 @@ import {
 	Tabs,
 	Tooltip,
 	useDisclosure,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import type React from "react";
 import { useCallback, useMemo, useState } from "react";
 import { BsCoin, BsFire } from "react-icons/bs";

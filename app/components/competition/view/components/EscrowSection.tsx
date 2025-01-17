@@ -9,7 +9,7 @@ import {
 	CardFooter,
 	CardHeader,
 	Spinner,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { type InfiniteData, useQueryClient } from "@tanstack/react-query";
 import type { PropsWithChildren } from "react";
 import { toast } from "react-toastify";

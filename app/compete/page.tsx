@@ -1,6 +1,6 @@
 "use client";
 
-import { BreadcrumbItem, Breadcrumbs, Button, Link } from "@nextui-org/react";
+import { BreadcrumbItem, Breadcrumbs, Button, Link } from "@heroui/react";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import { BsPlus } from "react-icons/bs";
