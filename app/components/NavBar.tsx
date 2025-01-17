@@ -93,7 +93,7 @@ export default function AppNavbar() {
 						radius="none"
 					/>
 				</div>
-				<p className="ml-2 font-bold text-inherit">Arena DAO</p>
+				<h3 className="ml-2 font-bold text-inherit">Arena DAO</h3>
 				{env.ENV === "development" && (
 					<Chip className="ml-2 hidden md:flex" size="sm">
 						testnet
