@@ -82,18 +82,16 @@ export default function AppNavbar() {
 		>
 			<NavbarMenuToggle className="text-default-400 md:hidden" />
 			<NavbarBrand>
-				<div className="rounded-full bg-foreground text-background">
-					<Image
-						as={NextImage}
-						src="/logo.png"
-						alt="logo"
-						width="48"
-						height="48"
-						removeWrapper
-						radius="none"
-					/>
-				</div>
-				<h3 className="ml-2 font-bold text-inherit">Arena DAO</h3>
+				<Image
+					as={NextImage}
+					src="/logo.svg"
+					alt="logo"
+					width="48"
+					height="48"
+					removeWrapper
+					radius="none"
+				/>
+				<h3 className="ml-2 font-extrabold text-inherit">Arena DAO</h3>
 				{env.ENV === "development" && (
 					<Chip className="ml-2 hidden md:flex" size="sm">
 						testnet
