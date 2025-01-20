@@ -1,3 +1,5 @@
+"use client";
+
 import { ProfileInput } from "@/components/ProfileInput";
 import { useChain } from "@cosmos-kit/react";
 import {
