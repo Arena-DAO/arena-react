@@ -327,7 +327,7 @@ const CreateTeam = () => {
 													<Controller
 														name={`members.${index}.percentage`}
 														control={control}
-														render={({ field: { onChange, ...field } }) => (
+														render={({ field }) => (
 															<Input
 																{...field}
 																isRequired
