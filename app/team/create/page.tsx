@@ -294,6 +294,7 @@ const CreateTeam = () => {
 									<Button
 										color="primary"
 										onPress={() => append({ addr: "", percentage: "0" })}
+										isDisabled={isSubmitting}
 									>
 										Add Member
 									</Button>
@@ -350,7 +351,11 @@ const CreateTeam = () => {
 													/>
 												</TableCell>
 												<TableCell>
-													<Button color="danger" onPress={() => remove(index)}>
+													<Button
+														color="danger"
+														onPress={() => remove(index)}
+														isDisabled={isSubmitting}
+													>
 														Remove
 													</Button>
 												</TableCell>
