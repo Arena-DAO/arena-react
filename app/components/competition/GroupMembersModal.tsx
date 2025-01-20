@@ -1,8 +1,11 @@
+"use client";
+
 import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
 import {
 	Button,
 	Checkbox,
+	Input,
 	Modal,
 	ModalBody,
 	ModalContent,
@@ -19,11 +22,9 @@ import {
 	useDraggable,
 } from "@heroui/react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useState } from "react";
-import { useCallback, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { toast } from "react-toastify";
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
-import { arenaCompetitionEnrollmentQueryKeys } from "~/codegen/ArenaCompetitionEnrollment.react-query";
 import { ArenaGroupQueryClient } from "~/codegen/ArenaGroup.client";
 import { arenaGroupQueryKeys } from "~/codegen/ArenaGroup.react-query";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
@@ -31,13 +32,12 @@ import { useEnv } from "~/hooks/useEnv";
 
 interface GroupMemberProps {
 	groupContract: string;
-	// Pass in the enrollmentId if the user can force withdraw member
-	forceWithdrawEnrollmentId?: string;
+	enrollmentId?: string; // Optional enrollmentId for authorization
 }
 
 const GroupMembers: React.FC<GroupMemberProps> = ({
 	groupContract,
-	forceWithdrawEnrollmentId,
+	enrollmentId,
 }) => {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
@@ -45,18 +45,31 @@ const GroupMembers: React.FC<GroupMemberProps> = ({
 	const [selectedMembers, setSelectedMembers] = useState<Set<string>>(
 		new Set(),
 	);
+	const [modifiedSeeds, setModifiedSeeds] = useState<Record<string, string>>(
+		{},
+	);
 	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
 	const queryClient = useQueryClient();
 
-	const handleCheckboxChange = (address: string, isSelected: boolean) => {
+	const handleCheckboxChange = (addr: string, isSelected: boolean) => {
 		setSelectedMembers((prev) => {
-			const newSelection = new Set(prev);
-			if (isSelected) {
-				newSelection.add(address);
-			} else {
-				newSelection.delete(address);
+			const updatedSelection = new Set(prev);
+			isSelected ? updatedSelection.add(addr) : updatedSelection.delete(addr);
+			return updatedSelection;
+		});
+	};
+
+	const handleSeedChange = (
+		addr: string,
+		value: string,
+		originalSeed: string,
+	) => {
+		setModifiedSeeds((prev) => {
+			if (value !== originalSeed) {
+				return { ...prev, [addr]: value };
 			}
-			return newSelection;
+			const { [addr]: _, ...rest } = prev; // Remove from modifiedSeeds if unchanged
+			return rest;
 		});
 	};
 
@@ -102,11 +115,13 @@ const GroupMembers: React.FC<GroupMemberProps> = ({
 		() => data?.pages.flatMap((page) => page.members) || [],
 		[data],
 	);
+
 	const targetRef = React.useRef(null);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
 	const handleForceWithdraw = async () => {
-		if (selectedMembers.size === 0 || !forceWithdrawEnrollmentId) return;
+		if (!enrollmentId || selectedMembers.size === 0) return;
+
 		try {
 			const client = await getSigningCosmWasmClient();
 			if (!address) throw new Error("Could not get user address");
@@ -118,19 +133,49 @@ const GroupMembers: React.FC<GroupMemberProps> = ({
 			);
 
 			await enrollmentClient.forceWithdraw({
-				id: forceWithdrawEnrollmentId,
+				id: enrollmentId,
 				members: Array.from(selectedMembers),
 			});
 
 			await queryClient.invalidateQueries(
-				arenaCompetitionEnrollmentQueryKeys.enrollment(
-					env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
-					{ enrollmentId: forceWithdrawEnrollmentId },
-				),
+				arenaGroupQueryKeys.members(groupContract, {}),
 			);
-			onClose();
-			setSelectedMembers(new Set());
+
 			toast.success("Users have been successfully withdrawn");
+			setSelectedMembers(new Set());
+		} catch (e) {
+			console.error(e);
+			toast.error((e as Error).toString());
+		}
+	};
+
+	const handleSetSeeds = async () => {
+		if (!enrollmentId || Object.keys(modifiedSeeds).length === 0) return;
+
+		try {
+			const client = await getSigningCosmWasmClient();
+			if (!address) throw new Error("Could not get user address");
+
+			const enrollmentClient = new ArenaCompetitionEnrollmentClient(
+				client,
+				address,
+				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+			);
+
+			await enrollmentClient.setRankings({
+				id: enrollmentId,
+				rankings: Object.entries(modifiedSeeds).map(([addr, seed]) => ({
+					addr,
+					seed: seed.toString(),
+				})),
+			});
+
+			await queryClient.invalidateQueries(
+				arenaGroupQueryKeys.members(groupContract, {}),
+			);
+
+			toast.success("Seeds updated successfully");
+			setModifiedSeeds({});
 		} catch (e) {
 			console.error(e);
 			toast.error((e as Error).toString());
@@ -154,11 +199,8 @@ const GroupMembers: React.FC<GroupMemberProps> = ({
 						<Table aria-label="Enrolled Members" removeWrapper>
 							<TableHeader>
 								<TableColumn>Member</TableColumn>
-								{forceWithdrawEnrollmentId ? (
-									<TableColumn>Selections</TableColumn>
-								) : (
-									<TableColumn> </TableColumn>
-								)}
+								<TableColumn>Seed</TableColumn>
+								<TableColumn> </TableColumn>
 							</TableHeader>
 							<TableBody
 								emptyContent="No members yet..."
@@ -170,7 +212,26 @@ const GroupMembers: React.FC<GroupMemberProps> = ({
 										<TableCell>
 											<Profile address={member.addr} />
 										</TableCell>
-										{forceWithdrawEnrollmentId ? (
+										<TableCell>
+											<Input
+												type="number"
+												step="1"
+												variant="flat"
+												readOnly={!enrollmentId}
+												value={
+													modifiedSeeds[member.addr]?.toString() ?? member.seed
+												}
+												onChange={(e) =>
+													handleSeedChange(
+														member.addr,
+														e.target.value,
+														member.seed,
+													)
+												}
+												placeholder="Enter seed"
+											/>
+										</TableCell>
+										{enrollmentId ? (
 											<TableCell>
 												<Checkbox
 													isSelected={selectedMembers.has(member.addr)}
@@ -187,18 +248,25 @@ const GroupMembers: React.FC<GroupMemberProps> = ({
 							</TableBody>
 						</Table>
 					</ModalBody>
-					{(hasNextPage || forceWithdrawEnrollmentId) && (
-						<ModalFooter>
-							{hasNextPage && (
+					<ModalFooter>
+						{hasNextPage && (
+							<Button
+								onPress={loadMore}
+								isLoading={isFetchingNextPage}
+								disabled={isFetchingNextPage}
+							>
+								Load More
+							</Button>
+						)}
+						{enrollmentId && (
+							<>
 								<Button
-									onPress={loadMore}
-									isLoading={isFetchingNextPage}
-									disabled={!hasNextPage || isFetchingNextPage}
+									onPress={handleSetSeeds}
+									color="primary"
+									isDisabled={Object.keys(modifiedSeeds).length === 0}
 								>
-									{isFetchingNextPage ? "Loading more..." : "Load More"}
+									Set Seeds
 								</Button>
-							)}
-							{forceWithdrawEnrollmentId && (
 								<Button
 									onPress={handleForceWithdraw}
 									isDisabled={selectedMembers.size === 0}
@@ -206,9 +274,9 @@ const GroupMembers: React.FC<GroupMemberProps> = ({
 								>
 									Force Withdraw
 								</Button>
-							)}
-						</ModalFooter>
-					)}
+							</>
+						)}
+					</ModalFooter>
 				</ModalContent>
 			</Modal>
 		</>

@@ -112,7 +112,7 @@ const EnrollmentView = () => {
 						<CardFooter className="justify-between gap-2">
 							<GroupMembersModal
 								groupContract={enrollment.competition_info.group_contract}
-								forceWithdrawEnrollmentId={
+								enrollmentId={
 									address === enrollment.host ? enrollment.id : undefined
 								}
 							/>
