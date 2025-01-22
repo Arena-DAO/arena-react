@@ -8,8 +8,10 @@ import {
 	CardFooter,
 	CardHeader,
 	Link,
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
 	Skeleton,
-	Tooltip,
 	User,
 	type UserProps,
 } from "@heroui/react";
@@ -18,11 +20,15 @@ import { ArenaCoreQueryClient } from "~/codegen/ArenaCore.client";
 import { useArenaCoreQueryExtensionQuery } from "~/codegen/ArenaCore.react-query";
 import type { Rating } from "~/codegen/ArenaCore.types";
 import { useCategoryContext } from "~/contexts/CategoryContext";
-import { isValidBech32Address } from "~/helpers/AddressHelpers";
+import {
+	isValidBech32Address,
+	isValidContractAddress,
+} from "~/helpers/AddressHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import { useProfileData } from "~/hooks/useProfile";
 import { CopyAddressButton } from "./CopyAddressButton";
+import TeamMembersModal from "./TeamMembersModal";
 import UserStatsModal from "./competition/view/components/UserStatsModal";
 
 interface StatProps {
@@ -34,20 +40,18 @@ export interface ProfileProps extends Omit<UserProps, "name"> {
 	address: string;
 	hideIfInvalid?: boolean;
 	justAvatar?: boolean;
-	isTooltipDisabled?: boolean;
+	isPopoverDisabled?: boolean;
 	isRatingDisabled?: boolean; // Should not be checked by the WalletConnectToggle
 	statProps?: StatProps;
-	tooltipOpenDelay?: number;
 }
 
 const Profile = ({
 	address,
 	hideIfInvalid = false,
 	justAvatar = false,
-	isTooltipDisabled = false,
+	isPopoverDisabled = false,
 	isRatingDisabled = false,
 	statProps,
-	tooltipOpenDelay,
 	...props
 }: ProfileProps) => {
 	const env = useEnv();
@@ -87,89 +91,105 @@ const Profile = ({
 		return null;
 	}
 
-	if (isLoading) return <Skeleton />;
-
 	const parsedRating = category
 		? rating
 			? (rating as unknown as Rating).value
 			: "1500"
 		: undefined;
 
-	const tooltipContent = (
-		<Card shadow="none" classNames={{ footer: "px-0 py-1" }}>
-			{data?.name && (
-				<CardHeader>
-					{data.link ? (
-						<Link isExternal showAnchorIcon href={data.link}>
-							{data.name}
-						</Link>
-					) : (
-						<>{data.name}</>
-					)}
-				</CardHeader>
-			)}
-			{!isEnrollmentContract && parsedRating && (
-				<CardBody className="pt-0">
-					Rating {Number.parseFloat(parsedRating).toFixed(2)}
-				</CardBody>
-			)}
-			{data?.address && (
-				<CardFooter className="gap-2">
-					<CopyAddressButton address={data.address} />
-					{!isEnrollmentContract && (
-						<>
-							<Button
-								as={Link}
-								href={`/user/competitions?host=${data.address}`}
-							>
-								Competitions
-							</Button>
+	const popoverContent = useMemo(() => {
+		if (isPopoverDisabled) return null;
+		return (
+			<Card shadow="none" classNames={{ footer: "px-0 py-1" }}>
+				{data?.name && (
+					<CardHeader>
+						{data.link ? (
+							<Link isExternal showAnchorIcon href={data.link}>
+								{data.name}
+							</Link>
+						) : (
+							<>{data.name}</>
+						)}
+					</CardHeader>
+				)}
+				{!isEnrollmentContract && parsedRating && (
+					<CardBody className="pt-0">
+						Rating {Number.parseFloat(parsedRating).toFixed(2)}
+					</CardBody>
+				)}
+				{data?.address && (
+					<CardFooter className="gap-2">
+						<CopyAddressButton address={data.address} />
+						{!isEnrollmentContract && (
+							<>
+								<Button
+									as={Link}
+									href={`/user/competitions?host=${data.address}`}
+								>
+									Competitions
+								</Button>
 
-							{statProps && (
-								<UserStatsModal userAddress={data.address} {...statProps} />
-							)}
-						</>
-					)}
-				</CardFooter>
-			)}
-		</Card>
+								{isValidContractAddress(data.address) && (
+									<TeamMembersModal daoAddress={data.address} />
+								)}
+
+								{statProps && (
+									<UserStatsModal userAddress={data.address} {...statProps} />
+								)}
+							</>
+						)}
+					</CardFooter>
+				)}
+			</Card>
+		);
+	}, [data, isEnrollmentContract, parsedRating, statProps, isPopoverDisabled]);
+
+	if (isLoading) return <Skeleton />;
+
+	// Common elements
+	const avatarElement = (
+		<Avatar
+			className={`${props.className} aspect-square`}
+			src={data?.imageUrl || undefined}
+			content={data?.name ?? data?.address}
+			showFallback
+		/>
 	);
 
+	const userElement = (
+		<User
+			{...props}
+			name={data?.name ?? data?.address}
+			showFallback
+			className="cursor-pointer"
+			avatarProps={{
+				src: data?.imageUrl || undefined,
+				className: `${props.className} aspect-square`,
+			}}
+		/>
+	);
+
+	if (isLoading) return <Skeleton />;
+
+	// Conditional rendering logic
 	if (justAvatar) {
-		return (
-			<Tooltip
-				isDisabled={isTooltipDisabled}
-				showArrow
-				content={tooltipContent}
-				delay={tooltipOpenDelay}
-			>
-				<Avatar
-					className={`${props.className} aspect-square`}
-					src={data?.imageUrl || undefined}
-					content={data?.name ?? data?.address}
-					showFallback
-				/>
-			</Tooltip>
+		return isPopoverDisabled ? (
+			avatarElement
+		) : (
+			<Popover>
+				<PopoverTrigger>{avatarElement}</PopoverTrigger>
+				<PopoverContent>{popoverContent}</PopoverContent>
+			</Popover>
 		);
 	}
 
-	return (
-		<Tooltip
-			delay={tooltipOpenDelay}
-			isDisabled={isTooltipDisabled}
-			showArrow
-			content={tooltipContent}
-		>
-			<User
-				{...props}
-				name={data?.name ?? data?.address}
-				showFallback
-				avatarProps={{
-					src: data?.imageUrl || undefined,
-					className: `${props.className} aspect-square`,
-				}}
-			/>
-		</Tooltip>
+	return isPopoverDisabled ? (
+		userElement
+	) : (
+		<Popover>
+			<PopoverTrigger>{userElement}</PopoverTrigger>
+			<PopoverContent>{popoverContent}</PopoverContent>
+		</Popover>
 	);
 };
 

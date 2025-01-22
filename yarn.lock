@@ -150,10 +150,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.50.53":
-  version: 0.50.53
-  resolution: "@chain-registry/types@npm:0.50.53"
-  checksum: 10c0/1bec5866e124c6455404d221a5097264bc4c66527b5c6d32a2ba5c58f58d8d4036ccf6e838ccc954ccaf0be94b511337518843084585e19ed8ad0ad38aac1cca
+"@chain-registry/types@npm:^0.50.54":
+  version: 0.50.54
+  resolution: "@chain-registry/types@npm:0.50.54"
+  checksum: 10c0/a2692527724b4a466eb9a57aae5187275d151c74be9dc343db2a51fdc5da53b04b5df6fc1d0c0b9b677e86c31a47a66ade45958c292198e8c0218146d493bced
   languageName: node
   linkType: hard
 
@@ -6033,7 +6033,7 @@ __metadata:
   resolution: "arena-react@workspace:."
   dependencies:
     "@biomejs/biome": "npm:1.9.4"
-    "@chain-registry/types": "npm:^0.50.53"
+    "@chain-registry/types": "npm:^0.50.54"
     "@cosmjs/amino": "npm:^0.32.4"
     "@cosmjs/cosmwasm-stargate": "npm:0.32.4"
     "@cosmjs/encoding": "npm:^0.32.4"
@@ -6056,7 +6056,7 @@ __metadata:
     "@types/react": "npm:18.3.18"
     "@types/react-dom": "npm:^18.3.5"
     autoprefixer: "npm:^10.4.20"
-    chain-registry: "npm:1.69.98"
+    chain-registry: "npm:1.69.100"
     clsx: "npm:^2.1.1"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^7.0.6"
@@ -6390,12 +6390,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.69.98":
-  version: 1.69.98
-  resolution: "chain-registry@npm:1.69.98"
+"chain-registry@npm:1.69.100":
+  version: 1.69.100
+  resolution: "chain-registry@npm:1.69.100"
   dependencies:
-    "@chain-registry/types": "npm:^0.50.53"
-  checksum: 10c0/8699a998ceec83605e5cd80465cc5d8b9926d12e6c9174e792ac6adf25f09e4a0d8a5e7f975b806dc25a1d08716d72c7c440156a36f8e54868ed2b5a3d8d5ae8
+    "@chain-registry/types": "npm:^0.50.54"
+  checksum: 10c0/57683175f942b3da756e23c46bd95d1832474399126d43dd315ea2341c529670be87195e5218c70a21c8d00c301d03242e211af7b910a94a58ad8b69c0a26d1a
   languageName: node
   linkType: hard
 

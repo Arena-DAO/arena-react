@@ -57,21 +57,13 @@ const MatchNode = memo(({ data }: MatchNodeProps) => {
 				</CardHeader>
 				<CardBody className="gap-4 text-center align-middle text-4xl">
 					{data.team_1 ? (
-						<Profile
-							address={data.team_1}
-							classNames={{ name: "text-4xl" }}
-							tooltipOpenDelay={1000}
-						/>
+						<Profile address={data.team_1} classNames={{ name: "text-4xl" }} />
 					) : (
 						<p>TBD</p>
 					)}
 					<Divider />
 					{data.team_2 ? (
-						<Profile
-							address={data.team_2}
-							classNames={{ name: "text-4xl" }}
-							tooltipOpenDelay={1000}
-						/>
+						<Profile address={data.team_2} classNames={{ name: "text-4xl" }} />
 					) : (
 						<p>TBD</p>
 					)}
@@ -101,14 +93,14 @@ const MatchNode = memo(({ data }: MatchNodeProps) => {
 									{item.textValue === "team1" && data.team_1 && (
 										<Profile
 											address={data.team_1}
-											isTooltipDisabled
+											isPopoverDisabled
 											classNames={{ name: "text-3xl" }}
 										/>
 									)}
 									{item.textValue === "team2" && data.team_2 && (
 										<Profile
 											address={data.team_2}
-											isTooltipDisabled
+											isPopoverDisabled
 											classNames={{ name: "text-3xl" }}
 										/>
 									)}
@@ -119,10 +111,10 @@ const MatchNode = memo(({ data }: MatchNodeProps) => {
 						{(user) => (
 							<SelectItem key={user.team} textValue={user.team}>
 								{user.team === "team1" && data.team_1 && (
-									<Profile address={data.team_1} isTooltipDisabled />
+									<Profile address={data.team_1} isPopoverDisabled />
 								)}
 								{user.team === "team2" && data.team_2 && (
-									<Profile address={data.team_2} isTooltipDisabled />
+									<Profile address={data.team_2} isPopoverDisabled />
 								)}
 							</SelectItem>
 						)}

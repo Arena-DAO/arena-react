@@ -118,7 +118,7 @@ const TeamsPage = () => {
 										<Profile address={team} isRatingDisabled />
 									</TableCell>
 									<TableCell className="flex">
-										<ButtonGroup variant="flat" className="ml-auto">
+										<ButtonGroup variant="light" className="ml-auto">
 											<ShareLinkButton address={team} />
 											<Button
 												color="danger"
