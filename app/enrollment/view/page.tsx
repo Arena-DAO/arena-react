@@ -392,6 +392,7 @@ const EnrollmentView = () => {
 							isFull={currentMembers >= maxMembers}
 							entryFee={enrollment.entry_fee}
 							groupContract={enrollment.competition_info.group_contract}
+							requiredTeamSize={enrollment.required_team_size}
 						/>
 					)}
 				</div>

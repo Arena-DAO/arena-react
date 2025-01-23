@@ -37,6 +37,7 @@ interface EnrollmentActionsButtonProps {
 	enrollmentId: string;
 	isFull: boolean;
 	groupContract: string;
+	requiredTeamSize?: number | null;
 }
 
 const actionLabelsMap = {
@@ -58,13 +59,18 @@ const EnrollmentActionsButton: React.FC<EnrollmentActionsButtonProps> = ({
 	isFull,
 	entryFee,
 	groupContract,
+	requiredTeamSize,
 }) => {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
 	const queryClient = useQueryClient();
 
-	const [selectedOption, setSelectedOption] = useState(new Set(["enroll"]));
+	const [selectedOption, setSelectedOption] = useState(
+		new Set([
+			requiredTeamSize && requiredTeamSize > 1 ? "enrollTeam" : "enroll",
+		]),
+	);
 	const selectedValue = Array.from(selectedOption)[0] ?? "enroll";
 
 	const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
