@@ -57,6 +57,20 @@ const fetchProfile = async (
 	};
 };
 
+const isValidDiscordImage = async (imageUrl: string): Promise<boolean> => {
+	try {
+		const response = await fetch(imageUrl, { method: "HEAD" }); // Use HEAD to avoid downloading the full image
+		if (!response.ok) {
+			return false; // The request failed
+		}
+		const contentType = response.headers.get("Content-Type");
+		// Check if the content type indicates an image
+		return contentType?.startsWith("image/") ?? false;
+	} catch (error) {
+		return false; // Assume invalid if any error occurs
+	}
+};
+
 export const useProfileData = (address: string, isValid: boolean) => {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
@@ -95,13 +109,19 @@ export const useProfileData = (address: string, isValid: boolean) => {
 					if (discordProfile) {
 						const { user_id, username, avatar_hash } = discordProfile;
 
+						const imageUrl = avatar_hash
+							? `https://cdn.discordapp.com/avatars/${user_id}/${avatar_hash}.png`
+							: null;
+
+						const isImageValid = imageUrl
+							? await isValidDiscordImage(imageUrl)
+							: false;
+
 						return {
 							address,
 							discordId: user_id,
 							name: username,
-							imageUrl: avatar_hash
-								? `https://cdn.discordapp.com/avatars/${user_id}/${avatar_hash}.png`
-								: null,
+							imageUrl: isImageValid ? imageUrl : null, // Use only if valid
 							link: `https://discordapp.com/users/${user_id}`,
 						};
 					}

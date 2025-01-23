@@ -2,6 +2,7 @@
 
 import {
 	Avatar,
+	AvatarIcon,
 	Button,
 	Card,
 	CardBody,
@@ -144,8 +145,6 @@ const Profile = ({
 		);
 	}, [data, isEnrollmentContract, parsedRating, statProps, isPopoverDisabled]);
 
-	if (isLoading) return <Skeleton />;
-
 	// Common elements
 	const avatarElement = (
 		<Avatar
@@ -153,6 +152,8 @@ const Profile = ({
 			src={data?.imageUrl || undefined}
 			content={data?.name ?? data?.address}
 			showFallback
+			fallback={<AvatarIcon />}
+			alt=" "
 		/>
 	);
 
@@ -160,11 +161,13 @@ const Profile = ({
 		<User
 			{...props}
 			name={data?.name ?? data?.address}
-			showFallback
 			className="cursor-pointer"
 			avatarProps={{
 				src: data?.imageUrl || undefined,
 				className: `${props.className} aspect-square`,
+				fallback: <AvatarIcon />,
+				showFallback: true,
+				alt: " ",
 			}}
 		/>
 	);

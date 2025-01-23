@@ -4,6 +4,10 @@
 @import "react-toastify/dist/ReactToastify.min.css";
 @import "@interchain-ui/react/dist/interchain-ui-kit-react.cjs.css";
 
+.data-\[loaded\=true\]\:opacity-100 {
+	opacity: 1;
+}
+
 .data-\[hover\=true\]\:bg-default-50[data-hover="true"] {
 	--tw-bg-opacity: 1;
 	background-color: hsl(
