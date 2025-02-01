@@ -1,6 +1,6 @@
 import { Badge, Chip, type ChipProps } from "@heroui/react";
+import { Hourglass } from "lucide-react";
 import type React from "react";
-import { BsHourglassBottom } from "react-icons/bs";
 import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
 import {
 	getStatusColor,
@@ -21,7 +21,7 @@ const CompetitionStatusDisplay: React.FC<CompetitionStatusDisplayProps> = ({
 	return (
 		<Badge
 			isOneChar
-			content={<BsHourglassBottom />}
+			content={<Hourglass />}
 			color="warning"
 			aria-label="Expired"
 			isInvisible={!(isExpired && (isActive(status) || status === "pending"))}

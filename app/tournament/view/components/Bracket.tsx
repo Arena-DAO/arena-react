@@ -28,12 +28,7 @@ import {
 	useInfiniteQuery,
 	useQueryClient,
 } from "@tanstack/react-query";
-import {
-	BsFullscreen,
-	BsFullscreenExit,
-	BsShare,
-	BsUpload,
-} from "react-icons/bs";
+import { Fullscreen, Minimize, Share, Upload } from "lucide-react";
 import { toast } from "react-toastify";
 import useClipboard from "react-use-clipboard";
 import { create } from "zustand";
@@ -421,7 +416,7 @@ function Bracket({
 					<ButtonGroup>
 						<Button
 							aria-label="Share Bracket"
-							startContent={<BsShare />}
+							startContent={<Share />}
 							isDisabled={isCopied}
 							onPress={() => {
 								setCopied();
@@ -431,9 +426,7 @@ function Bracket({
 							Share
 						</Button>
 						<Button
-							startContent={
-								isFullscreen ? <BsFullscreenExit /> : <BsFullscreen />
-							}
+							startContent={isFullscreen ? <Minimize /> : <Fullscreen />}
 							aria-label={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
 							onPress={toggleFullscreen}
 						>
@@ -441,7 +434,7 @@ function Bracket({
 						</Button>
 						{isHost && (
 							<Button
-								startContent={<BsUpload />}
+								startContent={<Upload />}
 								aria-label="Submit Results"
 								isDisabled={updates.size === 0}
 								onPress={onSubmit}

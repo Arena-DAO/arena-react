@@ -3,8 +3,8 @@
 import TokenInfo from "@/components/TokenInfo";
 import type { Asset } from "@chain-registry/types";
 import { Card, CardBody } from "@heroui/react";
+import { Trophy } from "lucide-react";
 import { useMemo } from "react";
-import { BsTrophyFill } from "react-icons/bs";
 import {
 	CartesianGrid,
 	Line,
@@ -47,7 +47,7 @@ const CustomDot = ({ cx, cy }: { cx: number; cy: number }) => (
 				</feMerge>
 			</filter>
 		</defs>
-		<BsTrophyFill
+		<Trophy
 			x={cx - 6}
 			y={cy - 6}
 			size={12}

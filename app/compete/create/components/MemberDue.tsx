@@ -13,6 +13,7 @@ import {
 	TableRow,
 	Tooltip,
 } from "@heroui/react";
+import { Minus, Plus, Trash } from "lucide-react";
 import type React from "react";
 import {
 	Controller,
@@ -20,7 +21,6 @@ import {
 	useFormContext,
 	useWatch,
 } from "react-hook-form";
-import { FiMinus, FiPlus, FiTrash } from "react-icons/fi";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 
 interface MemberDueProps {
@@ -79,12 +79,12 @@ const MemberDue: React.FC<MemberDueProps> = ({
 								<ButtonGroup variant="faded" className="my-auto">
 									<Tooltip content="Remove dues">
 										<Button isIconOnly onPress={onRemove}>
-											<FiMinus />
+											<Minus />
 										</Button>
 									</Tooltip>
 									<Tooltip content="Add more due">
 										<Button isIconOnly onPress={onEdit}>
-											<FiPlus />
+											<Plus />
 										</Button>
 									</Tooltip>
 								</ButtonGroup>
@@ -122,7 +122,7 @@ const MemberDue: React.FC<MemberDueProps> = ({
 												aria-label="Remove due"
 												onPress={() => removeNative(index)}
 											>
-												<FiMinus />
+												<Minus />
 											</Button>
 										</Tooltip>
 									</TableCell>
@@ -159,7 +159,7 @@ const MemberDue: React.FC<MemberDueProps> = ({
 												aria-label="Remove due"
 												onPress={() => removeCw20(index)}
 											>
-												<FiTrash />
+												<Trash />
 											</Button>
 										</Tooltip>
 									</TableCell>

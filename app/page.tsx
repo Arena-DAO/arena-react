@@ -1,174 +1,212 @@
 "use client";
+import { Button } from "@heroui/react";
+import { motion } from "framer-motion";
+import { Coins, Gavel, Medal, Scale, Trophy } from "lucide-react";
+import Link from "next/link";
+import type { PropsWithChildren } from "react";
 
-import { useKeenSlider } from "keen-slider/react";
-import "keen-slider/keen-slider.min.css";
-import { Button, Link } from "@heroui/react";
-import { useState } from "react";
-import { useEnv } from "~/hooks/useEnv";
-import LandingPageSections from "./components/LandingPageSections";
+const AnimatedIcon = ({ children }: PropsWithChildren) => (
+	<motion.div
+		className="flex h-32 w-32 items-center justify-center rounded-full bg-amber-700/20"
+		animate={{
+			scale: [1, 1.1, 1],
+			rotate: [0, 5, -5, 0],
+		}}
+		transition={{
+			duration: 4,
+			repeat: Number.POSITIVE_INFINITY,
+			ease: "easeInOut",
+		}}
+	>
+		{children}
+	</motion.div>
+);
 
-function Arrow(props: {
-	disabled: boolean;
-	left?: boolean;
-	onClick: (e: React.MouseEvent<SVGSVGElement>) => void;
-}) {
-	const disabled = props.disabled ? " arrow--disabled" : "";
+const FloatingElement = ({
+	delay = 0,
+	children,
+}: PropsWithChildren & { delay: number }) => (
+	<motion.div
+		animate={{
+			y: [0, -20, 0],
+		}}
+		transition={{
+			duration: 3,
+			repeat: Number.POSITIVE_INFINITY,
+			delay,
+			ease: "easeInOut",
+		}}
+	>
+		{children}
+	</motion.div>
+);
+
+const HomePage = () => {
 	return (
-		<svg
-			onClick={(e: React.MouseEvent<SVGSVGElement>) => {
-				e.stopPropagation();
-				props.onClick?.(e);
-			}}
-			onKeyUp={(e: React.KeyboardEvent<SVGSVGElement>) => {
-				if (e.key === "Enter" || e.key === " ") {
-					props.onClick?.(e as unknown as React.MouseEvent<SVGSVGElement>);
-				}
-			}}
-			onKeyDown={(e: React.KeyboardEvent<SVGSVGElement>) => {
-				if (e.key === "Enter" || e.key === " ") {
-					e.preventDefault();
-				}
-			}}
-			className={`${
-				props.left ? "arrow arrow--left" : "arrow arrow--right"
-			} ${disabled}`}
-			xmlns="http://www.w3.org/2000/svg"
-			viewBox="0 0 24 24"
-		>
-			<title>{props.left ? "Previous slide" : "Next slide"}</title>
-			{props.left && (
-				<path d="M16.67 0l2.83 2.829-9.339 9.175 9.339 9.167-2.83 2.829-12.17-11.996z" />
-			)}
-			{!props.left && (
-				<path d="M5 3l3.057-3 11.943 12-11.943 12-3.057-3 9-9z" />
-			)}
-		</svg>
-	);
-}
+		<div className="relative min-h-screen">
+			{/* Hero Section */}
+			<div className="relative flex min-h-screen items-center justify-center overflow-hidden">
+				{/* Animated background pattern */}
+				<motion.div
+					className="absolute inset-0 z-0"
+					style={{
+						background:
+							"radial-gradient(circle at 50% 50%, rgba(176, 147, 82, 0.2) 0%, rgba(0, 0, 0, 0) 50%)",
+					}}
+					animate={{
+						background: [
+							"radial-gradient(circle at 50% 50%, rgba(176, 147, 82, 0.2) 0%, rgba(0, 0, 0, 0) 50%)",
+							"radial-gradient(circle at 50% 50%, rgba(176, 147, 82, 0.3) 0%, rgba(0, 0, 0, 0) 50%)",
+						],
+					}}
+					transition={{
+						repeat: Number.POSITIVE_INFINITY,
+						duration: 3,
+						repeatType: "mirror",
+					}}
+				/>
 
-function HomePage() {
-	const env = useEnv();
-	const [currentSlide, setCurrentSlide] = useState(0);
-	const [loaded, setLoaded] = useState(false);
-	const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>(
-		{
-			initial: 0,
-			slideChanged(slider) {
-				setCurrentSlide(slider.track.details.rel);
-			},
-			created() {
-				setLoaded(true);
-			},
-			loop: true,
-		},
-		[
-			(slider) => {
-				let timeout: ReturnType<typeof setTimeout>;
-				function clearNextTimeout() {
-					clearTimeout(timeout);
-				}
-				function nextTimeout() {
-					clearTimeout(timeout);
-					timeout = setTimeout(() => {
-						slider.next();
-					}, 5000);
-				}
-				slider.on("created", () => {
-					nextTimeout();
-				});
-				slider.on("dragStarted", clearNextTimeout);
-				slider.on("animationEnded", nextTimeout);
-				slider.on("updated", nextTimeout);
-			},
-		],
-	);
-	return (
-		<div>
-			<div
-				ref={sliderRef}
-				className="keen-slider relative flex min-h-[50vh] md:min-h-[100vh]"
-			>
-				{[1, 2, 3, 4].map((id) => (
-					<div key={id} className="keen-slider__slide relative flex">
-						<div
-							className="absolute inset-0 z-[-1] bg-center bg-cover bg-no-repeat"
-							style={{
-								backgroundImage: `url('${env.JACKAL_PATH}landing_${id}.jpg'), url('/images/landing_${id}.jpg')`,
-								opacity: 0.5, // Set the opacity value (0 to 1)
-							}}
-						/>
+				{/* Decorative Elements */}
+				<div className="absolute inset-0 overflow-hidden">
+					<div className="absolute top-32 left-10">
+						<FloatingElement delay={0}>
+							<Medal className="h-16 w-16 text-amber-700/30" />
+						</FloatingElement>
 					</div>
-				))}
-				<div className="absolute top-[30%] mx-10 my-auto opacity-100 md:top-[20%] md:left-[5%]">
-					<div className="title text-center text-[180%] leading-none sm:text-[250%] md:max-w-[70%] md:text-left md:text-[400%]">
-						Welcome to{" "}
-						<span className="whitespace-nowrap text-primary">The Arena</span>
+					<div className="absolute top-48 right-20">
+						<FloatingElement delay={1}>
+							<Coins className="h-12 w-12 text-amber-700/20" />
+						</FloatingElement>
 					</div>
-					<div className="text-center text-[100%] sm:text-[120%] md:text-left md:text-[150%]">
-						⚔️ Empowering Communities to Compete, Govern, and Win ⚔️
-					</div>
-					<div className="mt-2 flex justify-center gap-4 md:justify-normal">
-						<Button as={Link} href="/compete" color="primary">
-							Compete
-						</Button>
-						<Button
-							as={Link}
-							href={env.DOCS_URL}
-							color="primary"
-							variant="faded"
-							isExternal
-						>
-							Learn More
-						</Button>
+					<div className="absolute bottom-32 left-1/4">
+						<FloatingElement delay={0.5}>
+							<Scale className="h-14 w-14 text-amber-700/25" />
+						</FloatingElement>
 					</div>
 				</div>
 
-				{loaded && instanceRef.current && (
-					<>
-						<Arrow
-							left
-							onClick={(e: React.MouseEvent<SVGSVGElement>) => {
-								e.stopPropagation();
-								instanceRef.current?.prev();
-							}}
-							disabled={currentSlide === 0}
-						/>
+				{/* Hero Content */}
+				<motion.div
+					className="relative z-20 px-4 text-center"
+					initial={{ opacity: 0, y: 50 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 1 }}
+				>
+					<motion.div
+						className="mb-8 inline-block"
+						animate={{
+							scale: [1, 1.05, 1],
+						}}
+						transition={{
+							duration: 4,
+							repeat: Number.POSITIVE_INFINITY,
+							ease: "easeInOut",
+						}}
+					>
+						<Trophy className="mx-auto h-24 w-24 text-amber-700" />
+					</motion.div>
 
-						<Arrow
-							onClick={(e: React.MouseEvent<SVGSVGElement>) => {
-								e.stopPropagation();
-								instanceRef.current?.next();
-							}}
-							disabled={
-								currentSlide ===
-								instanceRef.current.track.details.slides.length - 1
-							}
-						/>
-					</>
-				)}
-
-				{loaded && instanceRef.current && (
-					<div className="dots absolute bottom-0 w-full">
-						{[
-							...Array(instanceRef.current.track.details.slides.length).keys(),
-						].map((idx) => {
-							return (
-								<button
-									key={idx}
-									type="button"
-									onClick={() => {
-										instanceRef.current?.moveToIdx(idx);
-									}}
-									className={currentSlide === idx ? "dot active" : "dot"}
-								/>
-							);
-						})}
-					</div>
-				)}
+					<h1 className="font-bold text-6xl md:text-8xl">
+						ARENA DAO
+						<span className="mt-4 block text-2xl">
+							The Premier Web3 Competition Platform
+						</span>
+					</h1>
+					<p className="mt-6 text-xl md:text-2xl">
+						⚔️ Host Tournaments • Create Leagues • Place Wagers ⚔️
+					</p>
+					<p className="mt-2 text-lg ">
+						Fair Competition Powered by Decentralized Mediation
+					</p>
+					<motion.div
+						className="mt-8 flex flex-wrap justify-center gap-4"
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ delay: 0.5 }}
+					>
+						<Button as={Link} href="/compete" size="lg" color="primary">
+							Compete
+						</Button>
+					</motion.div>
+				</motion.div>
 			</div>
-			<LandingPageSections />
+
+			{/* Feature Sections */}
+			<div className="relative z-10 space-y-20 py-20">
+				{/* Host Competitions Section */}
+				<div className="container mx-auto px-6">
+					<div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
+						<div className="flex flex-col justify-center">
+							<div className="flex items-center gap-4">
+								<Trophy className="h-8 w-8 text-amber-700" />
+								<h2 className="font-bold text-4xl text-amber-700">
+									HOST EVENTS
+								</h2>
+							</div>
+							<p className="mt-4 text-xl">
+								Create and manage your own tournaments, leagues, or wager-based
+								competitions. Set your rules, prize pools, and let Arena DAO
+								handle the rest.
+							</p>
+						</div>
+						<div className="relative flex h-64 items-center justify-center">
+							<AnimatedIcon>
+								<Trophy className="h-16 w-16 text-amber-700" />
+							</AnimatedIcon>
+						</div>
+					</div>
+				</div>
+
+				{/* Wagers Section */}
+				<div className="container mx-auto px-6">
+					<div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+						<div className="relative order-2 flex h-64 items-center justify-center md:order-1">
+							<AnimatedIcon>
+								<Coins className="h-16 w-16 text-amber-700" />
+							</AnimatedIcon>
+						</div>
+						<div className="order-1 flex flex-col justify-center md:order-2">
+							<div className="flex items-center gap-4">
+								<Coins className="h-8 w-8 text-amber-700" />
+								<h2 className="font-bold text-4xl text-amber-700">
+									SECURE WAGERS
+								</h2>
+							</div>
+							<p className="mt-4 text-xl">
+								Place and manage wagers with confidence. Smart contracts ensure
+								transparent stake handling and automated payouts upon
+								resolution.
+							</p>
+						</div>
+					</div>
+				</div>
+
+				{/* Mediation Section */}
+				<div className="container mx-auto px-6">
+					<div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+						<div className="flex flex-col justify-center">
+							<div className="flex items-center gap-4">
+								<Gavel className="h-8 w-8 text-amber-700" />
+								<h2 className="font-bold text-4xl text-amber-700">
+									FAIR MEDIATION
+								</h2>
+							</div>
+							<p className="mt-4 text-xl">
+								Our DAO serves as an impartial mediator for any disputes.
+								Community-governed resolution ensures fairness and transparency
+								in all competitions.
+							</p>
+						</div>
+						<div className="relative flex h-64 items-center justify-center">
+							<AnimatedIcon>
+								<Scale className="h-16 w-16 text-amber-700" />
+							</AnimatedIcon>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	);
-}
+};
 
 export default HomePage;

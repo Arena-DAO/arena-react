@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, type ButtonProps } from "@heroui/react";
-import { FiCheck, FiClipboard } from "react-icons/fi";
+import { Check, Clipboard } from "lucide-react";
 import useClipboard from "react-use-clipboard";
 
 interface CopyAddressButtonProps extends ButtonProps {
@@ -20,7 +20,7 @@ export function CopyAddressButton({
 		<Button
 			onPress={setCopied}
 			aria-label="Copy address"
-			startContent={isCopied ? <FiCheck /> : <FiClipboard />}
+			startContent={isCopied ? <Check /> : <Clipboard />}
 			isDisabled={isCopied}
 			{...props}
 		>

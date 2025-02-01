@@ -19,13 +19,12 @@ import {
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
+import { Percent, Plus, Trash } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import type React from "react";
 import { useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
-import { BsPercent } from "react-icons/bs";
-import { FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import {
@@ -372,7 +371,7 @@ const PaymentRegistry: React.FC = () => {
 																errors.distribution?.member_percentages?.[i]
 																	?.percentage?.message
 															}
-															endContent={<BsPercent />}
+															endContent={<Percent />}
 															classNames={{ input: "text-right" }}
 															{...field}
 															className="min-w-32 max-w-40"
@@ -388,7 +387,7 @@ const PaymentRegistry: React.FC = () => {
 													onPress={() => remove(i)}
 													isDisabled={isSubmitting}
 												>
-													<FiTrash />
+													<Trash />
 												</Button>
 											</TableCell>
 										</TableRow>
@@ -414,7 +413,7 @@ const PaymentRegistry: React.FC = () => {
 							<Button
 								onPress={() => append({ addr: "", percentage: "0" })}
 								aria-label="Add Recipient"
-								startContent={<FiPlus />}
+								startContent={<Plus />}
 								isDisabled={isSubmitting}
 							>
 								Add Recipient

@@ -21,9 +21,9 @@ import {
 	TableRow,
 	useDisclosure,
 } from "@heroui/react";
+import { ChevronDown, Trash } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { BsChevronDown, BsTrash } from "react-icons/bs";
 import { toast } from "react-toastify";
 import { DaoDaoCoreClient } from "~/codegen/DaoDaoCore.client";
 import { getStringSet } from "~/helpers/ReactHookHelpers";
@@ -126,7 +126,7 @@ const TeamsPage = () => {
 												aria-label="Remove team"
 												onPress={() => teamStore.removeTeam(team)}
 											>
-												<BsTrash />
+												<Trash />
 											</Button>
 										</ButtonGroup>
 									</TableCell>
@@ -151,7 +151,7 @@ const TeamsPage = () => {
 						<Dropdown placement="bottom-end">
 							<DropdownTrigger>
 								<Button isIconOnly>
-									<BsChevronDown />
+									<ChevronDown />
 								</Button>
 							</DropdownTrigger>
 							<DropdownMenu

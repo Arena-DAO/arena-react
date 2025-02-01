@@ -18,10 +18,10 @@ import {
 	Textarea,
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Percent } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
-import { BsPercent } from "react-icons/bs";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import type { ExecuteMsg as ArenaPaymentRegistryExecuteMsg } from "~/codegen/ArenaPaymentRegistry.types";
@@ -344,7 +344,7 @@ const CreateTeam = () => {
 																isInvalid={
 																	!!errors.members?.[index]?.percentage
 																}
-																endContent={<BsPercent />}
+																endContent={<Percent />}
 																classNames={{ input: "text-right" }}
 															/>
 														)}

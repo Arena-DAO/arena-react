@@ -9,8 +9,9 @@ import {
 	DropdownTrigger,
 	Tooltip,
 } from "@heroui/react";
+import { Wallet } from "lucide-react";
 import { useMemo } from "react";
-import { BsDiscord, BsWallet } from "react-icons/bs";
+import { BsDiscord } from "react-icons/bs";
 import { toast } from "react-toastify";
 import { isValidWalletAddress } from "~/helpers/AddressHelpers";
 import { useEnv } from "~/hooks/useEnv";
@@ -128,7 +129,7 @@ export default function WalletConnectToggle() {
 				onPress={chainContext.openView}
 				isIconOnly
 			>
-				<BsWallet />
+				<Wallet />
 			</Button>
 		</Tooltip>
 	);

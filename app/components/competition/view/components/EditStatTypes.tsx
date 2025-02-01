@@ -36,7 +36,6 @@ import {
 	useForm,
 	useWatch,
 } from "react-hook-form";
-import { FiInfo, FiPlus, FiTrash2 } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
@@ -47,6 +46,7 @@ import {
 	useArenaWagerModuleUpdateStatTypesMutation,
 } from "~/codegen/ArenaWagerModule.react-query";
 
+import { Info, Plus, Trash } from "lucide-react";
 import { z } from "zod";
 import {
 	ArenaWagerModuleClient,
@@ -291,7 +291,7 @@ const EditStatTypes: React.FC<EditStatTypesProps> = ({
 															variant="light"
 															onPress={() => removeAdd(index)}
 														>
-															<FiTrash2 />
+															<Trash />
 														</Button>
 													</div>
 													<div className="grid grid-cols-4 gap-4">
@@ -397,7 +397,7 @@ const EditStatTypes: React.FC<EditStatTypesProps> = ({
 																			Is Beneficial
 																			<Tooltip content="Indicates if a higher value is better">
 																				<span className="ml-2 cursor-help">
-																					<FiInfo />
+																					<Info />
 																				</span>
 																			</Tooltip>
 																		</div>
@@ -412,7 +412,7 @@ const EditStatTypes: React.FC<EditStatTypesProps> = ({
 												<Button
 													color="primary"
 													variant="light"
-													startContent={<FiPlus />}
+													startContent={<Plus />}
 													onPress={() =>
 														appendAdd({
 															name: "",

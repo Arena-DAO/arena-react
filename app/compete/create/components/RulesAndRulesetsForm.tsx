@@ -1,6 +1,6 @@
 import { Accordion, AccordionItem, Button, Input } from "@heroui/react";
+import { Minus, Plus } from "lucide-react";
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
-import { FiMinus, FiPlus } from "react-icons/fi";
 import { useCategoryContext } from "~/contexts/CategoryContext";
 import RulesetsSelection from "./RulesetsSelection";
 
@@ -44,7 +44,7 @@ const RulesAndRulesetsForm = () => {
 											isDisabled={isSubmitting}
 											onPress={() => removeRule(index)}
 										>
-											<FiMinus />
+											<Minus />
 										</Button>
 									}
 								/>
@@ -56,7 +56,7 @@ const RulesAndRulesetsForm = () => {
 					className="mt-4"
 					onPress={() => appendRule({ rule: "" })}
 					isDisabled={isSubmitting}
-					startContent={<FiPlus />}
+					startContent={<Plus />}
 				>
 					Add Rule
 				</Button>

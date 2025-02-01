@@ -26,11 +26,10 @@ import {
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
+import { Percent, Plus, Trash } from "lucide-react";
 import type {} from "react";
 import React from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
-import { BsPercent } from "react-icons/bs";
-import { FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { ZodIssueCode, z } from "zod";
 import { ArenaCoreQueryClient } from "~/codegen/ArenaCore.client";
@@ -422,7 +421,7 @@ const ProcessForm = ({
 																	errors.distribution?.member_percentages?.[i]
 																		?.percentage?.message
 																}
-																endContent={<BsPercent />}
+																endContent={<Percent />}
 																classNames={{ input: "text-right" }}
 																{...field}
 																value={field.value?.toString()}
@@ -444,7 +443,7 @@ const ProcessForm = ({
 														onPress={() => remove(i)}
 														isDisabled={isSubmitting}
 													>
-														<FiTrash />
+														<Trash />
 													</Button>
 												</TableCell>
 											</TableRow>
@@ -472,7 +471,7 @@ const ProcessForm = ({
 								<Button
 									onPress={() => append({ addr: "", percentage: "0" })}
 									aria-label="Add Recipient"
-									startContent={<FiPlus />}
+									startContent={<Plus />}
 									isDisabled={isSubmitting}
 								>
 									Add Recipient

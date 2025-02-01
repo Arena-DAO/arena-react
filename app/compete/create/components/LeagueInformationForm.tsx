@@ -1,4 +1,5 @@
 import { Button, Input, Progress } from "@heroui/react";
+import { Minus, Percent, Plus } from "lucide-react";
 import { useMemo } from "react";
 import {
 	Controller,
@@ -6,8 +7,6 @@ import {
 	useFormContext,
 	useWatch,
 } from "react-hook-form";
-import { BsPercent } from "react-icons/bs";
-import { FiMinus, FiPlus } from "react-icons/fi";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 import { getNumberWithOrdinal } from "~/helpers/UIHelpers";
 
@@ -115,7 +114,7 @@ const LeagueInformationForm = () => {
 								errorMessage={error?.message}
 								endContent={
 									<div className="flex space-x-2">
-										<BsPercent className="mt-auto" />
+										<Percent className="mt-auto" />
 										<Button
 											isIconOnly
 											aria-label="Delete distribution"
@@ -123,7 +122,7 @@ const LeagueInformationForm = () => {
 											className="my-auto"
 											variant="faded"
 										>
-											<FiMinus />
+											<Minus />
 										</Button>
 									</div>
 								}
@@ -135,7 +134,7 @@ const LeagueInformationForm = () => {
 				))}
 				<Button
 					onPress={() => append({ percent: "0" })}
-					startContent={<FiPlus />}
+					startContent={<Plus />}
 				>
 					Add Distribution
 				</Button>

@@ -34,10 +34,10 @@ import {
 	useQueryClient,
 } from "@tanstack/react-query";
 import { chunk } from "lodash";
+import { Plus, Trash } from "lucide-react";
 import React from "react";
 import { useMemo } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { FiPlus, FiTrash } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import {
@@ -293,7 +293,7 @@ const EvidenceSection = ({
 													onPress={() => remove(i)}
 													isDisabled={isSubmitting}
 												>
-													<FiTrash />
+													<Trash />
 												</Button>
 											</Tooltip>
 										}
@@ -312,7 +312,7 @@ const EvidenceSection = ({
 							onPress={() => append({ content: "" })}
 							isDisabled={isSubmitting}
 							aria-label="Add evidence item"
-							startContent={<FiPlus />}
+							startContent={<Plus />}
 						>
 							Add Item
 						</Button>

@@ -25,8 +25,8 @@ import {
 	TableRow,
 	Tooltip,
 } from "@heroui/react";
+import { Users } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { FiUsers } from "react-icons/fi";
 import { ArenaCompetitionEnrollmentQueryClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import { useArenaCompetitionEnrollmentEnrollmentQuery } from "~/codegen/ArenaCompetitionEnrollment.react-query";
 import { CategoryProvider } from "~/contexts/CategoryContext";
@@ -279,8 +279,8 @@ const EnrollmentView = () => {
 							value={currentMembers}
 							color="primary"
 							showTooltip={true}
-							startContent={<FiUsers />}
-							endContent={<FiUsers />}
+							startContent={<Users />}
+							endContent={<Users />}
 							isDisabled
 							marks={[
 								{
@@ -296,13 +296,13 @@ const EnrollmentView = () => {
 						<div className="mt-2 flex justify-between text-sm">
 							<Tooltip content="Minimum required members">
 								<span className="flex items-center">
-									<FiUsers className="mr-1" /> Min: {minMembers}
+									<Users className="mr-1" /> Min: {minMembers}
 								</span>
 							</Tooltip>
 							<span>Current: {currentMembers}</span>
 							<Tooltip content="Maximum allowed members">
 								<span className="flex items-center">
-									<FiUsers className="mr-1" /> Max: {maxMembers}
+									<Users className="mr-1" /> Max: {maxMembers}
 								</span>
 							</Tooltip>
 						</div>

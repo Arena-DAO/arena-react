@@ -58,7 +58,7 @@ export default function Footer() {
 				</div>
 			</div>
 			<div className="pb-5 text-center text-xs italic">
-				Copyright © 2024 Arena DAO, All rights reserved
+				Copyright © {new Date().getFullYear()} Arena DAO, All rights reserved
 			</div>
 		</>
 	);

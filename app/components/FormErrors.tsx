@@ -1,7 +1,7 @@
 import { Card, CardBody, CardHeader } from "@heroui/react";
+import { AlertTriangle } from "lucide-react";
 import type React from "react";
 import type { FieldErrors } from "react-hook-form";
-import { FiAlertTriangle } from "react-icons/fi";
 
 interface FormErrorsProps {
 	errors: FieldErrors;
@@ -51,7 +51,7 @@ const FormErrors: React.FC<FormErrorsProps> = ({ errors }) => {
 		<Card className="mb-6 text-danger">
 			<CardHeader>
 				<h3 className="flex items-center font-semibold text-xl">
-					<FiAlertTriangle className="mr-2" /> Form Errors
+					<AlertTriangle className="mr-2" /> Form Errors
 				</h3>
 			</CardHeader>
 			<CardBody>

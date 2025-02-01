@@ -20,10 +20,9 @@ import {
 	Tooltip,
 	useDisclosure,
 } from "@heroui/react";
+import { Coins, Flame, Info } from "lucide-react";
 import type React from "react";
 import { useCallback, useMemo, useState } from "react";
-import { BsCoin, BsFire } from "react-icons/bs";
-import { FiInfo } from "react-icons/fi";
 import { CwAbcQueryClient } from "~/codegen/CwAbc.client";
 import { useCwAbcDumpStateQuery } from "~/codegen/CwAbc.react-query";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
@@ -111,7 +110,7 @@ const TokenPage: React.FC = () => {
 						<h2 className="text-2xl">Token Information</h2>
 						<Tooltip content="Effective prices are calculated from the bonding curve state and friction fees">
 							<span className="ml-2 cursor-help">
-								<FiInfo />
+								<Info />
 							</span>
 						</Tooltip>
 					</CardHeader>
@@ -210,7 +209,7 @@ const TokenPage: React.FC = () => {
 								key="mint"
 								title={
 									<div className="flex items-center space-x-2">
-										<BsCoin size={20} />
+										<Coins size={20} />
 										<span className="font-semibold">Mint</span>
 									</div>
 								}
@@ -239,7 +238,7 @@ const TokenPage: React.FC = () => {
 											onPress={() => openConfirmModal("mint")}
 											isDisabled={dumpState.is_paused}
 											className="font-semibold"
-											startContent={<BsCoin size={18} />}
+											startContent={<Coins size={18} />}
 										>
 											Mint Tokens
 										</Button>
@@ -250,7 +249,7 @@ const TokenPage: React.FC = () => {
 								key="burn"
 								title={
 									<div className="flex items-center space-x-2">
-										<BsFire size={20} />
+										<Flame size={20} />
 										<span className="font-semibold">Burn</span>
 									</div>
 								}
@@ -279,7 +278,7 @@ const TokenPage: React.FC = () => {
 											onPress={() => openConfirmModal("burn")}
 											isDisabled={dumpState.is_paused}
 											className="font-semibold"
-											startContent={<BsFire size={18} />}
+											startContent={<Flame size={18} />}
 										>
 											Burn Tokens
 										</Button>

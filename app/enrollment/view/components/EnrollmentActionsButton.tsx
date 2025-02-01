@@ -11,9 +11,9 @@ import {
 	useDisclosure,
 } from "@heroui/react";
 import { useQueryClient } from "@tanstack/react-query";
+import { ChevronDown } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { BsChevronDown } from "react-icons/bs";
 import { toast } from "react-toastify";
 import {
 	ArenaCompetitionEnrollmentClient,
@@ -188,7 +188,7 @@ const EnrollmentActionsButton: React.FC<EnrollmentActionsButtonProps> = ({
 							isIconOnly
 							color={selectedValue.includes("enroll") ? "success" : "danger"}
 						>
-							<BsChevronDown />
+							<ChevronDown />
 						</Button>
 					</DropdownTrigger>
 					<DropdownMenu

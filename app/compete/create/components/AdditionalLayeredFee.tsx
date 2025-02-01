@@ -1,8 +1,7 @@
 import Profile from "@/components/Profile"; // Adjust the import path as needed
 import { Button, Input } from "@heroui/react";
+import { Minus, Percent } from "lucide-react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
-import { BsPercent } from "react-icons/bs";
-import { FiMinus } from "react-icons/fi";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 
 interface AdditionalLayeredFeeProps {
@@ -54,7 +53,7 @@ const AdditionalLayeredFeeItem: React.FC<AdditionalLayeredFeeProps> = ({
 						errorMessage={error?.message}
 						endContent={
 							<div className="flex space-x-2">
-								<BsPercent className="mt-auto" />
+								<Percent className="mt-auto" />
 								<Button
 									isIconOnly
 									aria-label="Delete fee"
@@ -62,7 +61,7 @@ const AdditionalLayeredFeeItem: React.FC<AdditionalLayeredFeeProps> = ({
 									className="my-auto"
 									variant="faded"
 								>
-									<FiMinus />
+									<Minus />
 								</Button>
 							</div>
 						}

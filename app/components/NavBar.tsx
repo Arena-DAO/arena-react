@@ -17,17 +17,10 @@ const ColorModeSwitch = dynamic(() => import("./ColorModeSwitch"), {
 	ssr: false,
 });
 import { Image } from "@heroui/react";
+import { Book, Coins, Droplet, House, Lock, Trophy } from "lucide-react";
 import NextImage from "next/image";
 import NextLink from "next/link";
 import { useMemo, useState } from "react";
-import {
-	BsBookFill,
-	BsCoin,
-	BsDropletFill,
-	BsHouseFill,
-	BsPersonFillLock,
-	BsTrophyFill,
-} from "react-icons/bs";
 import { type Env, useEnv } from "~/hooks/useEnv";
 import WalletConnectToggle from "./WalletConnectToggle";
 
@@ -38,33 +31,33 @@ const menuConfig = (env: Env) => {
 			key: "home",
 			text: "Home",
 			href: "/",
-			icon: <BsHouseFill />,
+			icon: <House />,
 		},
 		{
 			key: "compete",
 			text: "Compete",
 			href: "/compete",
-			icon: <BsTrophyFill />,
+			icon: <Trophy />,
 		},
 		{
 			key: "jailhouse",
 			text: "Jailhouse",
 			href: "/dao/jailhouse",
-			icon: <BsPersonFillLock />,
+			icon: <Lock />,
 		},
 		{
 			key: "docs",
 			text: "Docs",
 			href: env.DOCS_URL,
 			isExternal: true,
-			icon: <BsBookFill />,
+			icon: <Book />,
 		},
 		{
 			key: "kado",
 			text: "Convert Funds",
 			href: "https://app.kado.money/?onPayCurrency=USD&onPayAmount=200&onRevCurrency=USDC&offPayCurrency=USDC&offRevCurrency=USD&network=NEUTRON&onToAddress=X&offFromAddress=X&cryptoList=USDC&networkList=NEUTRON&apiKey=API_KEY&product=BUY",
 			isExternal: true,
-			icon: <BsCoin />,
+			icon: <Coins />,
 		},
 	];
 
@@ -75,7 +68,7 @@ const menuConfig = (env: Env) => {
 			text: "Faucet",
 			href: env.FAUCET_URL,
 			isExternal: true,
-			icon: <BsDropletFill />,
+			icon: <Droplet />,
 		});
 	}
 

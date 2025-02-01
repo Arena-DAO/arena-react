@@ -29,10 +29,10 @@ import {
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
+import { Check, Edit, Eye, Plus, Trash, X } from "lucide-react";
 import type React from "react";
 import { useMemo, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { FiCheck, FiEdit, FiEye, FiPlus, FiTrash, FiX } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import {
@@ -558,7 +558,7 @@ const ArenaTokenGatewayPage: React.FC = () => {
 										variant="light"
 										onPress={() => handleOpenModal(app, true)}
 									>
-										<FiEye />
+										<Eye />
 									</Button>
 								</Tooltip>
 								{app.application.applicant === address &&
@@ -570,7 +570,7 @@ const ArenaTokenGatewayPage: React.FC = () => {
 												variant="light"
 												onPress={() => handleOpenModal(app, false)}
 											>
-												<FiEdit />
+												<Edit />
 											</Button>
 										</Tooltip>
 									)}
@@ -590,7 +590,7 @@ const ArenaTokenGatewayPage: React.FC = () => {
 												}
 												isLoading={acceptMutation.isLoading}
 											>
-												<FiCheck />
+												<Check />
 											</Button>
 										</Tooltip>
 										<Tooltip content="Reject">
@@ -605,7 +605,7 @@ const ArenaTokenGatewayPage: React.FC = () => {
 												}}
 												isLoading={rejectMutation.isLoading}
 											>
-												<FiX />
+												<X />
 											</Button>
 										</Tooltip>
 									</>
@@ -639,7 +639,7 @@ const ArenaTokenGatewayPage: React.FC = () => {
 						<Button
 							color="primary"
 							onPress={() => handleOpenModal()}
-							startContent={<FiPlus />}
+							startContent={<Plus />}
 						>
 							New Application
 						</Button>
@@ -772,7 +772,7 @@ const ArenaTokenGatewayPage: React.FC = () => {
 												variant="light"
 												onPress={() => remove(index)}
 											>
-												<FiTrash />
+												<Trash />
 											</Button>
 										)}
 									</div>
@@ -782,7 +782,7 @@ const ArenaTokenGatewayPage: React.FC = () => {
 										size="sm"
 										variant="flat"
 										onPress={() => append({ title: "", url: "" })}
-										startContent={<FiPlus />}
+										startContent={<Plus />}
 									>
 										Add Link
 									</Button>

@@ -16,9 +16,9 @@ import {
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {} from "@internationalized/date";
+import { Info } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Controller, FormProvider, useForm } from "react-hook-form";
-import { FiInfo } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import type { CompetitionType } from "~/codegen/ArenaCompetitionEnrollment.types";
@@ -407,7 +407,7 @@ const CreateCompetitionPage = () => {
 									Rules
 									<Tooltip content="The competition's rules and rulesets if applicable">
 										<span className="ml-2 cursor-help">
-											<FiInfo />
+											<Info />
 										</span>
 									</Tooltip>
 								</h3>

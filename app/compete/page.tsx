@@ -1,9 +1,9 @@
 "use client";
 
 import { BreadcrumbItem, Breadcrumbs, Button, Link } from "@heroui/react";
+import { Plus } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
-import { BsPlus } from "react-icons/bs";
 import { CategoryProvider } from "~/contexts/CategoryContext";
 import {
 	type CategoryItem,
@@ -75,7 +75,7 @@ const Compete = () => {
 				<>
 					<div className="flex justify-end">
 						<Button
-							startContent={<BsPlus />}
+							startContent={<Plus />}
 							as={Link}
 							href={`/compete/create?category=${category}`}
 							color="primary"

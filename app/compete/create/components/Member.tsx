@@ -1,7 +1,7 @@
 import Profile from "@/components/Profile";
 import { Button, Input } from "@heroui/react";
+import { Minus } from "lucide-react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
-import { FiMinus } from "react-icons/fi";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 
 interface MemberProps {
@@ -38,7 +38,7 @@ const Member: React.FC<MemberProps> = ({ memberIndex, onRemove }) => {
 								className="my-auto"
 								onPress={onRemove}
 							>
-								<FiMinus />
+								<Minus />
 							</Button>
 						}
 					/>

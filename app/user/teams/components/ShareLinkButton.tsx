@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "@heroui/react"; // Your UI library
+import { Share } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
-import { BsShare } from "react-icons/bs"; // Share icon
 import { toast } from "react-toastify";
 import useClipboard from "react-use-clipboard";
 
@@ -31,7 +31,7 @@ const ShareLinkButton: React.FC<ShareButtonProps> = ({ address }) => {
 			}}
 			isDisabled={isCopied}
 		>
-			<BsShare />
+			<Share />
 		</Button>
 	);
 };

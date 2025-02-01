@@ -16,6 +16,7 @@ import {
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
+import { Percent } from "lucide-react";
 import React, { useMemo } from "react";
 import {
 	Controller,
@@ -23,7 +24,6 @@ import {
 	type FieldError,
 	useForm,
 } from "react-hook-form";
-import { BsPercent } from "react-icons/bs";
 import { toast } from "react-toastify";
 import { z } from "zod";
 import {
@@ -76,7 +76,7 @@ const FormField: React.FC<FormFieldProps> = React.memo(
 						placeholder={`Enter ${statType.name}`}
 						errorMessage={error?.message}
 						isInvalid={!!error}
-						endContent={<BsPercent />}
+						endContent={<Percent />}
 					/>
 				);
 			case "uint":

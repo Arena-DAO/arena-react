@@ -1,7 +1,7 @@
 import TokenInfo from "@/components/TokenInfo";
 import { Slider, Tooltip } from "@heroui/react";
+import { Users } from "lucide-react";
 import type React from "react";
-import { FiUsers } from "react-icons/fi";
 import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollment.types";
 import { calculateMinMembers } from "~/helpers/EnrollmentHelpers";
 import EnrollmentStatusDisplay from "./EnrollmentStatusDisplay";
@@ -55,8 +55,8 @@ const EnrollmentInfo: React.FC<EnrollmentInfoProps> = ({
 					value={currentMembers}
 					color="primary"
 					showTooltip={true}
-					startContent={<FiUsers />}
-					endContent={<FiUsers />}
+					startContent={<Users />}
+					endContent={<Users />}
 					isDisabled
 					marks={[
 						{
@@ -72,13 +72,13 @@ const EnrollmentInfo: React.FC<EnrollmentInfoProps> = ({
 				<div className="mt-2 flex justify-between text-sm">
 					<Tooltip content="Minimum required members">
 						<span className="flex items-center">
-							<FiUsers className="mr-1" /> Min: {minMembers}
+							<Users className="mr-1" /> Min: {minMembers}
 						</span>
 					</Tooltip>
 					<span>Current: {currentMembers}</span>
 					<Tooltip content="Maximum allowed members">
 						<span className="flex items-center">
-							<FiUsers className="mr-1" /> Max: {maxMembers}
+							<Users className="mr-1" /> Max: {maxMembers}
 						</span>
 					</Tooltip>
 				</div>

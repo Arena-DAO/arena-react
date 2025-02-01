@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Divider, Switch, Tooltip, useDisclosure } from "@heroui/react";
+import { Info, Plus } from "lucide-react";
 import { useState } from "react";
 import {
 	Controller,
@@ -8,7 +9,6 @@ import {
 	useFormContext,
 	useWatch,
 } from "react-hook-form";
-import { FiInfo, FiPlus } from "react-icons/fi";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 import AddDueForm from "./AddDueForm";
 import Member from "./Member";
@@ -62,7 +62,7 @@ const MembersAndDuesForm = () => {
 				/>
 			))}
 			<div className="flex">
-				<Button onPress={handleAddDue} startContent={<FiPlus />}>
+				<Button onPress={handleAddDue} startContent={<Plus />}>
 					Add Due
 				</Button>
 			</div>
@@ -81,7 +81,7 @@ const MembersAndDuesForm = () => {
 							Use Dues as Members
 							<Tooltip content="Dues' addresses will be set as the competition's members">
 								<span className="ml-2 cursor-help">
-									<FiInfo />
+									<Info />
 								</span>
 							</Tooltip>
 						</div>
@@ -103,7 +103,7 @@ const MembersAndDuesForm = () => {
 					<div className="flex">
 						<Button
 							onPress={() => appendMember({ address: "" })}
-							startContent={<FiPlus />}
+							startContent={<Plus />}
 						>
 							Add Member
 						</Button>

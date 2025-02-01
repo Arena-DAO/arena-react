@@ -1,6 +1,6 @@
 import { Badge, Chip, type ChipProps } from "@heroui/react";
+import { Hourglass } from "lucide-react";
 import type React from "react";
-import { BsHourglassBottom } from "react-icons/bs";
 
 interface EnrollmentStatusDisplayProps extends ChipProps {
 	hasFinalized: boolean;
@@ -37,7 +37,7 @@ const EnrollmentStatusDisplay: React.FC<EnrollmentStatusDisplayProps> = ({
 	return (
 		<Badge
 			isOneChar
-			content={<BsHourglassBottom />}
+			content={<Hourglass />}
 			color="warning"
 			aria-label="Expired"
 			isInvisible={!isExpired || hasTriggeredExpiration}
