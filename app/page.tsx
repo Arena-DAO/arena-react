@@ -70,17 +70,17 @@ const HomePage = () => {
 				<div className="absolute inset-0 overflow-hidden">
 					<div className="absolute top-32 left-10">
 						<FloatingElement delay={0}>
-							<Medal className="h-16 w-16 text-amber-700/30" />
+							<Medal className="h-16 w-16 text-primary/30" />
 						</FloatingElement>
 					</div>
 					<div className="absolute top-48 right-20">
 						<FloatingElement delay={1}>
-							<Coins className="h-12 w-12 text-amber-700/20" />
+							<Coins className="h-12 w-12 text-primary/20" />
 						</FloatingElement>
 					</div>
 					<div className="absolute bottom-32 left-1/4">
 						<FloatingElement delay={0.5}>
-							<Scale className="h-14 w-14 text-amber-700/25" />
+							<Scale className="h-14 w-14 text-primary/25" />
 						</FloatingElement>
 					</div>
 				</div>
@@ -103,7 +103,7 @@ const HomePage = () => {
 							ease: "easeInOut",
 						}}
 					>
-						<Trophy className="mx-auto h-24 w-24 text-amber-700" />
+						<Trophy className="mx-auto h-24 w-24 text-primary" />
 					</motion.div>
 
 					<h1 className="font-bold text-6xl md:text-8xl">
@@ -138,10 +138,8 @@ const HomePage = () => {
 					<div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
 						<div className="flex flex-col justify-center">
 							<div className="flex items-center gap-4">
-								<Trophy className="h-8 w-8 text-amber-700" />
-								<h2 className="font-bold text-4xl text-amber-700">
-									HOST EVENTS
-								</h2>
+								<Trophy className="h-8 w-8 text-primary" />
+								<h2 className="font-bold text-4xl text-primary">HOST EVENTS</h2>
 							</div>
 							<p className="mt-4 text-xl">
 								Create and manage your own tournaments, leagues, or wager-based
@@ -151,7 +149,7 @@ const HomePage = () => {
 						</div>
 						<div className="relative flex h-64 items-center justify-center">
 							<AnimatedIcon>
-								<Trophy className="h-16 w-16 text-amber-700" />
+								<Trophy className="h-16 w-16 text-primary" />
 							</AnimatedIcon>
 						</div>
 					</div>
@@ -162,13 +160,13 @@ const HomePage = () => {
 					<div className="grid grid-cols-1 gap-8 md:grid-cols-2">
 						<div className="relative order-2 flex h-64 items-center justify-center md:order-1">
 							<AnimatedIcon>
-								<Coins className="h-16 w-16 text-amber-700" />
+								<Coins className="h-16 w-16 text-primary" />
 							</AnimatedIcon>
 						</div>
 						<div className="order-1 flex flex-col justify-center md:order-2">
 							<div className="flex items-center gap-4">
-								<Coins className="h-8 w-8 text-amber-700" />
-								<h2 className="font-bold text-4xl text-amber-700">
+								<Coins className="h-8 w-8 text-primary" />
+								<h2 className="font-bold text-4xl text-primary">
 									SECURE WAGERS
 								</h2>
 							</div>
@@ -186,8 +184,8 @@ const HomePage = () => {
 					<div className="grid grid-cols-1 gap-8 md:grid-cols-2">
 						<div className="flex flex-col justify-center">
 							<div className="flex items-center gap-4">
-								<Gavel className="h-8 w-8 text-amber-700" />
-								<h2 className="font-bold text-4xl text-amber-700">
+								<Gavel className="h-8 w-8 text-primary" />
+								<h2 className="font-bold text-4xl text-primary">
 									FAIR MEDIATION
 								</h2>
 							</div>
@@ -199,7 +197,7 @@ const HomePage = () => {
 						</div>
 						<div className="relative flex h-64 items-center justify-center">
 							<AnimatedIcon>
-								<Scale className="h-16 w-16 text-amber-700" />
+								<Scale className="h-16 w-16 text-primary" />
 							</AnimatedIcon>
 						</div>
 					</div>
