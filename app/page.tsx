@@ -1,7 +1,8 @@
 "use client";
-import { Button } from "@heroui/react";
+import { Button, Image } from "@heroui/react";
 import { motion } from "framer-motion";
-import { Coins, Gavel, Medal, Scale, Trophy } from "lucide-react";
+import { Coins, Gavel, Scale, Trophy } from "lucide-react";
+import NextImage from "next/image";
 import Link from "next/link";
 import type { PropsWithChildren } from "react";
 
@@ -41,6 +42,25 @@ const FloatingElement = ({
 	</motion.div>
 );
 
+const logos = [
+	{
+		key: "dao_dao",
+		logo: "/images/logos/dao_dao.jpg",
+	},
+	{
+		key: "neutron",
+		logo: "/images/logos/neutron.png",
+	},
+	{
+		key: "s2p",
+		logo: "/images/logos/s2p.jpg",
+	},
+	{
+		key: "vnsh",
+		logo: "/images/logos/vnsh.jpg",
+	},
+];
+
 const HomePage = () => {
 	return (
 		<div className="relative min-h-screen">
@@ -70,7 +90,7 @@ const HomePage = () => {
 				<div className="absolute inset-0 overflow-hidden">
 					<div className="absolute top-32 left-10">
 						<FloatingElement delay={0}>
-							<Medal className="h-16 w-16 text-primary/30" />
+							<Trophy className="h-16 w-16 text-primary/30" />
 						</FloatingElement>
 					</div>
 					<div className="absolute top-48 right-20">
@@ -103,7 +123,14 @@ const HomePage = () => {
 							ease: "easeInOut",
 						}}
 					>
-						<Trophy className="mx-auto h-24 w-24 text-primary" />
+						<Image
+							as={NextImage}
+							src="/logo.svg"
+							alt="Arena DAO Logo"
+							width="120"
+							height="100"
+							priority
+						/>
 					</motion.div>
 
 					<h1 className="font-bold text-6xl md:text-8xl">
