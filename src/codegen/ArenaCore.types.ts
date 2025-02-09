@@ -234,6 +234,11 @@ export type QueryMsg = {
   };
 };
 export type QueryExt = {
+  competitions: {
+    enrollment_module?: string | null;
+    filter?: CompetitionsFilter | null;
+  };
+} | {
   competition_modules: {
     include_disabled?: boolean | null;
     limit?: number | null;
@@ -298,6 +303,26 @@ export type QueryExt = {
   rating_period: {};
 } | {
   payment_registry: {};
+};
+export type CompetitionsFilter = {
+  competition_status: {
+    status: CompetitionStatus;
+  };
+} | {
+  category: {
+    id?: Uint128 | null;
+  };
+} | {
+  host: string;
+};
+export type CompetitionStatus = ("pending" | "inactive") | {
+  active: {
+    activation_height: number;
+  };
+} | {
+  jailed: {
+    activation_height: number;
+  };
 };
 export type CompetitionModuleQuery = {
   key: [string, number | null];
