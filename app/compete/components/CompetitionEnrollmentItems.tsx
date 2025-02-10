@@ -1,27 +1,27 @@
 "use client";
 
+import CompetitionCard from "@/components/competition/CompetitionCard";
+import type Competition from "@/components/competition/CompetitionCard";
 import { Button, Spinner } from "@heroui/react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
-import CompetitionCard from "@/components/competition/CompetitionCard";
 import { ArenaCompetitionEnrollmentQueryClient } from "~/codegen/ArenaCompetitionEnrollment.client";
-import { ArenaLeagueModuleQueryClient } from "~/codegen/ArenaLeagueModule.client";
-import { ArenaTournamentModuleQueryClient } from "~/codegen/ArenaTournamentModule.client";
-import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { arenaCompetitionEnrollmentQueryKeys } from "~/codegen/ArenaCompetitionEnrollment.react-query";
-import { arenaLeagueModuleQueryKeys } from "~/codegen/ArenaLeagueModule.react-query";
-import { arenaTournamentModuleQueryKeys } from "~/codegen/ArenaTournamentModule.react-query";
-import { arenaWagerModuleQueryKeys } from "~/codegen/ArenaWagerModule.react-query";
+import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollment.types";
 import { ArenaCoreQueryClient } from "~/codegen/ArenaCore.client";
 import { useArenaCoreQueryExtensionQuery } from "~/codegen/ArenaCore.react-query";
-import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollment.types";
+import { ArenaLeagueModuleQueryClient } from "~/codegen/ArenaLeagueModule.client";
+import { arenaLeagueModuleQueryKeys } from "~/codegen/ArenaLeagueModule.react-query";
 import type { CompetitionResponseForLeagueExt } from "~/codegen/ArenaLeagueModule.types";
+import { ArenaTournamentModuleQueryClient } from "~/codegen/ArenaTournamentModule.client";
+import { arenaTournamentModuleQueryKeys } from "~/codegen/ArenaTournamentModule.react-query";
 import type { CompetitionResponseForTournamentExt } from "~/codegen/ArenaTournamentModule.types";
+import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
+import { arenaWagerModuleQueryKeys } from "~/codegen/ArenaWagerModule.react-query";
 import type { CompetitionResponseForWagerExt } from "~/codegen/ArenaWagerModule.types";
 import type { CategoryLeaf } from "~/hooks/useCategoryMap";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import type Competition from "@/components/competition/CompetitionCard";
 
 interface CompetitionSectionProps<T> {
 	title: string;
