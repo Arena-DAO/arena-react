@@ -1,10 +1,10 @@
 "use client";
-import { Button, Image } from "@heroui/react";
+import { Button, Image, Link } from "@heroui/react";
 import { motion } from "framer-motion";
 import { Coins, Gavel, Scale, Trophy } from "lucide-react";
 import NextImage from "next/image";
-import Link from "next/link";
 import type { PropsWithChildren } from "react";
+import { useEnv } from "~/hooks/useEnv";
 
 const AnimatedIcon = ({ children }: PropsWithChildren) => (
 	<motion.div
@@ -42,26 +42,9 @@ const FloatingElement = ({
 	</motion.div>
 );
 
-const logos = [
-	{
-		key: "dao_dao",
-		logo: "/images/logos/dao_dao.jpg",
-	},
-	{
-		key: "neutron",
-		logo: "/images/logos/neutron.png",
-	},
-	{
-		key: "s2p",
-		logo: "/images/logos/s2p.jpg",
-	},
-	{
-		key: "vnsh",
-		logo: "/images/logos/vnsh.jpg",
-	},
-];
-
 const HomePage = () => {
+	const env = useEnv();
+
 	return (
 		<div className="relative min-h-screen">
 			{/* Hero Section */}
@@ -153,6 +136,16 @@ const HomePage = () => {
 					>
 						<Button as={Link} href="/compete" size="lg" color="primary">
 							Compete
+						</Button>
+						<Button
+							as={Link}
+							href={env.DOCS_URL}
+							size="lg"
+							variant="bordered"
+							color="primary"
+							isExternal
+						>
+							Learn More
 						</Button>
 					</motion.div>
 				</motion.div>
