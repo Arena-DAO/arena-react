@@ -21,7 +21,7 @@ import {
 import CompetitionCategoryCard from "./components/CompetitionCategoryCard";
 import CompetitionEnrollmentItems from "./components/CompetitionEnrollmentItems";
 
-const MotionCard = motion(Card);
+const MotionCard = motion.create(Card);
 
 const Compete = () => {
 	const searchParams = useSearchParams();

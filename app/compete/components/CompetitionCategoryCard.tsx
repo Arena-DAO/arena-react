@@ -14,7 +14,7 @@ interface CompetitionCategoryCardProps {
 	className?: string;
 }
 
-const MotionCard = motion(Card);
+const MotionCard = motion.create(Card);
 
 export default function CompetitionCategoryCard({
 	category,
