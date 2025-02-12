@@ -62,16 +62,22 @@ const EDGE_STYLES = {
 	winner: {
 		stroke: "#4CAF50",
 		strokeWidth: 3,
+		filter: "drop-shadow(0 0 6px rgba(76, 175, 80, 0.7))",
+		transition: "all 0.3s ease",
 	},
 	loser: {
 		stroke: "#FF5722",
 		strokeWidth: 3,
 		strokeDasharray: "5,5",
+		filter: "drop-shadow(0 0 6px rgba(255, 87, 34, 0.7))",
+		transition: "all 0.3s ease",
 	},
 	redemption: {
 		stroke: "#FFFF00",
 		strokeWidth: 3,
 		strokeDasharray: "5,5",
+		filter: "drop-shadow(0 0 6px rgba(255, 255, 0, 0.7))",
+		transition: "all 0.3s ease",
 	},
 };
 
