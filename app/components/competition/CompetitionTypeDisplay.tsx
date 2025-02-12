@@ -1,4 +1,4 @@
-import { Chip } from "@heroui/react";
+import { Chip, type ChipProps } from "@heroui/react";
 import type React from "react";
 import type { CompetitionType } from "~/codegen/ArenaCompetitionEnrollment.types";
 
@@ -14,16 +14,21 @@ const getCompetitionTypeInfo = (
 	return { display: "Unknown", color: "warning" };
 };
 
-interface CompetitionTypeDisplayProps {
+interface CompetitionTypeDisplayProps extends ChipProps {
 	type: CompetitionType;
 }
 
 const CompetitionTypeDisplay: React.FC<CompetitionTypeDisplayProps> = ({
 	type,
+	...props
 }) => {
 	const { display, color } = getCompetitionTypeInfo(type);
 
-	return <Chip color={color}>{display}</Chip>;
+	return (
+		<Chip color={color} {...props}>
+			{display}
+		</Chip>
+	);
 };
 
 export default CompetitionTypeDisplay;
