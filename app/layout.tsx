@@ -44,10 +44,10 @@ const Layout = ({ children }: PropsWithChildren) => {
 				<link rel="manifest" href="/site.webmanifest" />
 				<meta name="theme-color" content="#FF8000" />
 			</head>
-			<body className="font-roboto">
+			<body className="flex min-h-screen flex-col bg-background font-sans text-foreground antialiased">
 				<Providers>
 					<AppNavbar />
-					<div className="min-h-full pb-10">
+					<div className="mx-auto min-h-full w-full max-w-[1920px] flex-1 px-4 pb-10 sm:px-6 lg:px-8">
 						<ErrorBoundary>{children}</ErrorBoundary>
 					</div>
 					<Footer />

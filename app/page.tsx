@@ -8,7 +8,7 @@ import { useEnv } from "~/hooks/useEnv";
 
 const AnimatedIcon = ({ children }: PropsWithChildren) => (
 	<motion.div
-		className="flex h-32 w-32 items-center justify-center rounded-full bg-amber-700/20"
+		className="flex h-32 w-32 items-center justify-center rounded-full bg-primary/10"
 		animate={{
 			scale: [1, 1.1, 1],
 			rotate: [0, 5, -5, 0],
@@ -48,19 +48,12 @@ const HomePage = () => {
 	return (
 		<div className="relative min-h-screen">
 			{/* Hero Section */}
-			<div className="relative flex min-h-screen items-center justify-center overflow-hidden">
-				{/* Animated background pattern */}
+			<section className="relative flex min-h-screen items-center justify-center overflow-hidden">
+				{/* Background Pattern */}
 				<motion.div
-					className="absolute inset-0 z-0"
-					style={{
-						background:
-							"radial-gradient(circle at 50% 50%, rgba(176, 147, 82, 0.2) 0%, rgba(0, 0, 0, 0) 50%)",
-					}}
+					className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,128,0,0.1)_0%,rgba(0,0,0,0)_50%)]"
 					animate={{
-						background: [
-							"radial-gradient(circle at 50% 50%, rgba(176, 147, 82, 0.2) 0%, rgba(0, 0, 0, 0) 50%)",
-							"radial-gradient(circle at 50% 50%, rgba(176, 147, 82, 0.3) 0%, rgba(0, 0, 0, 0) 50%)",
-						],
+						opacity: [0.5, 0.8, 0.5],
 					}}
 					transition={{
 						repeat: Number.POSITIVE_INFINITY,
@@ -69,7 +62,7 @@ const HomePage = () => {
 					}}
 				/>
 
-				{/* Decorative Elements */}
+				{/* Floating Icons */}
 				<div className="absolute inset-0 overflow-hidden">
 					<div className="absolute top-32 left-10">
 						<FloatingElement delay={0}>
@@ -87,7 +80,6 @@ const HomePage = () => {
 						</FloatingElement>
 					</div>
 				</div>
-
 				{/* Hero Content */}
 				<motion.div
 					className="relative z-20 px-4 text-center"
@@ -97,9 +89,7 @@ const HomePage = () => {
 				>
 					<motion.div
 						className="mb-8 inline-block"
-						animate={{
-							scale: [1, 1.05, 1],
-						}}
+						animate={{ scale: [1, 1.05, 1] }}
 						transition={{
 							duration: 4,
 							repeat: Number.POSITIVE_INFINITY,
@@ -113,28 +103,41 @@ const HomePage = () => {
 							width="120"
 							height="100"
 							priority
+							className="text-glow"
 						/>
 					</motion.div>
 
-					<h1 className="font-bold text-6xl md:text-8xl">
+					<h1 className="font-bold font-cinzel text-6xl text-glow md:text-8xl">
 						ARENA DAO
-						<span className="mt-4 block text-2xl">
+						<span className="mt-4 block font-normal text-2xl">
 							The Premier Web3 Competition Platform
 						</span>
 					</h1>
-					<p className="mt-6 text-xl md:text-2xl">
-						⚔️ Host Tournaments • Create Leagues • Place Wagers ⚔️
+
+					<p className="mt-6 flex flex-wrap justify-center gap-2 text-lg md:gap-4 md:text-xl lg:text-2xl">
+						<span>Host Tournaments</span>
+						<span className="hidden md:inline">•</span>
+						<span>Create Leagues</span>
+						<span className="hidden md:inline">•</span>
+						<span>Place Wagers</span>
 					</p>
-					<p className="mt-2 text-lg ">
+					<p className="mt-2 text-lg">
 						Fair Competition Powered by Decentralized Mediation
 					</p>
+
 					<motion.div
 						className="mt-8 flex flex-wrap justify-center gap-4"
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ delay: 0.5 }}
 					>
-						<Button as={Link} href="/compete" size="lg" color="primary">
+						<Button
+							as={Link}
+							href="/compete"
+							size="lg"
+							color="primary"
+							className="card-hover"
+						>
 							Compete
 						</Button>
 						<Button
@@ -144,22 +147,25 @@ const HomePage = () => {
 							variant="bordered"
 							color="primary"
 							isExternal
+							className="card-hover"
 						>
 							Learn More
 						</Button>
 					</motion.div>
 				</motion.div>
-			</div>
+			</section>
 
-			{/* Feature Sections */}
-			<div className="relative z-10 space-y-20 py-20">
-				{/* Host Competitions Section */}
+			{/* Features Section */}
+			<section className="relative z-10 space-y-20 py-20">
+				{/* Host Events */}
 				<div className="container mx-auto px-6">
 					<div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
 						<div className="flex flex-col justify-center">
 							<div className="flex items-center gap-4">
 								<Trophy className="h-8 w-8 text-primary" />
-								<h2 className="font-bold text-4xl text-primary">HOST EVENTS</h2>
+								<h2 className="font-bold font-cinzel text-4xl text-glow text-primary">
+									HOST EVENTS
+								</h2>
 							</div>
 							<p className="mt-4 text-xl">
 								Create and manage your own tournaments, leagues, or wager-based
@@ -175,7 +181,7 @@ const HomePage = () => {
 					</div>
 				</div>
 
-				{/* Wagers Section */}
+				{/* Wagers */}
 				<div className="container mx-auto px-6">
 					<div className="grid grid-cols-1 gap-8 md:grid-cols-2">
 						<div className="relative order-2 flex h-64 items-center justify-center md:order-1">
@@ -186,7 +192,7 @@ const HomePage = () => {
 						<div className="order-1 flex flex-col justify-center md:order-2">
 							<div className="flex items-center gap-4">
 								<Coins className="h-8 w-8 text-primary" />
-								<h2 className="font-bold text-4xl text-primary">
+								<h2 className="font-bold font-cinzel text-4xl text-glow text-primary">
 									SECURE WAGERS
 								</h2>
 							</div>
@@ -199,13 +205,13 @@ const HomePage = () => {
 					</div>
 				</div>
 
-				{/* Mediation Section */}
+				{/* Mediation */}
 				<div className="container mx-auto px-6">
 					<div className="grid grid-cols-1 gap-8 md:grid-cols-2">
 						<div className="flex flex-col justify-center">
 							<div className="flex items-center gap-4">
 								<Gavel className="h-8 w-8 text-primary" />
-								<h2 className="font-bold text-4xl text-primary">
+								<h2 className="font-bold font-cinzel text-4xl text-glow text-primary">
 									FAIR MEDIATION
 								</h2>
 							</div>
@@ -222,7 +228,7 @@ const HomePage = () => {
 						</div>
 					</div>
 				</div>
-			</div>
+			</section>
 		</div>
 	);
 };
