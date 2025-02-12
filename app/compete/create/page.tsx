@@ -16,6 +16,7 @@ import {
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {} from "@internationalized/date";
+import { motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Controller, FormProvider, useForm } from "react-hook-form";
@@ -359,105 +360,164 @@ const CreateCompetitionPage = () => {
 
 	return (
 		<CategoryProvider value={category?.url}>
-			<div className="container mx-auto max-w-6xl px-4 py-8">
-				<h1 className="mb-8 text-center font-bold text-4xl">
-					Create a Competition
-				</h1>
+			<div className="min-h-screen bg-background/50">
+				<div className="container mx-auto max-w-6xl px-4 py-8 md:py-12">
+					<motion.div
+						initial={{ opacity: 0, y: -20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.5 }}
+					>
+						<h1 className="mb-4 text-center font-bold font-cinzel text-3xl md:text-4xl">
+							Create a Competition
+						</h1>
+						<p className="mx-auto mb-8 max-w-2xl text-center text-foreground/80">
+							Set up your competition details, rules, and participation
+							requirements.
+						</p>
+					</motion.div>
 
-				<FormProvider {...formMethods}>
-					<form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-						<Card>
-							<CardHeader>
-								<h2 className="font-semibold text-2xl">
-									Competition Information
-								</h2>
-							</CardHeader>
-							<CardBody>
-								<BasicInformationForm />
-							</CardBody>
-						</Card>
-
-						{competitionType === "league" && (
-							<Card>
-								<CardHeader>
-									<h2 className="font-semibold text-2xl">League Settings</h2>
-								</CardHeader>
-								<CardBody>
-									<LeagueInformationForm />
-								</CardBody>
-							</Card>
-						)}
-
-						{competitionType === "tournament" && (
-							<Card>
-								<CardHeader>
-									<h2 className="font-semibold text-2xl">
-										Tournament Settings
-									</h2>
-								</CardHeader>
-								<CardBody>
-									<TournamentInformationForm />
-								</CardBody>
-							</Card>
-						)}
-
-						<Card>
-							<CardHeader>
-								<h3 className="mb-2 flex items-center font-semibold text-2xl">
-									Rules
-									<Tooltip content="The competition's rules and rulesets if applicable">
-										<span className="ml-2 cursor-help">
-											<Info />
-										</span>
-									</Tooltip>
-								</h3>
-							</CardHeader>
-							<CardBody>
-								<RulesAndRulesetsForm />
-							</CardBody>
-						</Card>
-
-						<Card>
-							<CardBody>
-								<div className="mb-6 flex flex-wrap items-center justify-between gap-2">
-									<h2 className="font-semibold text-2xl">
-										Participation Details
-									</h2>
-									<Controller
-										name="useEnrollments"
-										render={({ field }) => (
-											<Switch
-												{...field}
-												isSelected={field.value}
-												isDisabled={isSubmitting}
-											>
-												Enable Enrollments
-											</Switch>
-										)}
-									/>
-								</div>
-								{useEnrollments ? (
-									<EnrollmentInformationForm />
-								) : (
-									<MembersAndDuesForm />
-								)}
-							</CardBody>
-						</Card>
-
-						<div className="mt-8 flex justify-end">
-							<Button
-								type="submit"
-								color="primary"
-								size="lg"
-								className="px-8"
-								isLoading={isLoading}
-								isDisabled={isSubmitting}
+					<FormProvider {...formMethods}>
+						<form
+							onSubmit={handleSubmit(onSubmit)}
+							className="space-y-6 md:space-y-8"
+						>
+							<motion.div
+								initial={{ opacity: 0, y: 20 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ delay: 0.2 }}
+								className="space-y-6 md:space-y-8"
 							>
-								Create Competition
-							</Button>
-						</div>
-					</form>
-				</FormProvider>
+								{/* Competition Information */}
+								<Card className="border border-primary/10">
+									<CardHeader className="border-primary/10 border-b">
+										<h2 className="font-cinzel font-semibold text-xl md:text-2xl">
+											Competition Information
+										</h2>
+									</CardHeader>
+									<CardBody className="p-6">
+										<BasicInformationForm />
+									</CardBody>
+								</Card>
+
+								{/* League Settings */}
+								{competitionType === "league" && (
+									<motion.div
+										initial={{ opacity: 0, height: 0 }}
+										animate={{ opacity: 1, height: "auto" }}
+										exit={{ opacity: 0, height: 0 }}
+										transition={{ duration: 0.3 }}
+									>
+										<Card className="border border-primary/10">
+											<CardHeader className="border-primary/10 border-b">
+												<h2 className="font-cinzel font-semibold text-xl md:text-2xl">
+													League Settings
+												</h2>
+											</CardHeader>
+											<CardBody className="p-6">
+												<LeagueInformationForm />
+											</CardBody>
+										</Card>
+									</motion.div>
+								)}
+
+								{/* Tournament Settings */}
+								{competitionType === "tournament" && (
+									<motion.div
+										initial={{ opacity: 0, height: 0 }}
+										animate={{ opacity: 1, height: "auto" }}
+										exit={{ opacity: 0, height: 0 }}
+										transition={{ duration: 0.3 }}
+									>
+										<Card className="border border-primary/10">
+											<CardHeader className="border-primary/10 border-b">
+												<h2 className="font-cinzel font-semibold text-xl md:text-2xl">
+													Tournament Settings
+												</h2>
+											</CardHeader>
+											<CardBody className="p-6">
+												<TournamentInformationForm />
+											</CardBody>
+										</Card>
+									</motion.div>
+								)}
+
+								{/* Rules */}
+								<Card className="border border-primary/10">
+									<CardHeader className="border-primary/10 border-b">
+										<div className="flex items-center gap-2">
+											<h2 className="font-cinzel font-semibold text-xl md:text-2xl">
+												Rules
+											</h2>
+											<Tooltip content="The competition's rules and rulesets if applicable">
+												<span className="cursor-help text-foreground/70 transition-colors hover:text-foreground/90">
+													<Info size={18} />
+												</span>
+											</Tooltip>
+										</div>
+									</CardHeader>
+									<CardBody className="p-6">
+										<RulesAndRulesetsForm />
+									</CardBody>
+								</Card>
+
+								{/* Participation Details */}
+								<Card className="border border-primary/10">
+									<CardBody className="p-6">
+										<div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+											<h2 className="font-cinzel font-semibold text-xl md:text-2xl">
+												Participation Details
+											</h2>
+											<div className="flex items-center gap-2">
+												<Controller
+													name="useEnrollments"
+													render={({ field }) => (
+														<Switch
+															{...field}
+															isSelected={field.value}
+															isDisabled={isSubmitting}
+														>
+															Enable Enrollments
+														</Switch>
+													)}
+												/>
+											</div>
+										</div>
+										<motion.div
+											initial={false}
+											animate={{ opacity: 1, height: "auto" }}
+											transition={{ duration: 0.3 }}
+										>
+											{useEnrollments ? (
+												<EnrollmentInformationForm />
+											) : (
+												<MembersAndDuesForm />
+											)}
+										</motion.div>
+									</CardBody>
+								</Card>
+							</motion.div>
+
+							{/* Submit Button */}
+							<motion.div
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								transition={{ delay: 0.4 }}
+								className="flex justify-end pt-4"
+							>
+								<Button
+									type="submit"
+									color="primary"
+									size="lg"
+									className="card-hover min-w-[200px] px-8"
+									isLoading={isLoading}
+									isDisabled={isSubmitting}
+								>
+									Create Competition
+								</Button>
+							</motion.div>
+						</form>
+					</FormProvider>
+				</div>
 			</div>
 		</CategoryProvider>
 	);

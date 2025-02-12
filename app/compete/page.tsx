@@ -49,14 +49,14 @@ const Compete = () => {
 
 	if (!categoryItem) {
 		return (
-			<div className="flex min-h-[60vh] flex-col items-center justify-center">
+			<div className="flex min-h-[60vh] flex-col items-center justify-center p-4">
 				<MotionCard
 					initial={{ scale: 0.9, opacity: 0 }}
 					animate={{ scale: 1, opacity: 1 }}
 					transition={{ duration: 0.3 }}
-					className="max-w-md"
+					className="w-full max-w-md"
 				>
-					<CardBody className="flex flex-col items-center gap-4 p-12">
+					<CardBody className="flex flex-col items-center gap-4 p-8 md:p-12">
 						<motion.div
 							initial={{ rotate: -10, scale: 0.9 }}
 							animate={{ rotate: 0, scale: 1 }}
@@ -64,8 +64,10 @@ const Compete = () => {
 						>
 							<Trophy className="h-16 w-16 opacity-50" />
 						</motion.div>
-						<h1 className="font-bold text-4xl">Category Not Found</h1>
-						<p className="opacity-80">
+						<h1 className="text-center font-bold text-3xl md:text-4xl">
+							Category Not Found
+						</h1>
+						<p className="text-center opacity-80">
 							The category "{category}" could not be found.
 						</p>
 						<Button
@@ -89,12 +91,12 @@ const Compete = () => {
 			animate={{ opacity: 1 }}
 			className="min-h-screen"
 		>
-			<div className="container mx-auto space-y-8 px-4 py-8">
+			<div className="container mx-auto space-y-6 px-4 py-6 md:space-y-8 md:py-8">
 				{/* Header Section */}
-				<div className="flex flex-col gap-6">
+				<div className="flex flex-col gap-4 md:gap-6">
 					<Breadcrumbs
 						separator={<ChevronRight className="opacity-50" size={16} />}
-						className="ml-1"
+						className="ml-1 overflow-x-auto"
 					>
 						{breadcrumbItems.map((item) => (
 							<BreadcrumbItem
@@ -109,10 +111,10 @@ const Compete = () => {
 					<motion.h1
 						initial={{ opacity: 0, y: -10 }}
 						animate={{ opacity: 1, y: 0 }}
-						className="font-bold text-4xl"
+						className="font-bold text-3xl md:text-4xl"
 					>
 						{categoryItem.title}
-						<span className="ml-3 font-normal text-lg opacity-80">
+						<span className="ml-3 font-normal text-base opacity-80 md:text-lg">
 							{"children" in categoryItem ? "Categories" : "Competitions"}
 						</span>
 					</motion.h1>
@@ -121,7 +123,7 @@ const Compete = () => {
 				{/* Categories Grid */}
 				{"children" in categoryItem && (
 					<motion.div
-						className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+						className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4"
 						initial="hidden"
 						animate="visible"
 						variants={{
@@ -158,13 +160,16 @@ const Compete = () => {
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ delay: 0.3 }}
 					>
-						<div className="flex items-center justify-between">
-							<h2 className="font-bold text-2xl">Available Competitions</h2>
+						<div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+							<h2 className="font-bold text-xl md:text-2xl">
+								Available Competitions
+							</h2>
 							<Button
 								as={Link}
 								href={`/compete/create?category=${category}`}
 								color="primary"
 								variant="shadow"
+								className="min-w-max whitespace-nowrap"
 								endContent={
 									<motion.div
 										initial={{ rotate: 0 }}
