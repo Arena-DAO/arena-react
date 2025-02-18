@@ -49,11 +49,27 @@ export const EnrollmentInfoSchema = z
 		},
 	);
 
-const DirectParticipationSchema = z.object({
-	dues: z.array(DueSchema).optional(),
-	membersFromDues: z.boolean().default(false),
-	members: z.array(z.object({ address: AddressSchema })),
-});
+const DirectParticipationSchema = z
+	.object({
+		dues: z.array(DueSchema).optional(),
+		membersFromDues: z.boolean().default(false),
+		members: z.array(z.object({ address: AddressSchema })),
+	})
+	.refine(
+		(data) => {
+			// If membersFromDues is true, we need non-zero dues
+			if (data.membersFromDues) {
+				return data.dues && data.dues.length > 0;
+			}
+			// Otherwise, we need non-zero members
+			return data.members.length > 0;
+		},
+		{
+			message:
+				"Either non-zero dues with members from dues or non-zero members are required",
+			path: ["members"],
+		},
+	);
 
 const BaseCreateCompetitionSchema = z.object({
 	banner: z.string().optional(),
