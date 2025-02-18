@@ -210,10 +210,13 @@ const CreateCompetitionPage = () => {
 		}
 
 		const members: AddMemberMsg[] = values.directParticipation.membersFromDues
-			? (values.directParticipation.dues?.map((due) => ({ addr: due.addr })) ??
-				[])
+			? (values.directParticipation.dues?.map((due) => ({
+					addr: due.addr,
+					power: "1000",
+				})) ?? [])
 			: (values.directParticipation.members?.map((member) => ({
 					addr: member.address,
+					power: "1000",
 				})) ?? []);
 
 		const groupContract = {

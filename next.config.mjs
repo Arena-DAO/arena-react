@@ -17,6 +17,9 @@ const nextConfig = {
 	},
 	reactStrictMode: true,
 	output: "export",
+	experimental: {
+		turbo: {},
+	},
 };
 
 export default nextConfig;
