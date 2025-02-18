@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee, Coin } from "@cosmjs/amino";
-import { Uint64, InstantiateMsg, AddMemberMsg, ExecuteMsg, Action, Expiration, Timestamp, MemberMsgForString, MemberData, QueryMsg, MigrateMsg, Boolean, MemberListResponse, Member, MemberResponse, Addr, ArrayOfMemberMsgForAddr, MemberMsgForAddr, OwnershipForString, TotalWeightResponse } from "./ArenaGroup.types";
+import { Uint64, InstantiateMsg, AddMemberMsg, ExecuteMsg, Action, Expiration, Timestamp, MemberMsgForString, QueryMsg, MigrateMsg, Boolean, MemberListResponse, Member, MemberResponse, Addr, ArrayOfMemberMsgForAddr, MemberMsgForAddr, OwnershipForString, TotalWeightResponse } from "./ArenaGroup.types";
 import { ArenaGroupQueryClient, ArenaGroupClient } from "./ArenaGroup.client";
 export const arenaGroupQueryKeys = {
   contract: ([{

@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ExecuteMsg, Uint128, Timestamp, Uint64, CompetitionType, Decimal, EliminationType, EscrowContractInfo, Binary, Admin, Duration, Threshold, PercentageThreshold, Action, Expiration, CompetitionInfoMsg, Coin, FeeInformationForString, ModuleInstantiateInfo, DaoConfig, MemberMsgForString, MemberData, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, FeeInformationForAddr, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
+import { InstantiateMsg, ExecuteMsg, Uint128, Timestamp, Uint64, CompetitionType, Decimal, EliminationType, EscrowContractInfo, Binary, Admin, Duration, Threshold, PercentageThreshold, Action, Expiration, CompetitionInfoMsg, Coin, FeeInformationForString, ModuleInstantiateInfo, DaoConfig, MemberMsgForString, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, FeeInformationForAddr, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
 export interface ArenaCompetitionEnrollmentReadOnlyInterface {
   contractAddress: string;
   enrollments: ({

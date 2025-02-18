@@ -38,10 +38,7 @@ export type Expiration = {
 export type Timestamp = Uint64;
 export interface MemberMsgForString {
   addr: string;
-  data: MemberData;
-}
-export interface MemberData {
-  power: Uint64;
+  power?: Uint64 | null;
   seed: Uint64;
 }
 export type QueryMsg = {
@@ -94,7 +91,8 @@ export type Addr = string;
 export type ArrayOfMemberMsgForAddr = MemberMsgForAddr[];
 export interface MemberMsgForAddr {
   addr: Addr;
-  data: MemberData;
+  power?: Uint64 | null;
+  seed: Uint64;
 }
 export interface OwnershipForString {
   owner?: string | null;

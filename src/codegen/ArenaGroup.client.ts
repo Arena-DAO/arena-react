@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { Uint64, InstantiateMsg, AddMemberMsg, ExecuteMsg, Action, Expiration, Timestamp, MemberMsgForString, MemberData, QueryMsg, MigrateMsg, Boolean, MemberListResponse, Member, MemberResponse, Addr, ArrayOfMemberMsgForAddr, MemberMsgForAddr, OwnershipForString, TotalWeightResponse } from "./ArenaGroup.types";
+import { Uint64, InstantiateMsg, AddMemberMsg, ExecuteMsg, Action, Expiration, Timestamp, MemberMsgForString, QueryMsg, MigrateMsg, Boolean, MemberListResponse, Member, MemberResponse, Addr, ArrayOfMemberMsgForAddr, MemberMsgForAddr, OwnershipForString, TotalWeightResponse } from "./ArenaGroup.types";
 export interface ArenaGroupReadOnlyInterface {
   contractAddress: string;
   members: ({

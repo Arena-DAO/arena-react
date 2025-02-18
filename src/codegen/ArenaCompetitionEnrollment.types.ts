@@ -167,10 +167,7 @@ export interface DaoConfig {
 }
 export interface MemberMsgForString {
   addr: string;
-  data: MemberData;
-}
-export interface MemberData {
-  power: Uint64;
+  power?: Uint64 | null;
   seed: Uint64;
 }
 export type QueryMsg = {
