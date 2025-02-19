@@ -130,7 +130,7 @@ const DaoConfigForm = () => {
 										aria-label="Select voting duration"
 									>
 										{VOTING_DURATIONS.map((duration) => (
-											<SelectItem key={duration.value} value={duration.value}>
+											<SelectItem key={duration.value}>
 												{duration.label}
 											</SelectItem>
 										))}

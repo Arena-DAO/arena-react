@@ -257,9 +257,7 @@ const RoundDisplay = ({
 									variant="bordered"
 								>
 									{LeagueResultValues.map((x) => (
-										<SelectItem key={x.value} value={x.value}>
-											{x.display}
-										</SelectItem>
+										<SelectItem key={x.value}>{x.display}</SelectItem>
 									))}
 								</Select>
 							</TableCell>

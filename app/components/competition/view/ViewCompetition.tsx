@@ -33,7 +33,6 @@ import CompetitionDates from "./components/CompetitionDates";
 import EscrowSection from "./components/EscrowSection";
 import EvidenceSection from "./components/EvidenceSection";
 import ResultSection from "./components/ResultSection";
-import StatsTableModal from "./components/StatsTableModal";
 
 interface ViewCompetitionProps extends PropsWithChildren {
 	moduleAddr: string;
@@ -90,10 +89,6 @@ const ViewCompetition = ({
 					<CardFooter className="justify-between gap-4 overflow-x-auto">
 						<div className="flex gap-2">
 							<GroupMembersModal groupContract={competition.group_contract} />
-							<StatsTableModal
-								moduleAddr={moduleAddr}
-								competitionId={competition.id}
-							/>
 						</div>
 						<CompetitionActions
 							competition={competition}
