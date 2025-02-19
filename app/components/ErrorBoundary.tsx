@@ -1,8 +1,7 @@
 "use client";
 
-import { Button } from "@heroui/react";
+import { Button, addToast } from "@heroui/react";
 import { Component, type ErrorInfo, type PropsWithChildren } from "react";
-import { toast } from "react-toastify";
 
 type ErrorBoundaryState = {
 	hasError: boolean;
@@ -21,7 +20,10 @@ class ErrorBoundary extends Component<PropsWithChildren, ErrorBoundaryState> {
 
 	componentDidCatch(error: Error, errorInfo: ErrorInfo) {
 		// Log error and show toast notification
-		toast.error("Something went wrong! Please try again.");
+		addToast({
+			color: "danger",
+			description: "Something went wrong! Please try again.",
+		});
 		console.error("ErrorBoundary caught an error:", error, errorInfo);
 	}
 

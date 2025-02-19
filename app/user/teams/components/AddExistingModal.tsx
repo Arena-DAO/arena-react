@@ -9,13 +9,14 @@ import {
 	ModalContent,
 	ModalFooter,
 	ModalHeader,
+	addToast,
 	useDraggable,
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type React from "react";
 import { useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
+
 import { DaoDaoCoreClient } from "~/codegen/DaoDaoCore.client";
 import {
 	AddressFormSchema,
@@ -77,10 +78,10 @@ const AddExistingTeamModal: React.FC<AddExistingTeamModalProps> = ({
 
 			teamStore.addTeam(data.address);
 			onClose();
-			toast.success("Team has been added");
+			addToast({ color: "success", description: "Team has been added" });
 		} catch (e) {
 			console.error(e);
-			toast.error((e as Error).message);
+			addToast({ color: "danger", description: (e as Error).message });
 		}
 	};
 

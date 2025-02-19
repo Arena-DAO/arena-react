@@ -6,7 +6,7 @@ import { wallets as metamaskExtensionWallets } from "@cosmos-kit/cosmos-extensio
 import { wallets as keplrWallets } from "@cosmos-kit/keplr";
 import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { ChainProvider } from "@cosmos-kit/react";
-import { HeroUIProvider } from "@heroui/react";
+import { HeroUIProvider, ToastProvider } from "@heroui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
 	assets as mainnetAssets,
@@ -19,7 +19,6 @@ import {
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { type PropsWithChildren, useMemo } from "react";
-import { ToastContainer } from "react-toastify";
 import { useEnv } from "~/hooks/useEnv";
 import "~/styles/globals.css";
 
@@ -74,7 +73,7 @@ function InnerProviders({ children }: PropsWithChildren) {
 			]}
 		>
 			{children}
-			<ToastContainer position="bottom-right" theme={theme} />
+			<ToastProvider toastProps={{ variant: "bordered", timeout: 2000 }} />
 		</ChainProvider>
 	);
 }

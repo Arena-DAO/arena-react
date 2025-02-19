@@ -24,6 +24,7 @@ import {
 	TableHeader,
 	TableRow,
 	Tooltip,
+	addToast,
 	useDisclosure,
 	useDraggable,
 } from "@heroui/react";
@@ -38,7 +39,7 @@ import { Plus, Trash } from "lucide-react";
 import React from "react";
 import { useMemo } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
+
 import { z } from "zod";
 import {
 	ArenaWagerModuleClient,
@@ -132,7 +133,10 @@ const EvidenceSection = ({
 				evidence: values.evidence.map((x) => x.content),
 			});
 
-			toast.success("Evidence has been submitted");
+			addToast({
+				color: "success",
+				description: "Evidence has been submitted",
+			});
 
 			const evidence_id = response.events
 				.find((x) => x.attributes.find((attr) => attr.key === "evidence_count"))
@@ -176,7 +180,7 @@ const EvidenceSection = ({
 			}
 		} catch (e) {
 			console.error(e);
-			toast.error((e as Error).toString());
+			addToast({ color: "danger", description: (e as Error).toString() });
 		}
 	};
 

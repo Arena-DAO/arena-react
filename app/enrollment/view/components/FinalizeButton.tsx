@@ -1,9 +1,9 @@
 "use client";
 
 import { useChain } from "@cosmos-kit/react";
-import { Button } from "@heroui/react";
+import { Button, addToast } from "@heroui/react";
 import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import {
 	arenaCompetitionEnrollmentQueryKeys,
@@ -36,7 +36,7 @@ const FinalizeButton: React.FC<TriggerButtonProps> = ({
 
 	const handleTriggerExpiration = async () => {
 		if (!address) {
-			toast.error("Wallet not connected");
+			addToast({ color: "danger", description: "Wallet not connected" });
 			return;
 		}
 
@@ -104,10 +104,13 @@ const FinalizeButton: React.FC<TriggerButtonProps> = ({
 					},
 				},
 			);
-			toast.success("Expiration triggered successfully");
+			addToast({
+				color: "success",
+				description: "Expiration triggered successfully",
+			});
 		} catch (e) {
 			console.error(e);
-			toast.error((e as Error).toString());
+			addToast({ color: "danger", description: (e as Error).toString() });
 		}
 	};
 

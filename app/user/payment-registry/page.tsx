@@ -16,6 +16,7 @@ import {
 	TableColumn,
 	TableHeader,
 	TableRow,
+	addToast,
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
@@ -25,7 +26,7 @@ import { useSearchParams } from "next/navigation";
 import type React from "react";
 import { useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
-import { toast } from "react-toastify";
+
 import { z } from "zod";
 import {
 	ArenaPaymentRegistryClient,
@@ -142,13 +143,16 @@ const PaymentRegistry: React.FC = () => {
 							}),
 							() => variables.msg.distribution,
 						);
-						toast.success("Payment distribution has been updated");
+						addToast({
+							color: "success",
+							description: "Payment distribution has been updated",
+						});
 					},
 				},
 			);
 		} catch (e) {
 			console.error(e);
-			toast.error((e as Error).toString());
+			addToast({ color: "danger", description: (e as Error).toString() });
 		}
 	};
 
@@ -182,13 +186,16 @@ const PaymentRegistry: React.FC = () => {
 								remainder_addr: "",
 							},
 						});
-						toast.success("Payment distribution has been removed");
+						addToast({
+							color: "success",
+							description: "Payment distribution has been removed",
+						});
 					},
 				},
 			);
 		} catch (e) {
 			console.error(e);
-			toast.error((e as Error).toString());
+			addToast({ color: "danger", description: (e as Error).toString() });
 		}
 	};
 

@@ -15,12 +15,12 @@ import {
 	TableHeader,
 	TableRow,
 	Textarea,
+	addToast,
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
 import { z } from "zod";
 import type {
 	InstantiateMsg as DaoCoreInstantiateMsg,
@@ -177,11 +177,14 @@ const CreateTeam = () => {
 				"auto",
 			);
 			addTeam(result.contractAddress);
-			toast.success("Successfully created the team");
+			addToast({
+				color: "success",
+				description: "Successfully created the team",
+			});
 			router.push("/user/teams");
 		} catch (error) {
 			console.error("Error submitting form:", error);
-			toast.error((error as Error).message);
+			addToast({ color: "danger", description: (error as Error).message });
 		}
 	};
 

@@ -19,12 +19,13 @@ import {
 	TableColumn,
 	TableHeader,
 	TableRow,
+	addToast,
 	useDisclosure,
 } from "@heroui/react";
 import { ChevronDown, Trash } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+
 import { DaoDaoCoreClient } from "~/codegen/DaoDaoCore.client";
 import { getStringSet } from "~/helpers/ReactHookHelpers";
 import { useEnv } from "~/hooks/useEnv";
@@ -68,8 +69,7 @@ const TeamsPage = () => {
 
 			try {
 				if (teamStore.teams.includes(teamAddress)) {
-					toast.error("This team is already in your list.");
-					return;
+					throw new Error("This team is already in your list.");
 				}
 
 				const signingCosmWasmClient = await getSigningCosmWasmClient();
@@ -83,15 +83,17 @@ const TeamsPage = () => {
 				const votingPower = await client.votingPowerAtHeight({ address });
 
 				if (Number(votingPower.power) === 0) {
-					toast.error("You are not a member of this team.");
-					return;
+					throw new Error("You are not a member of this team.");
 				}
 
 				teamStore.addTeam(teamAddress);
-				toast.success("Team has been added!");
+				addToast({ color: "success", description: "Team has been added!" });
 			} catch (error) {
 				console.error(error);
-				toast.error(`Failed to add team: ${(error as Error).message}`);
+				addToast({
+					color: "danger",
+					description: `Failed to add team: ${(error as Error).message}`,
+				});
 			}
 		};
 

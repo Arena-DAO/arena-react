@@ -22,14 +22,14 @@ import { useEnv } from "~/hooks/useEnv";
 import "reactflow/dist/style.css";
 import { useChain } from "@cosmos-kit/react";
 import dagre from "@dagrejs/dagre";
-import { Button, ButtonGroup } from "@heroui/react";
+import { Button, ButtonGroup, addToast } from "@heroui/react";
 import {
 	type QueryClient,
 	useInfiniteQuery,
 	useQueryClient,
 } from "@tanstack/react-query";
 import { Fullscreen, Minimize, Share, Upload } from "lucide-react";
-import { toast } from "react-toastify";
+
 import useClipboard from "react-use-clipboard";
 import { create } from "zustand";
 import { arenaCoreQueryKeys } from "~/codegen/ArenaCore.react-query";
@@ -322,7 +322,10 @@ function Bracket({
 				},
 				{
 					onSuccess: async (response) => {
-						toast.success("Matches were processed successfully");
+						addToast({
+							color: "success",
+							description: "Matches were processed successfully",
+						});
 
 						// Update the query data
 						await queryClient.invalidateQueries(
@@ -390,14 +393,17 @@ function Bracket({
 								);
 							}
 
-							toast.success("The tournament is now fully processed");
+							addToast({
+								color: "success",
+								description: "The tournament is now fully processed",
+							});
 						}
 					},
 				},
 			);
 		} catch (e) {
 			console.error(e);
-			toast.error((e as Error).toString());
+			addToast({ color: "danger", description: (e as Error).toString() });
 		}
 	};
 
@@ -426,7 +432,7 @@ function Bracket({
 							isDisabled={isCopied}
 							onPress={() => {
 								setCopied();
-								toast.success("Link copied 👍");
+								addToast({ color: "success", description: "Link copied 👍" });
 							}}
 						>
 							Share

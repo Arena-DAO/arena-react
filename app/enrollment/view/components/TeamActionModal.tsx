@@ -7,13 +7,14 @@ import {
 	ModalContent,
 	ModalFooter,
 	ModalHeader,
+	addToast,
 	useDraggable,
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type React from "react";
 import { useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
+
 import {
 	AddressFormSchema,
 	type AddressFormValues,
@@ -53,7 +54,7 @@ const TeamActionModal: React.FC<TeamActionModalProps> = ({
 			onClose();
 		} catch (e) {
 			console.error(e);
-			toast.error((e as Error).message);
+			addToast({ color: "danger", description: (e as Error).message });
 		}
 	};
 

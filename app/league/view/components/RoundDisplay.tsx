@@ -12,10 +12,11 @@ import {
 	TableColumn,
 	TableHeader,
 	TableRow,
+	addToast,
 } from "@heroui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+
 import { arenaCoreQueryKeys } from "~/codegen/ArenaCore.react-query";
 import { arenaEscrowQueryKeys } from "~/codegen/ArenaEscrow.react-query";
 import {
@@ -124,7 +125,10 @@ const RoundDisplay = ({
 				},
 				{
 					onSuccess: async (response) => {
-						toast.success("The results were submitted");
+						addToast({
+							color: "success",
+							description: "The results were submitted",
+						});
 
 						queryClient.setQueryData<string | undefined>(
 							arenaLeagueModuleQueryKeys.queryExtension(
@@ -216,14 +220,17 @@ const RoundDisplay = ({
 								);
 							}
 
-							toast.success("The league is now fully processed");
+							addToast({
+								color: "success",
+								description: "The league is now fully processed",
+							});
 						}
 					},
 				},
 			);
 		} catch (e) {
 			console.error(e);
-			toast.error((e as Error).toString());
+			addToast({ color: "danger", description: (e as Error).toString() });
 		} finally {
 			setIsSubmitting(false);
 		}

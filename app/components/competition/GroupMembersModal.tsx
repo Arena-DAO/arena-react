@@ -18,12 +18,13 @@ import {
 	TableColumn,
 	TableHeader,
 	TableRow,
+	addToast,
 	useDisclosure,
 	useDraggable,
 } from "@heroui/react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState, useMemo, useCallback } from "react";
-import { toast } from "react-toastify";
+
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import { ArenaGroupQueryClient } from "~/codegen/ArenaGroup.client";
 import { arenaGroupQueryKeys } from "~/codegen/ArenaGroup.react-query";
@@ -141,11 +142,14 @@ const GroupMembers: React.FC<GroupMemberProps> = ({
 				arenaGroupQueryKeys.members(groupContract, {}),
 			);
 
-			toast.success("Users have been successfully withdrawn");
+			addToast({
+				color: "success",
+				description: "Users have been successfully withdrawn",
+			});
 			setSelectedMembers(new Set());
 		} catch (e) {
 			console.error(e);
-			toast.error((e as Error).toString());
+			addToast({ color: "danger", description: (e as Error).toString() });
 		}
 	};
 
@@ -174,11 +178,11 @@ const GroupMembers: React.FC<GroupMemberProps> = ({
 				arenaGroupQueryKeys.members(groupContract, {}),
 			);
 
-			toast.success("Seeds updated successfully");
+			addToast({ color: "success", description: "Seeds updated successfully" });
 			setModifiedSeeds({});
 		} catch (e) {
 			console.error(e);
-			toast.error((e as Error).toString());
+			addToast({ color: "danger", description: (e as Error).toString() });
 		}
 	};
 

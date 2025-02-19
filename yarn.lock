@@ -6178,7 +6178,6 @@ __metadata:
     react-dom: "npm:19.0.0"
     react-hook-form: "npm:^7.54.2"
     react-icons: "npm:^5.5.0"
-    react-toastify: "npm:^10.0.6"
     react-use-clipboard: "npm:^1.0.9"
     reactflow: "npm:^11.11.4"
     recharts: "npm:^2.15.1"
@@ -6580,7 +6579,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clsx@npm:^2.0.0, clsx@npm:^2.1.0, clsx@npm:^2.1.1":
+"clsx@npm:^2.0.0, clsx@npm:^2.1.1":
   version: 2.1.1
   resolution: "clsx@npm:2.1.1"
   checksum: 10c0/c4c8eb865f8c82baab07e71bfa8897c73454881c4f99d6bc81585aecd7c441746c1399d08363dc096c550cceaf97bd4ce1e8854e1771e9998d9f94c4fe075839
@@ -9926,18 +9925,6 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
   checksum: 10c0/652d290d316c55a253507ecf65ca27f2162801dace10c715f2241203e81d82e9de6d282095b758b26c6bc9e1af9ca552cab5c3a361b230e5fcf25bec31e1bd25
-  languageName: node
-  linkType: hard
-
-"react-toastify@npm:^10.0.6":
-  version: 10.0.6
-  resolution: "react-toastify@npm:10.0.6"
-  dependencies:
-    clsx: "npm:^2.1.0"
-  peerDependencies:
-    react: ">=18"
-    react-dom: ">=18"
-  checksum: 10c0/4042b716d008295d0feab32488d1e88ec655a1b7a9176fa7d253c70387578a8a0c04aca0ff86d20e1722f3b4baadae8970f50f462940d67a90453c307dd350a9
   languageName: node
   linkType: hard
 

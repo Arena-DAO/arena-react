@@ -12,7 +12,6 @@ import {
 import { Wallet } from "lucide-react";
 import { useMemo } from "react";
 import { BsDiscord } from "react-icons/bs";
-import { toast } from "react-toastify";
 import { isValidWalletAddress } from "~/helpers/AddressHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import { useAuthStore } from "~/store/authStore";
@@ -72,8 +71,7 @@ export default function WalletConnectToggle() {
 
 	const handleDiscordConnect = () => {
 		if (!chainContext.address) {
-			toast.error("Wallet must be connected");
-			return; // Exit the function if no wallet is connected
+			throw new Error("Wallet must be connected");
 		}
 
 		// Encode the current URL and wallet address

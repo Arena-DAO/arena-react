@@ -13,6 +13,7 @@ import {
 	CardHeader,
 	Switch,
 	Tooltip,
+	addToast,
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {} from "@internationalized/date";
@@ -20,7 +21,7 @@ import { motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Controller, FormProvider, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
+
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import type { CompetitionType } from "~/codegen/ArenaCompetitionEnrollment.types";
 import type { InstantiateMsg as ArenaEscrowInstantiateMsg } from "~/codegen/ArenaEscrow.types";
@@ -327,7 +328,10 @@ const CreateCompetitionPage = () => {
 	const onSubmit = async (values: CreateCompetitionFormValues) => {
 		try {
 			if (!isWalletConnected) {
-				toast.error("Please connect your wallet to create a competition");
+				addToast({
+					color: "danger",
+					description: "Please connect your wallet to create a competition",
+				});
 				return;
 			}
 
@@ -359,16 +363,23 @@ const CreateCompetitionPage = () => {
 						? `/enrollment/view?enrollmentId=${id}`
 						: `/${values.competitionType}/view?competitionId=${id}`,
 				);
-				toast.success(
-					`Your ${values.competitionType} competition was created successfully!`,
-				);
+				addToast({
+					color: "success",
+					description: `Your ${values.competitionType} competition was created successfully!`,
+				});
 			} else {
 				console.warn("Competition created but ID not found in the result");
-				toast.warning("Competition created but redirect failed");
+				addToast({
+					color: "warning",
+					description: "Competition created but redirect failed",
+				});
 			}
 		} catch (e) {
 			console.error(e);
-			toast.error(`Error creating competition: ${(e as Error).message}`);
+			addToast({
+				color: "danger",
+				description: `Error creating competition: ${(e as Error).message}`,
+			});
 		}
 	};
 

@@ -44,7 +44,6 @@
 		"react-dom": "19.0.0",
 		"react-hook-form": "^7.54.2",
 		"react-icons": "^5.5.0",
-		"react-toastify": "^10.0.6",
 		"react-use-clipboard": "^1.0.9",
 		"reactflow": "^11.11.4",
 		"recharts": "^2.15.1",

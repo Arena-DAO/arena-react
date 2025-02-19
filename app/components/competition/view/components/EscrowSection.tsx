@@ -9,10 +9,11 @@ import {
 	CardFooter,
 	CardHeader,
 	Spinner,
+	addToast,
 } from "@heroui/react";
 import { type InfiniteData, useQueryClient } from "@tanstack/react-query";
 import type { PropsWithChildren } from "react";
-import { toast } from "react-toastify";
+
 import {
 	ArenaEscrowClient,
 	ArenaEscrowQueryClient,
@@ -106,7 +107,10 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 
 			const response = await client.executeMultiple(address, msgs, "auto");
 
-			toast.success("Funds have been successfully deposited");
+			addToast({
+				color: "success",
+				description: "Funds have been successfully deposited",
+			});
 
 			// Handle competition activation if in competition context
 			if (context.type === "competition") {
@@ -130,7 +134,10 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 							return old;
 						},
 					);
-					toast.success("The competition is now active");
+					addToast({
+						color: "success",
+						description: "The competition is now active",
+					});
 				}
 			}
 
@@ -157,7 +164,7 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 			);
 		} catch (e) {
 			console.error(e);
-			toast.error((e as Error).toString());
+			addToast({ color: "danger", description: (e as Error).toString() });
 		}
 	};
 
@@ -176,7 +183,10 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 				},
 				{
 					onSuccess: async () => {
-						toast.success("Funds have been successfully withdrawn");
+						addToast({
+							color: "success",
+							description: "Funds have been successfully withdrawn",
+						});
 
 						await queryClient.invalidateQueries(
 							arenaEscrowQueryKeys.dumpState(escrow, { addr: address }),
@@ -204,7 +214,7 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 			);
 		} catch (e) {
 			console.error(e);
-			toast.error((e as Error).toString());
+			addToast({ color: "danger", description: (e as Error).toString() });
 		}
 	};
 
