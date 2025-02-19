@@ -185,7 +185,6 @@ const ViewCompetition = ({
 				<EvidenceSection
 					moduleAddr={moduleAddr}
 					competitionId={competition.id}
-					hideIfEmpty={competition.status === "inactive"}
 				/>
 			)}
 			{competition.status === "inactive" && (

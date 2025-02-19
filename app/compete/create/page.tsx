@@ -21,7 +21,6 @@ import { motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Controller, FormProvider, useForm } from "react-hook-form";
-
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import type { CompetitionType } from "~/codegen/ArenaCompetitionEnrollment.types";
 import type { InstantiateMsg as ArenaEscrowInstantiateMsg } from "~/codegen/ArenaEscrow.types";
@@ -37,7 +36,7 @@ import {
 	type CreateCompetitionFormValues,
 	CreateCompetitionSchema,
 } from "~/config/schemas/CreateCompetitionSchema";
-import { parseToNanos } from "~/config/schemas/TimestampSchema";
+import { convertToNanoseconds } from "~/config/schemas/TimestampSchema";
 import {
 	CategoryProvider,
 	useCategoryContext,
@@ -165,7 +164,7 @@ const CreateCompetitionPage = () => {
 			competitionInfo: {
 				name: values.name,
 				description: values.description,
-				date: parseToNanos(values.date),
+				date: convertToNanoseconds(values.date),
 				duration: values.duration.toSeconds(),
 				rules: values.rules.map((r) => r.rule),
 				rulesets: values.rulesets.map((r) => r.ruleset_id.toString()),
@@ -245,7 +244,7 @@ const CreateCompetitionPage = () => {
 		const commonMsg = {
 			name: values.name,
 			description: values.description,
-			date: parseToNanos(values.date),
+			date: convertToNanoseconds(values.date),
 			duration: values.duration.toSeconds(),
 			rules: values.rules.map((r) => r.rule),
 			rulesets: values.rulesets.map((r) => r.ruleset_id.toString()),
@@ -503,7 +502,7 @@ const CreateCompetitionPage = () => {
 															isDisabled={isSubmitting}
 															aria-label="Toggle enrollment mode"
 														>
-															Enable Enrollments
+															Using Enrollments
 														</Switch>
 													)}
 												/>

@@ -9,7 +9,7 @@ import {
 	useDisclosure,
 } from "@heroui/react";
 import { Info, Plus, Users } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	Controller,
 	useFieldArray,
@@ -22,7 +22,7 @@ import Member from "./Member";
 import MemberDue from "./MemberDue";
 
 const DirectParticipationForm = () => {
-	const { control } = useFormContext<CreateCompetitionFormValues>();
+	const { control, setValue } = useFormContext<CreateCompetitionFormValues>();
 	const membersFromDues = useWatch({
 		control,
 		name: "directParticipation.membersFromDues",
@@ -45,6 +45,10 @@ const DirectParticipationForm = () => {
 		control,
 		name: "directParticipation.members",
 	});
+
+	useEffect(() => {
+		setValue("directParticipation.membersFromDues", true);
+	}, [setValue]);
 
 	const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 	const [editingDueIndex, setEditingDueIndex] = useState<number | null>(null);

@@ -153,8 +153,10 @@ const AddDueForm = ({
 	}, [watchDenomOrAddress]);
 
 	const handleTokenTypeChange = (value: string) => {
+		const denomOrAddress = value === "native" ? env.DEFAULT_NATIVE : "";
+		setDebouncedDenomOrAddress(denomOrAddress);
 		setValue("tokenType", value as "native" | "cw20" | "cw721");
-		setValue("denomOrAddress", value === "native" ? env.DEFAULT_NATIVE : "");
+		setValue("denomOrAddress", denomOrAddress);
 		setValue("amount", undefined);
 		setValue("tokenIds", []);
 	};

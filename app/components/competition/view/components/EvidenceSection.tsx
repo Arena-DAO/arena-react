@@ -55,7 +55,6 @@ import { useEnv } from "~/hooks/useEnv";
 interface EvidenceSectionProps {
 	moduleAddr: string;
 	competitionId: string;
-	hideIfEmpty: boolean;
 }
 
 const EvidenceFormSchema = z.object({
@@ -67,7 +66,6 @@ type EvidenceFormValues = z.infer<typeof EvidenceFormSchema>;
 const EvidenceSection = ({
 	competitionId,
 	moduleAddr,
-	hideIfEmpty,
 }: EvidenceSectionProps) => {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
@@ -191,8 +189,6 @@ const EvidenceSection = ({
 
 	const targetRef = React.useRef(null);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
-
-	if (evidence.length === 0 && hideIfEmpty) return null;
 
 	return (
 		<>

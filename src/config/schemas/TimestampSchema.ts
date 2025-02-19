@@ -51,12 +51,9 @@ export const getCurrentTimeNanos = (): bigint => {
 	return zonedDateTimeToNanos(now(getLocalTimeZone()));
 };
 
-export const parseToNanos = (isoString: string): string => {
+export function convertToNanoseconds(isoString: string): string {
 	const date = new Date(isoString);
-
-	if (Number.isNaN(date.getTime())) {
-		throw new Error("Invalid ISO date string");
-	}
-
-	return (date.getTime() * 1_000_000).toString();
-};
+	const milliseconds = BigInt(date.getTime());
+	const nanoseconds = milliseconds * BigInt(1000000);
+	return nanoseconds.toString();
+}
