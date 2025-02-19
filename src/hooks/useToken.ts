@@ -20,32 +20,23 @@ export const useToken = (
 			if (!denomOrAddress) {
 				throw new Error("Token denom or address is required");
 			}
-
-			try {
-				if (isNative) {
-					return await getNativeAsset(
-						denomOrAddress,
-						env.RPC_URL,
-						assets?.assets,
-					);
-				}
-				if (!cosmWasmClient) {
-					throw new Error("CosmWasm client not initialized");
-				}
-
-				return await getCw20Asset(
-					cosmWasmClient,
+			if (isNative) {
+				return await getNativeAsset(
 					denomOrAddress,
+					env.RPC_URL,
 					assets?.assets,
-					env.BECH32_PREFIX,
 				);
-			} catch (error) {
-				console.error(
-					`Failed to fetch token data for ${denomOrAddress}:`,
-					error,
-				);
-				throw error;
 			}
+			if (!cosmWasmClient) {
+				throw new Error("CosmWasm client not initialized");
+			}
+
+			return await getCw20Asset(
+				cosmWasmClient,
+				denomOrAddress,
+				assets?.assets,
+				env.BECH32_PREFIX,
+			);
 		},
 		{
 			staleTime: Number.POSITIVE_INFINITY,
