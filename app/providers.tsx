@@ -73,7 +73,6 @@ function InnerProviders({ children }: PropsWithChildren) {
 			]}
 		>
 			{children}
-			<ToastProvider toastProps={{ variant: "bordered", timeout: 2000 }} />
 		</ChainProvider>
 	);
 }
@@ -87,6 +86,17 @@ export function Providers({ children }: PropsWithChildren) {
 				<NextThemesProvider attribute="class" defaultTheme="dark">
 					<InnerProviders>{children}</InnerProviders>
 				</NextThemesProvider>
+				<ToastProvider
+					toastProps={{
+						variant: "flat",
+						size: "lg",
+						classNames: {
+							base: "min-w-[350px] max-w-[90vw] sm:max-w-[400px] md:max-w-[500px] w-auto", // Responsive width
+							content:
+								"whitespace-normal break-words overflow-y-auto max-h-[200px]", // Text wrapping and overflow
+						},
+					}}
+				/>
 			</HeroUIProvider>
 		</QueryClientProvider>
 	);
