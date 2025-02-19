@@ -7,6 +7,8 @@ import {
 	Card,
 	CardBody,
 	CardFooter,
+	CardHeader,
+	Divider,
 	Input,
 	Table,
 	TableBody,
@@ -15,11 +17,22 @@ import {
 	TableHeader,
 	TableRow,
 	Textarea,
+	Tooltip,
 	addToast,
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+	CalendarDays,
+	HelpCircle,
+	Image,
+	Info,
+	Link,
+	PlusCircle,
+	Shield,
+	Trash,
+	Users,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import type {
@@ -78,9 +91,8 @@ const CreateTeam = () => {
 	const {
 		control,
 		handleSubmit,
-		formState: { errors, isSubmitting },
-		setValue,
-		getValues,
+		formState: { errors, isSubmitting, dirtyFields },
+		reset,
 	} = useForm<CreateTeamFormData>({
 		resolver: zodResolver(CreateTeamSchema),
 		defaultValues: {
@@ -88,15 +100,10 @@ const CreateTeam = () => {
 			description: "",
 			teamImageUrl: "",
 			bannerUrl: "",
-			members: [{ addr: address }],
+			members: [{ addr: "" }, { addr: "" }],
 		},
+		mode: "onChange",
 	});
-
-	useEffect(() => {
-		if (address && !getValues("members.0.addr")) {
-			setValue("members.0.addr", address); // Update the first member's address dynamically
-		}
-	}, [address, setValue, getValues]);
 
 	const { fields, append, remove } = useFieldArray({
 		control,
@@ -108,6 +115,12 @@ const CreateTeam = () => {
 			if (!address) {
 				throw Error("Wallet must be connected");
 			}
+
+			addToast({
+				color: "primary",
+				description: "Creating your team...",
+			});
+
 			const cosmWasmClient = await getSigningCosmWasmClient();
 			const result = await cosmWasmClient.instantiate(
 				address,
@@ -176,151 +189,267 @@ const CreateTeam = () => {
 				"Arena Team",
 				"auto",
 			);
+
 			addTeam(result.contractAddress);
 			addToast({
 				color: "success",
-				description: "Successfully created the team",
+				description: "Successfully created the team!",
 			});
 			router.push("/user/teams");
 		} catch (error) {
 			console.error("Error submitting form:", error);
-			addToast({ color: "danger", description: (error as Error).message });
+			addToast({
+				color: "danger",
+				description: (error as Error).message,
+			});
+		}
+	};
+
+	const handleAddMember = () => {
+		append({ addr: "" });
+	};
+
+	const handleReset = () => {
+		if (
+			confirm(
+				"Are you sure you want to reset the form? All entered data will be lost.",
+			)
+		) {
+			reset({
+				teamName: "",
+				description: "",
+				teamImageUrl: "",
+				bannerUrl: "",
+				members: [{ addr: address || "" }, { addr: "" }],
+			});
 		}
 	};
 
 	return (
-		<div className="container mx-auto p-4">
-			<form onSubmit={handleSubmit(onSubmit)}>
-				<Card>
-					<CardBody>
-						<h1 className="mb-6 font-bold text-2xl">Create Your Team</h1>
-						<div className="space-y-4">
-							<Controller
-								name="teamName"
-								control={control}
-								render={({ field }) => (
-									<Input
-										{...field}
-										isRequired
-										label="Team Name"
-										errorMessage={errors.teamName?.message}
-										isInvalid={!!errors.teamName}
-									/>
-								)}
-							/>
+		<div className="container mx-auto max-w-4xl p-4">
+			<Card className="border border-primary/10 shadow-lg">
+				<CardHeader className="flex flex-col gap-2 border-primary/10 border-b">
+					<div className="flex items-center justify-between">
+						<h1 className="font-bold font-cinzel text-2xl md:text-3xl">
+							Create Your Team
+						</h1>
+						<Tooltip content="A team allows you to participate in competitions with multiple members">
+							<Button isIconOnly variant="light" className="cursor-help">
+								<Info size={20} />
+							</Button>
+						</Tooltip>
+					</div>
+					<p className="text-foreground/70">
+						Create a team to participate in competitions with friends and manage
+						shared assets
+					</p>
+				</CardHeader>
 
-							<Controller
-								name="description"
-								control={control}
-								render={({ field }) => (
-									<Textarea
-										{...field}
-										isRequired
-										label="Team Description"
-										errorMessage={errors.description?.message}
-										isInvalid={!!errors.description}
-									/>
-								)}
-							/>
-
-							<Controller
-								name="teamImageUrl"
-								control={control}
-								render={({ field }) => (
-									<Input
-										{...field}
-										label="Team Image URL"
-										placeholder="ipfs:// or http(s)://"
-										errorMessage={errors.teamImageUrl?.message}
-										isInvalid={!!errors.teamImageUrl}
-									/>
-								)}
-							/>
-
-							<Controller
-								name="bannerUrl"
-								control={control}
-								render={({ field }) => (
-									<Input
-										{...field}
-										label="Banner URL"
-										placeholder="ipfs:// or http(s)://"
-										errorMessage={errors.bannerUrl?.message}
-										isInvalid={!!errors.bannerUrl}
-									/>
-								)}
-							/>
-
+				<form onSubmit={handleSubmit(onSubmit)}>
+					<CardBody className="p-6 md:p-8">
+						<div className="space-y-8">
+							{/* Team Identity Section */}
 							<div className="space-y-4">
-								<div className="flex items-center justify-between">
-									<h2 className="font-semibold text-xl">Team Members</h2>
-									<Button
-										color="primary"
-										onPress={() => append({ addr: "" })}
-										isDisabled={isSubmitting}
-									>
-										Add Member
-									</Button>
+								<div className="flex items-center gap-2">
+									<Shield size={20} className="text-primary" />
+									<h2 className="font-semibold text-xl">Team Identity</h2>
 								</div>
 
-								<Table aria-label="Team members table" removeWrapper hideHeader>
-									<TableHeader>
-										<TableColumn>ADDRESS</TableColumn>
-										<TableColumn>ACTIONS</TableColumn>
-									</TableHeader>
-									<TableBody>
-										{fields.map((field, index) => (
-											<TableRow key={field.id}>
-												<TableCell>
-													<Controller
-														name={`members.${index}.addr`}
-														control={control}
-														render={({ field }) => (
-															<ProfileInput
-																label="Address"
-																field={field}
-																error={errors.members?.[index]?.addr}
-																isRequired
-																isDisabled={isSubmitting}
-															/>
-														)}
-													/>
-												</TableCell>
-												<TableCell>
-													<Button
-														color="danger"
-														onPress={() => remove(index)}
-														isDisabled={isSubmitting}
-													>
-														Remove
-													</Button>
-												</TableCell>
-											</TableRow>
-										))}
-									</TableBody>
-								</Table>
+								<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+									<Controller
+										name="teamName"
+										control={control}
+										render={({ field }) => (
+											<Input
+												{...field}
+												isRequired
+												label="Team Name"
+												placeholder="Enter your team name"
+												errorMessage={errors.teamName?.message}
+												isInvalid={!!errors.teamName}
+												startContent={
+													<Users size={16} className="text-default-400" />
+												}
+												description="Choose a unique and memorable name"
+											/>
+										)}
+									/>
+
+									<Controller
+										name="teamImageUrl"
+										control={control}
+										render={({ field }) => (
+											<Input
+												{...field}
+												label="Team Logo URL"
+												placeholder="ipfs:// or https://"
+												errorMessage={errors.teamImageUrl?.message}
+												isInvalid={!!errors.teamImageUrl}
+												startContent={
+													<Image size={16} className="text-default-400" />
+												}
+												description="Square image recommended (optional)"
+											/>
+										)}
+									/>
+								</div>
+
+								<Controller
+									name="description"
+									control={control}
+									render={({ field }) => (
+										<Textarea
+											{...field}
+											isRequired
+											label="Team Description"
+											placeholder="Tell us about your team"
+											errorMessage={errors.description?.message}
+											isInvalid={!!errors.description}
+											minRows={3}
+											classNames={{
+												input: "resize-none",
+											}}
+											description={`${field.value?.length || 0}/500 characters`}
+										/>
+									)}
+								/>
+
+								<Controller
+									name="bannerUrl"
+									control={control}
+									render={({ field }) => (
+										<Input
+											{...field}
+											label="Banner Image URL"
+											placeholder="ipfs:// or https://"
+											errorMessage={errors.bannerUrl?.message}
+											isInvalid={!!errors.bannerUrl}
+											startContent={
+												<Link size={16} className="text-default-400" />
+											}
+											description="Wide banner image (16:9 ratio recommended, optional)"
+										/>
+									)}
+								/>
+							</div>
+
+							<Divider className="my-6" />
+
+							{/* Team Members Section */}
+							<div className="space-y-4">
+								<div className="flex items-center justify-between">
+									<div className="flex items-center gap-2">
+										<Users size={20} className="text-primary" />
+										<h2 className="font-semibold text-xl">Team Members</h2>
+									</div>
+
+									<Tooltip content="Add team members with their wallet addresses">
+										<Button
+											color="primary"
+											variant="flat"
+											onPress={handleAddMember}
+											isDisabled={isSubmitting}
+											startContent={<PlusCircle size={18} />}
+											className="card-hover"
+										>
+											Add Member
+										</Button>
+									</Tooltip>
+								</div>
+
+								<Card className="border border-primary/10">
+									<Table
+										aria-label="Team members table"
+										removeWrapper
+										isStriped
+									>
+										<TableHeader>
+											<TableColumn>MEMBER ADDRESS</TableColumn>
+											<TableColumn width={100}>ACTIONS</TableColumn>
+										</TableHeader>
+										<TableBody emptyContent="No members added. Add at least two members to create a team.">
+											{fields.map((field, index) => (
+												<TableRow key={field.id} className="h-20">
+													<TableCell>
+														<Controller
+															name={`members.${index}.addr`}
+															control={control}
+															render={({ field }) => (
+																<ProfileInput
+																	label={`Member ${index + 1}`}
+																	field={field}
+																	error={errors.members?.[index]?.addr}
+																	isRequired
+																	isDisabled={isSubmitting}
+																	emptyTeams
+																/>
+															)}
+														/>
+													</TableCell>
+													<TableCell className="align-top">
+														<Button
+															isIconOnly
+															variant="light"
+															color="danger"
+															onPress={() => remove(index)}
+															isDisabled={isSubmitting}
+															aria-label="Remove member"
+														>
+															<Trash size={18} />
+														</Button>
+													</TableCell>
+												</TableRow>
+											))}
+										</TableBody>
+									</Table>
+								</Card>
 
 								{errors.members?.root && (
-									<p className="text-danger text-sm">
-										{errors.members.root.message}
-									</p>
+									<div className="flex items-center gap-2 rounded-lg bg-danger-50 p-3 text-danger">
+										<HelpCircle size={18} />
+										<p className="text-sm">{errors.members.root.message}</p>
+									</div>
 								)}
+
+								<div className="rounded-xl border border-primary/10 bg-primary/5 p-4">
+									<div className="flex items-start gap-3">
+										<CalendarDays size={20} className="mt-1 text-primary" />
+										<div>
+											<h3 className="font-medium text-md">Team Governance</h3>
+											<p className="mt-1 text-foreground/70 text-sm">
+												Your team will be created as a DAO with equal voting
+												power for all members. Decisions will require all
+												members to agree within 24-hours.
+											</p>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</CardBody>
-					<CardFooter>
+
+					<CardFooter className="flex justify-between gap-2 border-primary/10 border-t px-6 py-4">
+						<Button
+							type="button"
+							variant="flat"
+							onPress={handleReset}
+							isDisabled={isSubmitting || !Object.keys(dirtyFields).length}
+						>
+							Reset Form
+						</Button>
 						<Button
 							type="submit"
 							color="primary"
 							isLoading={isSubmitting}
 							isDisabled={isSubmitting}
-							className="ml-auto"
+							className="card-hover"
+							size="lg"
 						>
 							Create Team
 						</Button>
 					</CardFooter>
-				</Card>
-			</form>
+				</form>
+			</Card>
 		</div>
 	);
 };

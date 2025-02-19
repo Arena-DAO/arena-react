@@ -1,3 +1,4 @@
+import { useChain } from "@cosmos-kit/react";
 import {
 	Autocomplete,
 	AutocompleteItem,
@@ -23,11 +24,23 @@ export const ProfileInput = ({
 }: ProfileInputProps) => {
 	const env = useEnv();
 	const teams = useTeamStore((x) => x.teams);
+	const { address } = useChain(env.CHAIN);
 
 	const items = useMemo(() => {
-		if (emptyTeams) return [];
-		return teams.map((x) => ({ address: x }));
-	}, [teams, emptyTeams]);
+		// Always include the user's address if it's available
+		const result = address ? [{ address }] : [];
+
+		// If emptyTeams is false, add all team addresses (avoiding duplicates)
+		if (!emptyTeams) {
+			result.push(
+				...teams
+					.filter((team) => team !== address)
+					.map((team) => ({ address: team })),
+			);
+		}
+
+		return result;
+	}, [teams, emptyTeams, address]);
 
 	return (
 		<div className="flex items-center">

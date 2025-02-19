@@ -1,11 +1,11 @@
 "use client";
 
 import { Accordion, AccordionItem, Button, Input } from "@heroui/react";
-import { Trash, Plus } from "lucide-react";
+import { Plus, Trash } from "lucide-react";
+import React, { useCallback } from "react";
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 import { useCategoryContext } from "~/contexts/CategoryContext";
 import RulesetsSelection from "./RulesetsSelection";
-import React, { useCallback } from "react";
 
 interface RuleInputProps {
 	index: number;

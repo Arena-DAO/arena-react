@@ -121,8 +121,7 @@ const Profile = ({
 
 	// Validate address against current chain's prefix
 	const isValid = useMemo(
-		() =>
-			address.length > 0 && isValidBech32Address(address, env.BECH32_PREFIX),
+		() => Boolean(address) && isValidBech32Address(address, env.BECH32_PREFIX),
 		[address, env.BECH32_PREFIX],
 	);
 
@@ -181,7 +180,9 @@ const Profile = ({
 	// Calculate rating display value
 	const parsedRating = useMemo(
 		() =>
-			category && ratingData ? (ratingData as unknown as Rating).value : "1500",
+			category && ratingData
+				? (ratingData as unknown as Rating).value
+				: undefined,
 		[category, ratingData],
 	);
 
