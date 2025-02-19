@@ -8,13 +8,14 @@ import {
 	DropdownItem,
 	DropdownMenu,
 	DropdownTrigger,
+	addToast,
 	useDisclosure,
 } from "@heroui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+
 import {
 	ArenaCompetitionEnrollmentClient,
 	ArenaCompetitionEnrollmentQueryClient,
@@ -97,7 +98,10 @@ const EnrollmentActionsButton: React.FC<EnrollmentActionsButtonProps> = ({
 
 	const handleAction = async (type: "enroll" | "withdraw", team?: string) => {
 		if (!address) {
-			toast.error(`Please connect your wallet to ${type}.`);
+			addToast({
+				color: "danger",
+				description: `Please connect your wallet to ${type}.`,
+			});
 			return;
 		}
 
@@ -120,9 +124,10 @@ const EnrollmentActionsButton: React.FC<EnrollmentActionsButtonProps> = ({
 				},
 				{
 					onSuccess: async () => {
-						toast.success(
-							`Successfully ${type === "enroll" ? "enrolled" : "withdrawn"}!`,
-						);
+						addToast({
+							color: "success",
+							description: `Successfully ${type === "enroll" ? "enrolled" : "withdrawn"}!`,
+						});
 						await invalidateQueries();
 						queryClient.setQueryData(
 							arenaCompetitionEnrollmentQueryKeys.isMember(
@@ -139,7 +144,7 @@ const EnrollmentActionsButton: React.FC<EnrollmentActionsButtonProps> = ({
 			);
 		} catch (error) {
 			console.error(error);
-			toast.error((error as Error).toString());
+			addToast({ color: "danger", description: (error as Error).toString() });
 		}
 	};
 

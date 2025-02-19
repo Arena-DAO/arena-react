@@ -10,6 +10,7 @@ import {
 	ModalContent,
 	ModalFooter,
 	ModalHeader,
+	addToast,
 	useDisclosure,
 	useDraggable,
 } from "@heroui/react";
@@ -19,7 +20,7 @@ import _ from "lodash";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
+
 import { z } from "zod";
 import { ArenaEscrowClient } from "~/codegen/ArenaEscrow.client";
 import {
@@ -115,12 +116,15 @@ const DonateModal: React.FC<DonateModalProps> = ({ escrow }) => {
 				arenaEscrowQueryKeys.balances(escrow),
 			);
 
-			toast.success("Donation successful!");
+			addToast({ color: "success", description: "Donation successful!" });
 			reset();
 			onClose();
 		} catch (error) {
 			console.error("Donation failed:", error);
-			toast.error(error instanceof Error ? error.message : "Donation failed");
+			addToast({
+				color: "danger",
+				description: error instanceof Error ? error.message : "Donation failed",
+			});
 		} finally {
 			setIsLoading(false);
 		}

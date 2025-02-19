@@ -123,7 +123,7 @@ const BasicInformationSection = () => {
 							selectedKeys={[field.value]}
 						>
 							{DurationUnits.map((unit) => (
-								<SelectItem key={unit} value={unit}>
+								<SelectItem key={unit}>
 									{unit.charAt(0).toUpperCase() + unit.slice(1)}
 								</SelectItem>
 							))}

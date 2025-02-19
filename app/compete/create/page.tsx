@@ -13,13 +13,13 @@ import {
 	CardHeader,
 	Switch,
 	Tooltip,
+	addToast,
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { Info } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Controller, FormProvider, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import type { CompetitionType } from "~/codegen/ArenaCompetitionEnrollment.types";
 import type { InstantiateMsg as ArenaEscrowInstantiateMsg } from "~/codegen/ArenaEscrow.types";
@@ -35,7 +35,7 @@ import {
 	type CreateCompetitionFormValues,
 	CreateCompetitionSchema,
 } from "~/config/schemas/CreateCompetitionSchema";
-import { parseToNanos } from "~/config/schemas/TimestampSchema";
+import { convertToNanoseconds } from "~/config/schemas/TimestampSchema";
 import {
 	CategoryProvider,
 	useCategoryContext,
@@ -54,7 +54,9 @@ const CreateCompetitionPage = () => {
 	const params = useSearchParams();
 	const category = useCategoryContext(params.get("category"));
 	const router = useRouter();
-	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
+	const { getSigningCosmWasmClient, address, isWalletConnected } = useChain(
+		env.CHAIN,
+	);
 
 	const formMethods = useForm<CreateCompetitionFormValues>({
 		resolver: zodResolver(CreateCompetitionSchema),
@@ -64,7 +66,7 @@ const CreateCompetitionPage = () => {
 			name: "",
 			description: "",
 			duration: { units: "days", amount: "1" },
-			rules: [{ rule: "" }],
+			rules: [],
 			rulesets: [],
 			additionalLayeredFees: [],
 			leagueInfo: {
@@ -90,6 +92,7 @@ const CreateCompetitionPage = () => {
 		watch,
 		formState: { isSubmitting, isLoading },
 	} = formMethods;
+
 	const competitionType = watch("competitionType");
 	const useEnrollments = watch("useEnrollments");
 
@@ -160,7 +163,7 @@ const CreateCompetitionPage = () => {
 			competitionInfo: {
 				name: values.name,
 				description: values.description,
-				date: parseToNanos(values.date),
+				date: convertToNanoseconds(values.date),
 				duration: values.duration.toSeconds(),
 				rules: values.rules.map((r) => r.rule),
 				rulesets: values.rulesets.map((r) => r.ruleset_id.toString()),
@@ -193,6 +196,7 @@ const CreateCompetitionPage = () => {
 					} as ArenaEscrowInstantiateMsg),
 				},
 			},
+			useDaoHost: values.enrollmentInfo?.useDaoHost,
 		});
 
 		return result;
@@ -209,10 +213,13 @@ const CreateCompetitionPage = () => {
 		}
 
 		const members: AddMemberMsg[] = values.directParticipation.membersFromDues
-			? (values.directParticipation.dues?.map((due) => ({ addr: due.addr })) ??
-				[])
+			? (values.directParticipation.dues?.map((due) => ({
+					addr: due.addr,
+					power: "1000",
+				})) ?? [])
 			: (values.directParticipation.members?.map((member) => ({
 					addr: member.address,
+					power: "1000",
 				})) ?? []);
 
 		const groupContract = {
@@ -236,7 +243,7 @@ const CreateCompetitionPage = () => {
 		const commonMsg = {
 			name: values.name,
 			description: values.description,
-			date: parseToNanos(values.date),
+			date: convertToNanoseconds(values.date),
 			duration: values.duration.toSeconds(),
 			rules: values.rules.map((r) => r.rule),
 			rulesets: values.rulesets.map((r) => r.ruleset_id.toString()),
@@ -318,6 +325,14 @@ const CreateCompetitionPage = () => {
 
 	const onSubmit = async (values: CreateCompetitionFormValues) => {
 		try {
+			if (!isWalletConnected) {
+				addToast({
+					color: "danger",
+					description: "Please connect your wallet to create a competition",
+				});
+				return;
+			}
+
 			const client = await getSigningCosmWasmClient();
 			if (!address) throw new Error("Could not get user address");
 
@@ -346,14 +361,23 @@ const CreateCompetitionPage = () => {
 						? `/enrollment/view?enrollmentId=${id}`
 						: `/${values.competitionType}/view?competitionId=${id}`,
 				);
-				toast.success(`The ${values.competitionType} was created successfully`);
+				addToast({
+					color: "success",
+					description: `Your ${values.competitionType} competition was created successfully!`,
+				});
 			} else {
 				console.warn("Competition created but ID not found in the result");
-				toast.warning("Competition created but redirect failed");
+				addToast({
+					color: "warning",
+					description: "Competition created but redirect failed",
+				});
 			}
 		} catch (e) {
 			console.error(e);
-			toast.error((e as Error).toString());
+			addToast({
+				color: "danger",
+				description: `Error creating competition: ${(e as Error).message}`,
+			});
 		}
 	};
 
@@ -379,6 +403,7 @@ const CreateCompetitionPage = () => {
 						<form
 							onSubmit={handleSubmit(onSubmit)}
 							className="space-y-6 md:space-y-8"
+							aria-label="Competition creation form"
 						>
 							<motion.div
 								initial={{ opacity: 0, y: 20 }}
@@ -449,7 +474,7 @@ const CreateCompetitionPage = () => {
 											</h2>
 											<Tooltip content="The competition's rules and rulesets if applicable">
 												<span className="cursor-help text-foreground/70 transition-colors hover:text-foreground/90">
-													<Info size={18} />
+													<Info size={18} aria-hidden="true" />
 												</span>
 											</Tooltip>
 										</div>
@@ -474,8 +499,9 @@ const CreateCompetitionPage = () => {
 															{...field}
 															isSelected={field.value}
 															isDisabled={isSubmitting}
+															aria-label="Toggle enrollment mode"
 														>
-															Enable Enrollments
+															Using Enrollments
 														</Switch>
 													)}
 												/>

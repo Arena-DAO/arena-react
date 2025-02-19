@@ -24,6 +24,7 @@ import {
 	TableHeader,
 	TableRow,
 	Tooltip,
+	addToast,
 	useDisclosure,
 	useDraggable,
 } from "@heroui/react";
@@ -38,7 +39,7 @@ import { Plus, Trash } from "lucide-react";
 import React from "react";
 import { useMemo } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { toast } from "react-toastify";
+
 import { z } from "zod";
 import {
 	ArenaWagerModuleClient,
@@ -54,7 +55,6 @@ import { useEnv } from "~/hooks/useEnv";
 interface EvidenceSectionProps {
 	moduleAddr: string;
 	competitionId: string;
-	hideIfEmpty: boolean;
 }
 
 const EvidenceFormSchema = z.object({
@@ -66,7 +66,6 @@ type EvidenceFormValues = z.infer<typeof EvidenceFormSchema>;
 const EvidenceSection = ({
 	competitionId,
 	moduleAddr,
-	hideIfEmpty,
 }: EvidenceSectionProps) => {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
@@ -132,7 +131,10 @@ const EvidenceSection = ({
 				evidence: values.evidence.map((x) => x.content),
 			});
 
-			toast.success("Evidence has been submitted");
+			addToast({
+				color: "success",
+				description: "Evidence has been submitted",
+			});
 
 			const evidence_id = response.events
 				.find((x) => x.attributes.find((attr) => attr.key === "evidence_count"))
@@ -176,7 +178,7 @@ const EvidenceSection = ({
 			}
 		} catch (e) {
 			console.error(e);
-			toast.error((e as Error).toString());
+			addToast({ color: "danger", description: (e as Error).toString() });
 		}
 	};
 
@@ -187,8 +189,6 @@ const EvidenceSection = ({
 
 	const targetRef = React.useRef(null);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
-
-	if (evidence.length === 0 && hideIfEmpty) return null;
 
 	return (
 		<>

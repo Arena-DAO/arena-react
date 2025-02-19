@@ -1,8 +1,52 @@
+"use client";
+
 import { Accordion, AccordionItem, Button, Input } from "@heroui/react";
-import { Minus, Plus } from "lucide-react";
+import { Plus, Trash } from "lucide-react";
+import React, { useCallback } from "react";
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 import { useCategoryContext } from "~/contexts/CategoryContext";
 import RulesetsSelection from "./RulesetsSelection";
+
+interface RuleInputProps {
+	index: number;
+	removeRule: (index: number) => void;
+	isSubmitting: boolean;
+}
+
+const RuleInput: React.FC<RuleInputProps> = ({
+	index,
+	removeRule,
+	isSubmitting,
+}) => {
+	return (
+		<Controller
+			name={`rules.${index}.rule`}
+			render={({ field, fieldState: { error } }) => (
+				<Input
+					{...field}
+					label={`Rule ${index + 1}`}
+					placeholder="Enter rule or paste a link"
+					isInvalid={!!error}
+					errorMessage={error?.message}
+					isRequired
+					isDisabled={isSubmitting}
+					endContent={
+						<Button
+							variant="faded"
+							isIconOnly
+							className="my-auto"
+							isDisabled={isSubmitting}
+							onPress={() => removeRule(index)}
+							aria-label={`Remove rule ${index + 1}`}
+						>
+							<Trash />
+						</Button>
+					}
+				/>
+			)}
+		/>
+	);
+};
 
 const RulesAndRulesetsForm = () => {
 	const {
@@ -19,44 +63,35 @@ const RulesAndRulesetsForm = () => {
 		name: "rules",
 	});
 
+	const handleAddRule = useCallback(() => {
+		appendRule({ rule: "" });
+	}, [appendRule]);
+
+	const handleRemoveRule = useCallback(
+		(index: number) => {
+			removeRule(index);
+		},
+		[removeRule],
+	);
+
 	return (
 		<div className="space-y-6">
 			<div>
 				{ruleFields.map((field, index) => (
 					<div key={field.id} className="mt-4 flex items-center space-x-2">
-						<Controller
-							name={`rules.${index}.rule`}
-							control={control}
-							render={({ field, fieldState: { error } }) => (
-								<Input
-									{...field}
-									label={`Rule ${index + 1}`}
-									placeholder="Enter rule or paste a link"
-									isInvalid={!!error}
-									errorMessage={error?.message}
-									isRequired
-									isDisabled={isSubmitting}
-									endContent={
-										<Button
-											variant="faded"
-											isIconOnly
-											className="my-auto"
-											isDisabled={isSubmitting}
-											onPress={() => removeRule(index)}
-										>
-											<Minus />
-										</Button>
-									}
-								/>
-							)}
+						<RuleInput
+							index={index}
+							removeRule={handleRemoveRule}
+							isSubmitting={isSubmitting}
 						/>
 					</div>
 				))}
 				<Button
 					className="mt-4"
-					onPress={() => appendRule({ rule: "" })}
+					onPress={handleAddRule}
 					isDisabled={isSubmitting}
 					startContent={<Plus />}
+					aria-label="Add Rule"
 				>
 					Add Rule
 				</Button>
@@ -64,7 +99,7 @@ const RulesAndRulesetsForm = () => {
 			{category?.category_id && (
 				<Accordion>
 					<AccordionItem
-						key="1"
+						key="rulesets"
 						aria-label="Rulesets"
 						title="Rulesets"
 						isDisabled={isSubmitting}
@@ -77,4 +112,4 @@ const RulesAndRulesetsForm = () => {
 	);
 };
 
-export default RulesAndRulesetsForm;
+export default React.memo(RulesAndRulesetsForm);

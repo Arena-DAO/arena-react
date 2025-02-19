@@ -1,10 +1,10 @@
 "use client";
 
-import { Button } from "@heroui/react"; // Your UI library
+import { Button, addToast } from "@heroui/react"; // Your UI library
 import { Share } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
-import { toast } from "react-toastify";
+
 import useClipboard from "react-use-clipboard";
 
 interface ShareButtonProps {
@@ -27,7 +27,10 @@ const ShareLinkButton: React.FC<ShareButtonProps> = ({ address }) => {
 			color="primary"
 			onPress={() => {
 				setCopied();
-				toast.success("Shareable link to teammates is copied 📋");
+				addToast({
+					color: "success",
+					description: "Shareable link to teammates is copied 📋",
+				});
 			}}
 			isDisabled={isCopied}
 		>

@@ -21,6 +21,7 @@ import {
 	TableHeader,
 	TableRow,
 	Textarea,
+	addToast,
 	useDisclosure,
 	useDraggable,
 } from "@heroui/react";
@@ -30,7 +31,7 @@ import { Percent, Plus, Trash } from "lucide-react";
 import type {} from "react";
 import React from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
-import { toast } from "react-toastify";
+
 import { ZodIssueCode, z } from "zod";
 import { ArenaCoreQueryClient } from "~/codegen/ArenaCore.client";
 import { arenaCoreQueryKeys } from "~/codegen/ArenaCore.react-query";
@@ -179,7 +180,10 @@ const ProcessForm = ({
 					},
 					{
 						onSuccess: () => {
-							toast.success("The competition has been jailed");
+							addToast({
+								color: "success",
+								description: "The competition has been jailed",
+							});
 
 							queryClient.setQueryData<CompetitionResponse | undefined>(
 								getCompetitionQueryKey(env, competitionType, competitionId),
@@ -207,7 +211,10 @@ const ProcessForm = ({
 					},
 					{
 						onSuccess: async (response) => {
-							toast.success("The competition has been processed successfully");
+							addToast({
+								color: "success",
+								description: "The competition has been processed successfully",
+							});
 
 							queryClient.setQueryData<CompetitionResponse | undefined>(
 								getCompetitionQueryKey(env, competitionType, competitionId),
@@ -264,7 +271,7 @@ const ProcessForm = ({
 			}
 		} catch (e) {
 			console.error(e);
-			toast.error((e as Error).toString());
+			addToast({ color: "danger", description: (e as Error).toString() });
 		}
 	};
 	const tryOpen = () => {
@@ -274,7 +281,10 @@ const ProcessForm = ({
 			if (address === props.host) {
 				onOpen();
 			} else {
-				toast.info("Only the host can process the competition");
+				addToast({
+					color: "warning",
+					description: "Only the host can process the competition",
+				});
 			}
 		}
 	};

@@ -3,8 +3,15 @@ import TokenAmount from "@/components/TokenAmount";
 import TokenInfo from "@/components/TokenInfo";
 import {
 	Button,
-	ButtonGroup,
+	Card,
+	CardBody,
+	Chip,
+	Dropdown,
+	DropdownItem,
+	DropdownMenu,
+	DropdownTrigger,
 	Input,
+	ScrollShadow,
 	Table,
 	TableBody,
 	TableCell,
@@ -13,8 +20,7 @@ import {
 	TableRow,
 	Tooltip,
 } from "@heroui/react";
-import { Minus, Plus, Trash } from "lucide-react";
-import type React from "react";
+import { MoreVertical, Plus, Trash } from "lucide-react";
 import {
 	Controller,
 	useFieldArray,
@@ -23,27 +29,33 @@ import {
 } from "react-hook-form";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 
+// Type for token balance item
+interface TokenBalance {
+	type: "native" | "cw20";
+	denom: string;
+	amount: string;
+	index: number;
+}
+
 interface MemberDueProps {
 	dueIndex: number;
 	onEdit: () => void;
 	onRemove: () => void;
 }
 
-const MemberDue: React.FC<MemberDueProps> = ({
-	dueIndex,
-	onEdit,
-	onRemove,
-}) => {
+const MemberDue = ({ dueIndex, onEdit, onRemove }: MemberDueProps) => {
 	const { control } = useFormContext<CreateCompetitionFormValues>();
 	const dueAddress = useWatch({
 		control,
 		name: `directParticipation.dues.${dueIndex}.addr`,
 	});
+
 	const nativeBalances =
 		useWatch({
 			control,
 			name: `directParticipation.dues.${dueIndex}.balance.native`,
 		}) || [];
+
 	const cw20Balances =
 		useWatch({
 			control,
@@ -60,116 +72,168 @@ const MemberDue: React.FC<MemberDueProps> = ({
 		name: `directParticipation.dues.${dueIndex}.balance.cw20`,
 	});
 
-	return (
-		<div className="mb-4">
-			<div className="mb-2 flex items-center space-x-2">
-				<Profile address={dueAddress} justAvatar />
-				<Controller
-					name={`directParticipation.dues.${dueIndex}.addr`}
-					control={control}
-					render={({ field, fieldState: { error } }) => (
-						<Input
-							isRequired
-							isInvalid={!!error}
-							errorMessage={error?.message}
-							{...field}
-							label={`Due Address ${dueIndex + 1}`}
-							placeholder="Enter due address"
-							endContent={
-								<ButtonGroup variant="faded" className="my-auto">
-									<Tooltip content="Remove dues">
-										<Button isIconOnly onPress={onRemove}>
-											<Minus />
-										</Button>
-									</Tooltip>
-									<Tooltip content="Add more due">
-										<Button isIconOnly onPress={onEdit}>
-											<Plus />
-										</Button>
-									</Tooltip>
-								</ButtonGroup>
-							}
-						/>
-					)}
-				/>
-			</div>
-			<div className="space-y-2">
-				{nativeBalances.length > 0 && (
-					<Table removeWrapper aria-label="Native Dues">
-						<TableHeader>
-							<TableColumn className="w-1/2">Native Token</TableColumn>
-							<TableColumn className="text-right">Amount</TableColumn>
-							<TableColumn className="text-right">Actions</TableColumn>
-						</TableHeader>
-						<TableBody>
-							{nativeBalances.map((field, index) => (
-								<TableRow key={field.denom}>
-									<TableCell className="w-1/2">
-										<TokenInfo denomOrAddress={field.denom} isNative />
-									</TableCell>
-									<TableCell className="text-right">
-										<TokenAmount
-											amount={field.amount}
-											denomOrAddress={field.denom}
-											isNative
-										/>
-									</TableCell>
-									<TableCell className="text-right">
-										<Tooltip content="Remove due">
-											<Button
-												variant="faded"
-												isIconOnly
-												aria-label="Remove due"
-												onPress={() => removeNative(index)}
-											>
-												<Minus />
-											</Button>
-										</Tooltip>
-									</TableCell>
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
-				)}
+	// Combine balances for display
+	const allBalances: TokenBalance[] = [
+		...nativeBalances.map((item, idx) => ({
+			type: "native" as const,
+			denom: item.denom,
+			amount: item.amount,
+			index: idx,
+		})),
+		...cw20Balances.map((item, idx) => ({
+			type: "cw20" as const,
+			denom: item.address,
+			amount: item.amount,
+			index: idx,
+		})),
+	];
 
-				{cw20Balances.length > 0 && (
-					<Table removeWrapper aria-label="Cw20 Dues">
-						<TableHeader>
-							<TableColumn className="w-1/2">Cw20 Token</TableColumn>
-							<TableColumn className="text-right">Amount</TableColumn>
-							<TableColumn className="text-right">Actions</TableColumn>
-						</TableHeader>
-						<TableBody>
-							{cw20Balances.map((field, index) => (
-								<TableRow key={field.address}>
-									<TableCell className="w-1/2">
-										<TokenInfo denomOrAddress={field.address} />
-									</TableCell>
-									<TableCell className="text-right">
-										<TokenAmount
-											amount={field.amount}
-											denomOrAddress={field.address}
-										/>
-									</TableCell>
-									<TableCell className="text-right">
-										<Tooltip content="Remove due">
-											<Button
-												variant="faded"
-												isIconOnly
-												aria-label="Remove due"
-												onPress={() => removeCw20(index)}
-											>
-												<Trash />
-											</Button>
-										</Tooltip>
-									</TableCell>
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
-				)}
-			</div>
+	const handleRemoveToken = (type: "native" | "cw20", index: number) => {
+		if (type === "native") {
+			removeNative(index);
+		} else {
+			removeCw20(index);
+		}
+	};
+
+	// Empty state component for when no tokens are added
+	const EmptyTokensState = () => (
+		<div className="flex flex-col items-center justify-center py-6 text-center">
+			<div className="mb-3 text-foreground/60">No tokens added yet</div>
+			<Button
+				variant="faded"
+				startContent={<Plus size={16} />}
+				onPress={onEdit}
+				className="card-hover"
+			>
+				Add Token
+			</Button>
 		</div>
+	);
+
+	return (
+		<Card className="mb-6 overflow-hidden border border-primary/10">
+			<CardBody className="p-0">
+				{/* Address header with actions */}
+				<div className="border-primary/10 border-b p-4">
+					<div className="flex items-center gap-3">
+						<Profile address={dueAddress} justAvatar />
+
+						<Controller
+							name={`directParticipation.dues.${dueIndex}.addr`}
+							control={control}
+							render={({ field, fieldState: { error } }) => (
+								<Input
+									{...field}
+									label={`Due Address ${dueIndex + 1}`}
+									placeholder="Enter address for due"
+									isRequired
+									isInvalid={!!error}
+									errorMessage={error?.message}
+									className="flex-1"
+								/>
+							)}
+						/>
+
+						<Dropdown placement="bottom-end">
+							<DropdownTrigger>
+								<Button isIconOnly variant="flat" className="min-w-10">
+									<MoreVertical size={18} />
+								</Button>
+							</DropdownTrigger>
+							<DropdownMenu aria-label="Due actions">
+								<DropdownItem
+									key="add"
+									startContent={<Plus size={16} />}
+									onPress={onEdit}
+								>
+									Add Token
+								</DropdownItem>
+								<DropdownItem
+									key="remove"
+									startContent={<Trash size={16} />}
+									onPress={onRemove}
+									color="danger"
+								>
+									Remove Due
+								</DropdownItem>
+							</DropdownMenu>
+						</Dropdown>
+					</div>
+				</div>
+
+				{/* Token balances section */}
+				<div className="p-0">
+					{allBalances.length > 0 ? (
+						<ScrollShadow className="max-h-64">
+							<Table
+								removeWrapper
+								aria-label="Token Balances"
+								isStriped
+								className="min-w-full"
+							>
+								<TableHeader>
+									<TableColumn className="w-1/2 pl-6">Token</TableColumn>
+									<TableColumn className="text-right">Amount</TableColumn>
+									<TableColumn className="w-24 pr-6 text-right">
+										Actions
+									</TableColumn>
+								</TableHeader>
+								<TableBody>
+									{allBalances.map((token) => (
+										<TableRow
+											key={`${token.type}-${token.index}-${token.denom}`}
+										>
+											<TableCell className="pl-6">
+												<div className="flex items-center gap-2">
+													<TokenInfo
+														denomOrAddress={token.denom}
+														isNative={token.type === "native"}
+													/>
+													<Chip
+														size="sm"
+														variant="flat"
+														className="h-6"
+														color={
+															token.type === "native" ? "primary" : "secondary"
+														}
+													>
+														{token.type === "native" ? "Native" : "CW20"}
+													</Chip>
+												</div>
+											</TableCell>
+											<TableCell className="text-right font-medium">
+												<TokenAmount
+													amount={token.amount}
+													denomOrAddress={token.denom}
+													isNative={token.type === "native"}
+												/>
+											</TableCell>
+											<TableCell className="pr-6 text-right">
+												<Tooltip content="Remove token">
+													<Button
+														isIconOnly
+														size="sm"
+														variant="faded"
+														onPress={() =>
+															handleRemoveToken(token.type, token.index)
+														}
+													>
+														<Trash size={16} />
+													</Button>
+												</Tooltip>
+											</TableCell>
+										</TableRow>
+									))}
+								</TableBody>
+							</Table>
+						</ScrollShadow>
+					) : (
+						<EmptyTokensState />
+					)}
+				</div>
+			</CardBody>
+		</Card>
 	);
 };
 

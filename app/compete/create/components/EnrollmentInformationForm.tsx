@@ -1,3 +1,5 @@
+"use client";
+
 import TokenInfo from "@/components/TokenInfo";
 import {
 	Button,
@@ -10,6 +12,7 @@ import {
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 import { DurationUnits } from "~/config/schemas/DurationSchema";
+import DaoConfigForm from "./DaoConfigForm";
 import EntryFeeForm from "./EntryFeeForm";
 
 const EnrollmentInformationForm = () => {
@@ -114,7 +117,7 @@ const EnrollmentInformationForm = () => {
 								selectedKeys={[field.value]}
 							>
 								{DurationUnits.map((unit) => (
-									<SelectItem key={unit} value={unit}>
+									<SelectItem key={unit}>
 										{unit.charAt(0).toUpperCase() + unit.slice(1)}
 									</SelectItem>
 								))}
@@ -151,6 +154,8 @@ const EnrollmentInformationForm = () => {
 					)}
 				</div>
 			</div>
+
+			<DaoConfigForm />
 
 			<EntryFeeForm
 				isOpen={isOpen}

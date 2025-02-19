@@ -127,7 +127,7 @@ export async function getCw20Asset(
 		} as Asset;
 	}
 
-	throw "Could not find cw20 token";
+	throw new Error("Could not find cw20 token");
 }
 
 export async function getNativeAsset(
