@@ -25,8 +25,8 @@ export const useToken = (
 				if (isNative) {
 					return await getNativeAsset(
 						denomOrAddress,
-						env?.RPC_URL,
-						assets?.assets || [],
+						env.RPC_URL,
+						assets?.assets,
 					);
 				}
 				if (!cosmWasmClient) {
@@ -36,8 +36,8 @@ export const useToken = (
 				return await getCw20Asset(
 					cosmWasmClient,
 					denomOrAddress,
-					assets?.assets || [],
-					env?.BECH32_PREFIX || "",
+					assets?.assets,
+					env.BECH32_PREFIX,
 				);
 			} catch (error) {
 				console.error(
