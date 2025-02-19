@@ -55,7 +55,9 @@ const CreateCompetitionPage = () => {
 	const params = useSearchParams();
 	const category = useCategoryContext(params.get("category"));
 	const router = useRouter();
-	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
+	const { getSigningCosmWasmClient, address, isWalletConnected } = useChain(
+		env.CHAIN,
+	);
 
 	const formMethods = useForm<CreateCompetitionFormValues>({
 		resolver: zodResolver(CreateCompetitionSchema),
@@ -65,7 +67,7 @@ const CreateCompetitionPage = () => {
 			name: "",
 			description: "",
 			duration: { units: "days", amount: "1" },
-			rules: [{ rule: "" }],
+			rules: [],
 			rulesets: [],
 			additionalLayeredFees: [],
 			leagueInfo: {
@@ -91,6 +93,7 @@ const CreateCompetitionPage = () => {
 		watch,
 		formState: { isSubmitting, isLoading },
 	} = formMethods;
+
 	const competitionType = watch("competitionType");
 	const useEnrollments = watch("useEnrollments");
 
@@ -194,6 +197,7 @@ const CreateCompetitionPage = () => {
 					} as ArenaEscrowInstantiateMsg),
 				},
 			},
+			useDaoHost: values.enrollmentInfo?.useDaoHost,
 		});
 
 		return result;
@@ -322,6 +326,11 @@ const CreateCompetitionPage = () => {
 
 	const onSubmit = async (values: CreateCompetitionFormValues) => {
 		try {
+			if (!isWalletConnected) {
+				toast.error("Please connect your wallet to create a competition");
+				return;
+			}
+
 			const client = await getSigningCosmWasmClient();
 			if (!address) throw new Error("Could not get user address");
 
@@ -350,14 +359,16 @@ const CreateCompetitionPage = () => {
 						? `/enrollment/view?enrollmentId=${id}`
 						: `/${values.competitionType}/view?competitionId=${id}`,
 				);
-				toast.success(`The ${values.competitionType} was created successfully`);
+				toast.success(
+					`Your ${values.competitionType} competition was created successfully!`,
+				);
 			} else {
 				console.warn("Competition created but ID not found in the result");
 				toast.warning("Competition created but redirect failed");
 			}
 		} catch (e) {
 			console.error(e);
-			toast.error((e as Error).toString());
+			toast.error(`Error creating competition: ${(e as Error).message}`);
 		}
 	};
 
@@ -383,6 +394,7 @@ const CreateCompetitionPage = () => {
 						<form
 							onSubmit={handleSubmit(onSubmit)}
 							className="space-y-6 md:space-y-8"
+							aria-label="Competition creation form"
 						>
 							<motion.div
 								initial={{ opacity: 0, y: 20 }}
@@ -453,7 +465,7 @@ const CreateCompetitionPage = () => {
 											</h2>
 											<Tooltip content="The competition's rules and rulesets if applicable">
 												<span className="cursor-help text-foreground/70 transition-colors hover:text-foreground/90">
-													<Info size={18} />
+													<Info size={18} aria-hidden="true" />
 												</span>
 											</Tooltip>
 										</div>
@@ -478,6 +490,7 @@ const CreateCompetitionPage = () => {
 															{...field}
 															isSelected={field.value}
 															isDisabled={isSubmitting}
+															aria-label="Toggle enrollment mode"
 														>
 															Enable Enrollments
 														</Switch>

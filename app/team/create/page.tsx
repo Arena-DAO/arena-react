@@ -8,7 +8,6 @@ import {
 	CardBody,
 	CardFooter,
 	Input,
-	Progress,
 	Table,
 	TableBody,
 	TableCell,
@@ -18,23 +17,19 @@ import {
 	Textarea,
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Percent } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { z } from "zod";
-import type { ExecuteMsg as ArenaPaymentRegistryExecuteMsg } from "~/codegen/ArenaPaymentRegistry.types";
 import type {
-	CosmosMsgForEmpty,
 	InstantiateMsg as DaoCoreInstantiateMsg,
 	ModuleInstantiateInfo,
-	WasmMsg,
 } from "~/codegen/DaoDaoCore.types";
 import type { InstantiateMsg as DAOPreProposeSingleInstantiateMsg } from "~/codegen/DaoPreProposeSingle.types";
 import type { InstantiateMsg as DAOProposalSingleInstantiateMsg } from "~/codegen/DaoProposalSingle.types";
 import type { InstantiateMsg as DAOVotingCw4InstantiateMsg } from "~/codegen/DaoVotingCw4.types";
-import { MemberPercentageSchema } from "~/config/schemas";
+import MemberSchema from "~/config/schemas/MembersSchema";
 import { useEnv } from "~/hooks/useEnv";
 import { useTeamStore } from "~/store/teamStore";
 
@@ -70,19 +65,7 @@ const CreateTeamSchema = z.object({
 			(url) => !url || isValidUrl(url),
 			"Must be a valid IPFS or HTTP(S) URL",
 		),
-	members: z
-		.array(MemberPercentageSchema)
-		.min(1, "At least one team member is required")
-		.refine(
-			(members) => {
-				const total = members.reduce(
-					(sum, member) => sum + Number(member.percentage),
-					0,
-				);
-				return total === 1;
-			},
-			{ message: "Percentages must total 100%" },
-		),
+	members: z.array(MemberSchema).min(2, "At least two members are required"),
 });
 
 type CreateTeamFormData = z.infer<typeof CreateTeamSchema>;
@@ -105,7 +88,7 @@ const CreateTeam = () => {
 			description: "",
 			teamImageUrl: "",
 			bannerUrl: "",
-			members: [{ addr: address, percentage: "0" }],
+			members: [{ addr: address }],
 		},
 	});
 
@@ -116,11 +99,6 @@ const CreateTeam = () => {
 	}, [address, setValue, getValues]);
 
 	const { fields, append, remove } = useFieldArray({
-		control,
-		name: "members",
-	});
-
-	const members = useWatch({
 		control,
 		name: "members",
 	});
@@ -194,24 +172,6 @@ const CreateTeam = () => {
 							},
 						} as DAOVotingCw4InstantiateMsg),
 					} as ModuleInstantiateInfo,
-					initial_dao_actions: [
-						{
-							wasm: {
-								execute: {
-									contract_addr: env.ARENA_PAYMENT_REGISTRY_ADDRESS,
-									funds: [],
-									msg: toBinary({
-										set_distribution_remainder_self: {
-											member_percentages: data.members.map((member) => ({
-												addr: member.addr,
-												percentage: member.percentage.toString(),
-											})),
-										},
-									} as ArenaPaymentRegistryExecuteMsg),
-								},
-							} as WasmMsg,
-						} as CosmosMsgForEmpty,
-					],
 				} as DaoCoreInstantiateMsg,
 				"Arena Team",
 				"auto",
@@ -293,7 +253,7 @@ const CreateTeam = () => {
 									<h2 className="font-semibold text-xl">Team Members</h2>
 									<Button
 										color="primary"
-										onPress={() => append({ addr: "", percentage: "0" })}
+										onPress={() => append({ addr: "" })}
 										isDisabled={isSubmitting}
 									>
 										Add Member
@@ -303,7 +263,6 @@ const CreateTeam = () => {
 								<Table aria-label="Team members table" removeWrapper hideHeader>
 									<TableHeader>
 										<TableColumn>ADDRESS</TableColumn>
-										<TableColumn>PERCENTAGE %</TableColumn>
 										<TableColumn>ACTIONS</TableColumn>
 									</TableHeader>
 									<TableBody>
@@ -320,32 +279,6 @@ const CreateTeam = () => {
 																error={errors.members?.[index]?.addr}
 																isRequired
 																isDisabled={isSubmitting}
-															/>
-														)}
-													/>
-												</TableCell>
-												<TableCell>
-													<Controller
-														name={`members.${index}.percentage`}
-														control={control}
-														render={({ field }) => (
-															<Input
-																{...field}
-																isRequired
-																min="0"
-																max="100"
-																step="1"
-																type="number"
-																label="Payout %"
-																isDisabled={isSubmitting}
-																errorMessage={
-																	errors.members?.[index]?.percentage?.message
-																}
-																isInvalid={
-																	!!errors.members?.[index]?.percentage
-																}
-																endContent={<Percent />}
-																classNames={{ input: "text-right" }}
 															/>
 														)}
 													/>
@@ -369,15 +302,6 @@ const CreateTeam = () => {
 										{errors.members.root.message}
 									</p>
 								)}
-
-								<Progress
-									value={members.reduce(
-										(acc, x) => acc + Number(x.percentage),
-										0,
-									)}
-									color="primary"
-									showValueLabel
-								/>
 							</div>
 						</div>
 					</CardBody>

@@ -6,7 +6,19 @@ import MemberPercentageSchema from "./MemberPercentageSchema";
 import PercentageListSchema from "./PercentageListSchema";
 import RulesSchema from "./RulesSchema";
 import RulesetsSchema from "./RulesetsSchema";
+import { ThresholdSchema } from "./ThresholdSchema";
 import { TimestampSchema } from "./TimestampSchema";
+
+const DaoConfigSchema = z.object({
+	dao_code_id: z.coerce.number().int().positive(),
+	proposal_single_code_id: z.coerce.number().int().positive(),
+	prepropose_single_code_id: z.coerce.number().int().positive(),
+	cw4_voting_code_id: z.coerce.number().int().positive(),
+	max_voting_period: z.object({
+		time: z.coerce.number().int().positive(),
+	}),
+	threshold: ThresholdSchema,
+});
 
 export const EnrollmentInfoSchema = z
 	.object({
@@ -39,6 +51,7 @@ export const EnrollmentInfoSchema = z
 			.max(30, "30 is the max team size")
 			.optional()
 			.transform((x) => x?.toString()),
+		useDaoHost: DaoConfigSchema.optional(),
 	})
 	.refine(
 		(data) =>

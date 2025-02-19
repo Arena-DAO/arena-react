@@ -11,26 +11,54 @@ export const useToken = (
 ) => {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
-	const { assets } = useChain(chain ?? env.CHAIN);
+	const chainId = chain ?? env?.CHAIN;
+	const { assets } = useChain(chainId);
 
 	return useQuery(
-		["token", denomOrAddress, isNative],
-		async () =>
-			isNative
-				? await getNativeAsset(denomOrAddress, env.RPC_URL, assets?.assets)
-				: await getCw20Asset(
-						// biome-ignore lint/style/noNonNullAssertion: Handled by enabled option
-						cosmWasmClient!,
+		["token", denomOrAddress, isNative, chainId],
+		async () => {
+			if (!denomOrAddress) {
+				throw new Error("Token denom or address is required");
+			}
+
+			try {
+				if (isNative) {
+					return await getNativeAsset(
 						denomOrAddress,
-						assets?.assets,
-						env.BECH32_PREFIX,
-					),
+						env?.RPC_URL,
+						assets?.assets || [],
+					);
+				}
+				if (!cosmWasmClient) {
+					throw new Error("CosmWasm client not initialized");
+				}
+
+				return await getCw20Asset(
+					cosmWasmClient,
+					denomOrAddress,
+					assets?.assets || [],
+					env?.BECH32_PREFIX || "",
+				);
+			} catch (error) {
+				console.error(
+					`Failed to fetch token data for ${denomOrAddress}:`,
+					error,
+				);
+				throw error;
+			}
+		},
 		{
 			staleTime: Number.POSITIVE_INFINITY,
 			cacheTime: 600000,
 			retryOnMount: false,
 			retry: false,
-			enabled: !!cosmWasmClient && denomOrAddress.length > 0,
+			enabled:
+				Boolean(cosmWasmClient) &&
+				Boolean(denomOrAddress) &&
+				denomOrAddress.length > 0,
+			onError: (error) => {
+				console.warn(`Token query failed for ${denomOrAddress}:`, error);
+			},
 		},
 	);
 };
