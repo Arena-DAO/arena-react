@@ -12,7 +12,6 @@ import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
-	Skeleton,
 	User,
 	type UserProps,
 } from "@heroui/react";
@@ -39,7 +38,6 @@ interface StatProps {
 
 export interface ProfileProps extends Omit<UserProps, "name"> {
 	address: string;
-	hideIfInvalid?: boolean;
 	justAvatar?: boolean;
 	isPopoverDisabled?: boolean;
 	isRatingDisabled?: boolean;
@@ -110,7 +108,6 @@ CardContent.displayName = "ProfileCardContent";
 
 const Profile = ({
 	address,
-	hideIfInvalid = false,
 	justAvatar = false,
 	isPopoverDisabled = false,
 	isRatingDisabled = false,
@@ -125,23 +122,21 @@ const Profile = ({
 	// Validate address against current chain's prefix
 	const isValid = useMemo(
 		() =>
-			Boolean(address) &&
-			isValidBech32Address(address, env?.BECH32_PREFIX || ""),
-		[address, env?.BECH32_PREFIX],
+			address.length > 0 && isValidBech32Address(address, env.BECH32_PREFIX),
+		[address, env.BECH32_PREFIX],
 	);
 
 	// Check if this is the enrollment contract address
 	const isEnrollmentContract = useMemo(
-		() => address === env?.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
-		[address, env?.ARENA_COMPETITION_ENROLLMENT_ADDRESS],
+		() => address === env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+		[address, env.ARENA_COMPETITION_ENROLLMENT_ADDRESS],
 	);
 
 	// Fetch profile data - always call this hook regardless of isValid
-	const {
-		data: profileData,
-		isLoading: isProfileLoading,
-		error: profileError,
-	} = useProfileData(address, isValid);
+	const { data: profileData, error: profileError } = useProfileData(
+		address,
+		isValid,
+	);
 
 	// Always calculate this - the enabled option in the query will prevent the actual fetch
 	const shouldFetchRating = useMemo(
@@ -190,22 +185,8 @@ const Profile = ({
 		[category, ratingData],
 	);
 
-	// Determine if we should render based on validity
-	const shouldRender = useMemo(
-		() => isValid || !hideIfInvalid,
-		[isValid, hideIfInvalid],
-	);
-
 	// Memoize UI elements to avoid recreating them on every render
 	const avatarElement = useMemo(() => {
-		if (isProfileLoading) {
-			return (
-				<Skeleton
-					className={`h-10 w-10 rounded-full ${props.className || ""}`}
-				/>
-			);
-		}
-
 		if (profileError && !profileData) {
 			return (
 				<Avatar
@@ -228,13 +209,9 @@ const Profile = ({
 				radius="full"
 			/>
 		);
-	}, [profileData, isProfileLoading, profileError, address, props.className]);
+	}, [profileData, profileError, address, props.className]);
 
 	const userElement = useMemo(() => {
-		if (isProfileLoading) {
-			return <Skeleton className={`h-10 w-40 ${props.className || ""}`} />;
-		}
-
 		if (profileError && !profileData) {
 			return (
 				<User
@@ -271,7 +248,7 @@ const Profile = ({
 			/>
 		);
 		// biome-ignore lint/correctness/useExhaustiveDependencies: Needed
-	}, [profileData, isProfileLoading, profileError, address, props]);
+	}, [profileData, profileError, address, props]);
 
 	// Build popover content
 	const popoverContent = useMemo(() => {
@@ -293,7 +270,7 @@ const Profile = ({
 	]);
 
 	// Early return if we shouldn't render
-	if (!shouldRender) {
+	if (!isValid) {
 		return null;
 	}
 
