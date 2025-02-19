@@ -65,7 +65,7 @@
 		"discord.js": "^14.18.0",
 		"http-proxy-middleware": "^3.0.3",
 		"pino-pretty": "^13.0.0",
-		"postcss": "^8.5.2",
+		"postcss": "^8.5.3",
 		"postcss-import": "^16.1.0",
 		"shx": "^0.3.4",
 		"tailwindcss": "^3.4.17",
