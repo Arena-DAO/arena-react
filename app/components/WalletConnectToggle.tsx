@@ -59,7 +59,7 @@ export default function WalletConnectToggle() {
 			{
 				key: "registry",
 				label: "Payment Registry",
-				href: "/user/payment-registry",
+				href: `/user/payment-registry?addr=${chainContext.address}`,
 			},
 			{
 				key: "competitions",
