@@ -101,6 +101,7 @@ const AddExistingTeamModal: React.FC<AddExistingTeamModalProps> = ({
 									error={errors.address}
 									isRequired
 									emptyTeams
+									excludeSelf
 								/>
 							)}
 						/>

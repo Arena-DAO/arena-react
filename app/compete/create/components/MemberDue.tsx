@@ -1,4 +1,4 @@
-import Profile from "@/components/Profile";
+import { ProfileInput } from "@/components/ProfileInput";
 import TokenAmount from "@/components/TokenAmount";
 import TokenInfo from "@/components/TokenInfo";
 import {
@@ -10,7 +10,6 @@ import {
 	DropdownItem,
 	DropdownMenu,
 	DropdownTrigger,
-	Input,
 	ScrollShadow,
 	Table,
 	TableBody,
@@ -45,10 +44,6 @@ interface MemberDueProps {
 
 const MemberDue = ({ dueIndex, onEdit, onRemove }: MemberDueProps) => {
 	const { control } = useFormContext<CreateCompetitionFormValues>();
-	const dueAddress = useWatch({
-		control,
-		name: `directParticipation.dues.${dueIndex}.addr`,
-	});
 
 	const nativeBalances =
 		useWatch({
@@ -117,21 +112,11 @@ const MemberDue = ({ dueIndex, onEdit, onRemove }: MemberDueProps) => {
 				{/* Address header with actions */}
 				<div className="border-primary/10 border-b p-4">
 					<div className="flex items-center gap-3">
-						<Profile address={dueAddress} justAvatar />
-
 						<Controller
 							name={`directParticipation.dues.${dueIndex}.addr`}
 							control={control}
-							render={({ field, fieldState: { error } }) => (
-								<Input
-									{...field}
-									label={`Due Address ${dueIndex + 1}`}
-									placeholder="Enter address for due"
-									isRequired
-									isInvalid={!!error}
-									errorMessage={error?.message}
-									className="flex-1"
-								/>
+							render={({ field }) => (
+								<ProfileInput field={field} menuTrigger="manual" />
 							)}
 						/>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { ProfileInput } from "@/components/ProfileInput";
 import {
 	Button,
 	Card,
@@ -8,7 +9,7 @@ import {
 	Tooltip,
 	useDisclosure,
 } from "@heroui/react";
-import { Info, Plus, Users } from "lucide-react";
+import { Info, Plus, Trash, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
 	Controller,
@@ -18,7 +19,6 @@ import {
 } from "react-hook-form";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 import AddDueForm from "./AddDueForm";
-import Member from "./Member";
 import MemberDue from "./MemberDue";
 
 const DirectParticipationForm = () => {
@@ -65,7 +65,12 @@ const DirectParticipationForm = () => {
 			{/* Dues Section */}
 			<div className="space-y-4">
 				<div className="flex items-center justify-between">
-					<h3 className="font-semibold text-xl">Dues</h3>
+					<div>
+						<h3 className="font-semibold text-xl">Dues</h3>
+						<p className="mt-1 text-foreground/70 text-sm">
+							Contributors who must pay to activate the competition
+						</p>
+					</div>
 					<Button
 						color="primary"
 						variant="ghost"
@@ -86,8 +91,9 @@ const DirectParticipationForm = () => {
 								</div>
 								<h4 className="mb-2 font-semibold">No dues added yet</h4>
 								<p className="mb-4 max-w-md text-foreground/70">
-									Add dues to collect tokens from participants. Each due can
-									contain multiple tokens.
+									Add dues to collect tokens from participants. Each due
+									represents a contributor who must pay to activate the
+									competition.
 								</p>
 								<Button
 									color="primary"
@@ -135,12 +141,12 @@ const DirectParticipationForm = () => {
 									<div className="font-medium">Use Dues as Members</div>
 									<div className="text-foreground/70 text-sm">
 										Dues' addresses will be automatically set as the
-										competition's members
+										competition's members who can receive funds
 									</div>
 								</div>
 							</div>
 							<Tooltip
-								content="When enabled, the addresses added as dues will automatically be added as members"
+								content="When enabled, the addresses added as dues will automatically be added as members who can participate and receive funds"
 								placement="left"
 							>
 								<Button isIconOnly variant="light" className="cursor-help">
@@ -158,7 +164,12 @@ const DirectParticipationForm = () => {
 					<Divider className="my-6" />
 					<div className="space-y-4">
 						<div className="flex items-center justify-between">
-							<h3 className="font-semibold text-xl">Members</h3>
+							<div>
+								<h3 className="font-semibold text-xl">Members</h3>
+								<p className="mt-1 text-foreground/70 text-sm">
+									Participants who can compete and receive funds
+								</p>
+							</div>
 							<Button
 								color="primary"
 								variant="ghost"
@@ -179,7 +190,8 @@ const DirectParticipationForm = () => {
 										</div>
 										<h4 className="mb-2 font-semibold">No members added yet</h4>
 										<p className="mb-4 max-w-md text-foreground/70">
-											Add members who will participate in this competition.
+											Add members who will participate in this competition and
+											can receive funds from the competition pool.
 										</p>
 										<Button
 											color="primary"
@@ -193,11 +205,31 @@ const DirectParticipationForm = () => {
 								</Card>
 							) : (
 								membersFields.map((field, index) => (
-									<Member
-										key={field.id}
-										memberIndex={index}
-										onRemove={() => removeMember(index)}
-									/>
+									<div key={field.id} className="flex items-center gap-2">
+										<Controller
+											control={control}
+											name={`directParticipation.members.${index}.address`}
+											render={({ field: inputField, fieldState }) => (
+												<ProfileInput
+													field={inputField}
+													error={fieldState.error}
+													labelPlacement="outside"
+													className="flex-grow"
+													excludeSelf={false}
+													label={`Member ${index + 1}`}
+												/>
+											)}
+										/>
+										<Button
+											isIconOnly
+											color="danger"
+											variant="light"
+											onPress={() => removeMember(index)}
+											className="mt-7"
+										>
+											<Trash />
+										</Button>
+									</div>
 								))
 							)}
 						</div>

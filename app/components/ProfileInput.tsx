@@ -1,3 +1,5 @@
+"use client";
+
 import { useChain } from "@cosmos-kit/react";
 import {
 	Autocomplete,
@@ -14,12 +16,14 @@ interface ProfileInputProps extends Omit<AutocompleteProps, "children"> {
 	error?: FieldError;
 	field: FieldValues;
 	emptyTeams?: boolean;
+	excludeSelf?: boolean;
 }
 
 export const ProfileInput = ({
 	field,
 	error,
 	emptyTeams = false,
+	excludeSelf = false,
 	...props
 }: ProfileInputProps) => {
 	const env = useEnv();
@@ -27,23 +31,30 @@ export const ProfileInput = ({
 	const { address } = useChain(env.CHAIN);
 
 	const items = useMemo(() => {
-		// Always include the user's address if it's available
-		const result = address ? [{ address }] : [];
+		const result = [];
+
+		// Include the user's address if it's available and not excluded
+		if (address && !excludeSelf) {
+			result.push({ address });
+		}
 
 		// If emptyTeams is false, add all team addresses (avoiding duplicates)
 		if (!emptyTeams) {
 			result.push(
 				...teams
-					.filter((team) => team !== address)
+					.filter((team) => {
+						// Filter out user's address if excludeSelf is true
+						return excludeSelf ? team !== address : true;
+					})
 					.map((team) => ({ address: team })),
 			);
 		}
 
 		return result;
-	}, [teams, emptyTeams, address]);
+	}, [teams, emptyTeams, address, excludeSelf]);
 
 	return (
-		<div className="flex items-center">
+		<div className="flex w-full items-center">
 			{/* Profile Avatar */}
 			<Profile address={field.value} justAvatar className="mr-2" />
 

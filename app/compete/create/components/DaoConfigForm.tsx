@@ -71,7 +71,7 @@ const DaoConfigForm = () => {
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-2">
 					<h3 className="font-semibold text-lg">Community Governance</h3>
-					<Tooltip content="Enable democratic decision-making for this competition">
+					<Tooltip content="Enable DAO-based decision-making for this competition">
 						<span className="cursor-help text-foreground/70">
 							<HelpCircle size={16} />
 						</span>
@@ -100,9 +100,30 @@ const DaoConfigForm = () => {
 				/>
 			</div>
 
-			<p className="text-foreground/70 text-sm">
-				When enabled, participants can vote on competition decisions and changes
-			</p>
+			<Card className="border border-primary/10 bg-primary/5 p-4">
+				<div className="text-sm">
+					<p className="mb-2 font-medium">DAO Governance System:</p>
+					<ul className="list-disc space-y-1 pl-5 text-foreground/80">
+						<li>
+							Creates a DAO where <strong>all competition members</strong>{" "}
+							participate in voting
+						</li>
+						<li>
+							Members{" "}
+							<strong>collectively decide on competition outcomes</strong>{" "}
+							through voting
+						</li>
+						<li>
+							If consensus is not reached by the competition's expiration,
+							members must submit evidence
+						</li>
+						<li>
+							The Arena DAO will review evidence and process disputes when
+							consensus fails
+						</li>
+					</ul>
+				</div>
+			</Card>
 
 			{useDaoHost && (
 				<>
@@ -137,6 +158,10 @@ const DaoConfigForm = () => {
 									</Select>
 								)}
 							/>
+							<p className="mt-2 text-foreground/70 text-sm">
+								This is the maximum time allowed for members to vote on
+								proposals
+							</p>
 						</div>
 
 						<div>
@@ -177,15 +202,15 @@ const DaoConfigForm = () => {
 													case "custom_percentage":
 														setValue("enrollmentInfo.useDaoHost.threshold", {
 															absolute_percentage: {
-																percentage: { percent: "0.66" },
+																percentage: { percent: "66" },
 															},
 														});
 														break;
 													case "threshold_quorum":
 														setValue("enrollmentInfo.useDaoHost.threshold", {
 															threshold_quorum: {
-																threshold: { percent: "0.51" },
-																quorum: { percent: "0.33" },
+																threshold: { percent: "51" },
+																quorum: { percent: "33" },
 															},
 														});
 														break;
@@ -384,6 +409,29 @@ const DaoConfigForm = () => {
 								/>
 							</Card>
 						)}
+
+						<Card className="border border-primary/10 bg-primary/5 p-4">
+							<h4 className="mb-2 font-medium">
+								What happens if consensus fails?
+							</h4>
+							<p className="text-foreground/80 text-sm">
+								If members cannot reach a consensus by the competition's
+								expiration date:
+							</p>
+							<ol className="mt-2 list-decimal space-y-1 pl-5 text-foreground/80 text-sm">
+								<li>
+									Members should submit evidence supporting their position
+								</li>
+								<li>The Arena DAO will review all submitted evidence</li>
+								<li>
+									Arena DAO will make the final decision based on the evidence
+								</li>
+								<li>
+									Funds will be distributed according to the Arena DAO's
+									decision
+								</li>
+							</ol>
+						</Card>
 					</div>
 				</>
 			)}

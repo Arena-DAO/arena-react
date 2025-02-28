@@ -27,6 +27,13 @@ const EnrollmentInformationForm = () => {
 	return (
 		<div className="flex flex-col gap-6">
 			<div className="flex flex-col gap-4">
+				<div className="mb-2">
+					<h2 className="font-semibold text-xl">Enrollment Information</h2>
+					<p className="mt-1 text-foreground/70 text-sm">
+						Configure member limits and registration details
+					</p>
+				</div>
+
 				{/* Member Limits */}
 				<Controller
 					name="enrollmentInfo.minMembers"
@@ -37,6 +44,7 @@ const EnrollmentInformationForm = () => {
 							type="number"
 							label="Minimum Members"
 							placeholder="Enter the minimum number of members"
+							description="The competition needs at least this many members to start"
 							isDisabled={isSubmitting}
 							isInvalid={!!error}
 							errorMessage={error?.message}
@@ -53,6 +61,7 @@ const EnrollmentInformationForm = () => {
 							type="number"
 							label="Maximum Members"
 							placeholder="Enter the maximum number of members"
+							description="The competition won't allow more than this many members"
 							isDisabled={isSubmitting}
 							isInvalid={!!error}
 							errorMessage={error?.message}
@@ -71,6 +80,7 @@ const EnrollmentInformationForm = () => {
 							type="number"
 							label="Required Team Size"
 							placeholder="Enter the required team size"
+							description="Teams must have exactly this many members to participate"
 							isDisabled={isSubmitting}
 							isInvalid={!!error}
 							errorMessage={error?.message}
@@ -130,6 +140,9 @@ const EnrollmentInformationForm = () => {
 			{/* Entry Fee */}
 			<div className="flex flex-col gap-2">
 				<h3 className="font-medium">Entry Fee</h3>
+				<p className="text-foreground/70 text-sm">
+					Amount that each participant must pay to enter the competition
+				</p>
 				<div className="flex items-center justify-between">
 					{entryFee ? (
 						<>
@@ -155,7 +168,10 @@ const EnrollmentInformationForm = () => {
 				</div>
 			</div>
 
-			<DaoConfigForm />
+			{/* DAO Configuration Section with improved heading */}
+			<div className="mt-4">
+				<DaoConfigForm />
+			</div>
 
 			<EntryFeeForm
 				isOpen={isOpen}

@@ -17,7 +17,7 @@ import {
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
-import { Info } from "lucide-react";
+import { Info, Plus } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
@@ -523,23 +523,26 @@ const CreateCompetitionPage = () => {
 							</motion.div>
 
 							{/* Submit Button */}
-							<motion.div
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-								transition={{ delay: 0.4 }}
-								className="flex justify-end pt-4"
-							>
+							<div className="flex">
 								<Button
 									type="submit"
+									href={`/compete/create?category=${category}`}
 									color="primary"
-									size="lg"
-									className="card-hover min-w-[200px] px-8"
-									isLoading={isLoading}
-									isDisabled={isSubmitting}
+									variant="shadow"
+									className="ml-auto"
+									endContent={
+										<motion.div
+											initial={{ rotate: 0 }}
+											whileHover={{ rotate: 90 }}
+											transition={{ duration: 0.2 }}
+										>
+											<Plus />
+										</motion.div>
+									}
 								>
 									Create Competition
 								</Button>
-							</motion.div>
+							</div>
 						</form>
 					</FormProvider>
 				</div>

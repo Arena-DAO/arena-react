@@ -1,22 +1,21 @@
 "use client";
 
 import { Button, ButtonGroup, Link } from "@heroui/react";
+import dynamic from "next/dynamic";
 import { BsDiscord, BsGithub, BsTwitterX, BsYinYang } from "react-icons/bs";
 import { useEnv } from "~/hooks/useEnv";
+
+const ColorModeSwitch = dynamic(() => import("./ColorModeSwitch"), {
+	ssr: false,
+});
 
 export default function Footer() {
 	const env = useEnv();
 	return (
-		<>
-			<div className="flex flex-col-reverse items-center justify-between px-10 md:flex-row">
-				<div
-					className="w-full text-center text-small md:w-1/2 md:text-left"
-					translate="no"
-				>
-					"I found Rome a city of bricks and left it a city of marble." -
-					Augustus
-				</div>
-				<div>
+		<footer className="w-full px-6 py-4">
+			<div className="flex flex-col gap-2">
+				<div className="flex flex-col-reverse items-center justify-between gap-4 md:flex-row">
+					<ColorModeSwitch />
 					<ButtonGroup variant="light">
 						<Button
 							as={Link}
@@ -56,10 +55,10 @@ export default function Footer() {
 						</Button>
 					</ButtonGroup>
 				</div>
+				<div className="text-center text-default-400 text-xs">
+					Copyright © {new Date().getFullYear()} Arena DAO, All rights reserved
+				</div>
 			</div>
-			<div className="pb-5 text-center text-xs italic">
-				Copyright © {new Date().getFullYear()} Arena DAO, All rights reserved
-			</div>
-		</>
+		</footer>
 	);
 }

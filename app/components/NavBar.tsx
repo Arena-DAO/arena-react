@@ -12,10 +12,6 @@ import {
 	NavbarMenuToggle,
 	cn,
 } from "@heroui/react";
-import dynamic from "next/dynamic";
-const ColorModeSwitch = dynamic(() => import("./ColorModeSwitch"), {
-	ssr: false,
-});
 import { Image } from "@heroui/react";
 import { Book, Coins, Droplet, House, Lock, Trophy } from "lucide-react";
 import NextImage from "next/image";
@@ -61,7 +57,6 @@ const menuConfig = (env: Env) => {
 		},
 	];
 
-	// Conditionally add the faucet link for testnet
 	if (env.FAUCET_URL) {
 		menu.push({
 			key: "faucet",
@@ -131,8 +126,7 @@ export default function AppNavbar() {
 				))}
 			</NavbarContent>
 			<NavbarContent justify="end">
-				<NavbarItem className="!flex ml-2 gap-2">
-					<ColorModeSwitch />
+				<NavbarItem className="!flex">
 					<WalletConnectToggle />
 				</NavbarItem>
 			</NavbarContent>
