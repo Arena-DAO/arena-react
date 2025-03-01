@@ -9,7 +9,7 @@ import {
 	DropdownTrigger,
 	Tooltip,
 } from "@heroui/react";
-import { Wallet } from "lucide-react";
+import { Split, Swords, Users, Wallet } from "lucide-react";
 import { useMemo } from "react";
 import { BsDiscord } from "react-icons/bs";
 import { isValidWalletAddress } from "~/helpers/AddressHelpers";
@@ -28,6 +28,7 @@ export default function WalletConnectToggle() {
 			{
 				key: "wallet",
 				label: "Manage Wallet",
+				icon: <Wallet />,
 			},
 			...(env.ENV === "production" &&
 			!isAuthenticated &&
@@ -37,7 +38,7 @@ export default function WalletConnectToggle() {
 						{
 							key: "connect",
 							label: "Connect Discord",
-							icon: discordIcon,
+							icon: <BsDiscord className="text-[#5865F2]" />,
 						},
 					]
 				: []),
@@ -55,16 +56,19 @@ export default function WalletConnectToggle() {
 				key: "teams",
 				label: "Teams",
 				href: "/user/teams",
+				icon: <Users />,
 			},
 			{
 				key: "registry",
 				label: "Payment Registry",
 				href: `/user/payment-registry?addr=${chainContext.address}`,
+				icon: <Split />,
 			},
 			{
 				key: "competitions",
 				label: "My Competitions",
 				href: `/user/competitions?host=${chainContext.address}`,
+				icon: <Swords />,
 			},
 		];
 	}, [chainContext.address, env.ENV, isAuthenticated]);
