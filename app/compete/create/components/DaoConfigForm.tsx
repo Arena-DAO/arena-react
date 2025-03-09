@@ -6,11 +6,10 @@ import {
 	Input,
 	Radio,
 	RadioGroup,
-	Select,
-	SelectItem,
 	Switch,
 	Tooltip,
 } from "@heroui/react";
+import { Select, SelectItem } from "@heroui/select";
 import { HelpCircle, Info } from "lucide-react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";

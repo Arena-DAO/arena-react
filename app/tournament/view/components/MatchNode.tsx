@@ -1,14 +1,8 @@
+"use client";
+
 import Profile from "@/components/Profile";
-import {
-	Card,
-	CardBody,
-	CardFooter,
-	CardHeader,
-	Divider,
-	Select,
-	SelectItem,
-	type SelectedItems,
-} from "@heroui/react";
+import { Card, CardBody, CardFooter, CardHeader, Divider } from "@heroui/react";
+import { Select, SelectItem, type SelectedItems } from "@heroui/select";
 import clsx from "clsx";
 import { memo } from "react";
 import { Handle, type NodeProps, Position } from "reactflow";
