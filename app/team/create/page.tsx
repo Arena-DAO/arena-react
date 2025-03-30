@@ -1,4 +1,7 @@
 "use client";
+import ImageUploader from "@/components/ImageUpload";
+import type { ImageUploaderRef } from "@/components/ImageUpload";
+import Profile from "@/components/Profile";
 import { ProfileInput } from "@/components/ProfileInput";
 import { toBinary } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
@@ -10,6 +13,7 @@ import {
 	CardHeader,
 	Divider,
 	Input,
+	Link,
 	Table,
 	TableBody,
 	TableCell,
@@ -23,16 +27,17 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	CalendarDays,
+	ExternalLink,
 	HelpCircle,
-	Image,
+	Image as ImageIcon,
 	Info,
-	Link,
 	PlusCircle,
 	Shield,
 	Trash,
 	Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import type {
@@ -46,15 +51,7 @@ import MemberSchema from "~/config/schemas/MembersSchema";
 import { useEnv } from "~/hooks/useEnv";
 import { useTeamStore } from "~/store/teamStore";
 
-// Helper function to validate IPFS or HTTP(S) URLs
-const isValidUrl = (url: string) => {
-	return (
-		url.startsWith("ipfs://") ||
-		url.startsWith("http://") ||
-		url.startsWith("https://")
-	);
-};
-
+// Updated schema - removed URL validation since we'll upload images directly
 const CreateTeamSchema = z.object({
 	teamName: z
 		.string()
@@ -64,20 +61,8 @@ const CreateTeamSchema = z.object({
 		.string()
 		.min(1, "Description is required")
 		.max(500, "Description cannot exceed 500 characters"),
-	teamImageUrl: z
-		.string()
-		.optional()
-		.refine(
-			(url) => !url || isValidUrl(url),
-			"Must be a valid IPFS or HTTP(S) URL",
-		),
-	bannerUrl: z
-		.string()
-		.optional()
-		.refine(
-			(url) => !url || isValidUrl(url),
-			"Must be a valid IPFS or HTTP(S) URL",
-		),
+	teamImageUrl: z.string().optional(),
+	bannerUrl: z.string().optional(),
 	members: z.array(MemberSchema).min(2, "At least two members are required"),
 });
 
@@ -86,13 +71,21 @@ type CreateTeamFormData = z.infer<typeof CreateTeamSchema>;
 const CreateTeam = () => {
 	const router = useRouter();
 	const env = useEnv();
-	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
+	const {
+		address,
+		getSigningCosmWasmClient,
+		chain: { chain_id },
+	} = useChain(env.CHAIN);
 	const { addTeam } = useTeamStore();
+
+	const teamImageRef = useRef<ImageUploaderRef>(null);
+	const bannerImageRef = useRef<ImageUploaderRef>(null);
+
 	const {
 		control,
 		handleSubmit,
-		formState: { errors, isSubmitting, dirtyFields },
-		reset,
+		formState: { errors, isSubmitting },
+		watch,
 	} = useForm<CreateTeamFormData>({
 		resolver: zodResolver(CreateTeamSchema),
 		defaultValues: {
@@ -100,7 +93,7 @@ const CreateTeam = () => {
 			description: "",
 			teamImageUrl: "",
 			bannerUrl: "",
-			members: [{ addr: "" }, { addr: "" }],
+			members: [{ addr: address || "" }, { addr: "" }],
 		},
 		mode: "onChange",
 	});
@@ -109,6 +102,8 @@ const CreateTeam = () => {
 		control,
 		name: "members",
 	});
+
+	const description = watch("description");
 
 	const onSubmit = async (data: CreateTeamFormData) => {
 		try {
@@ -121,6 +116,11 @@ const CreateTeam = () => {
 				description: "Creating your team...",
 			});
 
+			const [teamImageUrl, bannerUrl] = await Promise.all([
+				teamImageRef.current?.uploadToS3(),
+				bannerImageRef.current?.uploadToS3(),
+			]);
+
 			const cosmWasmClient = await getSigningCosmWasmClient();
 			const result = await cosmWasmClient.instantiate(
 				address,
@@ -129,8 +129,11 @@ const CreateTeam = () => {
 					automatically_add_cw20s: true,
 					automatically_add_cw721s: true,
 					description: data.description,
-					image_url: data.teamImageUrl,
+					image_url: teamImageUrl,
 					name: data.teamName,
+					initial_items: bannerUrl
+						? [{ key: "banner", value: bannerUrl }]
+						: undefined,
 					proposal_modules_instantiate_info: [
 						{
 							admin: { core_module: {} },
@@ -209,194 +212,237 @@ const CreateTeam = () => {
 		append({ addr: "" });
 	};
 
-	const handleReset = () => {
-		if (
-			confirm(
-				"Are you sure you want to reset the form? All entered data will be lost.",
-			)
-		) {
-			reset({
-				teamName: "",
-				description: "",
-				teamImageUrl: "",
-				bannerUrl: "",
-				members: [{ addr: address || "" }, { addr: "" }],
-			});
-		}
-	};
-
 	return (
 		<div className="container mx-auto max-w-4xl p-4">
-			<Card className="border border-primary/10 shadow-lg">
-				<CardHeader className="flex flex-col gap-2 border-primary/10 border-b">
-					<div className="flex items-center justify-between">
-						<h1 className="font-bold font-cinzel text-2xl md:text-3xl">
-							Create Your Team
-						</h1>
+			<Card className="border-default-100">
+				<CardHeader className="flex flex-col items-center space-y-4 pt-8 pb-8">
+					<div className="flex items-center justify-center space-x-2">
+						<h1 className="font-bold font-cinzel text-3xl">Create Your Team</h1>
 						<Tooltip content="A team allows you to participate in competitions with multiple members">
-							<Button isIconOnly variant="light" className="cursor-help">
-								<Info size={20} />
+							<Button
+								isIconOnly
+								variant="light"
+								size="sm"
+								className="cursor-help"
+							>
+								<Info size={18} />
 							</Button>
 						</Tooltip>
 					</div>
-					<p className="text-foreground/70">
+					<p className="text-center text-default-500">
 						Create a team to participate in competitions with friends and manage
 						shared assets
 					</p>
 				</CardHeader>
 
 				<form onSubmit={handleSubmit(onSubmit)}>
-					<CardBody className="p-6 md:p-8">
-						<div className="space-y-8">
-							{/* Team Identity Section */}
-							<div className="space-y-4">
-								<div className="flex items-center gap-2">
-									<Shield size={20} className="text-primary" />
-									<h2 className="font-semibold text-xl">Team Identity</h2>
-								</div>
+					<CardBody className="p-8">
+						<div className="space-y-10">
+							{/* Team Identity and Branding Section */}
+							<div>
+								<div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+									{/* Left Column - Team Identity */}
+									<div className="space-y-6">
+										<div className="mb-6 flex items-center">
+											<div className="mr-2 h-6 w-1 rounded bg-primary" />
+											<Shield size={20} className="mr-2 text-primary" />
+											<h2 className="font-semibold text-xl">Team Identity</h2>
+										</div>
 
-								<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-									<Controller
-										name="teamName"
-										control={control}
-										render={({ field }) => (
-											<Input
-												{...field}
-												isRequired
-												label="Team Name"
-												placeholder="Enter your team name"
-												errorMessage={errors.teamName?.message}
-												isInvalid={!!errors.teamName}
-												startContent={
-													<Users size={16} className="text-default-400" />
-												}
-												description="Choose a unique and memorable name"
-											/>
-										)}
-									/>
-
-									<Controller
-										name="teamImageUrl"
-										control={control}
-										render={({ field }) => (
-											<Input
-												{...field}
-												label="Team Logo URL"
-												placeholder="ipfs:// or https://"
-												errorMessage={errors.teamImageUrl?.message}
-												isInvalid={!!errors.teamImageUrl}
-												startContent={
-													<Image size={16} className="text-default-400" />
-												}
-												description="Square image recommended (optional)"
-											/>
-										)}
-									/>
-								</div>
-
-								<Controller
-									name="description"
-									control={control}
-									render={({ field }) => (
-										<Textarea
-											{...field}
-											isRequired
-											label="Team Description"
-											placeholder="Tell us about your team"
-											errorMessage={errors.description?.message}
-											isInvalid={!!errors.description}
-											minRows={3}
-											classNames={{
-												input: "resize-none",
-											}}
-											description={`${field.value?.length || 0}/500 characters`}
+										<Controller
+											name="teamName"
+											control={control}
+											render={({ field }) => (
+												<Input
+													{...field}
+													isRequired
+													label="Team Name"
+													placeholder="Enter your team name"
+													errorMessage={errors.teamName?.message}
+													isInvalid={!!errors.teamName}
+													startContent={
+														<Users size={16} className="text-default-400" />
+													}
+													description="Choose a unique and memorable name"
+												/>
+											)}
 										/>
-									)}
-								/>
 
-								<Controller
-									name="bannerUrl"
-									control={control}
-									render={({ field }) => (
-										<Input
-											{...field}
-											label="Banner Image URL"
-											placeholder="ipfs:// or https://"
-											errorMessage={errors.bannerUrl?.message}
-											isInvalid={!!errors.bannerUrl}
-											startContent={
-												<Link size={16} className="text-default-400" />
-											}
-											description="Wide banner image (16:9 ratio recommended, optional)"
+										<Controller
+											name="description"
+											control={control}
+											render={({ field }) => (
+												<Textarea
+													{...field}
+													isRequired
+													label="Team Description"
+													placeholder="Tell us about your team"
+													errorMessage={errors.description?.message}
+													isInvalid={!!errors.description}
+													minRows={5}
+													classNames={{
+														input: "resize-none",
+													}}
+													description={`${description?.length || 0}/500 characters`}
+												/>
+											)}
 										/>
-									)}
-								/>
-							</div>
-
-							<Divider className="my-6" />
-
-							{/* Team Members Section */}
-							<div className="space-y-4">
-								<div className="flex items-center justify-between">
-									<div className="flex items-center gap-2">
-										<Users size={20} className="text-primary" />
-										<h2 className="font-semibold text-xl">Team Members</h2>
 									</div>
 
-									<Tooltip content="Add team members with their wallet addresses">
-										<Button
-											color="primary"
-											variant="flat"
-											onPress={handleAddMember}
-											isDisabled={isSubmitting}
-											startContent={<PlusCircle size={18} />}
-											className="card-hover"
-										>
-											Add Member
-										</Button>
-									</Tooltip>
+									{/* Right Column - Team Branding */}
+									<div className="space-y-6">
+										<div className="mb-6 flex items-center">
+											<div className="mr-2 h-6 w-1 rounded bg-primary" />
+											<ImageIcon size={20} className="mr-2 text-primary" />
+											<h2 className="font-semibold text-xl">Team Branding</h2>
+										</div>
+
+										<Controller
+											name="teamImageUrl"
+											control={control}
+											render={({ field, fieldState }) => (
+												<div className="mb-6">
+													<ImageUploader
+														field={field}
+														error={fieldState.error}
+														label="Team Logo"
+														startContent={
+															<ImageIcon
+																size={16}
+																className="text-default-400"
+															/>
+														}
+														ref={teamImageRef}
+														description="Square image recommended"
+													/>
+													{field.value && (
+														<div className="mt-2 h-16 w-16 rounded-md border border-default-200 p-1">
+															<img
+																src={field.value}
+																alt="Team logo preview"
+																className="h-full w-full rounded object-cover"
+															/>
+														</div>
+													)}
+												</div>
+											)}
+										/>
+
+										<Controller
+											name="bannerUrl"
+											control={control}
+											render={({ field, fieldState }) => (
+												<div>
+													<ImageUploader
+														field={field}
+														error={fieldState.error}
+														label="Banner Image"
+														startContent={
+															<ImageIcon
+																size={16}
+																className="text-default-400"
+															/>
+														}
+														ref={bannerImageRef}
+														description="16:9 ratio recommended for banners"
+													/>
+													{field.value && (
+														<div className="mt-2 h-28 w-full rounded-md border border-default-200 p-1">
+															<img
+																src={field.value}
+																alt="Banner preview"
+																className="h-full w-full rounded object-cover"
+															/>
+														</div>
+													)}
+												</div>
+											)}
+										/>
+									</div>
+								</div>
+							</div>
+
+							<Divider />
+
+							{/* Team Members Section */}
+							<div>
+								<div className="mb-6 flex items-center justify-between">
+									<div className="flex items-center">
+										<div className="mr-2 h-6 w-1 rounded bg-primary" />
+										<Users size={20} className="mr-2 text-primary" />
+										<h2 className="mr-3 font-semibold text-xl">Team Members</h2>
+										<div className="rounded-md border border-warning-200 bg-warning-50 px-2 py-0.5 text-warning-600 text-xs">
+											Min. 2 required
+										</div>
+									</div>
+
+									<Button
+										color="primary"
+										variant="flat"
+										onPress={handleAddMember}
+										isDisabled={isSubmitting}
+										startContent={<PlusCircle size={18} />}
+									>
+										Add Member
+									</Button>
 								</div>
 
-								<Card className="border border-primary/10">
-									<Table
-										aria-label="Team members table"
-										removeWrapper
-										isStriped
-									>
+								<Card className="border border-default-200">
+									<Table aria-label="Team members table" removeWrapper>
 										<TableHeader>
 											<TableColumn>MEMBER ADDRESS</TableColumn>
 											<TableColumn width={100}>ACTIONS</TableColumn>
 										</TableHeader>
-										<TableBody emptyContent="No members added. Add at least two members to create a team.">
+										<TableBody
+											emptyContent={
+												<div className="py-8 text-center text-default-500">
+													<Users size={40} className="mx-auto mb-2" />
+													<p>No members added. Add at least two members.</p>
+												</div>
+											}
+										>
 											{fields.map((field, index) => (
 												<TableRow key={field.id} className="h-20">
 													<TableCell>
-														<Controller
-															name={`members.${index}.addr`}
-															control={control}
-															render={({ field }) => (
-																<ProfileInput
-																	label={`Member ${index + 1}`}
-																	field={field}
-																	error={errors.members?.[index]?.addr}
-																	isRequired
-																	isDisabled={isSubmitting}
-																	emptyTeams
-																/>
-															)}
-														/>
+														{index === 0 && address ? (
+															<div className="flex items-center space-x-2">
+																<Profile address={address} />
+																<span className="text-default-500 text-xs">
+																	(You)
+																</span>
+															</div>
+														) : (
+															<Controller
+																name={`members.${index}.addr`}
+																control={control}
+																render={({ field }) => (
+																	<ProfileInput
+																		label=""
+																		field={field}
+																		error={errors.members?.[index]?.addr}
+																		isRequired
+																		isDisabled={isSubmitting}
+																		emptyTeams
+																	/>
+																)}
+															/>
+														)}
 													</TableCell>
 													<TableCell className="align-top">
-														<Button
-															isIconOnly
-															variant="light"
-															color="danger"
-															onPress={() => remove(index)}
-															isDisabled={isSubmitting}
-															aria-label="Remove member"
-														>
-															<Trash size={18} />
-														</Button>
+														{index === 0 && address ? (
+															<div className="w-10" />
+														) : (
+															<Button
+																isIconOnly
+																variant="light"
+																color="danger"
+																onPress={() => remove(index)}
+																isDisabled={isSubmitting || fields.length <= 2}
+																aria-label="Remove member"
+															>
+																<Trash size={18} />
+															</Button>
+														)}
 													</TableCell>
 												</TableRow>
 											))}
@@ -405,22 +451,35 @@ const CreateTeam = () => {
 								</Card>
 
 								{errors.members?.root && (
-									<div className="flex items-center gap-2 rounded-lg bg-danger-50 p-3 text-danger">
+									<div className="mt-4 flex items-center gap-2 rounded-lg bg-danger-50 p-4 text-danger">
 										<HelpCircle size={18} />
 										<p className="text-sm">{errors.members.root.message}</p>
 									</div>
 								)}
 
-								<div className="rounded-xl border border-primary/10 bg-primary/5 p-4">
+								<div className="mt-6 rounded-xl border border-default-200 bg-default-50 p-4">
 									<div className="flex items-start gap-3">
 										<CalendarDays size={20} className="mt-1 text-primary" />
 										<div>
 											<h3 className="font-medium text-md">Team Governance</h3>
-											<p className="mt-1 text-foreground/70 text-sm">
+											<p className="mt-1 text-default-500 text-sm">
 												Your team will be created as a DAO with equal voting
 												power for all members. Decisions will require all
 												members to agree within 24-hours.
 											</p>
+											<div className="mt-2 flex items-center text-primary text-sm">
+												<Link
+													href={`${env.DAO_DAO_URL}/dao/create?chain=${chain_id}`}
+													isExternal
+													className="flex items-center"
+													showAnchorIcon
+													anchorIcon={
+														<ExternalLink size={14} className="ml-1" />
+													}
+												>
+													Need more customization options? Visit DAO DAO
+												</Link>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -428,22 +487,14 @@ const CreateTeam = () => {
 						</div>
 					</CardBody>
 
-					<CardFooter className="flex justify-between gap-2 border-primary/10 border-t px-6 py-4">
-						<Button
-							type="button"
-							variant="flat"
-							onPress={handleReset}
-							isDisabled={isSubmitting || !Object.keys(dirtyFields).length}
-						>
-							Reset Form
-						</Button>
+					<CardFooter className="flex justify-end gap-2 border-t px-6 py-6">
 						<Button
 							type="submit"
 							color="primary"
 							isLoading={isSubmitting}
 							isDisabled={isSubmitting}
-							className="card-hover"
 							size="lg"
+							className="min-w-32"
 						>
 							Create Team
 						</Button>
