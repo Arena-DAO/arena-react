@@ -215,6 +215,12 @@
 			"img": "web3.jpg",
 			"children": [
 				{
+					"url": "boss-fighters",
+					"title": "Boss Fighters",
+					"img": "boss_fighters.jpg",
+					"category_id": 38
+				},
+				{
 					"url": "off-the-grid",
 					"title": "Off the Grid",
 					"img": "off-the-grid.jpg",
