@@ -126,6 +126,7 @@ const CreateTeam = () => {
 				address,
 				env.CODE_ID_DAO_CORE,
 				{
+					admin: env.ARENA_DAO_ADDRESS, // Set this to help process any locked teams
 					automatically_add_cw20s: true,
 					automatically_add_cw721s: true,
 					description: data.description,
