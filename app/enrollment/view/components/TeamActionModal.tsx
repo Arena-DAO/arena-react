@@ -36,7 +36,8 @@ const TeamActionModal: React.FC<TeamActionModalProps> = ({
 }) => {
 	const env = useEnv();
 	const { address } = useChain(env.CHAIN);
-	const targetRef = useRef(null);
+	// biome-ignore lint/style/noNonNullAssertion: correct
+	const targetRef = useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 	const {
 		control,

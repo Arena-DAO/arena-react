@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, DatePicker, Input, Textarea } from "@heroui/react";
-import { Select, SelectItem } from "@heroui/select";
+import { Select, SelectItem } from "@heroui/react";
 import { getLocalTimeZone, now } from "@internationalized/date";
 import { Controller, useFormContext } from "react-hook-form";
 import { DurationUnits } from "~/config/schemas/DurationSchema";

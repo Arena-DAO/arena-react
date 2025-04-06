@@ -20,7 +20,8 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import _ from "lodash";
 import { Coins, ImagePlus, Trash } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import React from "react";
+import { useEffect, useState } from "react";
 import {
 	Controller,
 	useFieldArray,
@@ -93,7 +94,8 @@ const AddDueForm = ({
 	const { assets } = useChain(env.CHAIN);
 	const { control: competitionControl, getValues } =
 		useFormContext<CreateCompetitionFormValues>();
-	const targetRef = useRef(null);
+	// biome-ignore lint/style/noNonNullAssertion: correct
+	const targetRef = React.useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
 	const { append: appendNative } = useFieldArray({

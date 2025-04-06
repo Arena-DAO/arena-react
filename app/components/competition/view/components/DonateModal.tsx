@@ -49,7 +49,8 @@ const DonateModal: React.FC<DonateModalProps> = ({ escrow }) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const { getSigningCosmWasmClient, address, assets } = useChain(env.CHAIN);
 	const [isLoading, setIsLoading] = useState(false);
-	const targetRef = useRef(null);
+	// biome-ignore lint/style/noNonNullAssertion: correct
+	const targetRef = useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 	const queryClient = useQueryClient();
 

@@ -62,7 +62,8 @@ const EntryFeeForm: React.FC<EntryFeeFormProps> = ({
 	const watchDenom = watch("denom");
 	const [debouncedDenom, setDebouncedDenom] = useState(watchDenom);
 	const [isLoading, setIsLoading] = useState(false);
-	const targetRef = React.useRef(null);
+	// biome-ignore lint/style/noNonNullAssertion: correct
+	const targetRef = React.useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
 	useEffect(() => {

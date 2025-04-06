@@ -39,7 +39,8 @@ const BalancesModal = ({ escrow }: BalancesModalProps) => {
 	const { address } = useChain(env.CHAIN);
 	const queryClient = useQueryClient();
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
-	const targetRef = React.useRef(null);
+	// biome-ignore lint/style/noNonNullAssertion: correct
+	const targetRef = React.useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
 	const fetchBalances = async ({ pageParam = undefined }) => {

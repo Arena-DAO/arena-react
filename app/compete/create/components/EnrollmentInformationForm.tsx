@@ -1,8 +1,14 @@
 "use client";
 
 import TokenInfo from "@/components/TokenInfo";
-import { Button, ButtonGroup, Input, useDisclosure } from "@heroui/react";
-import { Select, SelectItem } from "@heroui/select";
+import {
+	Button,
+	ButtonGroup,
+	Input,
+	Select,
+	SelectItem,
+	useDisclosure,
+} from "@heroui/react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 import { DurationUnits } from "~/config/schemas/DurationSchema";

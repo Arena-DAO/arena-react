@@ -58,7 +58,7 @@ const ViewCompetition = ({
 				<Image
 					src={competition.banner}
 					alt={competition.name}
-					className="h-64 w-full rounded-lg object-cover"
+					className="z-0 h-full w-full"
 					removeWrapper
 				/>
 			)}

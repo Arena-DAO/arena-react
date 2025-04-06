@@ -1,8 +1,16 @@
 "use client";
 
 import Profile from "@/components/Profile";
-import { Card, CardBody, CardFooter, CardHeader, Divider } from "@heroui/react";
-import { Select, SelectItem, type SelectedItems } from "@heroui/select";
+import {
+	Card,
+	CardBody,
+	CardFooter,
+	CardHeader,
+	Divider,
+	Select,
+	SelectItem,
+	type SelectedItems,
+} from "@heroui/react";
 import clsx from "clsx";
 import { memo } from "react";
 import { Handle, type NodeProps, Position } from "reactflow";
@@ -62,58 +70,60 @@ const MatchNode = memo(({ data }: MatchNodeProps) => {
 						<p>TBD</p>
 					)}
 				</CardBody>
-				<CardFooter className="mt-1">
-					<Select
-						items={[{ team: "team1" }, { team: "team2" }]}
-						label="Winner"
-						placeholder="Select a winner"
-						labelPlacement="outside"
-						size="lg"
-						isDisabled={!data.team_1 || !data.team_2}
-						defaultSelectedKeys={data.result ? [data.result] : []}
-						onChange={(e) => {
-							if (!e.target.value) {
-								removeMatchResult(data.match_number);
-							} else {
-								setMatchResult({
-									match_number: data.match_number,
-									match_result: e.target.value as MatchResult,
-								});
-							}
-						}}
-						renderValue={(items: SelectedItems<SelectItemType>) => {
-							return items.map((item) => (
-								<div key={item.key}>
-									{item.textValue === "team1" && data.team_1 && (
-										<Profile
-											address={data.team_1}
-											isPopoverDisabled
-											classNames={{ name: "text-3xl" }}
-										/>
+				{data.team_1 && data.team_2 && (
+					<CardFooter className="mt-1">
+						<Select
+							items={[{ team: "team1" }, { team: "team2" }]}
+							label="Winner"
+							placeholder="Select a winner"
+							labelPlacement="outside"
+							className="nodrag"
+							size="lg"
+							defaultSelectedKeys={data.result ? [data.result] : []}
+							onChange={(e) => {
+								if (!e.target.value) {
+									removeMatchResult(data.match_number);
+								} else {
+									setMatchResult({
+										match_number: data.match_number,
+										match_result: e.target.value as MatchResult,
+									});
+								}
+							}}
+							renderValue={(items: SelectedItems<SelectItemType>) => {
+								return items.map((item) => (
+									<div key={item.key}>
+										{item.textValue === "team1" && data.team_1 && (
+											<Profile
+												address={data.team_1}
+												isPopoverDisabled
+												classNames={{ name: "text-3xl" }}
+											/>
+										)}
+										{item.textValue === "team2" && data.team_2 && (
+											<Profile
+												address={data.team_2}
+												isPopoverDisabled
+												classNames={{ name: "text-3xl" }}
+											/>
+										)}
+									</div>
+								));
+							}}
+						>
+							{(user) => (
+								<SelectItem key={user.team} textValue={user.team}>
+									{user.team === "team1" && data.team_1 && (
+										<Profile address={data.team_1} isPopoverDisabled />
 									)}
-									{item.textValue === "team2" && data.team_2 && (
-										<Profile
-											address={data.team_2}
-											isPopoverDisabled
-											classNames={{ name: "text-3xl" }}
-										/>
+									{user.team === "team2" && data.team_2 && (
+										<Profile address={data.team_2} isPopoverDisabled />
 									)}
-								</div>
-							));
-						}}
-					>
-						{(user) => (
-							<SelectItem key={user.team} textValue={user.team}>
-								{user.team === "team1" && data.team_1 && (
-									<Profile address={data.team_1} isPopoverDisabled />
-								)}
-								{user.team === "team2" && data.team_2 && (
-									<Profile address={data.team_2} isPopoverDisabled />
-								)}
-							</SelectItem>
-						)}
-					</Select>
-				</CardFooter>
+								</SelectItem>
+							)}
+						</Select>
+					</CardFooter>
+				)}
 			</Card>
 			<Handle
 				type="source"

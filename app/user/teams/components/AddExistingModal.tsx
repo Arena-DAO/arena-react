@@ -39,7 +39,8 @@ const AddExistingTeamModal: React.FC<AddExistingTeamModalProps> = ({
 	const env = useEnv();
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
 	const teamStore = useTeamStore();
-	const targetRef = useRef(null);
+	// biome-ignore lint/style/noNonNullAssertion: correct
+	const targetRef = useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 	const {
 		control,

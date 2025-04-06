@@ -87,7 +87,8 @@ const UserStatsModal: React.FC<UserStatsModalProps> = ({
 		return { rows, columns };
 	}, [data]);
 
-	const targetRef = React.useRef(null);
+	// biome-ignore lint/style/noNonNullAssertion: correct
+	const targetRef = React.useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
 	return (

@@ -4,6 +4,8 @@ import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
 import {
 	Button,
+	Select,
+	SelectItem,
 	Table,
 	TableBody,
 	TableCell,
@@ -12,7 +14,6 @@ import {
 	TableRow,
 	addToast,
 } from "@heroui/react";
-import { Select, SelectItem } from "@heroui/select";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 

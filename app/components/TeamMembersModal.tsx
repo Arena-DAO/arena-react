@@ -33,7 +33,8 @@ const TeamMembersModal = ({ daoAddress }: TeamMembersModalProps) => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure({
 		id: `teams_${daoAddress}`,
 	});
-	const targetRef = useRef(null);
+	// biome-ignore lint/style/noNonNullAssertion: correct
+	const targetRef = useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
 	// Query chain: DAO Core -> Voting Module -> Group Contract -> Members

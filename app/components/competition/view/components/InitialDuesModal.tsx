@@ -62,7 +62,8 @@ const InitialDuesModal = ({ escrow }: InitialDuesModalProps) => {
 		});
 
 	const allDues = data?.pages.flatMap((page) => page.items) ?? [];
-	const targetRef = React.useRef(null);
+	// biome-ignore lint/style/noNonNullAssertion: correct
+	const targetRef = React.useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
 	return (

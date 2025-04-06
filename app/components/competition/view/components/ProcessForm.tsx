@@ -288,7 +288,8 @@ const ProcessForm = ({
 			}
 		}
 	};
-	const targetRef = React.useRef(null);
+	// biome-ignore lint/style/noNonNullAssertion: correct
+	const targetRef = React.useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
 	const action = "is_expired" in props ? "Jail" : "Process";
