@@ -424,6 +424,7 @@ const CreateTeam = () => {
 																		isRequired
 																		isDisabled={isSubmitting}
 																		emptyTeams
+																		excludeSelf
 																	/>
 																)}
 															/>
