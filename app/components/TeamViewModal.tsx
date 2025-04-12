@@ -90,6 +90,7 @@ export default function TeamViewModal({ isOpen, onClose }: TeamViewModalProps) {
 									isRequired
 									isDisabled={isSubmitting}
 									excludeSelf
+									includeArena
 								/>
 							)}
 						/>

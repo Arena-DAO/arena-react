@@ -17,6 +17,7 @@ interface ProfileInputProps extends Omit<AutocompleteProps, "children"> {
 	field: FieldValues;
 	emptyTeams?: boolean;
 	excludeSelf?: boolean;
+	includeArena?: boolean;
 }
 
 export const ProfileInput = ({
@@ -24,6 +25,7 @@ export const ProfileInput = ({
 	error,
 	emptyTeams = false,
 	excludeSelf = false,
+	includeArena = false,
 	...props
 }: ProfileInputProps) => {
 	const env = useEnv();
@@ -36,6 +38,10 @@ export const ProfileInput = ({
 		// Include the user's address if it's available and not excluded
 		if (address && !excludeSelf) {
 			result.push({ address });
+		}
+
+		if (includeArena) {
+			result.push({ address: env.ARENA_DAO_ADDRESS });
 		}
 
 		// If emptyTeams is false, add all team addresses (avoiding duplicates)
@@ -51,7 +57,14 @@ export const ProfileInput = ({
 		}
 
 		return result;
-	}, [teams, emptyTeams, address, excludeSelf]);
+	}, [
+		teams,
+		emptyTeams,
+		address,
+		excludeSelf,
+		includeArena,
+		env.ARENA_DAO_ADDRESS,
+	]);
 
 	return (
 		<div className="flex w-full items-center">
