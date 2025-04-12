@@ -85,7 +85,10 @@ const ViewWager = () => {
 										<Bracket
 											tournamentId={data.id}
 											escrow={data.escrow}
-											isHost={address === data.host}
+											isHost={
+												address === data.host ||
+												address === env.ARENA_DAO_ADDRESS
+											}
 											showBracket={showBracket}
 										/>
 									</ReactFlowProvider>

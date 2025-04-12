@@ -274,20 +274,7 @@ const ProcessForm = ({
 			addToast({ color: "danger", description: (e as Error).toString() });
 		}
 	};
-	const tryOpen = () => {
-		if ("is_expired" in props) {
-			onOpen();
-		} else {
-			if (address === props.host) {
-				onOpen();
-			} else {
-				addToast({
-					color: "warning",
-					description: "Only the host can process the competition",
-				});
-			}
-		}
-	};
+
 	// biome-ignore lint/style/noNonNullAssertion: correct
 	const targetRef = React.useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
@@ -295,10 +282,7 @@ const ProcessForm = ({
 	const action = "is_expired" in props ? "Jail" : "Process";
 	return (
 		<>
-			<Button
-				color={action === "Jail" ? "danger" : "primary"}
-				onPress={tryOpen}
-			>
+			<Button color={action === "Jail" ? "danger" : "primary"} onPress={onOpen}>
 				{action}
 			</Button>
 			<Modal
