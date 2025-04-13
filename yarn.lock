@@ -143,10 +143,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.50.108":
-  version: 0.50.108
-  resolution: "@chain-registry/types@npm:0.50.108"
-  checksum: 10c0/c9bb8923f91b893fa94be880cfab8af3bc15bfb470faad88b357adac2d5dbd64c2296efdb1845eba0fa4b00e7c0f132bee7a9fa6f89b9538a9576e7d9e572560
+"@chain-registry/types@npm:^0.50.113":
+  version: 0.50.113
+  resolution: "@chain-registry/types@npm:0.50.113"
+  checksum: 10c0/99507ac1cdf3fff0c891d64dac7b6ac324f716f434b181954f19d6f6ae5d59191d557db376bddad6c1755bd3bf68f95ad7944c6abcd04bf9de7b91dc42b6a51e
   languageName: node
   linkType: hard
 
@@ -6756,7 +6756,7 @@ __metadata:
   resolution: "arena-react@workspace:."
   dependencies:
     "@biomejs/biome": "npm:1.9.4"
-    "@chain-registry/types": "npm:^0.50.108"
+    "@chain-registry/types": "npm:^0.50.113"
     "@cosmjs/amino": "npm:^0.32.4"
     "@cosmjs/cosmwasm-stargate": "npm:0.32.4"
     "@cosmjs/encoding": "npm:^0.32.4"
@@ -6779,14 +6779,14 @@ __metadata:
     "@types/react": "npm:19.1.0"
     "@types/react-dom": "npm:^18.3.5"
     autoprefixer: "npm:^10.4.21"
-    chain-registry: "npm:1.69.175"
+    chain-registry: "npm:1.69.181"
     clsx: "npm:^2.1.1"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^7.0.6"
     date-fns: "npm:^3.6.0"
     discord.js: "npm:^14.18.0"
     framer-motion: "npm:^11.18.2"
-    http-proxy-middleware: "npm:^3.0.3"
+    http-proxy-middleware: "npm:^3.0.5"
     keen-slider: "npm:^6.8.6"
     lodash: "npm:^4.17.21"
     lucide-react: "npm:^0.485.0"
@@ -7102,12 +7102,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.69.175":
-  version: 1.69.175
-  resolution: "chain-registry@npm:1.69.175"
+"chain-registry@npm:1.69.181":
+  version: 1.69.181
+  resolution: "chain-registry@npm:1.69.181"
   dependencies:
-    "@chain-registry/types": "npm:^0.50.108"
-  checksum: 10c0/04dc42cb7ca3469e99d0268ba32576612a364b961b8afeeb4294bce697e43a92f2af00508e0842fc6eb39c61025462696ef1ad69a4d7765145dd5e8205696638
+    "@chain-registry/types": "npm:^0.50.113"
+  checksum: 10c0/0fcd7285a45eec7d3b9362a8fabc052be7c20dd734ae62d6a21ee1cd1eb947ef307789fce22bc0c8d93ca42b5254c39d6f8ffd7d7cebd1aebc0e450d3c787eee
   languageName: node
   linkType: hard
 
@@ -8409,9 +8409,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"http-proxy-middleware@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "http-proxy-middleware@npm:3.0.3"
+"http-proxy-middleware@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "http-proxy-middleware@npm:3.0.5"
   dependencies:
     "@types/http-proxy": "npm:^1.17.15"
     debug: "npm:^4.3.6"
@@ -8419,7 +8419,7 @@ __metadata:
     is-glob: "npm:^4.0.3"
     is-plain-object: "npm:^5.0.0"
     micromatch: "npm:^4.0.8"
-  checksum: 10c0/c4d68a10d8d42f02e59f7dc8249c98d1ac03aecee177b42c2d8b6a0cb6b71c6688e759e5387f4cdb570150070ca1c6808b38010cbdf67f4500a2e75671a36e05
+  checksum: 10c0/89ff3c8fe65b22b8042a6173ae1b8f77c5171f7eecf3c8b5d6dcffe3c9d688acae7bcf498cc08d1525f566dc0781efaec4e2ddc49224b1f16f020de7987a446b
   languageName: node
   linkType: hard
 
