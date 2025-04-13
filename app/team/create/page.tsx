@@ -122,7 +122,7 @@ const CreateTeam = () => {
 			]);
 
 			const cosmWasmClient = await getSigningCosmWasmClient();
-			const result = await cosmWasmClient.instantiate(
+			const { contractAddress } = await cosmWasmClient.instantiate(
 				address,
 				env.CODE_ID_DAO_CORE,
 				{
@@ -192,9 +192,12 @@ const CreateTeam = () => {
 				} as DaoCoreInstantiateMsg,
 				"Arena Team",
 				"auto",
+				{
+					admin: env.ARENA_DAO_ADDRESS,
+				},
 			);
 
-			addTeam(result.contractAddress);
+			addTeam(contractAddress);
 			addToast({
 				color: "success",
 				description: "Successfully created the team!",

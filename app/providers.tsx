@@ -40,11 +40,27 @@ function InnerProviders({ children }: PropsWithChildren) {
 			return undefined;
 		},
 	};
-	const chainsMemo = useMemo(
-		() =>
-			env.ENV === "development" ? [testnetChain, mainnetChain] : [mainnetChain],
-		[env.ENV],
-	);
+	const chainsMemo = useMemo(() => {
+		if (env.ENV === "development") return [testnetChain];
+
+		const filteredMainnet = { ...mainnetChain };
+		if (filteredMainnet.apis) {
+			filteredMainnet.apis = {
+				...filteredMainnet.apis,
+				rpc: filteredMainnet.apis.rpc?.filter(
+					(api) => !api.address.toLowerCase().includes("quokkastake"),
+				),
+				rest: filteredMainnet.apis.rest?.filter(
+					(api) => !api.address.toLowerCase().includes("quokkastake"),
+				),
+				grpc: filteredMainnet.apis.grpc?.filter(
+					(grpc) => !grpc.address.includes("quokkastake"),
+				),
+			};
+		}
+
+		return [filteredMainnet];
+	}, [env.ENV]);
 	const assetsMemo = useMemo(() => {
 		if (env.ENV === "development") {
 			return [testnetAssets, mainnetAssets];
