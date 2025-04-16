@@ -1,55 +1,123 @@
-const { heroui } = require("@heroui/react");
+import { heroui } from "@heroui/react";
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+const sharedColors = {
+	primary: {
+		50: "#FFF3E5",
+		100: "#FFE0C2",
+		200: "#FFD1A0",
+		300: "#FFC27D",
+		400: "#FFB35A",
+		500: "#FF9E33",
+		600: "#FF8C1A",
+		700: "#FF7A00",
+		800: "#E66D00",
+		900: "#CC6000",
+		DEFAULT: "#FF9E33",
+		foreground: "#000000",
+	},
+	secondary: {
+		50: "#F2E6FF",
+		100: "#E0C2FF",
+		200: "#CC99FF",
+		300: "#B870FF",
+		400: "#A347FF",
+		500: "#8F1FFF",
+		600: "#7A00E6",
+		700: "#6600CC",
+		800: "#5200B3",
+		900: "#3D0099",
+		DEFAULT: "#8F1FFF",
+		foreground: "#FFFFFF",
+	},
+	success: {
+		50: "#E8FFF3",
+		100: "#C2FFE0",
+		200: "#99FFCC",
+		300: "#70FFB8",
+		400: "#47FFA3",
+		500: "#1FFF8F",
+		600: "#00E67A",
+		700: "#00CC66",
+		800: "#00B352",
+		900: "#00993D",
+		DEFAULT: "#1FFF8F",
+		foreground: "#000000",
+	},
+	warning: {
+		50: "#FFF7E5",
+		100: "#FFEEC2",
+		200: "#FFE699",
+		300: "#FFDD70",
+		400: "#FFD447",
+		500: "#FFCC1F",
+		600: "#E6B800",
+		700: "#CCA300",
+		800: "#B38F00",
+		900: "#997A00",
+		DEFAULT: "#FFCC1F",
+		foreground: "#000000",
+	},
+	danger: {
+		50: "#FFE5E5",
+		100: "#FFB8B8",
+		200: "#FF8C8C",
+		300: "#FF5F5F",
+		400: "#FF3333",
+		500: "#FF0000",
+		600: "#E60000",
+		700: "#CC0000",
+		800: "#B30000",
+		900: "#990000",
+		DEFAULT: "#FF3333",
+		foreground: "#FFFFFF",
+	},
+};
+
+export default {
 	content: [
-		"./app/**/*.{js,ts,jsx,tsx,mdx,mjs}",
-		"./src/**/*.{js,ts,jsx,tsx,mdx,mjs}",
-		"./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx,mjs}",
+		"./app/**/*.{js,ts,jsx,tsx}",
+		"./src/**/*.{js,ts,jsx,tsx}",
+		"./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
 	],
 	theme: {
 		extend: {
-			fontFamily: {
-				cinzel: ["cinzel", "serif"],
-				sans: ["Inter var", "sans-serif"],
-			},
 			animation: {
-				"fade-in": "fadeIn 0.5s ease-in",
-				"slide-up": "slideUp 0.6s ease-out",
-				"slide-down": "slideDown 0.6s ease-out",
-				"pulse-subtle": "pulse 3s infinite",
+				"pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+				glow: "glow 2s ease-in-out infinite alternate",
 				float: "float 6s ease-in-out infinite",
+				shine: "shine 2.5s linear infinite",
 			},
 			keyframes: {
-				fadeIn: {
-					"0%": { opacity: "0" },
-					"100%": { opacity: "1" },
-				},
-				slideUp: {
-					"0%": { transform: "translateY(20px)", opacity: "0" },
-					"100%": { transform: "translateY(0)", opacity: "1" },
-				},
-				slideDown: {
-					"0%": { transform: "translateY(-20px)", opacity: "0" },
-					"100%": { transform: "translateY(0)", opacity: "1" },
+				glow: {
+					"0%": { boxShadow: "0 0 5px rgba(255, 158, 51, 0.3)" },
+					"100%": { boxShadow: "0 0 20px rgba(255, 158, 51, 0.6)" },
 				},
 				float: {
 					"0%, 100%": { transform: "translateY(0)" },
 					"50%": { transform: "translateY(-10px)" },
 				},
+				shine: {
+					"0%": { backgroundPosition: "200% 0" },
+					"100%": { backgroundPosition: "-200% 0" },
+				},
 			},
-			borderRadius: {
-				xl: "1rem",
-				"2xl": "1.5rem",
-				"3xl": "2rem",
+			backdropFilter: {
+				none: "none",
+				blur: "blur(20px)",
 			},
-			boxShadow: {
-				glow: "0 0 15px rgba(255, 128, 0, 0.5)",
-				"glow-lg": "0 0 30px rgba(255, 128, 0, 0.6)",
-				"inner-glow": "inset 0 0 15px rgba(255, 128, 0, 0.3)",
+			backgroundImage: {
+				"grid-pattern":
+					"linear-gradient(to right, rgba(255, 158, 51, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 158, 51, 0.05) 1px, transparent 1px)",
+				"dot-pattern":
+					"radial-gradient(rgba(255, 158, 51, 0.1) 1px, transparent 1px)",
+				"gradient-shine":
+					"linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
 			},
-			backdropBlur: {
-				xs: "2px",
+			backgroundSize: {
+				grid: "20px 20px",
+				dot: "20px 20px",
+				shine: "200% 100%",
 			},
 		},
 	},
@@ -57,142 +125,143 @@ module.exports = {
 	plugins: [
 		heroui({
 			layout: {
-				fontSize: {
-					large: "1.6rem",
+				radius: {
+					small: "4px",
+					medium: "8px",
+					large: "16px",
 				},
-				borderRadius: {
-					large: "1rem",
-					medium: "0.75rem",
+				borderWidth: {
+					small: "1px",
+					medium: "2px",
+					large: "3px",
+				},
+				fontSize: {
+					tiny: "0.75rem",
+					small: "0.875rem",
+					medium: "1rem",
+					large: "1.125rem",
+				},
+				lineHeight: {
+					tiny: "1rem",
+					small: "1.25rem",
+					medium: "1.5rem",
+					large: "1.75rem",
+				},
+				spacing: {
 					small: "0.5rem",
+					medium: "1rem",
+					large: "2rem",
 				},
 			},
 			themes: {
-				dark: {
-					extend: "dark",
+				light: {
 					colors: {
-						danger: {
-							DEFAULT: "#C22A28",
-							foreground: "#FFFFFF",
+						background: "#F9F9FB",
+						foreground: "#000000",
+						content1: { DEFAULT: "#FFFFFF", foreground: "#000000" },
+						content2: { DEFAULT: "#F2F2F5", foreground: "#000000" },
+						content3: { DEFAULT: "#E8E8EC", foreground: "#000000" },
+						content4: { DEFAULT: "#DEDEE6", foreground: "#000000" },
+						...sharedColors,
+						focus: "#FF9E33",
+						divider: "rgba(255, 158, 51, 0.2)",
+					},
+					components: {
+						button: {
+							shadow: "0 4px 14px 0 rgba(255, 158, 51, 0.2)",
+							textTransform: "none",
 						},
-						background: {
-							50: "#1A1A1A",
-							100: "#333333",
-							200: "#4D4D4D",
-							300: "#666666",
-							400: "#808080",
-							500: "#999999",
-							600: "#B3B3B3",
-							700: "#CCCCCC",
-							800: "#E6E6E6",
-							900: "#F2F2F2",
-							foreground: "#FFFFFF",
-							DEFAULT: "#1A1A1A",
+						card: {
+							shadow: "0 8px 20px rgba(0, 0, 0, 0.05)",
+							borderWeight: "light",
 						},
-						primary: {
-							50: "#FFB266",
-							100: "#FFA64D",
-							200: "#FF9933",
-							300: "#FF8C1A",
-							400: "#FF8000",
-							500: "#E67300",
-							600: "#CC6600",
-							700: "#B35900",
-							800: "#994D00",
-							900: "#804000",
-							foreground: "#FFFFFF",
-							DEFAULT: "#FF8000",
+						chip: {
+							shadow: "0 2px 8px rgba(255, 158, 51, 0.15)",
 						},
-						success: {
-							DEFAULT: "#2ECC71",
-							foreground: "#FFFFFF",
+						tooltip: {
+							shadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
 						},
-						warning: {
-							DEFAULT: "#F1C40F",
-							foreground: "#000000",
-						},
-						info: {
-							DEFAULT: "#3498DB",
-							foreground: "#FFFFFF",
+						progress: {
+							trackColor: "rgba(255, 158, 51, 0.1)",
 						},
 					},
 				},
-				light: {
-					extend: "light",
+				dark: {
 					colors: {
-						hover: "#000",
-						danger: {
-							DEFAULT: "#C22A28",
-							foreground: "#FFFFFF",
+						background: "#0D0D0F",
+						foreground: "#FFFFFF",
+						content1: { DEFAULT: "#1A1A1D", foreground: "#FFFFFF" },
+						content2: { DEFAULT: "#2A2A2E", foreground: "#FFFFFF" },
+						content3: { DEFAULT: "#3A3A3F", foreground: "#FFFFFF" },
+						content4: { DEFAULT: "#4A4A51", foreground: "#FFFFFF" },
+						...sharedColors,
+						focus: "#FF9E33",
+						divider: "rgba(255, 158, 51, 0.15)",
+					},
+					components: {
+						button: {
+							shadow: "0 4px 14px 0 rgba(255, 158, 51, 0.3)",
+							textTransform: "none",
 						},
-						background: {
-							50: "#F9F9F9",
-							100: "#F2F2F2",
-							200: "#E6E6E6",
-							300: "#D9D9D9",
-							400: "#CCCCCC",
-							500: "#BFBFBF",
-							600: "#B3B3B3",
-							700: "#A6A6A6",
-							800: "#999999",
-							900: "#8C8C8C",
-							foreground: "#000000",
-							DEFAULT: "#FFFFFF",
+						card: {
+							shadow: "0 8px 20px rgba(0, 0, 0, 0.2)",
+							borderWeight: "light",
 						},
-						primary: {
-							50: "#FFF5EB",
-							100: "#FFE6CC",
-							200: "#FFD9B3",
-							300: "#FFCC99",
-							400: "#FFBF80",
-							500: "#FFB266",
-							600: "#FFA64D",
-							700: "#FF9933",
-							800: "#FF8C1A",
-							900: "#FF8000",
-							foreground: "#000000",
-							DEFAULT: "#FF8000",
+						chip: {
+							shadow: "0 2px 8px rgba(255, 158, 51, 0.25)",
 						},
-						success: {
-							DEFAULT: "#27AE60",
-							foreground: "#FFFFFF",
+						tooltip: {
+							shadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
 						},
-						warning: {
-							DEFAULT: "#F39C12",
-							foreground: "#000000",
+						progress: {
+							trackColor: "rgba(255, 158, 51, 0.15)",
 						},
-						info: {
-							DEFAULT: "#2980B9",
-							foreground: "#FFFFFF",
+					},
+				},
+			},
+			components: {
+				button: {
+					defaultProps: {
+						disableRipple: false,
+						radius: "medium",
+						size: "md",
+					},
+					variants: {
+						gaming: {
+							background:
+								"linear-gradient(135deg, var(--primary-500), var(--primary-600))",
+							color: "#000000",
+							border: "none",
+							shadow: "0 4px 12px rgba(255, 158, 51, 0.3)",
+							transform: "translateY(0)",
+							transition: "transform 0.2s, shadow 0.2s",
+							_hover: {
+								transform: "translateY(-2px)",
+								shadow: "0 6px 16px rgba(255, 158, 51, 0.4)",
+							},
+							_active: {
+								transform: "translateY(1px)",
+								shadow: "0 2px 8px rgba(255, 158, 51, 0.3)",
+							},
+						},
+					},
+				},
+				card: {
+					defaultProps: {
+						shadow: "md",
+						radius: "large",
+					},
+				},
+				tooltip: {
+					defaultProps: {
+						delay: 300,
+						closeDelay: 100,
+						motionProps: {
+							transition: { duration: 0.2 },
 						},
 					},
 				},
 			},
 		}),
-		({ addUtilities }) => {
-			const newUtilities = {
-				".text-glow": {
-					"text-shadow": "0 0 8px rgba(255, 128, 0, 0.6)",
-				},
-				".text-glow-lg": {
-					"text-shadow": "0 0 12px rgba(255, 128, 0, 0.8)",
-				},
-				".border-glow": {
-					"box-shadow": "0 0 8px rgba(255, 128, 0, 0.4)",
-				},
-				".glassmorphism": {
-					background: "rgba(255, 255, 255, 0.1)",
-					"backdrop-filter": "blur(10px)",
-					border: "1px solid rgba(255, 255, 255, 0.2)",
-				},
-				".card-hover": {
-					transition: "all 0.3s ease",
-					"&:hover": {
-						transform: "translateY(-4px)",
-						"box-shadow": "0 12px 20px rgba(0, 0, 0, 0.1)",
-					},
-				},
-			};
-			addUtilities(newUtilities, ["hover", "responsive"]);
-		},
 	],
 };
