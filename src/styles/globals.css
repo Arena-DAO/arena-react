@@ -1,94 +1,55 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 @import "@interchain-ui/react/dist/interchain-ui-kit-react.cjs.css";
 
-/* Base styles */
-@layer base {
-	:root {
-		--animation-timing: 0.3s;
-	}
-
-	body {
-		font-size: large;
-		@apply antialiased;
-	}
-
-	h1,
-	h2,
-	h3,
-	h4,
-	h5,
-	.title {
-		font-family: cinzel, serif;
-		font-weight: bolder;
-	}
-
-	h1 {
-		margin-top: 1rem;
-		font-size: xx-large;
-	}
+@font-face {
+	font-family: orbitron;
+	src: url(Orbitron-VariableFont_wght.ttf);
+	font-display: swap;
 }
 
-/* Custom components */
-@layer components {
-	.trophy_cursor {
-		cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>🏆</text></svg>")
-			16 0, auto;
-	}
+:root {
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
 
-	.navigation-wrapper {
-		position: relative;
-	}
+html {
+	scroll-behavior: smooth;
+}
 
-	.dots {
-		display: flex;
-		padding: 10px 0;
-		justify-content: center;
-	}
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
 
-	.dot {
-		border: none;
-		width: 10px;
-		height: 10px;
-		background: #ffffff;
-		border-radius: 50%;
-		margin: 0 5px;
-		padding: 5px;
-		cursor: pointer;
-	}
+::-webkit-scrollbar-track {
+	background: hsl(var(--background) / 0.5);
+}
 
-	.dot:focus {
-		outline: none;
-	}
+::-webkit-scrollbar-thumb {
+	background: hsl(var(--primary) / 0.5);
+	border-radius: 4px;
+}
 
-	.dot.active {
-		background: #ff8000;
-	}
+::-webkit-scrollbar-thumb:hover {
+	background: hsl(var(--primary) / 0.7);
+}
 
-	.arrow {
-		width: 30px;
-		height: 30px;
-		position: absolute;
-		top: 50%;
-		transform: translateY(-50%);
-		-webkit-transform: translateY(-50%);
-		fill: #fff;
-		cursor: pointer;
-	}
+body {
+	font-family: "Inter", sans-serif;
+}
 
-	.arrow--left {
-		left: 5px;
-	}
-
-	.arrow--right {
-		left: auto;
-		right: 5px;
-	}
-
-	.arrow--disabled {
-		fill: rgba(255, 255, 255, 0.5);
-	}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: orbitron, sans-serif;
 }
 
 /* Custom utilities */
@@ -116,24 +77,7 @@
 	}
 }
 
-/* Form styles */
-form {
-	display: flex;
-	flex-direction: column;
-}
-
 /* Layout utilities */
 [data-overlay-container="true"] {
 	height: 100dvh;
-}
-
-header {
-	max-width: 1920px !important;
-}
-
-/* Font face declaration */
-@font-face {
-	font-family: cinzel;
-	src: url(Cinzel-VariableFont_wght.ttf);
-	font-display: swap;
 }

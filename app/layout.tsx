@@ -32,12 +32,12 @@ const Layout = ({ children }: PropsWithChildren) => {
 				<link rel="manifest" href="/site.webmanifest" />
 				<meta name="theme-color" content="#FF8000" />
 			</head>
-			<body className="flex min-h-screen flex-col bg-background font-sans text-foreground antialiased">
+			<body className="flex min-h-screen flex-col bg-background text-foreground antialiased">
 				<Providers>
 					<AppNavbar />
-					<div className="mx-auto min-h-full w-full max-w-[1920px] flex-1 px-4 pb-10 sm:px-6 lg:px-8">
+					<main className="mx-auto min-h-full w-full max-w-[1920px] flex-1 px-4 py-6 sm:px-6 lg:px-8 xl:px-12">
 						<ErrorBoundary>{children}</ErrorBoundary>
-					</div>
+					</main>
 					<Footer />
 				</Providers>
 			</body>
