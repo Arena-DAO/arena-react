@@ -1,6 +1,7 @@
 "use client";
 
 import ViewCompetition from "@/components/competition/view/ViewCompetition";
+import DistributionDisplay from "@/components/competition/view/components/DistributionDisplay";
 import { useChain } from "@cosmos-kit/react-lite";
 import {
 	Card,
@@ -8,24 +9,17 @@ import {
 	CardFooter,
 	CardHeader,
 	Input,
-	Progress,
 	Spinner,
 	Switch,
 	Tab,
-	Table,
-	TableBody,
-	TableCell,
-	TableColumn,
-	TableHeader,
-	TableRow,
 	Tabs,
 } from "@heroui/react";
+import { Share2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { ReactFlowProvider } from "reactflow";
 import { ArenaTournamentModuleQueryClient } from "~/codegen/ArenaTournamentModule.client";
 import { useArenaTournamentModuleCompetitionQuery } from "~/codegen/ArenaTournamentModule.react-query";
 import { CategoryProvider } from "~/contexts/CategoryContext";
-import { getNumberWithOrdinal } from "~/helpers/UIHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import Bracket from "./components/Bracket";
@@ -100,36 +94,20 @@ const ViewWager = () => {
 								className="text-xs md:text-lg"
 							>
 								<Card>
-									<CardHeader>Final Distribution</CardHeader>
+									<CardHeader>
+										<div className="flex items-center gap-2">
+											<Share2 className="text-primary-500" />
+											<h3 className="font-semibold text-xl">Distribution</h3>
+										</div>
+									</CardHeader>
 									<CardBody className="space-y-4">
 										<p>
 											How the tournament's funds will be distributed after all
 											matches are processed.
 										</p>
-										<Table aria-label="Distribution" removeWrapper>
-											<TableHeader>
-												<TableColumn>Place</TableColumn>
-												<TableColumn>Percentage</TableColumn>
-											</TableHeader>
-											<TableBody>
-												{data.extension.distribution.map((percentage, i) => (
-													// biome-ignore lint/suspicious/noArrayIndexKey: Best choice
-													<TableRow key={i}>
-														<TableCell>
-															{getNumberWithOrdinal(i + 1)} place
-														</TableCell>
-														<TableCell>
-															<Progress
-																aria-label="Percentage"
-																value={Number.parseFloat(percentage) * 100}
-																color="primary"
-																showValueLabel
-															/>
-														</TableCell>
-													</TableRow>
-												))}
-											</TableBody>
-										</Table>
+										<DistributionDisplay
+											distribution={data.extension.distribution}
+										/>
 									</CardBody>
 									<CardFooter className="grid grid-cols-12 gap-4">
 										<Input

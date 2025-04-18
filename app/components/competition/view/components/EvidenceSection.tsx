@@ -35,7 +35,7 @@ import {
 	useQueryClient,
 } from "@tanstack/react-query";
 import { chunk } from "lodash";
-import { Plus, Trash } from "lucide-react";
+import { FileCheck, Plus, Trash } from "lucide-react";
 import React from "react";
 import { useMemo } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
@@ -208,7 +208,12 @@ const EvidenceSection = ({
 						<AccordionItem
 							key="evidence"
 							aria-label="Evidence"
-							title="Evidence"
+							title={
+								<div className="flex items-center gap-2">
+									<FileCheck className="text-primary-500" />
+									<h3 className="font-semibold">Evidence</h3>
+								</div>
+							}
 							classNames={{ title: "font-semibold text-xl", content: "gap-2" }}
 						>
 							<Table
@@ -258,7 +263,7 @@ const EvidenceSection = ({
 							</Table>
 							<CardFooter>
 								<Button onPress={onOpen} isDisabled={isSubmitting}>
-									Add Evidence
+									Submit Evidence
 								</Button>
 							</CardFooter>
 						</AccordionItem>

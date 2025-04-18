@@ -14,6 +14,7 @@ import {
 import { type InfiniteData, useQueryClient } from "@tanstack/react-query";
 import type { PropsWithChildren } from "react";
 
+import { Vault } from "lucide-react";
 import {
 	ArenaEscrowClient,
 	ArenaEscrowQueryClient,
@@ -229,7 +230,10 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 	return (
 		<Card className="w-full">
 			<CardHeader>
-				<h2 className="font-semibold text-xl">Escrow Information</h2>
+				<div className="flex items-center gap-2">
+					<Vault className="text-primary-500" />
+					<h2 className="font-semibold text-xl">Escrow Information</h2>
+				</div>
 			</CardHeader>
 			<CardBody className="space-y-4">
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

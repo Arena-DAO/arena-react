@@ -14,8 +14,10 @@ import {
 	TableHeader,
 	TableRow,
 } from "@heroui/react";
+import { Award } from "lucide-react";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { useArenaWagerModuleResultQuery } from "~/codegen/ArenaWagerModule.react-query";
+import { getNumberWithOrdinal } from "~/helpers/UIHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 
 interface ResultSectionProps {
@@ -44,7 +46,10 @@ const ResultSection = ({ competitionId, moduleAddr }: ResultSectionProps) => {
 		<Skeleton isLoaded={!isLoading}>
 			<Card>
 				<CardHeader>
-					<h2 className="font-semibold text-xl">Result</h2>
+					<div className="flex items-center gap-2">
+						<Award className="text-primary-500" />
+						<h2 className="font-semibold text-xl">Result</h2>
+					</div>
 				</CardHeader>
 				<CardBody className="space-y-4">
 					{!data && <p className="font-bold text-lg">Draw</p>}
@@ -63,16 +68,18 @@ const ResultSection = ({ competitionId, moduleAddr }: ResultSectionProps) => {
 									<TableColumn>Percentage</TableColumn>
 								</TableHeader>
 								<TableBody>
-									{data.member_percentages.map((item) => (
+									{data.member_percentages.map((item, i) => (
 										<TableRow key={item.addr}>
 											<TableCell>
 												<Profile address={item.addr} />
 											</TableCell>
 											<TableCell>
 												<Progress
-													aria-label="Percentage"
+													aria-label={`${getNumberWithOrdinal(i + 1)} place`}
 													value={Number.parseFloat(item.percentage) * 100}
 													color="primary"
+													className="flex-grow"
+													label={`${getNumberWithOrdinal(i + 1)} place:`}
 													showValueLabel
 												/>
 											</TableCell>

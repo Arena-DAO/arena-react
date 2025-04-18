@@ -8,28 +8,22 @@ import {
 	CardFooter,
 	CardHeader,
 	Input,
-	Progress,
 	Spinner,
 	Tab,
-	Table,
-	TableBody,
-	TableCell,
-	TableColumn,
-	TableHeader,
-	TableRow,
 	Tabs,
 } from "@heroui/react";
 import { useSearchParams } from "next/navigation";
 import { ArenaLeagueModuleQueryClient } from "~/codegen/ArenaLeagueModule.client";
 import { useArenaLeagueModuleCompetitionQuery } from "~/codegen/ArenaLeagueModule.react-query";
 import { CategoryProvider } from "~/contexts/CategoryContext";
-import { getNumberWithOrdinal } from "~/helpers/UIHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import LeaderboardDisplay from "./components/LeaderboardDisplay";
 import RoundsDisplay from "./components/RoundsDisplay";
+import { Share2 } from "lucide-react";
+import DistributionDisplay from "@/components/competition/view/components/DistributionDisplay";
 
-const ViewWager = () => {
+const ViewLeague = () => {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { address } = useChain(env.CHAIN);
@@ -87,36 +81,20 @@ const ViewWager = () => {
 								className="text-xs md:text-lg"
 							>
 								<Card>
-									<CardHeader>Final Distribution</CardHeader>
+									<CardHeader>
+										<div className="flex items-center gap-2">
+											<Share2 className="text-primary-500" />
+											<h3 className="font-semibold text-xl">Distribution</h3>
+										</div>
+									</CardHeader>
 									<CardBody className="space-y-4">
 										<p>
 											How the league's funds will be distributed after all
 											matches are processed.
 										</p>
-										<Table aria-label="Distribution" removeWrapper>
-											<TableHeader>
-												<TableColumn>Place</TableColumn>
-												<TableColumn>Percentage</TableColumn>
-											</TableHeader>
-											<TableBody>
-												{data.extension.distribution.map((percentage, i) => (
-													// biome-ignore lint/suspicious/noArrayIndexKey: Best choice
-													<TableRow key={i}>
-														<TableCell>
-															{getNumberWithOrdinal(i + 1)} place
-														</TableCell>
-														<TableCell>
-															<Progress
-																aria-label="Percentage"
-																value={Number.parseFloat(percentage) * 100}
-																color="primary"
-																showValueLabel
-															/>
-														</TableCell>
-													</TableRow>
-												))}
-											</TableBody>
-										</Table>
+										<DistributionDisplay
+											distribution={data.extension.distribution}
+										/>
 									</CardBody>
 									<CardFooter className="grid grid-cols-12 gap-4">
 										<Input
@@ -157,4 +135,4 @@ const ViewWager = () => {
 	);
 };
 
-export default ViewWager;
+export default ViewLeague;

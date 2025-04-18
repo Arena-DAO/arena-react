@@ -143,10 +143,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.50.113":
-  version: 0.50.113
-  resolution: "@chain-registry/types@npm:0.50.113"
-  checksum: 10c0/99507ac1cdf3fff0c891d64dac7b6ac324f716f434b181954f19d6f6ae5d59191d557db376bddad6c1755bd3bf68f95ad7944c6abcd04bf9de7b91dc42b6a51e
+"@chain-registry/types@npm:^0.50.117":
+  version: 0.50.117
+  resolution: "@chain-registry/types@npm:0.50.117"
+  checksum: 10c0/366d2e0c2f9270d00d8328946f602abf607fc3069546959701b9dd7175aba1c6870b6d6b152dc3735fd1ec84365b36c1f3aee910c26e1afafcf018dea6b7ebcf
   languageName: node
   linkType: hard
 
@@ -6299,21 +6299,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.3.5":
-  version: 18.3.5
-  resolution: "@types/react-dom@npm:18.3.5"
+"@types/react-dom@npm:^18.3.6":
+  version: 18.3.6
+  resolution: "@types/react-dom@npm:18.3.6"
   peerDependencies:
     "@types/react": ^18.0.0
-  checksum: 10c0/b163d35a6b32a79f5782574a7aeb12a31a647e248792bf437e6d596e2676961c394c5e3c6e91d1ce44ae90441dbaf93158efb4f051c0d61e2612f1cb04ce4faa
+  checksum: 10c0/e77ac076096bd4b2e0a99130c47959762a927e536b83412e470ac5198d4b8d111cfd787ff2ab7c22bc39c114c0c5fef80046ea0cccb02a655e021a435859314a
   languageName: node
   linkType: hard
 
-"@types/react@npm:19.1.0":
-  version: 19.1.0
-  resolution: "@types/react@npm:19.1.0"
+"@types/react@npm:19.1.2":
+  version: 19.1.2
+  resolution: "@types/react@npm:19.1.2"
   dependencies:
     csstype: "npm:^3.0.2"
-  checksum: 10c0/632fd20ee176e55801a61c5f854141b043571a3e363ef106b047b766a813a12735cbb37abb3d61d126346979f530f2ed269a60c8ef3cdee54e5e9fe4174e5dad
+  checksum: 10c0/76ffe71395c713d4adc3c759465012d3c956db00af35ab7c6d0d91bd07b274b7ce69caa0478c0760311587bd1e38c78ffc9688ebc629f2b266682a19d8750947
   languageName: node
   linkType: hard
 
@@ -6756,7 +6756,7 @@ __metadata:
   resolution: "arena-react@workspace:."
   dependencies:
     "@biomejs/biome": "npm:1.9.4"
-    "@chain-registry/types": "npm:^0.50.113"
+    "@chain-registry/types": "npm:^0.50.117"
     "@cosmjs/amino": "npm:^0.32.4"
     "@cosmjs/cosmwasm-stargate": "npm:0.32.4"
     "@cosmjs/encoding": "npm:^0.32.4"
@@ -6776,10 +6776,10 @@ __metadata:
     "@tanstack/react-query": "npm:4.36.1"
     "@types/lodash": "npm:^4.17.16"
     "@types/node": "npm:^22.13.14"
-    "@types/react": "npm:19.1.0"
-    "@types/react-dom": "npm:^18.3.5"
+    "@types/react": "npm:19.1.2"
+    "@types/react-dom": "npm:^18.3.6"
     autoprefixer: "npm:^10.4.21"
-    chain-registry: "npm:1.69.181"
+    chain-registry: "npm:1.69.186"
     clsx: "npm:^2.1.1"
     cosmjs-types: "npm:^0.9.0"
     cssnano: "npm:^7.0.6"
@@ -6804,7 +6804,7 @@ __metadata:
     shx: "npm:^0.4.0"
     tailwindcss: "npm:^3.4.17"
     typescript: "npm:^5.8.3"
-    zod: "npm:^3.24.2"
+    zod: "npm:^3.24.3"
     zustand: "npm:^5.0.3"
   languageName: unknown
   linkType: soft
@@ -7102,12 +7102,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chain-registry@npm:1.69.181":
-  version: 1.69.181
-  resolution: "chain-registry@npm:1.69.181"
+"chain-registry@npm:1.69.186":
+  version: 1.69.186
+  resolution: "chain-registry@npm:1.69.186"
   dependencies:
-    "@chain-registry/types": "npm:^0.50.113"
-  checksum: 10c0/0fcd7285a45eec7d3b9362a8fabc052be7c20dd734ae62d6a21ee1cd1eb947ef307789fce22bc0c8d93ca42b5254c39d6f8ffd7d7cebd1aebc0e450d3c787eee
+    "@chain-registry/types": "npm:^0.50.117"
+  checksum: 10c0/24ea340b011d9b05d29c944b60a9be7cf4ec1225d69bd315e0bcccfb7dc84517b508e6853cd728191a4ca819e9f534b312a23327f39b2da33649059a741bb426
   languageName: node
   linkType: hard
 
@@ -11717,10 +11717,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.24.2":
-  version: 3.24.2
-  resolution: "zod@npm:3.24.2"
-  checksum: 10c0/c638c7220150847f13ad90635b3e7d0321b36cce36f3fc6050ed960689594c949c326dfe2c6fa87c14b126ee5d370ccdebd6efb304f41ef5557a4aaca2824565
+"zod@npm:^3.24.3":
+  version: 3.24.3
+  resolution: "zod@npm:3.24.3"
+  checksum: 10c0/ab0369810968d0329a1a141e9418e01e5c9c2a4905cbb7cb7f5a131d6e9487596e1400e21eeff24c4a8ee28dacfa5bd6103893765c055b7a98c2006a5a4fc68d
   languageName: node
   linkType: hard
 

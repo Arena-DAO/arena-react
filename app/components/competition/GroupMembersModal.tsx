@@ -42,7 +42,7 @@ const GroupMembers: React.FC<GroupMemberProps> = ({
 }) => {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
-	const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const [selectedMembers, setSelectedMembers] = useState<Set<string>>(
 		new Set(),
 	);
@@ -194,6 +194,7 @@ const GroupMembers: React.FC<GroupMemberProps> = ({
 				ref={targetRef}
 				isOpen={isOpen}
 				onOpenChange={onOpenChange}
+				scrollBehavior="inside"
 				size="xl"
 			>
 				<ModalContent>
