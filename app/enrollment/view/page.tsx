@@ -148,14 +148,16 @@ const EnrollmentView = () => {
 										address === enrollment.host ? enrollment.id : undefined
 									}
 								/>
-								{!enrollment.has_finalized && enrollment.host === address && (
-									<FinalizeButton
-										enrollmentId={enrollment.id}
-										competitionDate={enrollment.competition_info.date}
-										deadlineBefore={enrollment.duration_before}
-										isFull={currentMembers >= maxMembers}
-									/>
-								)}
+								{!enrollment.has_finalized &&
+									(enrollment.host === address ||
+										enrollment.host === env.ARENA_DAO_ADDRESS) && (
+										<FinalizeButton
+											enrollmentId={enrollment.id}
+											competitionDate={enrollment.competition_info.date}
+											deadlineBefore={enrollment.duration_before}
+											isFull={currentMembers >= maxMembers}
+										/>
+									)}
 							</CardFooter>
 						</Card>
 
