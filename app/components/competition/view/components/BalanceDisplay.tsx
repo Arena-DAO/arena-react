@@ -26,20 +26,31 @@ const BalanceDisplay = ({ balance }: BalanceDisplayProps) => {
 						<TableColumn className="text-right">Amount</TableColumn>
 					</TableHeader>
 					<TableBody>
-						{Object.entries(balance.native).map(([denom, amount]) => (
-							<TableRow key={denom}>
-								<TableCell className="w-1/2">
-									<TokenInfo denomOrAddress={denom} isNative />
-								</TableCell>
-								<TableCell className="text-right">
-									<TokenAmount
-										amount={BigInt(amount)}
-										denomOrAddress={denom}
-										isNative
-									/>
-								</TableCell>
-							</TableRow>
-						))}
+						{Object.entries(balance.native).map(([denom, amount]) => {
+							// Normalize the data
+							if (typeof amount !== "string") {
+								const parsed = amount as unknown as {
+									denom: string;
+									amount: string;
+								};
+								denom = parsed.denom;
+								amount = parsed.amount;
+							}
+							return (
+								<TableRow key={denom}>
+									<TableCell className="w-1/2">
+										<TokenInfo denomOrAddress={denom} isNative />
+									</TableCell>
+									<TableCell className="text-right">
+										<TokenAmount
+											amount={BigInt(amount)}
+											denomOrAddress={denom}
+											isNative
+										/>
+									</TableCell>
+								</TableRow>
+							);
+						})}
 					</TableBody>
 				</Table>
 			)}

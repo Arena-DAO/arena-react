@@ -48,13 +48,16 @@ function InnerProviders({ children }: PropsWithChildren) {
 			filteredMainnet.apis = {
 				...filteredMainnet.apis,
 				rpc: filteredMainnet.apis.rpc?.filter(
-					(api) => !api.address.toLowerCase().includes("quokkastake"),
+					(api: { address: string }) =>
+						!api.address.toLowerCase().includes("quokkastake"),
 				),
 				rest: filteredMainnet.apis.rest?.filter(
-					(api) => !api.address.toLowerCase().includes("quokkastake"),
+					(api: { address: string }) =>
+						!api.address.toLowerCase().includes("quokkastake"),
 				),
 				grpc: filteredMainnet.apis.grpc?.filter(
-					(grpc) => !grpc.address.includes("quokkastake"),
+					(grpc: { address: string | string[] }) =>
+						!grpc.address.includes("quokkastake"),
 				),
 			};
 		}
