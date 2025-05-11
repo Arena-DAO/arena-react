@@ -6,8 +6,8 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { Uint128, InstantiateMsg, MemberBalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, Cw20ReceiveMsg, Cw721ReceiveMsg, DistributionForString, MemberPercentageForString, FeeInformationForString, TransferEscrowOwnershipMsg, QueryMsg, MigrateMsg, BalanceVerified, Addr, ArrayOfMemberBalanceChecked, MemberBalanceChecked, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
-export interface ArenaEscrowReadOnlyInterface {
+import { Uint128, InstantiateMsg, MemberBalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, Cw20ReceiveMsg, Cw721ReceiveMsg, DistributionForString, MemberPercentageForString, FeeInformationForString, TransferEscrowOwnershipMsg, QueryMsg, MigrateMsg, BalanceVerified, Addr, ArrayOfMemberBalanceChecked, MemberBalanceChecked, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaTeamEnrollments.types";
+export interface ArenaTeamEnrollmentsReadOnlyInterface {
   contractAddress: string;
   balances: ({
     limit,
@@ -55,7 +55,7 @@ export interface ArenaEscrowReadOnlyInterface {
   }) => Promise<DumpStateResponse>;
   ownership: () => Promise<OwnershipForString>;
 }
-export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
+export class ArenaTeamEnrollmentsQueryClient implements ArenaTeamEnrollmentsReadOnlyInterface {
   client: CosmWasmClient;
   contractAddress: string;
   constructor(client: CosmWasmClient, contractAddress: string) {
@@ -180,7 +180,7 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
     });
   };
 }
-export interface ArenaEscrowInterface extends ArenaEscrowReadOnlyInterface {
+export interface ArenaTeamEnrollmentsInterface extends ArenaTeamEnrollmentsReadOnlyInterface {
   contractAddress: string;
   sender: string;
   withdraw: ({
@@ -237,7 +237,7 @@ export interface ArenaEscrowInterface extends ArenaEscrowReadOnlyInterface {
   claw: (fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   updateOwnership: (action: Action, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
 }
-export class ArenaEscrowClient extends ArenaEscrowQueryClient implements ArenaEscrowInterface {
+export class ArenaTeamEnrollmentsClient extends ArenaTeamEnrollmentsQueryClient implements ArenaTeamEnrollmentsInterface {
   client: SigningCosmWasmClient;
   sender: string;
   contractAddress: string;

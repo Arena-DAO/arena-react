@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ExecuteMsg, Uint128, Timestamp, Uint64, CompetitionType, Decimal, EliminationType, EscrowContractInfo, Binary, Admin, Duration, Threshold, PercentageThreshold, Action, Expiration, CompetitionInfoMsg, Coin, FeeInformationForString, ModuleInstantiateInfo, DaoConfig, MemberMsgForString, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, FeeInformationForAddr, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
+import { InstantiateMsg, ExecuteMsg, Uint128, Timestamp, Uint64, CompetitionType, Decimal, EliminationType, EscrowContractInfo, Binary, Admin, Duration, Threshold, PercentageThreshold, FieldActionForString, FieldActionForUint64, FieldActionForUint32, MigrateMsg, Action, Expiration, CompetitionInfoMsg, Coin, FeeInformationForString, ModuleInstantiateInfo, DaoConfigForNull, MemberMsgForString, QueryMsg, EnrollmentFilter, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, FeeInformationForAddr, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
 import { ArenaCompetitionEnrollmentQueryClient, ArenaCompetitionEnrollmentClient } from "./ArenaCompetitionEnrollment.client";
 export const arenaCompetitionEnrollmentQueryKeys = {
   contract: ([{
@@ -205,6 +205,85 @@ export function useArenaCompetitionEnrollmentUpdateOwnershipMutation(options?: O
     } = {}
   }) => client.updateOwnership(msg, fee, memo, funds), options);
 }
+export interface ArenaCompetitionEnrollmentMigrateEscrowMutation {
+  client: ArenaCompetitionEnrollmentClient;
+  msg: {
+    escrow: string;
+    escrowCodeId: number;
+    id: Uint128;
+    msg: MigrateMsg;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaCompetitionEnrollmentMigrateEscrowMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaCompetitionEnrollmentMigrateEscrowMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaCompetitionEnrollmentMigrateEscrowMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.migrateEscrow(msg, fee, memo, funds), options);
+}
+export interface ArenaCompetitionEnrollmentRevertMutation {
+  client: ArenaCompetitionEnrollmentClient;
+  msg: {
+    id: Uint128;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaCompetitionEnrollmentRevertMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaCompetitionEnrollmentRevertMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaCompetitionEnrollmentRevertMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.revert(msg, fee, memo, funds), options);
+}
+export interface ArenaCompetitionEnrollmentEditEnrollmentMutation {
+  client: ArenaCompetitionEnrollmentClient;
+  msg: {
+    banner?: FieldActionForString;
+    date?: Timestamp;
+    description?: string;
+    duration?: number;
+    durationBefore?: number;
+    id: Uint128;
+    maxMembers?: Uint64;
+    minMembers?: FieldActionForUint64;
+    name?: string;
+    requiredTeamSize?: FieldActionForUint32;
+    useDaoHost?: DaoConfigForNull;
+  };
+  args?: {
+    fee?: number | StdFee | "auto";
+    memo?: string;
+    funds?: Coin[];
+  };
+}
+export function useArenaCompetitionEnrollmentEditEnrollmentMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaCompetitionEnrollmentEditEnrollmentMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaCompetitionEnrollmentEditEnrollmentMutation>(({
+    client,
+    msg,
+    args: {
+      fee,
+      memo,
+      funds
+    } = {}
+  }) => client.editEnrollment(msg, fee, memo, funds), options);
+}
 export interface ArenaCompetitionEnrollmentSetRankingsMutation {
   client: ArenaCompetitionEnrollmentClient;
   msg: {
@@ -332,7 +411,7 @@ export interface ArenaCompetitionEnrollmentCreateEnrollmentMutation {
     maxMembers: Uint64;
     minMembers?: Uint64;
     requiredTeamSize?: number;
-    useDaoHost?: DaoConfig;
+    useDaoHost?: DaoConfigForNull;
   };
   args?: {
     fee?: number | StdFee | "auto";
