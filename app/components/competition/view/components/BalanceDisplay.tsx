@@ -19,22 +19,22 @@ interface BalanceDisplayProps {
 const BalanceDisplay = ({ balance }: BalanceDisplayProps) => {
 	return (
 		<>
-			{balance.native && balance.native.length > 0 && (
+			{balance.native && Object.keys(balance.native).length > 0 && (
 				<Table removeWrapper aria-label="Native Balance">
 					<TableHeader>
 						<TableColumn className="w-1/2">Native Token</TableColumn>
 						<TableColumn className="text-right">Amount</TableColumn>
 					</TableHeader>
 					<TableBody>
-						{balance.native.map((x) => (
-							<TableRow key={x.denom}>
+						{Object.entries(balance.native).map(([denom, amount]) => (
+							<TableRow key={denom}>
 								<TableCell className="w-1/2">
-									<TokenInfo denomOrAddress={x.denom} isNative />
+									<TokenInfo denomOrAddress={denom} isNative />
 								</TableCell>
 								<TableCell className="text-right">
 									<TokenAmount
-										amount={BigInt(x.amount)}
-										denomOrAddress={x.denom}
+										amount={BigInt(amount)}
+										denomOrAddress={denom}
 										isNative
 									/>
 								</TableCell>
@@ -43,23 +43,22 @@ const BalanceDisplay = ({ balance }: BalanceDisplayProps) => {
 					</TableBody>
 				</Table>
 			)}
-			{balance.cw20 && balance.cw20.length > 0 && (
+			{balance.cw20 && Object.keys(balance.cw20).length > 0 && (
 				<Table removeWrapper aria-label="Cw20 Balance">
 					<TableHeader>
 						<TableColumn className="w-1/2">Cw20 Token</TableColumn>
 						<TableColumn className="text-right">Amount</TableColumn>
 					</TableHeader>
 					<TableBody>
-						{balance.cw20.map((x) => (
-							<TableRow key={x.address}>
+						{Object.entries(balance.cw20).map(([address, amount]) => (
+							<TableRow key={address}>
 								<TableCell className="w-1/2">
-									<TokenInfo denomOrAddress={x.address} isNative />
+									<TokenInfo denomOrAddress={address} />
 								</TableCell>
 								<TableCell className="text-right">
 									<TokenAmount
-										amount={BigInt(x.amount)}
-										denomOrAddress={x.address}
-										isNative
+										amount={BigInt(amount)}
+										denomOrAddress={address}
 									/>
 								</TableCell>
 							</TableRow>

@@ -149,9 +149,9 @@ export type MigrateMsg = {
   from_compatible: {};
 };
 export interface BalanceVerified {
-  cw20?: {};
-  cw721?: {};
-  native?: {};
+  cw20?: Record<string, Uint128>;
+  cw721?: Record<string, Uint128>
+  native?: Record<string, Uint128>
 }
 export type Addr = string;
 export type ArrayOfMemberBalanceChecked = MemberBalanceChecked[];
