@@ -4,64 +4,78 @@
 * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
 */
 
-export type Uint128 = string;
 export interface InstantiateMsg {
-  dues: MemberBalanceUnchecked[];
-  is_enrollment: boolean;
-}
-export interface MemberBalanceUnchecked {
-  addr: string;
-  cw20?: Cw20Coin[];
-  cw721?: Cw721Collection[];
-  native?: Coin[];
-}
-export interface Cw20Coin {
-  address: string;
-  amount: Uint128;
-}
-export interface Cw721Collection {
-  address: string;
-  token_ids: string[];
-}
-export interface Coin {
-  amount: Uint128;
-  denom: string;
+  owner: string;
 }
 export type ExecuteMsg = {
-  withdraw: {
-    cw20_msg?: Binary | null;
-    cw721_msg?: Binary | null;
+  create_entry: {
+    category_id?: Uint128 | null;
+    dao_config: DaoConfigForUint64;
+    description: string;
+    title: string;
   };
 } | {
-  enrollment_withdraw: {
-    addrs: string[];
-    entry_fee: Coin;
+  update_entry_status: {
+    entry_id: number;
+    status: EntryStatus;
   };
 } | {
-  receive_native: {};
-} | {
-  receive: Cw20ReceiveMsg;
-} | {
-  receive_nft: Cw721ReceiveMsg;
-} | {
-  distribute: {
-    activation_height?: number | null;
-    distribution?: DistributionForString | null;
-    group_contract: string;
-    layered_fees?: FeeInformationForString[] | null;
+  apply: {
+    entry_id: number;
   };
 } | {
-  lock: {
-    transfer_ownership?: TransferEscrowOwnershipMsg | null;
-    value: boolean;
+  withdraw_application: {
+    entry_id: number;
   };
 } | {
-  claw: {};
+  update_applicant_status: {
+    applicant: string;
+    entry_id: number;
+    status: ApplicantStatus;
+  };
 } | {
   update_ownership: Action;
 };
-export type Binary = string;
+export type Uint128 = string;
+export type DaoConfigForUint64 = {
+  cw4_voting_code_id: number;
+  dao_code_id: number;
+  max_voting_period: Duration;
+  prepropose_single_code_id: number;
+  proposal_single_code_id: number;
+  threshold: Threshold;
+} | number;
+export type Duration = {
+  height: number;
+} | {
+  time: number;
+};
+export type Threshold = {
+  absolute_percentage: {
+    percentage: PercentageThreshold;
+  };
+} | {
+  threshold_quorum: {
+    quorum: PercentageThreshold;
+    threshold: PercentageThreshold;
+  };
+} | {
+  absolute_count: {
+    threshold: Uint128;
+  };
+};
+export type PercentageThreshold = {
+  majority: {};
+} | {
+  percent: Decimal;
+};
 export type Decimal = string;
+export type EntryStatus = "open" | "created" | "closed" | "aborted";
+export type ApplicantStatus = ("default" | "approved") | {
+  rejected: {
+    reason: string;
+  };
+};
 export type Action = {
   transfer_ownership: {
     expiry?: Expiration | null;
@@ -77,95 +91,54 @@ export type Expiration = {
 };
 export type Timestamp = Uint64;
 export type Uint64 = string;
-export interface Cw20ReceiveMsg {
-  amount: Uint128;
-  msg: Binary;
-  sender: string;
-}
-export interface Cw721ReceiveMsg {
-  msg: Binary;
-  sender: string;
-  token_id: string;
-}
-export interface DistributionForString {
-  member_percentages: MemberPercentageForString[];
-  remainder_addr: string;
-}
-export interface MemberPercentageForString {
-  addr: string;
-  percentage: Decimal;
-}
-export interface FeeInformationForString {
-  cw20_msg?: Binary | null;
-  cw721_msg?: Binary | null;
-  receiver: string;
-  tax: Decimal;
-}
-export interface TransferEscrowOwnershipMsg {
-  addr: string;
-  is_enrollment: boolean;
-}
 export type QueryMsg = {
-  balances: {
+  get_entry: {
+    entry_id: number;
+  };
+} | {
+  list_entries: {
+    category_id?: Uint128 | null;
+    limit?: number | null;
+    start_after?: number | null;
+    status?: EntryStatus | null;
+  };
+} | {
+  get_applicant: {
+    applicant: string;
+    entry_id: number;
+  };
+} | {
+  list_applicants: {
+    entry_id: number;
     limit?: number | null;
     start_after?: string | null;
   };
 } | {
-  balance: {
-    addr: string;
-  };
-} | {
-  due: {
-    addr: string;
-  };
-} | {
-  dues: {
+  list_teams: {
     limit?: number | null;
     start_after?: string | null;
-  };
-} | {
-  initial_dues: {
-    limit?: number | null;
-    start_after?: string | null;
-  };
-} | {
-  is_funded: {
-    addr: string;
-  };
-} | {
-  is_fully_funded: {};
-} | {
-  total_balance: {};
-} | {
-  is_locked: {};
-} | {
-  dump_state: {
-    addr?: string | null;
+    user: string;
   };
 } | {
   ownership: {};
 };
-export type MigrateMsg = {
-  from_compatible: {};
-};
-export interface BalanceVerified {
-  cw20?: {};
-  cw721?: {};
-  native?: {};
-}
 export type Addr = string;
-export type ArrayOfMemberBalanceChecked = MemberBalanceChecked[];
-export interface MemberBalanceChecked {
-  addr: Addr;
-  balance: BalanceVerified;
+export interface ApplicantResponse {
+  applicant: Addr;
+  status: ApplicantStatus;
 }
-export interface DumpStateResponse {
-  balance: BalanceVerified;
-  due: BalanceVerified;
-  is_locked: boolean;
-  total_balance: BalanceVerified;
+export interface TeamEntryResponse {
+  category_id?: Uint128 | null;
+  created_at: number;
+  creator: Addr;
+  description: string;
+  entry_id: number;
+  status: EntryStatus;
+  title: string;
 }
-export type Boolean = boolean;
+export type ArrayOfApplicantResponse = ApplicantResponse[];
+export type ArrayOfTeamEntryResponse = TeamEntryResponse[];
+export type ArrayOfAddr = Addr[];
 export interface OwnershipForString {
   owner?: string | null;
   pending_expiry?: Expiration | null;

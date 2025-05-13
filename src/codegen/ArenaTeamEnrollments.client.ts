@@ -5,54 +5,51 @@
 */
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
-import { StdFee } from "@cosmjs/amino";
-import { Uint128, InstantiateMsg, MemberBalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, Cw20ReceiveMsg, Cw721ReceiveMsg, DistributionForString, MemberPercentageForString, FeeInformationForString, TransferEscrowOwnershipMsg, QueryMsg, MigrateMsg, BalanceVerified, Addr, ArrayOfMemberBalanceChecked, MemberBalanceChecked, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaTeamEnrollments.types";
+import { Coin, StdFee } from "@cosmjs/amino";
+import { InstantiateMsg, ExecuteMsg, Uint128, DaoConfigForUint64, Duration, Threshold, PercentageThreshold, Decimal, EntryStatus, ApplicantStatus, Action, Expiration, Timestamp, Uint64, QueryMsg, Addr, ApplicantResponse, TeamEntryResponse, ArrayOfApplicantResponse, ArrayOfTeamEntryResponse, ArrayOfAddr, OwnershipForString } from "./ArenaTeamEnrollments.types";
 export interface ArenaTeamEnrollmentsReadOnlyInterface {
   contractAddress: string;
-  balances: ({
+  getEntry: ({
+    entryId
+  }: {
+    entryId: number;
+  }) => Promise<TeamEntryResponse>;
+  listEntries: ({
+    categoryId,
+    limit,
+    startAfter,
+    status
+  }: {
+    categoryId?: Uint128;
+    limit?: number;
+    startAfter?: number;
+    status?: EntryStatus;
+  }) => Promise<ArrayOfTeamEntryResponse>;
+  getApplicant: ({
+    applicant,
+    entryId
+  }: {
+    applicant: string;
+    entryId: number;
+  }) => Promise<ApplicantResponse>;
+  listApplicants: ({
+    entryId,
     limit,
     startAfter
   }: {
+    entryId: number;
     limit?: number;
     startAfter?: string;
-  }) => Promise<ArrayOfMemberBalanceChecked>;
-  balance: ({
-    addr
-  }: {
-    addr: string;
-  }) => Promise<BalanceVerified>;
-  due: ({
-    addr
-  }: {
-    addr: string;
-  }) => Promise<BalanceVerified>;
-  dues: ({
+  }) => Promise<ArrayOfApplicantResponse>;
+  listTeams: ({
     limit,
-    startAfter
+    startAfter,
+    user
   }: {
     limit?: number;
     startAfter?: string;
-  }) => Promise<ArrayOfMemberBalanceChecked>;
-  initialDues: ({
-    limit,
-    startAfter
-  }: {
-    limit?: number;
-    startAfter?: string;
-  }) => Promise<ArrayOfMemberBalanceChecked>;
-  isFunded: ({
-    addr
-  }: {
-    addr: string;
-  }) => Promise<Boolean>;
-  isFullyFunded: () => Promise<Boolean>;
-  totalBalance: () => Promise<BalanceVerified>;
-  isLocked: () => Promise<Boolean>;
-  dumpState: ({
-    addr
-  }: {
-    addr?: string;
-  }) => Promise<DumpStateResponse>;
+    user: string;
+  }) => Promise<ArrayOfAddr>;
   ownership: () => Promise<OwnershipForString>;
 }
 export class ArenaTeamEnrollmentsQueryClient implements ArenaTeamEnrollmentsReadOnlyInterface {
@@ -61,116 +58,89 @@ export class ArenaTeamEnrollmentsQueryClient implements ArenaTeamEnrollmentsRead
   constructor(client: CosmWasmClient, contractAddress: string) {
     this.client = client;
     this.contractAddress = contractAddress;
-    this.balances = this.balances.bind(this);
-    this.balance = this.balance.bind(this);
-    this.due = this.due.bind(this);
-    this.dues = this.dues.bind(this);
-    this.initialDues = this.initialDues.bind(this);
-    this.isFunded = this.isFunded.bind(this);
-    this.isFullyFunded = this.isFullyFunded.bind(this);
-    this.totalBalance = this.totalBalance.bind(this);
-    this.isLocked = this.isLocked.bind(this);
-    this.dumpState = this.dumpState.bind(this);
+    this.getEntry = this.getEntry.bind(this);
+    this.listEntries = this.listEntries.bind(this);
+    this.getApplicant = this.getApplicant.bind(this);
+    this.listApplicants = this.listApplicants.bind(this);
+    this.listTeams = this.listTeams.bind(this);
     this.ownership = this.ownership.bind(this);
   }
-  balances = async ({
+  getEntry = async ({
+    entryId
+  }: {
+    entryId: number;
+  }): Promise<TeamEntryResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      get_entry: {
+        entry_id: entryId
+      }
+    });
+  };
+  listEntries = async ({
+    categoryId,
+    limit,
+    startAfter,
+    status
+  }: {
+    categoryId?: Uint128;
+    limit?: number;
+    startAfter?: number;
+    status?: EntryStatus;
+  }): Promise<ArrayOfTeamEntryResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      list_entries: {
+        category_id: categoryId,
+        limit,
+        start_after: startAfter,
+        status
+      }
+    });
+  };
+  getApplicant = async ({
+    applicant,
+    entryId
+  }: {
+    applicant: string;
+    entryId: number;
+  }): Promise<ApplicantResponse> => {
+    return this.client.queryContractSmart(this.contractAddress, {
+      get_applicant: {
+        applicant,
+        entry_id: entryId
+      }
+    });
+  };
+  listApplicants = async ({
+    entryId,
     limit,
     startAfter
   }: {
+    entryId: number;
     limit?: number;
     startAfter?: string;
-  }): Promise<ArrayOfMemberBalanceChecked> => {
+  }): Promise<ArrayOfApplicantResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      balances: {
+      list_applicants: {
+        entry_id: entryId,
         limit,
         start_after: startAfter
       }
     });
   };
-  balance = async ({
-    addr
-  }: {
-    addr: string;
-  }): Promise<BalanceVerified> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      balance: {
-        addr
-      }
-    });
-  };
-  due = async ({
-    addr
-  }: {
-    addr: string;
-  }): Promise<BalanceVerified> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      due: {
-        addr
-      }
-    });
-  };
-  dues = async ({
+  listTeams = async ({
     limit,
-    startAfter
+    startAfter,
+    user
   }: {
     limit?: number;
     startAfter?: string;
-  }): Promise<ArrayOfMemberBalanceChecked> => {
+    user: string;
+  }): Promise<ArrayOfAddr> => {
     return this.client.queryContractSmart(this.contractAddress, {
-      dues: {
+      list_teams: {
         limit,
-        start_after: startAfter
-      }
-    });
-  };
-  initialDues = async ({
-    limit,
-    startAfter
-  }: {
-    limit?: number;
-    startAfter?: string;
-  }): Promise<ArrayOfMemberBalanceChecked> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      initial_dues: {
-        limit,
-        start_after: startAfter
-      }
-    });
-  };
-  isFunded = async ({
-    addr
-  }: {
-    addr: string;
-  }): Promise<Boolean> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      is_funded: {
-        addr
-      }
-    });
-  };
-  isFullyFunded = async (): Promise<Boolean> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      is_fully_funded: {}
-    });
-  };
-  totalBalance = async (): Promise<BalanceVerified> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      total_balance: {}
-    });
-  };
-  isLocked = async (): Promise<Boolean> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      is_locked: {}
-    });
-  };
-  dumpState = async ({
-    addr
-  }: {
-    addr?: string;
-  }): Promise<DumpStateResponse> => {
-    return this.client.queryContractSmart(this.contractAddress, {
-      dump_state: {
-        addr
+        start_after: startAfter,
+        user
       }
     });
   };
@@ -183,58 +153,43 @@ export class ArenaTeamEnrollmentsQueryClient implements ArenaTeamEnrollmentsRead
 export interface ArenaTeamEnrollmentsInterface extends ArenaTeamEnrollmentsReadOnlyInterface {
   contractAddress: string;
   sender: string;
-  withdraw: ({
-    cw20Msg,
-    cw721Msg
+  createEntry: ({
+    categoryId,
+    daoConfig,
+    description,
+    title
   }: {
-    cw20Msg?: Binary;
-    cw721Msg?: Binary;
+    categoryId?: Uint128;
+    daoConfig: DaoConfig_for_uint64;
+    description: string;
+    title: string;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
-  enrollmentWithdraw: ({
-    addrs,
-    entryFee
+  updateEntryStatus: ({
+    entryId,
+    status
   }: {
-    addrs: string[];
-    entryFee: Coin;
+    entryId: number;
+    status: EntryStatus;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
-  receiveNative: (fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
-  receive: ({
-    amount,
-    msg,
-    sender
+  apply: ({
+    entryId
   }: {
-    amount: Uint128;
-    msg: Binary;
-    sender: string;
+    entryId: number;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
-  receiveNft: ({
-    msg,
-    sender,
-    tokenId
+  withdrawApplication: ({
+    entryId
   }: {
-    msg: Binary;
-    sender: string;
-    tokenId: string;
+    entryId: number;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
-  distribute: ({
-    activationHeight,
-    distribution,
-    groupContract,
-    layeredFees
+  updateApplicantStatus: ({
+    applicant,
+    entryId,
+    status
   }: {
-    activationHeight?: number;
-    distribution?: DistributionForString;
-    groupContract: string;
-    layeredFees?: FeeInformationForString[];
+    applicant: string;
+    entryId: number;
+    status: ApplicantStatus;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
-  lock: ({
-    transferOwnership,
-    value
-  }: {
-    transferOwnership?: TransferEscrowOwnershipMsg;
-    value: boolean;
-  }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
-  claw: (fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   updateOwnership: (action: Action, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
 }
 export class ArenaTeamEnrollmentsClient extends ArenaTeamEnrollmentsQueryClient implements ArenaTeamEnrollmentsInterface {
@@ -246,120 +201,84 @@ export class ArenaTeamEnrollmentsClient extends ArenaTeamEnrollmentsQueryClient 
     this.client = client;
     this.sender = sender;
     this.contractAddress = contractAddress;
-    this.withdraw = this.withdraw.bind(this);
-    this.enrollmentWithdraw = this.enrollmentWithdraw.bind(this);
-    this.receiveNative = this.receiveNative.bind(this);
-    this.receive = this.receive.bind(this);
-    this.receiveNft = this.receiveNft.bind(this);
-    this.distribute = this.distribute.bind(this);
-    this.lock = this.lock.bind(this);
-    this.claw = this.claw.bind(this);
+    this.createEntry = this.createEntry.bind(this);
+    this.updateEntryStatus = this.updateEntryStatus.bind(this);
+    this.apply = this.apply.bind(this);
+    this.withdrawApplication = this.withdrawApplication.bind(this);
+    this.updateApplicantStatus = this.updateApplicantStatus.bind(this);
     this.updateOwnership = this.updateOwnership.bind(this);
   }
-  withdraw = async ({
-    cw20Msg,
-    cw721Msg
+  createEntry = async ({
+    categoryId,
+    daoConfig,
+    description,
+    title
   }: {
-    cw20Msg?: Binary;
-    cw721Msg?: Binary;
+    categoryId?: Uint128;
+    daoConfig: DaoConfig_for_uint64;
+    description: string;
+    title: string;
   }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      withdraw: {
-        cw20_msg: cw20Msg,
-        cw721_msg: cw721Msg
+      create_entry: {
+        category_id: categoryId,
+        dao_config: daoConfig,
+        description,
+        title
       }
     }, fee_, memo_, funds_);
   };
-  enrollmentWithdraw = async ({
-    addrs,
-    entryFee
+  updateEntryStatus = async ({
+    entryId,
+    status
   }: {
-    addrs: string[];
-    entryFee: Coin;
+    entryId: number;
+    status: EntryStatus;
   }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      enrollment_withdraw: {
-        addrs,
-        entry_fee: entryFee
+      update_entry_status: {
+        entry_id: entryId,
+        status
       }
     }, fee_, memo_, funds_);
   };
-  receiveNative = async (fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
-    return await this.client.execute(this.sender, this.contractAddress, {
-      receive_native: {}
-    }, fee_, memo_, funds_);
-  };
-  receive = async ({
-    amount,
-    msg,
-    sender
+  apply = async ({
+    entryId
   }: {
-    amount: Uint128;
-    msg: Binary;
-    sender: string;
+    entryId: number;
   }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      receive: {
-        amount,
-        msg,
-        sender
+      apply: {
+        entry_id: entryId
       }
     }, fee_, memo_, funds_);
   };
-  receiveNft = async ({
-    msg,
-    sender,
-    tokenId
+  withdrawApplication = async ({
+    entryId
   }: {
-    msg: Binary;
-    sender: string;
-    tokenId: string;
+    entryId: number;
   }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      receive_nft: {
-        msg,
-        sender,
-        token_id: tokenId
+      withdraw_application: {
+        entry_id: entryId
       }
     }, fee_, memo_, funds_);
   };
-  distribute = async ({
-    activationHeight,
-    distribution,
-    groupContract,
-    layeredFees
+  updateApplicantStatus = async ({
+    applicant,
+    entryId,
+    status
   }: {
-    activationHeight?: number;
-    distribution?: DistributionForString;
-    groupContract: string;
-    layeredFees?: FeeInformationForString[];
+    applicant: string;
+    entryId: number;
+    status: ApplicantStatus;
   }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
-      distribute: {
-        activation_height: activationHeight,
-        distribution,
-        group_contract: groupContract,
-        layered_fees: layeredFees
+      update_applicant_status: {
+        applicant,
+        entry_id: entryId,
+        status
       }
-    }, fee_, memo_, funds_);
-  };
-  lock = async ({
-    transferOwnership,
-    value
-  }: {
-    transferOwnership?: TransferEscrowOwnershipMsg;
-    value: boolean;
-  }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
-    return await this.client.execute(this.sender, this.contractAddress, {
-      lock: {
-        transfer_ownership: transferOwnership,
-        value
-      }
-    }, fee_, memo_, funds_);
-  };
-  claw = async (fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
-    return await this.client.execute(this.sender, this.contractAddress, {
-      claw: {}
     }, fee_, memo_, funds_);
   };
   updateOwnership = async (action: Action, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {

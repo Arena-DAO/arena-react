@@ -6,8 +6,8 @@
 
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
-import { StdFee } from "@cosmjs/amino";
-import { Uint128, InstantiateMsg, MemberBalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, Cw20ReceiveMsg, Cw721ReceiveMsg, DistributionForString, MemberPercentageForString, FeeInformationForString, TransferEscrowOwnershipMsg, QueryMsg, MigrateMsg, BalanceVerified, Addr, ArrayOfMemberBalanceChecked, MemberBalanceChecked, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaTeamEnrollments.types";
+import { StdFee, Coin } from "@cosmjs/amino";
+import { InstantiateMsg, ExecuteMsg, Uint128, DaoConfigForUint64, Duration, Threshold, PercentageThreshold, Decimal, EntryStatus, ApplicantStatus, Action, Expiration, Timestamp, Uint64, QueryMsg, Addr, ApplicantResponse, TeamEntryResponse, ArrayOfApplicantResponse, ArrayOfTeamEntryResponse, ArrayOfAddr, OwnershipForString } from "./ArenaTeamEnrollments.types";
 import { ArenaTeamEnrollmentsQueryClient, ArenaTeamEnrollmentsClient } from "./ArenaTeamEnrollments.client";
 export const arenaTeamEnrollmentsQueryKeys = {
   contract: ([{
@@ -17,54 +17,29 @@ export const arenaTeamEnrollmentsQueryKeys = {
     ...arenaTeamEnrollmentsQueryKeys.contract[0],
     address: contractAddress
   }] as const),
-  balances: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
+  getEntry: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
     ...arenaTeamEnrollmentsQueryKeys.address(contractAddress)[0],
-    method: "balances",
+    method: "get_entry",
     args
   }] as const),
-  balance: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
+  listEntries: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
     ...arenaTeamEnrollmentsQueryKeys.address(contractAddress)[0],
-    method: "balance",
+    method: "list_entries",
     args
   }] as const),
-  due: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
+  getApplicant: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
     ...arenaTeamEnrollmentsQueryKeys.address(contractAddress)[0],
-    method: "due",
+    method: "get_applicant",
     args
   }] as const),
-  dues: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
+  listApplicants: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
     ...arenaTeamEnrollmentsQueryKeys.address(contractAddress)[0],
-    method: "dues",
+    method: "list_applicants",
     args
   }] as const),
-  initialDues: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
+  listTeams: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
     ...arenaTeamEnrollmentsQueryKeys.address(contractAddress)[0],
-    method: "initial_dues",
-    args
-  }] as const),
-  isFunded: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
-    ...arenaTeamEnrollmentsQueryKeys.address(contractAddress)[0],
-    method: "is_funded",
-    args
-  }] as const),
-  isFullyFunded: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
-    ...arenaTeamEnrollmentsQueryKeys.address(contractAddress)[0],
-    method: "is_fully_funded",
-    args
-  }] as const),
-  totalBalance: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
-    ...arenaTeamEnrollmentsQueryKeys.address(contractAddress)[0],
-    method: "total_balance",
-    args
-  }] as const),
-  isLocked: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
-    ...arenaTeamEnrollmentsQueryKeys.address(contractAddress)[0],
-    method: "is_locked",
-    args
-  }] as const),
-  dumpState: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
-    ...arenaTeamEnrollmentsQueryKeys.address(contractAddress)[0],
-    method: "dump_state",
+    method: "list_teams",
     args
   }] as const),
   ownership: (contractAddress: string | undefined, args?: Record<string, unknown>) => ([{
@@ -74,116 +49,70 @@ export const arenaTeamEnrollmentsQueryKeys = {
   }] as const)
 };
 export const arenaTeamEnrollmentsQueries = {
-  balances: <TData = ArrayOfMemberBalanceChecked,>({
+  getEntry: <TData = TeamEntryResponse,>({
     client,
     args,
     options
-  }: ArenaTeamEnrollmentsBalancesQuery<TData>): UseQueryOptions<ArrayOfMemberBalanceChecked, Error, TData> => ({
-    queryKey: arenaTeamEnrollmentsQueryKeys.balances(client?.contractAddress, args),
-    queryFn: () => client ? client.balances({
+  }: ArenaTeamEnrollmentsGetEntryQuery<TData>): UseQueryOptions<TeamEntryResponse, Error, TData> => ({
+    queryKey: arenaTeamEnrollmentsQueryKeys.getEntry(client?.contractAddress, args),
+    queryFn: () => client ? client.getEntry({
+      entryId: args.entryId
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  listEntries: <TData = ArrayOfTeamEntryResponse,>({
+    client,
+    args,
+    options
+  }: ArenaTeamEnrollmentsListEntriesQuery<TData>): UseQueryOptions<ArrayOfTeamEntryResponse, Error, TData> => ({
+    queryKey: arenaTeamEnrollmentsQueryKeys.listEntries(client?.contractAddress, args),
+    queryFn: () => client ? client.listEntries({
+      categoryId: args.categoryId,
+      limit: args.limit,
+      startAfter: args.startAfter,
+      status: args.status
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  getApplicant: <TData = ApplicantResponse,>({
+    client,
+    args,
+    options
+  }: ArenaTeamEnrollmentsGetApplicantQuery<TData>): UseQueryOptions<ApplicantResponse, Error, TData> => ({
+    queryKey: arenaTeamEnrollmentsQueryKeys.getApplicant(client?.contractAddress, args),
+    queryFn: () => client ? client.getApplicant({
+      applicant: args.applicant,
+      entryId: args.entryId
+    }) : Promise.reject(new Error("Invalid client")),
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  }),
+  listApplicants: <TData = ArrayOfApplicantResponse,>({
+    client,
+    args,
+    options
+  }: ArenaTeamEnrollmentsListApplicantsQuery<TData>): UseQueryOptions<ArrayOfApplicantResponse, Error, TData> => ({
+    queryKey: arenaTeamEnrollmentsQueryKeys.listApplicants(client?.contractAddress, args),
+    queryFn: () => client ? client.listApplicants({
+      entryId: args.entryId,
       limit: args.limit,
       startAfter: args.startAfter
     }) : Promise.reject(new Error("Invalid client")),
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   }),
-  balance: <TData = BalanceVerified,>({
+  listTeams: <TData = ArrayOfAddr,>({
     client,
     args,
     options
-  }: ArenaTeamEnrollmentsBalanceQuery<TData>): UseQueryOptions<BalanceVerified, Error, TData> => ({
-    queryKey: arenaTeamEnrollmentsQueryKeys.balance(client?.contractAddress, args),
-    queryFn: () => client ? client.balance({
-      addr: args.addr
-    }) : Promise.reject(new Error("Invalid client")),
-    ...options,
-    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
-  }),
-  due: <TData = BalanceVerified,>({
-    client,
-    args,
-    options
-  }: ArenaTeamEnrollmentsDueQuery<TData>): UseQueryOptions<BalanceVerified, Error, TData> => ({
-    queryKey: arenaTeamEnrollmentsQueryKeys.due(client?.contractAddress, args),
-    queryFn: () => client ? client.due({
-      addr: args.addr
-    }) : Promise.reject(new Error("Invalid client")),
-    ...options,
-    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
-  }),
-  dues: <TData = ArrayOfMemberBalanceChecked,>({
-    client,
-    args,
-    options
-  }: ArenaTeamEnrollmentsDuesQuery<TData>): UseQueryOptions<ArrayOfMemberBalanceChecked, Error, TData> => ({
-    queryKey: arenaTeamEnrollmentsQueryKeys.dues(client?.contractAddress, args),
-    queryFn: () => client ? client.dues({
+  }: ArenaTeamEnrollmentsListTeamsQuery<TData>): UseQueryOptions<ArrayOfAddr, Error, TData> => ({
+    queryKey: arenaTeamEnrollmentsQueryKeys.listTeams(client?.contractAddress, args),
+    queryFn: () => client ? client.listTeams({
       limit: args.limit,
-      startAfter: args.startAfter
-    }) : Promise.reject(new Error("Invalid client")),
-    ...options,
-    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
-  }),
-  initialDues: <TData = ArrayOfMemberBalanceChecked,>({
-    client,
-    args,
-    options
-  }: ArenaTeamEnrollmentsInitialDuesQuery<TData>): UseQueryOptions<ArrayOfMemberBalanceChecked, Error, TData> => ({
-    queryKey: arenaTeamEnrollmentsQueryKeys.initialDues(client?.contractAddress, args),
-    queryFn: () => client ? client.initialDues({
-      limit: args.limit,
-      startAfter: args.startAfter
-    }) : Promise.reject(new Error("Invalid client")),
-    ...options,
-    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
-  }),
-  isFunded: <TData = Boolean,>({
-    client,
-    args,
-    options
-  }: ArenaTeamEnrollmentsIsFundedQuery<TData>): UseQueryOptions<Boolean, Error, TData> => ({
-    queryKey: arenaTeamEnrollmentsQueryKeys.isFunded(client?.contractAddress, args),
-    queryFn: () => client ? client.isFunded({
-      addr: args.addr
-    }) : Promise.reject(new Error("Invalid client")),
-    ...options,
-    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
-  }),
-  isFullyFunded: <TData = Boolean,>({
-    client,
-    options
-  }: ArenaTeamEnrollmentsIsFullyFundedQuery<TData>): UseQueryOptions<Boolean, Error, TData> => ({
-    queryKey: arenaTeamEnrollmentsQueryKeys.isFullyFunded(client?.contractAddress),
-    queryFn: () => client ? client.isFullyFunded() : Promise.reject(new Error("Invalid client")),
-    ...options,
-    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
-  }),
-  totalBalance: <TData = BalanceVerified,>({
-    client,
-    options
-  }: ArenaTeamEnrollmentsTotalBalanceQuery<TData>): UseQueryOptions<BalanceVerified, Error, TData> => ({
-    queryKey: arenaTeamEnrollmentsQueryKeys.totalBalance(client?.contractAddress),
-    queryFn: () => client ? client.totalBalance() : Promise.reject(new Error("Invalid client")),
-    ...options,
-    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
-  }),
-  isLocked: <TData = Boolean,>({
-    client,
-    options
-  }: ArenaTeamEnrollmentsIsLockedQuery<TData>): UseQueryOptions<Boolean, Error, TData> => ({
-    queryKey: arenaTeamEnrollmentsQueryKeys.isLocked(client?.contractAddress),
-    queryFn: () => client ? client.isLocked() : Promise.reject(new Error("Invalid client")),
-    ...options,
-    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
-  }),
-  dumpState: <TData = DumpStateResponse,>({
-    client,
-    args,
-    options
-  }: ArenaTeamEnrollmentsDumpStateQuery<TData>): UseQueryOptions<DumpStateResponse, Error, TData> => ({
-    queryKey: arenaTeamEnrollmentsQueryKeys.dumpState(client?.contractAddress, args),
-    queryFn: () => client ? client.dumpState({
-      addr: args.addr
+      startAfter: args.startAfter,
+      user: args.user
     }) : Promise.reject(new Error("Invalid client")),
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
@@ -214,82 +143,41 @@ export function useArenaTeamEnrollmentsOwnershipQuery<TData = OwnershipForString
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
-export interface ArenaTeamEnrollmentsDumpStateQuery<TData> extends ArenaTeamEnrollmentsReactQuery<DumpStateResponse, TData> {
+export interface ArenaTeamEnrollmentsListTeamsQuery<TData> extends ArenaTeamEnrollmentsReactQuery<ArrayOfAddr, TData> {
   args: {
-    addr?: string;
+    limit?: number;
+    startAfter?: string;
+    user: string;
   };
 }
-export function useArenaTeamEnrollmentsDumpStateQuery<TData = DumpStateResponse>({
+export function useArenaTeamEnrollmentsListTeamsQuery<TData = ArrayOfAddr>({
   client,
   args,
   options
-}: ArenaTeamEnrollmentsDumpStateQuery<TData>) {
-  return useQuery<DumpStateResponse, Error, TData>(arenaTeamEnrollmentsQueryKeys.dumpState(client?.contractAddress, args), () => client ? client.dumpState({
-    addr: args.addr
+}: ArenaTeamEnrollmentsListTeamsQuery<TData>) {
+  return useQuery<ArrayOfAddr, Error, TData>(arenaTeamEnrollmentsQueryKeys.listTeams(client?.contractAddress, args), () => client ? client.listTeams({
+    limit: args.limit,
+    startAfter: args.startAfter,
+    user: args.user
   }) : Promise.reject(new Error("Invalid client")), {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
-export interface ArenaTeamEnrollmentsIsLockedQuery<TData> extends ArenaTeamEnrollmentsReactQuery<Boolean, TData> {}
-export function useArenaTeamEnrollmentsIsLockedQuery<TData = Boolean>({
-  client,
-  options
-}: ArenaTeamEnrollmentsIsLockedQuery<TData>) {
-  return useQuery<Boolean, Error, TData>(arenaTeamEnrollmentsQueryKeys.isLocked(client?.contractAddress), () => client ? client.isLocked() : Promise.reject(new Error("Invalid client")), {
-    ...options,
-    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
-  });
-}
-export interface ArenaTeamEnrollmentsTotalBalanceQuery<TData> extends ArenaTeamEnrollmentsReactQuery<BalanceVerified, TData> {}
-export function useArenaTeamEnrollmentsTotalBalanceQuery<TData = BalanceVerified>({
-  client,
-  options
-}: ArenaTeamEnrollmentsTotalBalanceQuery<TData>) {
-  return useQuery<BalanceVerified, Error, TData>(arenaTeamEnrollmentsQueryKeys.totalBalance(client?.contractAddress), () => client ? client.totalBalance() : Promise.reject(new Error("Invalid client")), {
-    ...options,
-    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
-  });
-}
-export interface ArenaTeamEnrollmentsIsFullyFundedQuery<TData> extends ArenaTeamEnrollmentsReactQuery<Boolean, TData> {}
-export function useArenaTeamEnrollmentsIsFullyFundedQuery<TData = Boolean>({
-  client,
-  options
-}: ArenaTeamEnrollmentsIsFullyFundedQuery<TData>) {
-  return useQuery<Boolean, Error, TData>(arenaTeamEnrollmentsQueryKeys.isFullyFunded(client?.contractAddress), () => client ? client.isFullyFunded() : Promise.reject(new Error("Invalid client")), {
-    ...options,
-    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
-  });
-}
-export interface ArenaTeamEnrollmentsIsFundedQuery<TData> extends ArenaTeamEnrollmentsReactQuery<Boolean, TData> {
+export interface ArenaTeamEnrollmentsListApplicantsQuery<TData> extends ArenaTeamEnrollmentsReactQuery<ArrayOfApplicantResponse, TData> {
   args: {
-    addr: string;
-  };
-}
-export function useArenaTeamEnrollmentsIsFundedQuery<TData = Boolean>({
-  client,
-  args,
-  options
-}: ArenaTeamEnrollmentsIsFundedQuery<TData>) {
-  return useQuery<Boolean, Error, TData>(arenaTeamEnrollmentsQueryKeys.isFunded(client?.contractAddress, args), () => client ? client.isFunded({
-    addr: args.addr
-  }) : Promise.reject(new Error("Invalid client")), {
-    ...options,
-    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
-  });
-}
-export interface ArenaTeamEnrollmentsInitialDuesQuery<TData> extends ArenaTeamEnrollmentsReactQuery<ArrayOfMemberBalanceChecked, TData> {
-  args: {
+    entryId: number;
     limit?: number;
     startAfter?: string;
   };
 }
-export function useArenaTeamEnrollmentsInitialDuesQuery<TData = ArrayOfMemberBalanceChecked>({
+export function useArenaTeamEnrollmentsListApplicantsQuery<TData = ArrayOfApplicantResponse>({
   client,
   args,
   options
-}: ArenaTeamEnrollmentsInitialDuesQuery<TData>) {
-  return useQuery<ArrayOfMemberBalanceChecked, Error, TData>(arenaTeamEnrollmentsQueryKeys.initialDues(client?.contractAddress, args), () => client ? client.initialDues({
+}: ArenaTeamEnrollmentsListApplicantsQuery<TData>) {
+  return useQuery<ArrayOfApplicantResponse, Error, TData>(arenaTeamEnrollmentsQueryKeys.listApplicants(client?.contractAddress, args), () => client ? client.listApplicants({
+    entryId: args.entryId,
     limit: args.limit,
     startAfter: args.startAfter
   }) : Promise.reject(new Error("Invalid client")), {
@@ -297,73 +185,60 @@ export function useArenaTeamEnrollmentsInitialDuesQuery<TData = ArrayOfMemberBal
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
-export interface ArenaTeamEnrollmentsDuesQuery<TData> extends ArenaTeamEnrollmentsReactQuery<ArrayOfMemberBalanceChecked, TData> {
+export interface ArenaTeamEnrollmentsGetApplicantQuery<TData> extends ArenaTeamEnrollmentsReactQuery<ApplicantResponse, TData> {
   args: {
+    applicant: string;
+    entryId: number;
+  };
+}
+export function useArenaTeamEnrollmentsGetApplicantQuery<TData = ApplicantResponse>({
+  client,
+  args,
+  options
+}: ArenaTeamEnrollmentsGetApplicantQuery<TData>) {
+  return useQuery<ApplicantResponse, Error, TData>(arenaTeamEnrollmentsQueryKeys.getApplicant(client?.contractAddress, args), () => client ? client.getApplicant({
+    applicant: args.applicant,
+    entryId: args.entryId
+  }) : Promise.reject(new Error("Invalid client")), {
+    ...options,
+    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
+  });
+}
+export interface ArenaTeamEnrollmentsListEntriesQuery<TData> extends ArenaTeamEnrollmentsReactQuery<ArrayOfTeamEntryResponse, TData> {
+  args: {
+    categoryId?: Uint128;
     limit?: number;
-    startAfter?: string;
+    startAfter?: number;
+    status?: EntryStatus;
   };
 }
-export function useArenaTeamEnrollmentsDuesQuery<TData = ArrayOfMemberBalanceChecked>({
+export function useArenaTeamEnrollmentsListEntriesQuery<TData = ArrayOfTeamEntryResponse>({
   client,
   args,
   options
-}: ArenaTeamEnrollmentsDuesQuery<TData>) {
-  return useQuery<ArrayOfMemberBalanceChecked, Error, TData>(arenaTeamEnrollmentsQueryKeys.dues(client?.contractAddress, args), () => client ? client.dues({
+}: ArenaTeamEnrollmentsListEntriesQuery<TData>) {
+  return useQuery<ArrayOfTeamEntryResponse, Error, TData>(arenaTeamEnrollmentsQueryKeys.listEntries(client?.contractAddress, args), () => client ? client.listEntries({
+    categoryId: args.categoryId,
     limit: args.limit,
-    startAfter: args.startAfter
+    startAfter: args.startAfter,
+    status: args.status
   }) : Promise.reject(new Error("Invalid client")), {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
   });
 }
-export interface ArenaTeamEnrollmentsDueQuery<TData> extends ArenaTeamEnrollmentsReactQuery<BalanceVerified, TData> {
+export interface ArenaTeamEnrollmentsGetEntryQuery<TData> extends ArenaTeamEnrollmentsReactQuery<TeamEntryResponse, TData> {
   args: {
-    addr: string;
+    entryId: number;
   };
 }
-export function useArenaTeamEnrollmentsDueQuery<TData = BalanceVerified>({
+export function useArenaTeamEnrollmentsGetEntryQuery<TData = TeamEntryResponse>({
   client,
   args,
   options
-}: ArenaTeamEnrollmentsDueQuery<TData>) {
-  return useQuery<BalanceVerified, Error, TData>(arenaTeamEnrollmentsQueryKeys.due(client?.contractAddress, args), () => client ? client.due({
-    addr: args.addr
-  }) : Promise.reject(new Error("Invalid client")), {
-    ...options,
-    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
-  });
-}
-export interface ArenaTeamEnrollmentsBalanceQuery<TData> extends ArenaTeamEnrollmentsReactQuery<BalanceVerified, TData> {
-  args: {
-    addr: string;
-  };
-}
-export function useArenaTeamEnrollmentsBalanceQuery<TData = BalanceVerified>({
-  client,
-  args,
-  options
-}: ArenaTeamEnrollmentsBalanceQuery<TData>) {
-  return useQuery<BalanceVerified, Error, TData>(arenaTeamEnrollmentsQueryKeys.balance(client?.contractAddress, args), () => client ? client.balance({
-    addr: args.addr
-  }) : Promise.reject(new Error("Invalid client")), {
-    ...options,
-    enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
-  });
-}
-export interface ArenaTeamEnrollmentsBalancesQuery<TData> extends ArenaTeamEnrollmentsReactQuery<ArrayOfMemberBalanceChecked, TData> {
-  args: {
-    limit?: number;
-    startAfter?: string;
-  };
-}
-export function useArenaTeamEnrollmentsBalancesQuery<TData = ArrayOfMemberBalanceChecked>({
-  client,
-  args,
-  options
-}: ArenaTeamEnrollmentsBalancesQuery<TData>) {
-  return useQuery<ArrayOfMemberBalanceChecked, Error, TData>(arenaTeamEnrollmentsQueryKeys.balances(client?.contractAddress, args), () => client ? client.balances({
-    limit: args.limit,
-    startAfter: args.startAfter
+}: ArenaTeamEnrollmentsGetEntryQuery<TData>) {
+  return useQuery<TeamEntryResponse, Error, TData>(arenaTeamEnrollmentsQueryKeys.getEntry(client?.contractAddress, args), () => client ? client.getEntry({
+    entryId: args.entryId
   }) : Promise.reject(new Error("Invalid client")), {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
@@ -389,29 +264,12 @@ export function useArenaTeamEnrollmentsUpdateOwnershipMutation(options?: Omit<Us
     } = {}
   }) => client.updateOwnership(msg, fee, memo, funds), options);
 }
-export interface ArenaTeamEnrollmentsClawMutation {
-  client: ArenaTeamEnrollmentsClient;
-  args?: {
-    fee?: number | StdFee | "auto";
-    memo?: string;
-    funds?: Coin[];
-  };
-}
-export function useArenaTeamEnrollmentsClawMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTeamEnrollmentsClawMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaTeamEnrollmentsClawMutation>(({
-    client,
-    args: {
-      fee,
-      memo,
-      funds
-    } = {}
-  }) => client.claw(fee, memo, funds), options);
-}
-export interface ArenaTeamEnrollmentsLockMutation {
+export interface ArenaTeamEnrollmentsUpdateApplicantStatusMutation {
   client: ArenaTeamEnrollmentsClient;
   msg: {
-    transferOwnership?: TransferEscrowOwnershipMsg;
-    value: boolean;
+    applicant: string;
+    entryId: number;
+    status: ApplicantStatus;
   };
   args?: {
     fee?: number | StdFee | "auto";
@@ -419,8 +277,8 @@ export interface ArenaTeamEnrollmentsLockMutation {
     funds?: Coin[];
   };
 }
-export function useArenaTeamEnrollmentsLockMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTeamEnrollmentsLockMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaTeamEnrollmentsLockMutation>(({
+export function useArenaTeamEnrollmentsUpdateApplicantStatusMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTeamEnrollmentsUpdateApplicantStatusMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaTeamEnrollmentsUpdateApplicantStatusMutation>(({
     client,
     msg,
     args: {
@@ -428,15 +286,12 @@ export function useArenaTeamEnrollmentsLockMutation(options?: Omit<UseMutationOp
       memo,
       funds
     } = {}
-  }) => client.lock(msg, fee, memo, funds), options);
+  }) => client.updateApplicantStatus(msg, fee, memo, funds), options);
 }
-export interface ArenaTeamEnrollmentsDistributeMutation {
+export interface ArenaTeamEnrollmentsWithdrawApplicationMutation {
   client: ArenaTeamEnrollmentsClient;
   msg: {
-    activationHeight?: number;
-    distribution?: DistributionForString;
-    groupContract: string;
-    layeredFees?: FeeInformationForString[];
+    entryId: number;
   };
   args?: {
     fee?: number | StdFee | "auto";
@@ -444,8 +299,8 @@ export interface ArenaTeamEnrollmentsDistributeMutation {
     funds?: Coin[];
   };
 }
-export function useArenaTeamEnrollmentsDistributeMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTeamEnrollmentsDistributeMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaTeamEnrollmentsDistributeMutation>(({
+export function useArenaTeamEnrollmentsWithdrawApplicationMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTeamEnrollmentsWithdrawApplicationMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaTeamEnrollmentsWithdrawApplicationMutation>(({
     client,
     msg,
     args: {
@@ -453,14 +308,12 @@ export function useArenaTeamEnrollmentsDistributeMutation(options?: Omit<UseMuta
       memo,
       funds
     } = {}
-  }) => client.distribute(msg, fee, memo, funds), options);
+  }) => client.withdrawApplication(msg, fee, memo, funds), options);
 }
-export interface ArenaTeamEnrollmentsReceiveNftMutation {
+export interface ArenaTeamEnrollmentsApplyMutation {
   client: ArenaTeamEnrollmentsClient;
   msg: {
-    msg: Binary;
-    sender: string;
-    tokenId: string;
+    entryId: number;
   };
   args?: {
     fee?: number | StdFee | "auto";
@@ -468,8 +321,8 @@ export interface ArenaTeamEnrollmentsReceiveNftMutation {
     funds?: Coin[];
   };
 }
-export function useArenaTeamEnrollmentsReceiveNftMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTeamEnrollmentsReceiveNftMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaTeamEnrollmentsReceiveNftMutation>(({
+export function useArenaTeamEnrollmentsApplyMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTeamEnrollmentsApplyMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaTeamEnrollmentsApplyMutation>(({
     client,
     msg,
     args: {
@@ -477,14 +330,13 @@ export function useArenaTeamEnrollmentsReceiveNftMutation(options?: Omit<UseMuta
       memo,
       funds
     } = {}
-  }) => client.receiveNft(msg, fee, memo, funds), options);
+  }) => client.apply(msg, fee, memo, funds), options);
 }
-export interface ArenaTeamEnrollmentsReceiveMutation {
+export interface ArenaTeamEnrollmentsUpdateEntryStatusMutation {
   client: ArenaTeamEnrollmentsClient;
   msg: {
-    amount: Uint128;
-    msg: Binary;
-    sender: string;
+    entryId: number;
+    status: EntryStatus;
   };
   args?: {
     fee?: number | StdFee | "auto";
@@ -492,8 +344,8 @@ export interface ArenaTeamEnrollmentsReceiveMutation {
     funds?: Coin[];
   };
 }
-export function useArenaTeamEnrollmentsReceiveMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTeamEnrollmentsReceiveMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaTeamEnrollmentsReceiveMutation>(({
+export function useArenaTeamEnrollmentsUpdateEntryStatusMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTeamEnrollmentsUpdateEntryStatusMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaTeamEnrollmentsUpdateEntryStatusMutation>(({
     client,
     msg,
     args: {
@@ -501,31 +353,15 @@ export function useArenaTeamEnrollmentsReceiveMutation(options?: Omit<UseMutatio
       memo,
       funds
     } = {}
-  }) => client.receive(msg, fee, memo, funds), options);
+  }) => client.updateEntryStatus(msg, fee, memo, funds), options);
 }
-export interface ArenaTeamEnrollmentsReceiveNativeMutation {
-  client: ArenaTeamEnrollmentsClient;
-  args?: {
-    fee?: number | StdFee | "auto";
-    memo?: string;
-    funds?: Coin[];
-  };
-}
-export function useArenaTeamEnrollmentsReceiveNativeMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTeamEnrollmentsReceiveNativeMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaTeamEnrollmentsReceiveNativeMutation>(({
-    client,
-    args: {
-      fee,
-      memo,
-      funds
-    } = {}
-  }) => client.receiveNative(fee, memo, funds), options);
-}
-export interface ArenaTeamEnrollmentsEnrollmentWithdrawMutation {
+export interface ArenaTeamEnrollmentsCreateEntryMutation {
   client: ArenaTeamEnrollmentsClient;
   msg: {
-    addrs: string[];
-    entryFee: Coin;
+    categoryId?: Uint128;
+    daoConfig: DaoConfig_for_uint64;
+    description: string;
+    title: string;
   };
   args?: {
     fee?: number | StdFee | "auto";
@@ -533,8 +369,8 @@ export interface ArenaTeamEnrollmentsEnrollmentWithdrawMutation {
     funds?: Coin[];
   };
 }
-export function useArenaTeamEnrollmentsEnrollmentWithdrawMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTeamEnrollmentsEnrollmentWithdrawMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaTeamEnrollmentsEnrollmentWithdrawMutation>(({
+export function useArenaTeamEnrollmentsCreateEntryMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTeamEnrollmentsCreateEntryMutation>, "mutationFn">) {
+  return useMutation<ExecuteResult, Error, ArenaTeamEnrollmentsCreateEntryMutation>(({
     client,
     msg,
     args: {
@@ -542,28 +378,5 @@ export function useArenaTeamEnrollmentsEnrollmentWithdrawMutation(options?: Omit
       memo,
       funds
     } = {}
-  }) => client.enrollmentWithdraw(msg, fee, memo, funds), options);
-}
-export interface ArenaTeamEnrollmentsWithdrawMutation {
-  client: ArenaTeamEnrollmentsClient;
-  msg: {
-    cw20Msg?: Binary;
-    cw721Msg?: Binary;
-  };
-  args?: {
-    fee?: number | StdFee | "auto";
-    memo?: string;
-    funds?: Coin[];
-  };
-}
-export function useArenaTeamEnrollmentsWithdrawMutation(options?: Omit<UseMutationOptions<ExecuteResult, Error, ArenaTeamEnrollmentsWithdrawMutation>, "mutationFn">) {
-  return useMutation<ExecuteResult, Error, ArenaTeamEnrollmentsWithdrawMutation>(({
-    client,
-    msg,
-    args: {
-      fee,
-      memo,
-      funds
-    } = {}
-  }) => client.withdraw(msg, fee, memo, funds), options);
+  }) => client.createEntry(msg, fee, memo, funds), options);
 }

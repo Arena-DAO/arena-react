@@ -41,7 +41,7 @@ function InnerProviders({ children }: PropsWithChildren) {
 		},
 	};
 	const chainsMemo = useMemo(() => {
-		if (env.ENV === "development") return [testnetChain];
+		if (env.ENV === "development") return [testnetChain, mainnetChain];
 
 		const filteredMainnet = { ...mainnetChain };
 		if (filteredMainnet.apis) {

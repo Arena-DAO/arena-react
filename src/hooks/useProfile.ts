@@ -114,7 +114,7 @@ const isValidDiscordImage = async (imageUrl: string): Promise<boolean> => {
 export const useProfileData = (address: string, isValid = true) => {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
-	const { getCosmWasmClient } = useChain("neutron");
+	const { getCosmWasmClient: getMainnetCosmWasmClient } = useChain("neutron");
 
 	return useQuery({
 		queryKey: ["profile", address, env?.ENV],
@@ -144,10 +144,7 @@ export const useProfileData = (address: string, isValid = true) => {
 					// Check Discord identity first
 					if (env?.ARENA_DISCORD_IDENTITY_ADDRESS) {
 						try {
-							const mainnetClient =
-								env.ENV === "production"
-									? cosmWasmClient
-									: await getCosmWasmClient();
+							const mainnetClient = await getMainnetCosmWasmClient();
 
 							if (mainnetClient) {
 								const identityClient = new ArenaDiscordIdentityQueryClient(
