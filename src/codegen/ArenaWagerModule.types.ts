@@ -9,9 +9,7 @@ export interface InstantiateMsg {
   extension: Empty;
   key: string;
 }
-export interface Empty {
-  [k: string]: unknown;
-}
+export interface Empty {}
 export type ExecuteMsg = {
   jail_competition: {
     competition_id: Uint128;
@@ -179,14 +177,14 @@ export interface FeeInformationForString {
 export interface ModuleInstantiateInfo {
   admin?: Admin | null;
   code_id: number;
-  funds: Coin[];
+  funds?: Coin[] | null;
   label: string;
   msg: Binary;
+  salt?: Binary | null;
 }
 export interface Coin {
   amount: Uint128;
   denom: string;
-  [k: string]: unknown;
 }
 export interface WagerInstantiateExt {}
 export interface MemberStatsMsg {

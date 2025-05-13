@@ -19,7 +19,7 @@ export type ExecuteMsg = {
     max_members: Uint64;
     min_members?: Uint64 | null;
     required_team_size?: number | null;
-    use_dao_host?: DaoConfig | null;
+    use_dao_host?: DaoConfigForNull | null;
   };
 } | {
   finalize: {
@@ -44,6 +44,31 @@ export type ExecuteMsg = {
   set_rankings: {
     id: Uint128;
     rankings: MemberMsgForString[];
+  };
+} | {
+  edit_enrollment: {
+    banner?: FieldActionForString | null;
+    date?: Timestamp | null;
+    description?: string | null;
+    duration?: number | null;
+    duration_before?: number | null;
+    id: Uint128;
+    max_members?: Uint64 | null;
+    min_members?: FieldActionForUint64 | null;
+    name?: string | null;
+    required_team_size?: FieldActionForUint32 | null;
+    use_dao_host?: DaoConfigForNull | null;
+  };
+} | {
+  revert: {
+    id: Uint128;
+  };
+} | {
+  migrate_escrow: {
+    escrow: string;
+    escrow_code_id: number;
+    id: Uint128;
+    msg: MigrateMsg;
   };
 } | {
   update_ownership: Action;
@@ -117,6 +142,24 @@ export type PercentageThreshold = {
 } | {
   percent: Decimal;
 };
+export type FieldActionForString = "remove" | {
+  update: string;
+};
+export type FieldActionForUint64 = "remove" | {
+  update: Uint64;
+};
+export type FieldActionForUint32 = "remove" | {
+  update: number;
+};
+export type MigrateMsg = {
+  from_compatible: {};
+} | {
+  remove_third_place_match: {
+    enrollment_id: Uint128;
+  };
+} | {
+  from_v2_3: {};
+};
 export type Action = {
   transfer_ownership: {
     expiry?: Expiration | null;
@@ -142,7 +185,6 @@ export interface CompetitionInfoMsg {
 export interface Coin {
   amount: Uint128;
   denom: string;
-  [k: string]: unknown;
 }
 export interface FeeInformationForString {
   cw20_msg?: Binary | null;
@@ -153,11 +195,12 @@ export interface FeeInformationForString {
 export interface ModuleInstantiateInfo {
   admin?: Admin | null;
   code_id: number;
-  funds: Coin[];
+  funds?: Coin[] | null;
   label: string;
   msg: Binary;
+  salt?: Binary | null;
 }
-export interface DaoConfig {
+export interface DaoConfigForNull {
   cw4_voting_code_id: number;
   dao_code_id: number;
   max_voting_period: Duration;
@@ -197,15 +240,6 @@ export type EnrollmentFilter = {
 } | {
   host: string;
 };
-export type MigrateMsg = {
-  from_compatible: {};
-} | {
-  remove_third_place_match: {
-    enrollment_id: Uint128;
-  };
-} | {
-  from_v2_3: {};
-};
 export type Addr = string;
 export interface SudoMsg {
   enrollment_entry_response: EnrollmentEntryResponse;
@@ -224,7 +258,7 @@ export interface EnrollmentEntryResponse {
   max_members: Uint64;
   min_members?: Uint64 | null;
   required_team_size?: number | null;
-  use_dao_host?: DaoConfig | null;
+  use_dao_host?: DaoConfigForNull | null;
 }
 export interface CompetitionInfoResponse {
   additional_layered_fees?: FeeInformationForAddr[] | null;

@@ -1,6 +1,7 @@
 "use client";
 
 import ViewCompetition from "@/components/competition/view/ViewCompetition";
+import DistributionDisplay from "@/components/competition/view/components/DistributionDisplay";
 import { useChain } from "@cosmos-kit/react";
 import {
 	Card,
@@ -12,6 +13,7 @@ import {
 	Tab,
 	Tabs,
 } from "@heroui/react";
+import { Share2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { ArenaLeagueModuleQueryClient } from "~/codegen/ArenaLeagueModule.client";
 import { useArenaLeagueModuleCompetitionQuery } from "~/codegen/ArenaLeagueModule.react-query";
@@ -20,8 +22,6 @@ import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import LeaderboardDisplay from "./components/LeaderboardDisplay";
 import RoundsDisplay from "./components/RoundsDisplay";
-import { Share2 } from "lucide-react";
-import DistributionDisplay from "@/components/competition/view/components/DistributionDisplay";
 
 const ViewLeague = () => {
 	const env = useEnv();
