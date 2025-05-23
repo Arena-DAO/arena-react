@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ExecuteMsg, Uint128, Timestamp, Uint64, CompetitionType, Decimal, EliminationType, EscrowContractInfo, Binary, Admin, Duration, Threshold, PercentageThreshold, FieldActionForString, FieldActionForUint64, FieldActionForUint32, MigrateMsg, Action, Expiration, CompetitionInfoMsg, Coin, FeeInformationForString, ModuleInstantiateInfo, DaoConfigForNull, MemberMsgForString, QueryMsg, EnrollmentFilter, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, FeeInformationForAddr, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
+import { InstantiateMsg, ExecuteMsg, Uint128, Timestamp, Uint64, CompetitionType, Decimal, EliminationType, EscrowContractInfo, Binary, Admin, Duration, Threshold, PercentageThreshold, FieldActionForString, FieldActionForUint64, FieldActionForUint32, MigrateMsg, Action, Expiration, CompetitionInfoMsg, Coin, FeeInformationForString, ModuleInstantiateInfo, DaoConfigForEmpty, MemberMsgForString, QueryMsg, EnrollmentFilter, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, FeeInformationForAddr, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
 export interface ArenaCompetitionEnrollmentReadOnlyInterface {
   contractAddress: string;
   enrollments: ({
@@ -124,7 +124,7 @@ export interface ArenaCompetitionEnrollmentInterface extends ArenaCompetitionEnr
     maxMembers: Uint64;
     minMembers?: Uint64;
     requiredTeamSize?: number;
-    useDaoHost?: DaoConfigForNull;
+    useDaoHost?: DaoConfigForEmpty;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   finalize: ({
     id
@@ -182,7 +182,7 @@ export interface ArenaCompetitionEnrollmentInterface extends ArenaCompetitionEnr
     minMembers?: FieldActionForUint64;
     name?: string;
     requiredTeamSize?: FieldActionForUint32;
-    useDaoHost?: DaoConfigForNull;
+    useDaoHost?: DaoConfigForEmpty;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   revert: ({
     id
@@ -245,7 +245,7 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
     maxMembers: Uint64;
     minMembers?: Uint64;
     requiredTeamSize?: number;
-    useDaoHost?: DaoConfigForNull;
+    useDaoHost?: DaoConfigForEmpty;
   }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       create_enrollment: {
@@ -353,7 +353,7 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
     minMembers?: FieldActionForUint64;
     name?: string;
     requiredTeamSize?: FieldActionForUint32;
-    useDaoHost?: DaoConfigForNull;
+    useDaoHost?: DaoConfigForEmpty;
   }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       edit_enrollment: {

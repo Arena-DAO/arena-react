@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ExecuteMsg, Uint128, Timestamp, Uint64, CompetitionType, Decimal, EliminationType, EscrowContractInfo, Binary, Admin, Duration, Threshold, PercentageThreshold, FieldActionForString, FieldActionForUint64, FieldActionForUint32, MigrateMsg, Action, Expiration, CompetitionInfoMsg, Coin, FeeInformationForString, ModuleInstantiateInfo, DaoConfigForNull, MemberMsgForString, QueryMsg, EnrollmentFilter, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, FeeInformationForAddr, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
+import { InstantiateMsg, ExecuteMsg, Uint128, Timestamp, Uint64, CompetitionType, Decimal, EliminationType, EscrowContractInfo, Binary, Admin, Duration, Threshold, PercentageThreshold, FieldActionForString, FieldActionForUint64, FieldActionForUint32, MigrateMsg, Action, Expiration, CompetitionInfoMsg, Coin, FeeInformationForString, ModuleInstantiateInfo, DaoConfigForEmpty, MemberMsgForString, QueryMsg, EnrollmentFilter, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, FeeInformationForAddr, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
 import { ArenaCompetitionEnrollmentQueryClient, ArenaCompetitionEnrollmentClient } from "./ArenaCompetitionEnrollment.client";
 export const arenaCompetitionEnrollmentQueryKeys = {
   contract: ([{
@@ -265,7 +265,7 @@ export interface ArenaCompetitionEnrollmentEditEnrollmentMutation {
     minMembers?: FieldActionForUint64;
     name?: string;
     requiredTeamSize?: FieldActionForUint32;
-    useDaoHost?: DaoConfigForNull;
+    useDaoHost?: DaoConfigForEmpty;
   };
   args?: {
     fee?: number | StdFee | "auto";
@@ -411,7 +411,7 @@ export interface ArenaCompetitionEnrollmentCreateEnrollmentMutation {
     maxMembers: Uint64;
     minMembers?: Uint64;
     requiredTeamSize?: number;
-    useDaoHost?: DaoConfigForNull;
+    useDaoHost?: DaoConfigForEmpty;
   };
   args?: {
     fee?: number | StdFee | "auto";

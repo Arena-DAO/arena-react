@@ -359,7 +359,7 @@ export interface ArenaTeamEnrollmentsCreateEntryMutation {
   client: ArenaTeamEnrollmentsClient;
   msg: {
     categoryId?: Uint128;
-    daoConfig: DaoConfig_for_uint64;
+    daoConfig: DaoConfigForUint64;
     description: string;
     title: string;
   };

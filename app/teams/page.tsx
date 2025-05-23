@@ -12,7 +12,7 @@ import {
 } from "@heroui/react";
 import { formatDistanceToNow } from "date-fns";
 import { motion } from "framer-motion";
-import { ArrowLeft, Calendar, ChevronRight, Plus, Users } from "lucide-react";
+import { ArrowLeft, Calendar, ChevronRight, Shield, Users } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import { ArenaTeamEnrollmentsQueryClient } from "~/codegen/ArenaTeamEnrollments.client";
@@ -121,10 +121,10 @@ const TeamEnrollments = () => {
 
 						<Button
 							as={Link}
-							href={`/teams/create?categoryId=${categoryId}`}
+							href={`/teams/create?category=${categoryId}`}
 							color="primary"
 							variant="shadow"
-							startContent={<Plus size={18} />}
+							startContent={<Shield size={18} />}
 						>
 							Create Team Enrollment
 						</Button>

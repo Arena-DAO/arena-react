@@ -9,7 +9,7 @@ import {
 	Link,
 } from "@heroui/react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ChevronRight, Swords, Trophy, Users } from "lucide-react";
+import { ArrowLeft, ChevronRight, Shield, Swords, Trophy } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import { CategoryProvider } from "~/contexts/CategoryContext";
@@ -172,7 +172,7 @@ const Compete = () => {
 									href={`/teams?category=${category}`}
 									color="primary"
 									variant="shadow"
-									startContent={<Users size={18} />}
+									startContent={<Shield size={18} />}
 									className="min-w-max whitespace-nowrap"
 								>
 									Find Teams

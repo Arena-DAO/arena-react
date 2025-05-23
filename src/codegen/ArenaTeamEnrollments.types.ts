@@ -40,11 +40,13 @@ export type Uint128 = string;
 export type DaoConfigForUint64 = {
   cw4_voting_code_id: number;
   dao_code_id: number;
+  image_url?: string | null;
   max_voting_period: Duration;
   prepropose_single_code_id: number;
   proposal_single_code_id: number;
   threshold: Threshold;
-} | number;
+  extension: number
+};
 export type Duration = {
   height: number;
 } | {

@@ -4,6 +4,8 @@
 * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
 */
 
+import { Empty } from "./ArenaWagerModule.types";
+
 export interface InstantiateMsg {
   owner: string;
 }
@@ -19,7 +21,7 @@ export type ExecuteMsg = {
     max_members: Uint64;
     min_members?: Uint64 | null;
     required_team_size?: number | null;
-    use_dao_host?: DaoConfigForNull | null;
+    use_dao_host?: DaoConfigForEmpty | null;
   };
 } | {
   finalize: {
@@ -57,7 +59,7 @@ export type ExecuteMsg = {
     min_members?: FieldActionForUint64 | null;
     name?: string | null;
     required_team_size?: FieldActionForUint32 | null;
-    use_dao_host?: DaoConfigForNull | null;
+    use_dao_host?: DaoConfigForEmpty | null;
   };
 } | {
   revert: {
@@ -200,9 +202,10 @@ export interface ModuleInstantiateInfo {
   msg: Binary;
   salt?: Binary | null;
 }
-export interface DaoConfigForNull {
+export interface DaoConfigForEmpty {
   cw4_voting_code_id: number;
   dao_code_id: number;
+  image_url?: string | null;
   max_voting_period: Duration;
   prepropose_single_code_id: number;
   proposal_single_code_id: number;
@@ -258,7 +261,7 @@ export interface EnrollmentEntryResponse {
   max_members: Uint64;
   min_members?: Uint64 | null;
   required_team_size?: number | null;
-  use_dao_host?: DaoConfigForNull | null;
+  use_dao_host?: DaoConfigForEmpty | null;
 }
 export interface CompetitionInfoResponse {
   additional_layered_fees?: FeeInformationForAddr[] | null;

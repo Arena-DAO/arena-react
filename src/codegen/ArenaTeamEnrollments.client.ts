@@ -160,7 +160,7 @@ export interface ArenaTeamEnrollmentsInterface extends ArenaTeamEnrollmentsReadO
     title
   }: {
     categoryId?: Uint128;
-    daoConfig: DaoConfig_for_uint64;
+    daoConfig: DaoConfigForUint64;
     description: string;
     title: string;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
@@ -215,7 +215,7 @@ export class ArenaTeamEnrollmentsClient extends ArenaTeamEnrollmentsQueryClient 
     title
   }: {
     categoryId?: Uint128;
-    daoConfig: DaoConfig_for_uint64;
+    daoConfig: DaoConfigForUint64;
     description: string;
     title: string;
   }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
