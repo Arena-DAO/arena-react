@@ -11,12 +11,9 @@ export interface InstantiateMsg {
 }
 export interface MemberBalanceUnchecked {
   addr: string;
-  balance: BalanceUnchecked;
-}
-export interface BalanceUnchecked {
-  cw20?: Cw20Coin[] | null;
-  cw721?: Cw721Collection[] | null;
-  native?: Coin[] | null;
+  cw20?: Cw20Coin[];
+  cw721?: Cw721Collection[];
+  native?: Coin[];
 }
 export interface Cw20Coin {
   address: string;
@@ -29,7 +26,6 @@ export interface Cw721Collection {
 export interface Coin {
   amount: Uint128;
   denom: string;
-  [k: string]: unknown;
 }
 export type ExecuteMsg = {
   withdraw: {
@@ -59,6 +55,8 @@ export type ExecuteMsg = {
     transfer_ownership?: TransferEscrowOwnershipMsg | null;
     value: boolean;
   };
+} | {
+  claw: {};
 } | {
   update_ownership: Action;
 };
@@ -150,31 +148,22 @@ export type QueryMsg = {
 export type MigrateMsg = {
   from_compatible: {};
 };
-export type NullableBalanceVerified = BalanceVerified | null;
-export type Addr = string;
 export interface BalanceVerified {
-  cw20?: Cw20CoinVerified[] | null;
-  cw721?: Cw721CollectionVerified[] | null;
-  native?: Coin[] | null;
+  cw20?: Record<string, Uint128>;
+  cw721?: Record<string, Uint128>
+  native?: Record<string, Uint128>
 }
-export interface Cw20CoinVerified {
-  address: Addr;
-  amount: Uint128;
-}
-export interface Cw721CollectionVerified {
-  address: Addr;
-  token_ids: string[];
-}
+export type Addr = string;
 export type ArrayOfMemberBalanceChecked = MemberBalanceChecked[];
 export interface MemberBalanceChecked {
   addr: Addr;
   balance: BalanceVerified;
 }
 export interface DumpStateResponse {
-  balance?: BalanceVerified | null;
-  due?: BalanceVerified | null;
+  balance: BalanceVerified;
+  due: BalanceVerified;
   is_locked: boolean;
-  total_balance?: BalanceVerified | null;
+  total_balance: BalanceVerified;
 }
 export type Boolean = boolean;
 export interface OwnershipForString {

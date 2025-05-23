@@ -12,7 +12,6 @@ export interface InstantiateMsg {
 export interface Coin {
   amount: Uint128;
   denom: string;
-  [k: string]: unknown;
 }
 export type ExecuteMsg = {
   set_profile: {

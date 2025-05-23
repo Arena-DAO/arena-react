@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ExecuteMsg, Uint128, Timestamp, Uint64, CompetitionType, Decimal, EliminationType, EscrowContractInfo, Binary, Admin, Duration, Threshold, PercentageThreshold, Action, Expiration, CompetitionInfoMsg, Coin, FeeInformationForString, ModuleInstantiateInfo, DaoConfig, MemberMsgForString, QueryMsg, EnrollmentFilter, MigrateMsg, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, FeeInformationForAddr, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
+import { InstantiateMsg, ExecuteMsg, Uint128, Timestamp, Uint64, CompetitionType, Decimal, EliminationType, EscrowContractInfo, Binary, Admin, Duration, Threshold, PercentageThreshold, FieldActionForString, FieldActionForUint64, FieldActionForUint32, MigrateMsg, Action, Expiration, CompetitionInfoMsg, Coin, FeeInformationForString, ModuleInstantiateInfo, DaoConfigForEmpty, MemberMsgForString, QueryMsg, EnrollmentFilter, Addr, SudoMsg, EnrollmentEntryResponse, CompetitionInfoResponse, FeeInformationForAddr, ArrayOfEnrollmentEntryResponse, Boolean, OwnershipForString } from "./ArenaCompetitionEnrollment.types";
 export interface ArenaCompetitionEnrollmentReadOnlyInterface {
   contractAddress: string;
   enrollments: ({
@@ -124,7 +124,7 @@ export interface ArenaCompetitionEnrollmentInterface extends ArenaCompetitionEnr
     maxMembers: Uint64;
     minMembers?: Uint64;
     requiredTeamSize?: number;
-    useDaoHost?: DaoConfig;
+    useDaoHost?: DaoConfigForEmpty;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   finalize: ({
     id
@@ -159,6 +159,47 @@ export interface ArenaCompetitionEnrollmentInterface extends ArenaCompetitionEnr
     id: Uint128;
     rankings: MemberMsgForString[];
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
+  editEnrollment: ({
+    banner,
+    date,
+    description,
+    duration,
+    durationBefore,
+    id,
+    maxMembers,
+    minMembers,
+    name,
+    requiredTeamSize,
+    useDaoHost
+  }: {
+    banner?: FieldActionForString;
+    date?: Timestamp;
+    description?: string;
+    duration?: number;
+    durationBefore?: number;
+    id: Uint128;
+    maxMembers?: Uint64;
+    minMembers?: FieldActionForUint64;
+    name?: string;
+    requiredTeamSize?: FieldActionForUint32;
+    useDaoHost?: DaoConfigForEmpty;
+  }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
+  revert: ({
+    id
+  }: {
+    id: Uint128;
+  }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
+  migrateEscrow: ({
+    escrow,
+    escrowCodeId,
+    id,
+    msg
+  }: {
+    escrow: string;
+    escrowCodeId: number;
+    id: Uint128;
+    msg: MigrateMsg;
+  }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   updateOwnership: (action: Action, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
 }
 export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollmentQueryClient implements ArenaCompetitionEnrollmentInterface {
@@ -176,6 +217,9 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
     this.withdraw = this.withdraw.bind(this);
     this.forceWithdraw = this.forceWithdraw.bind(this);
     this.setRankings = this.setRankings.bind(this);
+    this.editEnrollment = this.editEnrollment.bind(this);
+    this.revert = this.revert.bind(this);
+    this.migrateEscrow = this.migrateEscrow.bind(this);
     this.updateOwnership = this.updateOwnership.bind(this);
   }
   createEnrollment = async ({
@@ -201,7 +245,7 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
     maxMembers: Uint64;
     minMembers?: Uint64;
     requiredTeamSize?: number;
-    useDaoHost?: DaoConfig;
+    useDaoHost?: DaoConfigForEmpty;
   }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
     return await this.client.execute(this.sender, this.contractAddress, {
       create_enrollment: {
@@ -283,6 +327,78 @@ export class ArenaCompetitionEnrollmentClient extends ArenaCompetitionEnrollment
       set_rankings: {
         id,
         rankings
+      }
+    }, fee_, memo_, funds_);
+  };
+  editEnrollment = async ({
+    banner,
+    date,
+    description,
+    duration,
+    durationBefore,
+    id,
+    maxMembers,
+    minMembers,
+    name,
+    requiredTeamSize,
+    useDaoHost
+  }: {
+    banner?: FieldActionForString;
+    date?: Timestamp;
+    description?: string;
+    duration?: number;
+    durationBefore?: number;
+    id: Uint128;
+    maxMembers?: Uint64;
+    minMembers?: FieldActionForUint64;
+    name?: string;
+    requiredTeamSize?: FieldActionForUint32;
+    useDaoHost?: DaoConfigForEmpty;
+  }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      edit_enrollment: {
+        banner,
+        date,
+        description,
+        duration,
+        duration_before: durationBefore,
+        id,
+        max_members: maxMembers,
+        min_members: minMembers,
+        name,
+        required_team_size: requiredTeamSize,
+        use_dao_host: useDaoHost
+      }
+    }, fee_, memo_, funds_);
+  };
+  revert = async ({
+    id
+  }: {
+    id: Uint128;
+  }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      revert: {
+        id
+      }
+    }, fee_, memo_, funds_);
+  };
+  migrateEscrow = async ({
+    escrow,
+    escrowCodeId,
+    id,
+    msg
+  }: {
+    escrow: string;
+    escrowCodeId: number;
+    id: Uint128;
+    msg: MigrateMsg;
+  }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      migrate_escrow: {
+        escrow,
+        escrow_code_id: escrowCodeId,
+        id,
+        msg
       }
     }, fee_, memo_, funds_);
   };

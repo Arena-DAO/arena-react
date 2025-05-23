@@ -19,6 +19,7 @@ const envSchema = z.object({
 	ARENA_PAYMENT_REGISTRY_ADDRESS: z.string(),
 	ARENA_TOKEN_GATEWAY_ADDRESS: z.string(),
 	ARENA_DISCORD_IDENTITY_ADDRESS: z.string().optional(),
+	ARENA_TEAM_ENROLLMENTS_ADDRESS: z.string(),
 	DAO_DAO_URL: z.string(),
 	DOCS_URL: z.string(),
 	RPC_URL: z.string(),
@@ -71,6 +72,8 @@ const getEnv = (): Env => {
 				process.env.NEXT_PUBLIC_ARENA_TOKEN_GATEWAY_ADDRESS,
 			ARENA_DISCORD_IDENTITY_ADDRESS:
 				process.env.NEXT_PUBLIC_ARENA_DISCORD_IDENTITY_ADDRESS,
+			ARENA_TEAM_ENROLLMENTS_ADDRESS:
+				process.env.NEXT_PUBLIC_ARENA_TEAM_ENROLLMENTS_ADDRESS,
 			DAO_DAO_URL: process.env.NEXT_PUBLIC_DAO_DAO_URL,
 			DOCS_URL: process.env.NEXT_PUBLIC_DOCS_URL,
 			RPC_URL: process.env.NEXT_PUBLIC_RPC_URL,

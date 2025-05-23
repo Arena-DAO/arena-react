@@ -20,11 +20,15 @@ const ImageUploader = forwardRef<ImageUploaderRef, ImageUploaderProps>(
 		const [uploading, setUploading] = useState(false);
 		const [selectedFile, setSelectedFile] = useState<File | null>(null);
 		const [sizeError, setSizeError] = useState<string | null>(null);
+		const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
+		const [hasChanged, setHasChanged] = useState(false);
 
 		useEffect(() => {
 			if (!field.value) {
 				setSelectedFile(null);
 				setSizeError(null);
+				setUploadedUrl(null);
+				setHasChanged(false);
 			}
 		}, [field.value]);
 
@@ -40,11 +44,26 @@ const ImageUploader = forwardRef<ImageUploaderRef, ImageUploaderProps>(
 
 			setSizeError(null);
 			setSelectedFile(file);
+			setHasChanged(true);
+			setUploadedUrl(null); // Reset uploaded URL when new file is selected
 			field.onChange(URL.createObjectURL(file));
 		};
 
 		const uploadToS3 = async (): Promise<string | null> => {
-			if (!selectedFile) return field.value;
+			// If no file selected, return current field value (could be existing URL)
+			if (!selectedFile) {
+				return field.value || null;
+			}
+
+			// If we already uploaded this file and nothing changed, return the uploaded URL
+			if (uploadedUrl && !hasChanged) {
+				return uploadedUrl;
+			}
+
+			// If we have an uploaded URL but the file hasn't changed, return it
+			if (uploadedUrl && selectedFile && !hasChanged) {
+				return uploadedUrl;
+			}
 
 			try {
 				setUploading(true);
@@ -76,6 +95,13 @@ const ImageUploader = forwardRef<ImageUploaderRef, ImageUploaderProps>(
 				if (!uploadResponse.ok) {
 					throw new Error("Failed to upload image");
 				}
+
+				// Store the uploaded URL and mark as unchanged
+				setUploadedUrl(imageUrl);
+				setHasChanged(false);
+
+				// Update the field value to the actual uploaded URL
+				field.onChange(imageUrl);
 
 				return imageUrl;
 			} catch (err) {

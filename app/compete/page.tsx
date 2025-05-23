@@ -9,7 +9,7 @@ import {
 	Link,
 } from "@heroui/react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ChevronRight, Plus, Trophy } from "lucide-react";
+import { ArrowLeft, ChevronRight, Shield, Swords, Trophy } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import { CategoryProvider } from "~/contexts/CategoryContext";
@@ -94,19 +94,21 @@ const Compete = () => {
 			<div className="container mx-auto space-y-6 px-4 py-6 md:space-y-8 md:py-8">
 				{/* Header Section */}
 				<div className="flex flex-col gap-4 md:gap-6">
-					<Breadcrumbs
-						separator={<ChevronRight className="opacity-50" size={16} />}
-						className="ml-1 overflow-x-auto"
-					>
-						{breadcrumbItems.map((item) => (
-							<BreadcrumbItem
-								key={item.title}
-								href={item.url ? `/compete?category=${item.url}` : "/compete"}
-							>
-								{item.title}
-							</BreadcrumbItem>
-						))}
-					</Breadcrumbs>
+					<div className="flex flex-wrap items-center justify-between">
+						<Breadcrumbs
+							separator={<ChevronRight className="opacity-50" size={16} />}
+							className="ml-1 overflow-x-auto"
+						>
+							{breadcrumbItems.map((item) => (
+								<BreadcrumbItem
+									key={item.title}
+									href={item.url ? `/compete?category=${item.url}` : "/compete"}
+								>
+									{item.title}
+								</BreadcrumbItem>
+							))}
+						</Breadcrumbs>
+					</div>
 
 					<motion.h1
 						initial={{ opacity: 0, y: -10 }}
@@ -164,24 +166,28 @@ const Compete = () => {
 							<h2 className="font-bold text-xl md:text-2xl">
 								Available Competitions
 							</h2>
-							<Button
-								as={Link}
-								href={`/compete/create?category=${category}`}
-								color="primary"
-								variant="shadow"
-								className="min-w-max whitespace-nowrap"
-								endContent={
-									<motion.div
-										initial={{ rotate: 0 }}
-										whileHover={{ rotate: 90 }}
-										transition={{ duration: 0.2 }}
-									>
-										<Plus />
-									</motion.div>
-								}
-							>
-								Create Competition
-							</Button>
+							<div className="flex gap-2">
+								<Button
+									as={Link}
+									href={`/teams?category=${category}`}
+									color="primary"
+									variant="shadow"
+									startContent={<Shield size={18} />}
+									className="min-w-max whitespace-nowrap"
+								>
+									Find Teams
+								</Button>
+								<Button
+									as={Link}
+									href={`/compete/create?category=${category}`}
+									color="primary"
+									variant="shadow"
+									className="min-w-max whitespace-nowrap"
+									startContent={<Swords size={18} />}
+								>
+									Create Competition
+								</Button>
+							</div>
 						</div>
 						<CategoryProvider value={categoryItem.url}>
 							<CompetitionEnrollmentItems category={categoryItem} />

@@ -14,6 +14,7 @@ import {
 import { type InfiniteData, useQueryClient } from "@tanstack/react-query";
 import type { PropsWithChildren } from "react";
 
+import { Coin } from "cosmjs-types/cosmos/base/v1beta1/coin";
 import { Vault } from "lucide-react";
 import {
 	ArenaEscrowClient,
@@ -86,20 +87,23 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 
 			const msgs: ExecuteInstruction[] = [];
 
-			if (data.due.native && data.due.native.length > 0) {
+			if (data.due.native && Object.keys(data.due.native).length > 0) {
+				const funds = Object.entries(data.due.native).map(([denom, amount]) =>
+					Coin.fromPartial({ denom, amount }),
+				);
 				msgs.push({
 					contractAddress: escrow,
 					msg: { receive_native: {} } as EscrowExecuteMsg,
-					funds: data.due.native,
+					funds,
 				});
 			}
-			if (data.due.cw20 && data.due.cw20.length > 0) {
+			if (data.due.cw20 && Object.keys(data.due.cw20).length > 0) {
 				msgs.push(
-					...data.due.cw20.map((x) => {
+					...Object.entries(data.due.cw20).map(([address, amount]) => {
 						return {
-							contractAddress: x.address,
+							contractAddress: address,
 							msg: {
-								send: { amount: x.amount, contract: escrow, msg: "" },
+								send: { amount: amount, contract: escrow, msg: "" },
 							} as Cw20ExecuteMsg,
 						};
 					}),
