@@ -2,7 +2,7 @@
 "use client";
 
 import Profile from "@/components/Profile";
-import { Avatar, Card, CardBody, Progress } from "@heroui/react";
+import { Avatar, Card, CardBody } from "@heroui/react";
 import { formatDistanceToNow } from "date-fns";
 import { motion } from "framer-motion";
 import { Calendar, Shield, Target, Users } from "lucide-react";
@@ -139,31 +139,6 @@ const TeamEnrollmentCard = ({ entry }: TeamEnrollmentCardProps) => {
 								</div>
 							</div>
 						</div>
-
-						{/* Approval Progress */}
-						{entry.applicants_count > 0 && (
-							<div className="mb-4">
-								<div className="mb-2 flex items-center justify-between">
-									<span className="font-medium text-default-600 text-xs">
-										Approval Rate
-									</span>
-									<span className="font-bold text-success text-xs">
-										{Math.round(approvalRate)}%
-									</span>
-								</div>
-								<Progress
-									value={approvalRate}
-									color="success"
-									size="sm"
-									className="max-w-full"
-									classNames={{
-										track: "border border-default-200",
-										indicator:
-											"bg-gradient-to-r from-success-400 to-success-600",
-									}}
-								/>
-							</div>
-						)}
 
 						{/* Creator Profile */}
 						<div className="mb-4">

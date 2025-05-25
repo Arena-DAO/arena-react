@@ -14,6 +14,8 @@ import {
 	CardHeader,
 	Input,
 	Link,
+	Select,
+	SelectItem,
 	Spinner,
 	Textarea,
 	addToast,
@@ -23,8 +25,11 @@ import { motion } from "framer-motion";
 import {
 	ArrowLeft,
 	ChevronRight,
+	Clock,
+	ExternalLink,
 	Image as ImageIcon,
 	Shield,
+	Users,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
@@ -36,7 +41,7 @@ import type { TeamDaoConfig } from "~/codegen/ArenaTeamEnrollments.types";
 import { type CategoryItem, useCategoryMap } from "~/hooks/useCategoryMap";
 import { useEnv } from "~/hooks/useEnv";
 
-// Zod schema for form validation
+// Zod schema for form validation - aligned with actual usage
 const createTeamSchema = z.object({
 	title: z
 		.string()
@@ -52,14 +57,35 @@ const createTeamSchema = z.object({
 	votingPeriodDays: z
 		.number()
 		.min(1, "Voting period must be at least 1 day")
-		.max(30, "Voting period cannot exceed 30 days"),
+		.max(30, "Voting period cannot exceed 30 days")
+		.default(1),
 	approvalThreshold: z
 		.number()
-		.min(1, "Threshold must be at least 1%")
-		.max(100, "Threshold cannot exceed 100%"),
+		.min(50, "Threshold must be at least 50%")
+		.max(100, "Threshold cannot exceed 100%")
+		.default(100),
 });
 
 type CreateTeamForm = z.infer<typeof createTeamSchema>;
+
+// Preset options for common configurations
+const VOTING_PERIOD_OPTIONS = [
+	{ value: 1, label: "1 Day", description: "Quick decisions" },
+	{ value: 3, label: "3 Days", description: "Standard period" },
+	{ value: 7, label: "1 Week", description: "Extended discussion" },
+	{ value: 14, label: "2 Weeks", description: "Major decisions" },
+];
+
+const THRESHOLD_OPTIONS = [
+	{
+		value: 100,
+		label: "100%",
+		description: "Unanimous (Recommended for new teams)",
+	},
+	{ value: 75, label: "75%", description: "Super majority" },
+	{ value: 66, label: "66%", description: "Two-thirds majority" },
+	{ value: 51, label: "51%", description: "Simple majority" },
+];
 
 const CreateTeamEnrollment = () => {
 	const router = useRouter();
@@ -103,6 +129,7 @@ const CreateTeamEnrollment = () => {
 		control,
 		register,
 		handleSubmit,
+		watch,
 		formState: { errors, isValid },
 	} = useForm<CreateTeamForm>({
 		resolver: zodResolver(createTeamSchema),
@@ -110,11 +137,15 @@ const CreateTeamEnrollment = () => {
 			title: "",
 			description: "",
 			teamImageUrl: "",
-			votingPeriodDays: 1,
-			approvalThreshold: 51,
+			votingPeriodDays: 1, // Default to 1 day
+			approvalThreshold: 100, // Default to 100% (unanimous)
 		},
 		mode: "onChange",
 	});
+
+	// Watch form values for dynamic descriptions
+	const watchVotingPeriod = watch("votingPeriodDays");
+	const watchThreshold = watch("approvalThreshold");
 
 	const onSubmit = async (data: CreateTeamForm) => {
 		if (!walletAddress || !categoryItem?.category_id) return;
@@ -156,7 +187,6 @@ const CreateTeamEnrollment = () => {
 				env.ARENA_TEAM_ENROLLMENTS_ADDRESS,
 			);
 
-			console.log(data.title, data.description, daoConfig);
 			await createEntry({
 				client: enrollmentClient,
 				msg: {
@@ -273,12 +303,48 @@ const CreateTeamEnrollment = () => {
 					{/* Basic Information */}
 					<Card>
 						<CardHeader className="px-6 py-4">
-							<h2 className="font-bold text-xl">Team Information</h2>
+							<div className="flex items-center gap-2">
+								<Users size={20} className="text-primary" />
+								<h2 className="font-bold text-xl">Team Information</h2>
+							</div>
 						</CardHeader>
 						<CardBody className="space-y-6 px-6 py-4">
-							<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-								{/* Left Column - Text Inputs */}
-								<div className="space-y-6">
+							<div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+								{/* Left Column - Team Logo */}
+								<div className="lg:col-span-1">
+									<Controller
+										name="teamImageUrl"
+										control={control}
+										render={({ field, fieldState }) => (
+											<div className="space-y-4">
+												<ImageUploader
+													field={field}
+													error={fieldState.error}
+													label="Team Logo"
+													startContent={
+														<ImageIcon size={16} className="text-default-400" />
+													}
+													ref={teamImageRef}
+													description="Square image recommended for best results"
+												/>
+												{field.value && (
+													<div className="flex justify-center">
+														<div className="h-24 w-24 rounded-xl border-2 border-default-200 bg-default-50 p-1">
+															<img
+																src={field.value}
+																alt="Team logo preview"
+																className="h-full w-full rounded-lg object-cover"
+															/>
+														</div>
+													</div>
+												)}
+											</div>
+										)}
+									/>
+								</div>
+
+								{/* Right Column - Text Inputs */}
+								<div className="space-y-6 lg:col-span-2">
 									<Input
 										{...register("title")}
 										label="Team Name"
@@ -288,6 +354,9 @@ const CreateTeamEnrollment = () => {
 										isInvalid={!!errors.title}
 										isRequired
 										variant="bordered"
+										startContent={
+											<Shield size={16} className="text-default-400" />
+										}
 									/>
 
 									<Textarea
@@ -297,41 +366,10 @@ const CreateTeamEnrollment = () => {
 										description="Provide details about your team's objectives, required skills, experience level, and expectations for new members"
 										errorMessage={errors.description?.message}
 										isInvalid={!!errors.description}
-										minRows={4}
-										maxRows={8}
+										minRows={6}
+										maxRows={10}
 										isRequired
 										variant="bordered"
-									/>
-								</div>
-
-								{/* Right Column - Team Image */}
-								<div className="space-y-6">
-									<Controller
-										name="teamImageUrl"
-										control={control}
-										render={({ field, fieldState }) => (
-											<div>
-												<ImageUploader
-													field={field}
-													error={fieldState.error}
-													label="Team Logo"
-													startContent={
-														<ImageIcon size={16} className="text-default-400" />
-													}
-													ref={teamImageRef}
-													description="Square image recommended (optional)"
-												/>
-												{field.value && (
-													<div className="mt-3 h-24 w-24 rounded-lg border border-default-200 p-1">
-														<img
-															src={field.value}
-															alt="Team logo preview"
-															className="h-full w-full rounded-md object-cover"
-														/>
-													</div>
-												)}
-											</div>
-										)}
 									/>
 								</div>
 							</div>
@@ -342,8 +380,11 @@ const CreateTeamEnrollment = () => {
 					<Card>
 						<CardHeader className="px-6 py-4">
 							<div>
-								<h2 className="font-bold text-xl">Team Governance</h2>
-								<p className="mt-1 text-sm opacity-70">
+								<div className="mb-2 flex items-center gap-2">
+									<Clock size={20} className="text-primary" />
+									<h2 className="font-bold text-xl">Team Governance</h2>
+								</div>
+								<p className="text-sm opacity-70">
 									Configure how your team will make decisions and vote on
 									proposals
 								</p>
@@ -351,43 +392,108 @@ const CreateTeamEnrollment = () => {
 						</CardHeader>
 						<CardBody className="space-y-6 px-6 py-4">
 							<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-								<Input
-									{...register("votingPeriodDays", { valueAsNumber: true })}
-									type="number"
-									label="Voting Period"
-									placeholder="7"
-									description="How many days team members have to vote on proposals"
-									errorMessage={errors.votingPeriodDays?.message}
-									isInvalid={!!errors.votingPeriodDays}
-									min={1}
-									max={30}
-									endContent={
-										<span className="text-default-400 text-small">day(s)</span>
-									}
-									variant="bordered"
+								{/* Voting Period */}
+								<Controller
+									name="votingPeriodDays"
+									control={control}
+									render={({ field }) => (
+										<Select
+											label="Voting Period"
+											placeholder="Select voting duration"
+											description={`Proposals will be open for ${watchVotingPeriod} day${watchVotingPeriod !== 1 ? "s" : ""}`}
+											errorMessage={errors.votingPeriodDays?.message}
+											isInvalid={!!errors.votingPeriodDays}
+											variant="bordered"
+											selectedKeys={field.value ? [field.value.toString()] : []}
+											onSelectionChange={(keys) => {
+												const value = Array.from(keys)[0] as string;
+												field.onChange(Number.parseInt(value));
+											}}
+											startContent={
+												<Clock size={16} className="text-default-400" />
+											}
+										>
+											{VOTING_PERIOD_OPTIONS.map((option) => (
+												<SelectItem
+													key={option.value.toString()}
+													description={option.description}
+												>
+													{option.label}
+												</SelectItem>
+											))}
+										</Select>
+									)}
 								/>
 
-								<Input
-									{...register("approvalThreshold", { valueAsNumber: true })}
-									type="number"
-									label="Approval Threshold"
-									placeholder="51"
-									description="Percentage of votes needed for a proposal to pass"
-									errorMessage={errors.approvalThreshold?.message}
-									isInvalid={!!errors.approvalThreshold}
-									min={1}
-									max={100}
-									endContent={
-										<span className="text-default-400 text-small">%</span>
-									}
-									variant="bordered"
+								{/* Approval Threshold */}
+								<Controller
+									name="approvalThreshold"
+									control={control}
+									render={({ field }) => (
+										<Select
+											label="Approval Threshold"
+											placeholder="Select approval percentage"
+											description={`${watchThreshold}% of members must approve proposals`}
+											errorMessage={errors.approvalThreshold?.message}
+											isInvalid={!!errors.approvalThreshold}
+											variant="bordered"
+											selectedKeys={field.value ? [field.value.toString()] : []}
+											onSelectionChange={(keys) => {
+												const value = Array.from(keys)[0] as string;
+												field.onChange(Number.parseInt(value));
+											}}
+											startContent={
+												<Users size={16} className="text-default-400" />
+											}
+										>
+											{THRESHOLD_OPTIONS.map((option) => (
+												<SelectItem
+													key={option.value.toString()}
+													description={option.description}
+												>
+													{option.label}
+												</SelectItem>
+											))}
+										</Select>
+									)}
 								/>
 							</div>
+
+							{/* Governance Explanation */}
 							<Alert
-								color="primary"
 								variant="solid"
-								title="All approved
-										members get equal voting power"
+								title="Governance Rules"
+								description={
+									<div className="mt-2 space-y-2">
+										<p>• All approved members get equal voting power</p>
+										<p>
+											•{" "}
+											{watchThreshold === 100
+												? "Unanimous consent required"
+												: `${watchThreshold}% approval needed`}{" "}
+											for proposals to pass
+										</p>
+										<p>
+											• Voting period: {watchVotingPeriod} day
+											{watchVotingPeriod !== 1 ? "s" : ""}
+										</p>
+										<p className="mt-2 text-xs opacity-80">
+											💡 New teams often start with 100% approval threshold for
+											important decisions
+										</p>
+										<div className="flex items-center text-primary text-sm">
+											<Link
+												href={`${env.DAO_DAO_URL}/dao/create?chain=${env.CHAIN}`}
+												isExternal
+												className="flex items-center hover:underline"
+												size="sm"
+											>
+												Need more customization options? Visit DAO DAO
+												<ExternalLink size={12} className="ml-1" />
+											</Link>
+										</div>
+									</div>
+								}
 							/>
 						</CardBody>
 					</Card>
@@ -395,16 +501,26 @@ const CreateTeamEnrollment = () => {
 					{/* Submit Button */}
 					<div className="flex justify-end gap-2 pt-4">
 						<Button
+							as={Link}
+							href={`/teams?category=${categoryParam}`}
+							variant="bordered"
+							startContent={<ArrowLeft size={18} />}
+						>
+							Cancel
+						</Button>
+						<Button
 							type="submit"
 							color="primary"
 							variant="shadow"
+							size="lg"
 							startContent={
 								isSubmitting ? <Spinner size="sm" /> : <Shield size={18} />
 							}
 							isLoading={isSubmitting}
 							isDisabled={!isValid || isSubmitting}
+							className="min-w-[200px]"
 						>
-							Create Team Enrollment
+							{isSubmitting ? "Creating Team..." : "Create Team Enrollment"}
 						</Button>
 					</div>
 				</form>
