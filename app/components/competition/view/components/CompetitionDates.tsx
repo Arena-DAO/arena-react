@@ -13,16 +13,9 @@ interface CompetitionDatesProps {
 }
 
 const CompetitionDates: React.FC<CompetitionDatesProps> = React.memo(
-	({
-		competitionDateNanos,
-		duration,
-		deadlineBefore,
-		hideExpiration = false,
-	}) => {
+	({ competitionDateNanos, duration, deadlineBefore, hideExpiration = false }) => {
 		const competitionDate = nanosToZonedDateTime(BigInt(competitionDateNanos));
-		const expirationDate = !hideExpiration
-			? competitionDate.add({ seconds: duration })
-			: null;
+		const expirationDate = !hideExpiration ? competitionDate.add({ seconds: duration }) : null;
 		const registrationDeadline = deadlineBefore
 			? competitionDate.subtract({ seconds: deadlineBefore })
 			: null;
@@ -54,7 +47,7 @@ const CompetitionDates: React.FC<CompetitionDatesProps> = React.memo(
 				)}
 			</>
 		);
-	},
+	}
 );
 
 export default CompetitionDates;

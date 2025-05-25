@@ -68,9 +68,7 @@ const EnrollmentActionsButton: React.FC<EnrollmentActionsButtonProps> = ({
 	const queryClient = useQueryClient();
 
 	const [selectedOption, setSelectedOption] = useState(
-		new Set([
-			requiredTeamSize && requiredTeamSize > 1 ? "enrollTeam" : "enroll",
-		]),
+		new Set([requiredTeamSize && requiredTeamSize > 1 ? "enrollTeam" : "enroll"])
 	);
 	const selectedValue = Array.from(selectedOption)[0] ?? "enroll";
 
@@ -81,7 +79,7 @@ const EnrollmentActionsButton: React.FC<EnrollmentActionsButtonProps> = ({
 			cosmWasmClient &&
 			new ArenaCompetitionEnrollmentQueryClient(
 				cosmWasmClient,
-				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS
 			),
 		args: { addr: address || "", enrollmentId },
 		options: { enabled: !!cosmWasmClient && !!address },
@@ -110,7 +108,7 @@ const EnrollmentActionsButton: React.FC<EnrollmentActionsButtonProps> = ({
 			const enrollmentClient = new ArenaCompetitionEnrollmentClient(
 				client,
 				address,
-				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS
 			);
 
 			const mutation = type === "enroll" ? enrollMutation : withdrawMutation;
@@ -119,8 +117,7 @@ const EnrollmentActionsButton: React.FC<EnrollmentActionsButtonProps> = ({
 				{
 					client: enrollmentClient,
 					msg: { id: enrollmentId, team },
-					args:
-						type === "enroll" && entryFee ? { funds: [entryFee] } : undefined,
+					args: type === "enroll" && entryFee ? { funds: [entryFee] } : undefined,
 				},
 				{
 					onSuccess: async () => {
@@ -132,15 +129,13 @@ const EnrollmentActionsButton: React.FC<EnrollmentActionsButtonProps> = ({
 						queryClient.setQueryData(
 							arenaCompetitionEnrollmentQueryKeys.isMember(
 								env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
-								{ addr: team ?? address, enrollmentId },
+								{ addr: team ?? address, enrollmentId }
 							),
-							() => type === "enroll",
+							() => type === "enroll"
 						);
-						setSelectedOption(
-							new Set([type === "enroll" ? "withdraw" : "enroll"]),
-						);
+						setSelectedOption(new Set([type === "enroll" ? "withdraw" : "enroll"]));
 					},
-				},
+				}
 			);
 		} catch (error) {
 			console.error(error);
@@ -150,14 +145,11 @@ const EnrollmentActionsButton: React.FC<EnrollmentActionsButtonProps> = ({
 
 	const invalidateQueries = async () => {
 		await queryClient.invalidateQueries(
-			arenaCompetitionEnrollmentQueryKeys.enrollment(
-				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
-				{ enrollmentId },
-			),
+			arenaCompetitionEnrollmentQueryKeys.enrollment(env.ARENA_COMPETITION_ENROLLMENT_ADDRESS, {
+				enrollmentId,
+			})
 		);
-		await queryClient.invalidateQueries(
-			arenaGroupQueryKeys.members(groupContract),
-		);
+		await queryClient.invalidateQueries(arenaGroupQueryKeys.members(groupContract));
 	};
 
 	if (!address) {
@@ -189,10 +181,7 @@ const EnrollmentActionsButton: React.FC<EnrollmentActionsButtonProps> = ({
 				</Button>
 				<Dropdown placement="bottom-end">
 					<DropdownTrigger>
-						<Button
-							isIconOnly
-							color={selectedValue.includes("enroll") ? "success" : "danger"}
-						>
+						<Button isIconOnly color={selectedValue.includes("enroll") ? "success" : "danger"}>
 							<ChevronDown />
 						</Button>
 					</DropdownTrigger>
@@ -204,28 +193,16 @@ const EnrollmentActionsButton: React.FC<EnrollmentActionsButtonProps> = ({
 						disabledKeys={isFull ? ["enroll", "enrollTeam"] : []}
 						onSelectionChange={(keys) => setSelectedOption(getStringSet(keys))}
 					>
-						<DropdownItem
-							key="enroll"
-							description={actionDescriptionsMap.enroll}
-						>
+						<DropdownItem key="enroll" description={actionDescriptionsMap.enroll}>
 							{actionLabelsMap.enroll}
 						</DropdownItem>
-						<DropdownItem
-							key="enrollTeam"
-							description={actionDescriptionsMap.enrollTeam}
-						>
+						<DropdownItem key="enrollTeam" description={actionDescriptionsMap.enrollTeam}>
 							{actionLabelsMap.enrollTeam}
 						</DropdownItem>
-						<DropdownItem
-							key="withdraw"
-							description={actionDescriptionsMap.withdraw}
-						>
+						<DropdownItem key="withdraw" description={actionDescriptionsMap.withdraw}>
 							{actionLabelsMap.withdraw}
 						</DropdownItem>
-						<DropdownItem
-							key="withdrawTeam"
-							description={actionDescriptionsMap.withdrawTeam}
-						>
+						<DropdownItem key="withdrawTeam" description={actionDescriptionsMap.withdrawTeam}>
 							{actionLabelsMap.withdrawTeam}
 						</DropdownItem>
 					</DropdownMenu>
@@ -236,10 +213,7 @@ const EnrollmentActionsButton: React.FC<EnrollmentActionsButtonProps> = ({
 				onClose={onClose}
 				onOpenChange={onOpenChange}
 				action={(team) =>
-					handleAction(
-						selectedValue.includes("enroll") ? "enroll" : "withdraw",
-						team,
-					)
+					handleAction(selectedValue.includes("enroll") ? "enroll" : "withdraw", team)
 				}
 			/>
 		</>

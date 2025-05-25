@@ -33,9 +33,7 @@ const FormErrors: React.FC<FormErrorsProps> = ({ errors }) => {
 				<li key={key}>
 					{key}:
 					<ul className="list-disc pl-5">
-						{Object.entries(error).map(([subKey, subError]) =>
-							renderError(subError, subKey),
-						)}
+						{Object.entries(error).map(([subKey, subError]) => renderError(subError, subKey))}
 					</ul>
 				</li>
 			);
@@ -56,9 +54,7 @@ const FormErrors: React.FC<FormErrorsProps> = ({ errors }) => {
 			</CardHeader>
 			<CardBody>
 				<ul className="list-disc pl-5">
-					{Object.entries(errors).map(([key, error]) =>
-						renderError(error, key),
-					)}
+					{Object.entries(errors).map(([key, error]) => renderError(error, key))}
 				</ul>
 			</CardBody>
 		</Card>

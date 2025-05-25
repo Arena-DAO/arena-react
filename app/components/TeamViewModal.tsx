@@ -74,9 +74,7 @@ export default function TeamViewModal({ isOpen, onClose }: TeamViewModalProps) {
 		<Modal size="2xl" isOpen={isOpen} onClose={handleClose}>
 			<ModalContent>
 				<form onSubmit={handleSubmit(onSubmit)}>
-					<ModalHeader className="flex flex-col gap-1">
-						Enter DAO Address
-					</ModalHeader>
+					<ModalHeader className="flex flex-col gap-1">Enter DAO Address</ModalHeader>
 					<ModalBody>
 						<Alert description="Enter your DAO address to switch to Team Mode. This lets your team take actions, like signing up for competitions, using the team’s account instead of your personal one. When you sign up or take action, the team will be the one making decisions and receiving rewards, not individuals. You’ll be redirected to a page where your team can manage these actions together." />
 						<Controller
@@ -99,12 +97,7 @@ export default function TeamViewModal({ isOpen, onClose }: TeamViewModalProps) {
 						<Button variant="light" onPress={handleClose} type="button">
 							Cancel
 						</Button>
-						<Button
-							color="primary"
-							type="submit"
-							isLoading={isSubmitting}
-							className="shadow-glow"
-						>
+						<Button color="primary" type="submit" isLoading={isSubmitting} className="shadow-glow">
 							Open Team View
 						</Button>
 					</ModalFooter>

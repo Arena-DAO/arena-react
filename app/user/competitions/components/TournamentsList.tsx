@@ -17,18 +17,15 @@ const TournamentsList: React.FC<TournamentsListProps> = ({ hostAddress }) => {
 	const { data: cosmWasmClient } = useCosmWasmClient();
 
 	const tournamentsQuery = useInfiniteQuery({
-		queryKey: arenaTournamentModuleQueryKeys.competitions(
-			env.ARENA_TOURNAMENT_MODULE_ADDRESS,
-			{
-				filter: { host: hostAddress },
-			},
-		),
+		queryKey: arenaTournamentModuleQueryKeys.competitions(env.ARENA_TOURNAMENT_MODULE_ADDRESS, {
+			filter: { host: hostAddress },
+		}),
 		queryFn: async ({ pageParam = undefined }) => {
 			if (!cosmWasmClient) throw new Error("Could not get CosmWasm client");
 
 			const client = new ArenaTournamentModuleQueryClient(
 				cosmWasmClient,
-				env.ARENA_TOURNAMENT_MODULE_ADDRESS,
+				env.ARENA_TOURNAMENT_MODULE_ADDRESS
 			);
 
 			return client.competitions({
@@ -38,9 +35,7 @@ const TournamentsList: React.FC<TournamentsListProps> = ({ hostAddress }) => {
 			});
 		},
 		getNextPageParam: (lastPage) =>
-			lastPage.length === env.PAGINATION_LIMIT
-				? lastPage[lastPage.length - 1]?.id
-				: undefined,
+			lastPage.length === env.PAGINATION_LIMIT ? lastPage[lastPage.length - 1]?.id : undefined,
 		enabled: !!cosmWasmClient,
 	});
 
@@ -52,9 +47,7 @@ const TournamentsList: React.FC<TournamentsListProps> = ({ hostAddress }) => {
 		<div className="gap-4">
 			<div className="grid grid-cols-1 justify-items-center gap-10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 				{tournamentsQuery.data?.pages.map((page) =>
-					page.map((x) => (
-						<CompetitionCard key={x.id} competition={x} hideHost />
-					)),
+					page.map((x) => <CompetitionCard key={x.id} competition={x} hideHost />)
 				)}
 			</div>
 			{tournamentsQuery.hasNextPage && (
@@ -62,14 +55,10 @@ const TournamentsList: React.FC<TournamentsListProps> = ({ hostAddress }) => {
 					onPress={() => tournamentsQuery.fetchNextPage()}
 					disabled={tournamentsQuery.isFetchingNextPage}
 				>
-					{tournamentsQuery.isFetchingNextPage
-						? "Loading more..."
-						: "Load More"}
+					{tournamentsQuery.isFetchingNextPage ? "Loading more..." : "Load More"}
 				</Button>
 			)}
-			{(tournamentsQuery.data?.pages[0]?.length ?? 0) === 0 && (
-				<p>No tournaments found.</p>
-			)}
+			{(tournamentsQuery.data?.pages[0]?.length ?? 0) === 0 && <p>No tournaments found.</p>}
 		</div>
 	);
 };

@@ -36,19 +36,12 @@ interface GroupMemberProps {
 	enrollmentId?: string; // Optional enrollmentId for authorization
 }
 
-const GroupMembers: React.FC<GroupMemberProps> = ({
-	groupContract,
-	enrollmentId,
-}) => {
+const GroupMembers: React.FC<GroupMemberProps> = ({ groupContract, enrollmentId }) => {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
-	const [selectedMembers, setSelectedMembers] = useState<Set<string>>(
-		new Set(),
-	);
-	const [modifiedSeeds, setModifiedSeeds] = useState<Record<string, string>>(
-		{},
-	);
+	const [selectedMembers, setSelectedMembers] = useState<Set<string>>(new Set());
+	const [modifiedSeeds, setModifiedSeeds] = useState<Record<string, string>>({});
 	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
 	const queryClient = useQueryClient();
 
@@ -60,11 +53,7 @@ const GroupMembers: React.FC<GroupMemberProps> = ({
 		});
 	};
 
-	const handleSeedChange = (
-		addr: string,
-		value: string,
-		originalSeed: string,
-	) => {
+	const handleSeedChange = (addr: string, value: string, originalSeed: string) => {
 		setModifiedSeeds((prev) => {
 			if (value !== originalSeed) {
 				return { ...prev, [addr]: value };
@@ -86,25 +75,17 @@ const GroupMembers: React.FC<GroupMemberProps> = ({
 
 		return {
 			members: result,
-			nextCursor:
-				result.length === env.PAGINATION_LIMIT
-					? result[result.length - 1]
-					: undefined,
+			nextCursor: result.length === env.PAGINATION_LIMIT ? result[result.length - 1] : undefined,
 		};
 	};
 
-	const {
-		data,
-		fetchNextPage,
-		hasNextPage,
-		isFetchingNextPage,
-		isInitialLoading,
-	} = useInfiniteQuery({
-		queryKey: arenaGroupQueryKeys.members(groupContract, {}),
-		queryFn: fetchMembers,
-		getNextPageParam: (lastPage) => lastPage.nextCursor,
-		enabled: !!cosmWasmClient && isOpen,
-	});
+	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isInitialLoading } =
+		useInfiniteQuery({
+			queryKey: arenaGroupQueryKeys.members(groupContract, {}),
+			queryFn: fetchMembers,
+			getNextPageParam: (lastPage) => lastPage.nextCursor,
+			enabled: !!cosmWasmClient && isOpen,
+		});
 
 	const loadMore = useCallback(() => {
 		if (hasNextPage) {
@@ -112,12 +93,8 @@ const GroupMembers: React.FC<GroupMemberProps> = ({
 		}
 	}, [fetchNextPage, hasNextPage]);
 
-	const members = useMemo(
-		() => data?.pages.flatMap((page) => page.members) || [],
-		[data],
-	);
+	const members = useMemo(() => data?.pages.flatMap((page) => page.members) || [], [data]);
 
-	// biome-ignore lint/style/noNonNullAssertion: correct
 	const targetRef = React.useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
@@ -131,7 +108,7 @@ const GroupMembers: React.FC<GroupMemberProps> = ({
 			const enrollmentClient = new ArenaCompetitionEnrollmentClient(
 				client,
 				address,
-				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS
 			);
 
 			await enrollmentClient.forceWithdraw({
@@ -139,9 +116,7 @@ const GroupMembers: React.FC<GroupMemberProps> = ({
 				members: Array.from(selectedMembers),
 			});
 
-			await queryClient.invalidateQueries(
-				arenaGroupQueryKeys.members(groupContract, {}),
-			);
+			await queryClient.invalidateQueries(arenaGroupQueryKeys.members(groupContract, {}));
 
 			addToast({
 				color: "success",
@@ -164,7 +139,7 @@ const GroupMembers: React.FC<GroupMemberProps> = ({
 			const enrollmentClient = new ArenaCompetitionEnrollmentClient(
 				client,
 				address,
-				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS
 			);
 
 			await enrollmentClient.setRankings({
@@ -175,9 +150,7 @@ const GroupMembers: React.FC<GroupMemberProps> = ({
 				})),
 			});
 
-			await queryClient.invalidateQueries(
-				arenaGroupQueryKeys.members(groupContract, {}),
-			);
+			await queryClient.invalidateQueries(arenaGroupQueryKeys.members(groupContract, {}));
 
 			addToast({ color: "success", description: "Seeds updated successfully" });
 			setModifiedSeeds({});
@@ -224,16 +197,8 @@ const GroupMembers: React.FC<GroupMemberProps> = ({
 												step="1"
 												variant="flat"
 												readOnly={!enrollmentId}
-												value={
-													modifiedSeeds[member.addr]?.toString() ?? member.seed
-												}
-												onChange={(e) =>
-													handleSeedChange(
-														member.addr,
-														e.target.value,
-														member.seed,
-													)
-												}
+												value={modifiedSeeds[member.addr]?.toString() ?? member.seed}
+												onChange={(e) => handleSeedChange(member.addr, e.target.value, member.seed)}
 												placeholder="Enter seed"
 											/>
 										</TableCell>

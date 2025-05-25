@@ -140,19 +140,12 @@ const ProcessForm = ({
 
 			const client = await getSigningCosmWasmClient();
 
-			const competitionClient = new ArenaWagerModuleClient(
-				client,
-				address,
-				moduleAddr,
-			);
+			const competitionClient = new ArenaWagerModuleClient(client, address, moduleAddr);
 
 			const distribution = convertToDistribution(values.distribution);
 
 			if ("is_expired" in props) {
-				const arenaCoreClient = new ArenaCoreQueryClient(
-					client,
-					env.ARENA_CORE_ADDRESS,
-				);
+				const arenaCoreClient = new ArenaCoreQueryClient(client, env.ARENA_CORE_ADDRESS);
 
 				// Should cache this locally
 				const config = await arenaCoreClient.config();
@@ -195,10 +188,10 @@ const ProcessForm = ({
 										};
 									}
 									return old;
-								},
+								}
 							);
 						},
-					},
+					}
 				);
 			} else {
 				await processMutation.mutateAsync(
@@ -223,50 +216,44 @@ const ProcessForm = ({
 										return { ...old, status: "inactive" };
 									}
 									return old;
-								},
+								}
 							);
 
 							if ("escrow" in props && props.escrow) {
 								await queryClient.invalidateQueries(
 									arenaEscrowQueryKeys.dumpState(props.escrow, {
 										addr: address,
-									}),
+									})
 								);
-								await queryClient.invalidateQueries(
-									arenaEscrowQueryKeys.balances(props.escrow),
-								);
+								await queryClient.invalidateQueries(arenaEscrowQueryKeys.balances(props.escrow));
 							}
 
 							if (category?.category_id) {
 								const ratingAdjustmentsEvent = response.events.find((event) =>
 									event.attributes.find(
-										(attr) =>
-											attr.key === "action" && attr.value === "adjust_ratings",
-									),
+										(attr) => attr.key === "action" && attr.value === "adjust_ratings"
+									)
 								);
 								if (ratingAdjustmentsEvent) {
 									for (const attr of ratingAdjustmentsEvent.attributes) {
 										if (attr.key === "action") continue;
 
 										queryClient.setQueryData<string | undefined>(
-											arenaCoreQueryKeys.queryExtension(
-												env.ARENA_CORE_ADDRESS,
-												{
-													msg: {
-														rating: {
-															addr: attr.key,
-															category_id: category.category_id.toString(),
-														},
+											arenaCoreQueryKeys.queryExtension(env.ARENA_CORE_ADDRESS, {
+												msg: {
+													rating: {
+														addr: attr.key,
+														category_id: category.category_id.toString(),
 													},
 												},
-											),
-											() => attr.value,
+											}),
+											() => attr.value
 										);
 									}
 								}
 							}
 						},
-					},
+					}
 				);
 			}
 		} catch (e) {
@@ -275,7 +262,6 @@ const ProcessForm = ({
 		}
 	};
 
-	// biome-ignore lint/style/noNonNullAssertion: correct
 	const targetRef = React.useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
@@ -329,16 +315,14 @@ const ProcessForm = ({
 							</>
 						)}
 						<p>
-							List the addresses and share percentages of all members, and
-							provide an address for receiving any remaining funds. If no
-							members are provided, then funds will be refunded.
+							List the addresses and share percentages of all members, and provide an address for
+							receiving any remaining funds. If no members are provided, then funds will be
+							refunded.
 						</p>
 						<Card>
 							<CardBody className="space-y-2">
 								<div className="flex items-center space-x-2">
-									{remainderAddr && (
-										<Profile address={remainderAddr} justAvatar />
-									)}
+									{remainderAddr && <Profile address={remainderAddr} justAvatar />}
 									<Controller
 										control={control}
 										name="distribution.remainder_addr"
@@ -348,9 +332,7 @@ const ProcessForm = ({
 												autoFocus
 												isDisabled={isSubmitting}
 												isInvalid={!!errors.distribution?.remainder_addr}
-												errorMessage={
-													errors.distribution?.remainder_addr?.message
-												}
+												errorMessage={errors.distribution?.remainder_addr?.message}
 												{...field}
 											/>
 										)}
@@ -368,10 +350,7 @@ const ProcessForm = ({
 												<TableCell>
 													<div className="flex items-center space-x-2">
 														{percentages[i] && (
-															<Profile
-																address={percentages[i]?.addr}
-																justAvatar
-															/>
+															<Profile address={percentages[i]?.addr} justAvatar />
 														)}
 														<Controller
 															control={control}
@@ -380,14 +359,9 @@ const ProcessForm = ({
 																<Input
 																	label={`Member ${i + 1}`}
 																	isDisabled={isSubmitting}
-																	isInvalid={
-																		!!errors.distribution?.member_percentages?.[
-																			i
-																		]?.addr
-																	}
+																	isInvalid={!!errors.distribution?.member_percentages?.[i]?.addr}
 																	errorMessage={
-																		errors.distribution?.member_percentages?.[i]
-																			?.addr?.message
+																		errors.distribution?.member_percentages?.[i]?.addr?.message
 																	}
 																	{...field}
 																	className="min-w-80"
@@ -409,22 +383,16 @@ const ProcessForm = ({
 																label="Percentage"
 																isDisabled={isSubmitting}
 																isInvalid={
-																	!!errors.distribution?.member_percentages?.[i]
-																		?.percentage
+																	!!errors.distribution?.member_percentages?.[i]?.percentage
 																}
 																errorMessage={
-																	errors.distribution?.member_percentages?.[i]
-																		?.percentage?.message
+																	errors.distribution?.member_percentages?.[i]?.percentage?.message
 																}
 																endContent={<Percent />}
 																classNames={{ input: "text-right" }}
 																{...field}
 																value={field.value?.toString()}
-																onChange={(e) =>
-																	field.onChange(
-																		Number.parseFloat(e.target.value),
-																	)
-																}
+																onChange={(e) => field.onChange(Number.parseFloat(e.target.value))}
 																className="min-w-32 max-w-40"
 															/>
 														)}
@@ -448,16 +416,11 @@ const ProcessForm = ({
 								<div className="text-danger text-xs">
 									<p>{errors.distribution?.message}</p>
 									<p>{errors.distribution?.member_percentages?.message}</p>
-									<p>
-										{errors.distribution?.member_percentages?.root?.message}
-									</p>
+									<p>{errors.distribution?.member_percentages?.root?.message}</p>
 								</div>
 								<Progress
 									aria-label="Total Percentage"
-									value={percentages.reduce(
-										(acc, x) => acc + Number(x.percentage),
-										0,
-									)}
+									value={percentages.reduce((acc, x) => acc + Number(x.percentage), 0)}
 									color="primary"
 									showValueLabel
 								/>
@@ -475,10 +438,7 @@ const ProcessForm = ({
 						</Card>
 					</ModalBody>
 					<ModalFooter>
-						<Button
-							onPress={() => handleSubmit(onSubmit)()}
-							isLoading={isSubmitting}
-						>
+						<Button onPress={() => handleSubmit(onSubmit)()} isLoading={isSubmitting}>
 							Submit
 						</Button>
 					</ModalFooter>

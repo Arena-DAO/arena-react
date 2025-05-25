@@ -22,28 +22,17 @@ import _ from "lodash";
 import { Coins, ImagePlus, Trash } from "lucide-react";
 import React from "react";
 import { useEffect, useState } from "react";
-import {
-	Controller,
-	useFieldArray,
-	useForm,
-	useFormContext,
-} from "react-hook-form";
+import { Controller, useFieldArray, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
-import {
-	getBaseToken,
-	getCw20Asset,
-	getNativeAsset,
-} from "~/helpers/TokenHelpers";
+import { getBaseToken, getCw20Asset, getNativeAsset } from "~/helpers/TokenHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 
 const DueFormSchema = z
 	.object({
 		tokenType: z.enum(["native", "cw20", "cw721"]),
-		denomOrAddress: z
-			.string()
-			.min(1, { message: "Denom or address is required" }),
+		denomOrAddress: z.string().min(1, { message: "Denom or address is required" }),
 		amount: z.coerce
 			.number()
 			.positive()
@@ -62,10 +51,7 @@ const DueFormSchema = z
 				message: "Amount is required for fungible tokens",
 			});
 		}
-		if (
-			value.tokenType === "cw721" &&
-			(!value.tokenIds || value.tokenIds.length === 0)
-		) {
+		if (value.tokenType === "cw721" && (!value.tokenIds || value.tokenIds.length === 0)) {
 			context.addIssue({
 				path: ["tokenIds"],
 				code: z.ZodIssueCode.custom,
@@ -83,18 +69,11 @@ interface AddDueFormProps {
 	onClose: () => void;
 }
 
-const AddDueForm = ({
-	isOpen,
-	onOpenChange,
-	index,
-	onClose,
-}: AddDueFormProps) => {
+const AddDueForm = ({ isOpen, onOpenChange, index, onClose }: AddDueFormProps) => {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { assets } = useChain(env.CHAIN);
-	const { control: competitionControl, getValues } =
-		useFormContext<CreateCompetitionFormValues>();
-	// biome-ignore lint/style/noNonNullAssertion: correct
+	const { control: competitionControl, getValues } = useFormContext<CreateCompetitionFormValues>();
 	const targetRef = React.useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
@@ -143,8 +122,7 @@ const AddDueForm = ({
 	const watchTokenType = watch("tokenType");
 	const watchTokenIds = watch("tokenIds");
 
-	const [debouncedDenomOrAddress, setDebouncedDenomOrAddress] =
-		useState(watchDenomOrAddress);
+	const [debouncedDenomOrAddress, setDebouncedDenomOrAddress] = useState(watchDenomOrAddress);
 	const [isSubmissionLoading, setIsSubmissionLoading] = useState(false);
 
 	// Only set up debouncing - no validation
@@ -196,12 +174,12 @@ const AddDueForm = ({
 			cosmWasmClient,
 			values.denomOrAddress,
 			assets?.assets,
-			env.BECH32_PREFIX,
+			env.BECH32_PREFIX
 		);
 
 		if (
 			getValues(`directParticipation.dues.${index}.balance.cw20`)?.find((x) =>
-				cw20.denom_units.find((y) => y.denom === x.address),
+				cw20.denom_units.find((y) => y.denom === x.address)
 			)
 		) {
 			throw new Error("This token has already been added");
@@ -213,22 +191,18 @@ const AddDueForm = ({
 
 		const token = getBaseToken(
 			{ denom: values.denomOrAddress, amount: values.amount.toString() },
-			cw20,
+			cw20
 		);
 
 		appendCw20({ address: token.denom, amount: token.amount });
 	};
 
 	const handleNativeSubmission = async (values: DueFormValues) => {
-		const native = await getNativeAsset(
-			values.denomOrAddress,
-			env.RPC_URL,
-			assets?.assets,
-		);
+		const native = await getNativeAsset(values.denomOrAddress, env.RPC_URL, assets?.assets);
 
 		if (
 			getValues(`directParticipation.dues.${index}.balance.native`)?.find((x) =>
-				native.denom_units.find((y) => y.denom === x.denom),
+				native.denom_units.find((y) => y.denom === x.denom)
 			)
 		) {
 			throw new Error("This token has already been added");
@@ -240,7 +214,7 @@ const AddDueForm = ({
 
 		const token = getBaseToken(
 			{ denom: values.denomOrAddress, amount: values.amount.toString() },
-			native,
+			native
 		);
 
 		appendNative({ denom: token.denom, amount: token.amount });
@@ -296,9 +270,7 @@ const AddDueForm = ({
 								<Tabs
 									aria-label="Token type options"
 									selectedKey={field.value}
-									onSelectionChange={(key) =>
-										handleTokenTypeChange(key as string)
-									}
+									onSelectionChange={(key) => handleTokenTypeChange(key as string)}
 									color="primary"
 									variant="bordered"
 									fullWidth
@@ -346,11 +318,7 @@ const AddDueForm = ({
 												{...field}
 												autoFocus
 												isRequired
-												label={
-													watchTokenType === "native"
-														? "Token Denom"
-														: "Token Address"
-												}
+												label={watchTokenType === "native" ? "Token Denom" : "Token Address"}
 												placeholder={
 													watchTokenType === "native"
 														? "Enter token denomination"
@@ -454,11 +422,7 @@ const AddDueForm = ({
 				</ModalBody>
 
 				<ModalFooter className="border-primary/10 border-t">
-					<Button
-						variant="flat"
-						onPress={onClose}
-						isDisabled={isSubmitting || isSubmissionLoading}
-					>
+					<Button variant="flat" onPress={onClose} isDisabled={isSubmitting || isSubmissionLoading}>
 						Cancel
 					</Button>
 					<Button

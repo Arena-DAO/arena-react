@@ -39,7 +39,6 @@ const BalancesModal = ({ escrow }: BalancesModalProps) => {
 	const { address } = useChain(env.CHAIN);
 	const queryClient = useQueryClient();
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
-	// biome-ignore lint/style/noNonNullAssertion: correct
 	const targetRef = React.useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
@@ -55,16 +54,13 @@ const BalancesModal = ({ escrow }: BalancesModalProps) => {
 		if (userBalance) {
 			queryClient.setQueryData(
 				arenaEscrowQueryKeys.balance(escrow, { addr: address }),
-				() => userBalance,
+				() => userBalance
 			);
 		}
 
 		return {
 			items: data,
-			nextCursor:
-				data.length === env.PAGINATION_LIMIT
-					? data[data.length - 1]?.addr
-					: undefined,
+			nextCursor: data.length === env.PAGINATION_LIMIT ? data[data.length - 1]?.addr : undefined,
 		};
 	};
 
@@ -77,18 +73,13 @@ const BalancesModal = ({ escrow }: BalancesModalProps) => {
 
 	const balances = useMemo(
 		() => query.data?.pages.flatMap((page) => page.items) ?? [],
-		[query.data],
+		[query.data]
 	);
 
 	return (
 		<>
 			<Button onPress={onOpen}>View Balances</Button>
-			<Modal
-				ref={targetRef}
-				isOpen={isOpen}
-				onOpenChange={onOpenChange}
-				size="5xl"
-			>
+			<Modal ref={targetRef} isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
 				<ModalContent>
 					<ModalHeader {...moveProps}>
 						<h2 className="font-semibold text-xl">Balances</h2>
@@ -126,10 +117,7 @@ const BalancesModal = ({ escrow }: BalancesModalProps) => {
 					</ModalBody>
 					{query.hasNextPage && (
 						<ModalFooter>
-							<Button
-								onPress={() => query.fetchNextPage()}
-								isLoading={query.isFetchingNextPage}
-							>
+							<Button onPress={() => query.fetchNextPage()} isLoading={query.isFetchingNextPage}>
 								Load More
 							</Button>
 						</ModalFooter>

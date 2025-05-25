@@ -21,17 +21,14 @@ const LogoutPage = () => {
 			try {
 				if (address) {
 					// Get profile
-					const profile = queryClient.getQueryData<Profile>([
-						"profile",
-						address,
-					]);
+					const profile = queryClient.getQueryData<Profile>(["profile", address]);
 
 					if (profile?.discordId) {
 						// Call the API route to clear the session
 						await axios.post(
 							`${env.API_URL}/logout?user_id=${profile.discordId}`,
 							{},
-							{ withCredentials: true },
+							{ withCredentials: true }
 						);
 					}
 
@@ -47,13 +44,7 @@ const LogoutPage = () => {
 		};
 
 		logout();
-	}, [
-		setAuthenticated,
-		router,
-		address,
-		env.API_URL,
-		queryClient.getQueryData,
-	]);
+	}, [setAuthenticated, router, address, env.API_URL, queryClient.getQueryData]);
 
 	return <p>Logging out...</p>;
 };

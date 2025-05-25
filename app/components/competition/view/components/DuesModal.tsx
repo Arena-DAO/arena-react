@@ -49,18 +49,12 @@ const DuesModal = ({ escrow }: DuesModalProps) => {
 
 		const userDue = data.find((x) => x.addr === address);
 		if (userDue) {
-			queryClient.setQueryData(
-				arenaEscrowQueryKeys.due(escrow, { addr: address }),
-				() => userDue,
-			);
+			queryClient.setQueryData(arenaEscrowQueryKeys.due(escrow, { addr: address }), () => userDue);
 		}
 
 		return {
 			items: data,
-			nextCursor:
-				data.length === env.PAGINATION_LIMIT
-					? data[data.length - 1]?.addr
-					: undefined,
+			nextCursor: data.length === env.PAGINATION_LIMIT ? data[data.length - 1]?.addr : undefined,
 		};
 	};
 
@@ -71,11 +65,7 @@ const DuesModal = ({ escrow }: DuesModalProps) => {
 		enabled: !!cosmWasmClient && isOpen,
 	});
 
-	const dues = useMemo(
-		() => query.data?.pages.flatMap((page) => page.items) ?? [],
-		[query.data],
-	);
-	// biome-ignore lint/style/noNonNullAssertion: correct
+	const dues = useMemo(() => query.data?.pages.flatMap((page) => page.items) ?? [], [query.data]);
 	const targetRef = React.useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
@@ -90,12 +80,7 @@ const DuesModal = ({ escrow }: DuesModalProps) => {
 	return (
 		<>
 			<Button onPress={onOpen}>View Dues</Button>
-			<Modal
-				ref={targetRef}
-				isOpen={isOpen}
-				onOpenChange={onOpenChange}
-				size="5xl"
-			>
+			<Modal ref={targetRef} isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
 				<ModalContent>
 					<ModalHeader {...moveProps} className="flex flex-col gap-1">
 						Dues

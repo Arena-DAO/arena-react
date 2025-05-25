@@ -1,23 +1,12 @@
 "use client";
 
-import {
-	BreadcrumbItem,
-	Breadcrumbs,
-	Button,
-	Card,
-	CardBody,
-	Link,
-} from "@heroui/react";
+import { BreadcrumbItem, Breadcrumbs, Button, Card, CardBody, Link } from "@heroui/react";
 import { motion } from "framer-motion";
 import { ArrowLeft, ChevronRight, Shield, Swords, Trophy } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 import { CategoryProvider } from "~/contexts/CategoryContext";
-import {
-	type CategoryItem,
-	type SubCategory,
-	useCategoryMap,
-} from "~/hooks/useCategoryMap";
+import { type CategoryItem, type SubCategory, useCategoryMap } from "~/hooks/useCategoryMap";
 import CompetitionCategoryCard from "./components/CompetitionCategoryCard";
 import CompetitionEnrollmentItems from "./components/CompetitionEnrollmentItems";
 
@@ -38,9 +27,7 @@ const Compete = () => {
 
 		while (currentItem) {
 			result.unshift(currentItem);
-			currentItem = currentItem.parent_url
-				? categories.get(currentItem.parent_url)
-				: undefined;
+			currentItem = currentItem.parent_url ? categories.get(currentItem.parent_url) : undefined;
 		}
 
 		result.unshift({ title: "Categories", url: "", children: [], img: "" });
@@ -64,12 +51,8 @@ const Compete = () => {
 						>
 							<Trophy className="h-16 w-16 opacity-50" />
 						</motion.div>
-						<h1 className="text-center font-bold text-3xl md:text-4xl">
-							Category Not Found
-						</h1>
-						<p className="text-center opacity-80">
-							The category "{category}" could not be found.
-						</p>
+						<h1 className="text-center font-bold text-3xl md:text-4xl">Category Not Found</h1>
+						<p className="text-center opacity-80">The category "{category}" could not be found.</p>
 						<Button
 							as={Link}
 							href="/compete"
@@ -86,11 +69,7 @@ const Compete = () => {
 	}
 
 	return (
-		<motion.div
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			className="min-h-screen"
-		>
+		<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen">
 			<div className="container mx-auto space-y-6 px-4 py-6 md:space-y-8 md:py-8">
 				{/* Header Section */}
 				<div className="flex flex-col gap-4 md:gap-6">
@@ -163,9 +142,7 @@ const Compete = () => {
 						transition={{ delay: 0.3 }}
 					>
 						<div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-							<h2 className="font-bold text-xl md:text-2xl">
-								Available Competitions
-							</h2>
+							<h2 className="font-bold text-xl md:text-2xl">Available Competitions</h2>
 							<div className="flex gap-2">
 								<Button
 									as={Link}

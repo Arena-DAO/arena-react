@@ -109,8 +109,7 @@ export default {
 			backgroundImage: {
 				"grid-pattern":
 					"linear-gradient(to right, rgba(255, 158, 51, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 158, 51, 0.05) 1px, transparent 1px)",
-				"dot-pattern":
-					"radial-gradient(rgba(255, 158, 51, 0.1) 1px, transparent 1px)",
+				"dot-pattern": "radial-gradient(rgba(255, 158, 51, 0.1) 1px, transparent 1px)",
 				"gradient-shine":
 					"linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
 			},
@@ -228,8 +227,7 @@ export default {
 					},
 					variants: {
 						gaming: {
-							background:
-								"linear-gradient(135deg, var(--primary-500), var(--primary-600))",
+							background: "linear-gradient(135deg, var(--primary-500), var(--primary-600))",
 							color: "#000000",
 							border: "none",
 							shadow: "0 4px 12px rgba(255, 158, 51, 0.3)",

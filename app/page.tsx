@@ -23,10 +23,7 @@ const AnimatedIcon = ({ children }: PropsWithChildren) => (
 	</motion.div>
 );
 
-const FloatingElement = ({
-	delay = 0,
-	children,
-}: PropsWithChildren & { delay: number }) => (
+const FloatingElement = ({ delay = 0, children }: PropsWithChildren & { delay: number }) => (
 	<motion.div
 		animate={{
 			y: [0, -20, 0],
@@ -121,9 +118,7 @@ const HomePage = () => {
 						<span className="hidden md:inline">•</span>
 						<span>Place Wagers</span>
 					</p>
-					<p className="mt-2 text-lg">
-						Fair Competition Powered by Decentralized Mediation
-					</p>
+					<p className="mt-2 text-lg">Fair Competition Powered by Decentralized Mediation</p>
 
 					<motion.div
 						className="mt-8 flex flex-wrap justify-center gap-4"
@@ -131,13 +126,7 @@ const HomePage = () => {
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ delay: 0.5 }}
 					>
-						<Button
-							as={Link}
-							href="/compete"
-							size="lg"
-							color="primary"
-							className="card-hover"
-						>
+						<Button as={Link} href="/compete" size="lg" color="primary" className="card-hover">
 							Compete
 						</Button>
 						<Button
@@ -168,9 +157,8 @@ const HomePage = () => {
 								</h2>
 							</div>
 							<p className="mt-4 text-xl">
-								Create and manage your own tournaments, leagues, or wager-based
-								competitions. Set your rules, prize pools, and let Arena DAO
-								handle the rest.
+								Create and manage your own tournaments, leagues, or wager-based competitions. Set
+								your rules, prize pools, and let Arena DAO handle the rest.
 							</p>
 						</div>
 						<div className="relative flex h-64 items-center justify-center">
@@ -197,9 +185,8 @@ const HomePage = () => {
 								</h2>
 							</div>
 							<p className="mt-4 text-xl">
-								Place and manage wagers with confidence. Smart contracts ensure
-								transparent stake handling and automated payouts upon
-								resolution.
+								Place and manage wagers with confidence. Smart contracts ensure transparent stake
+								handling and automated payouts upon resolution.
 							</p>
 						</div>
 					</div>
@@ -216,9 +203,8 @@ const HomePage = () => {
 								</h2>
 							</div>
 							<p className="mt-4 text-xl">
-								Our DAO serves as an impartial mediator for any disputes.
-								Community-governed resolution ensures fairness and transparency
-								in all competitions.
+								Our DAO serves as an impartial mediator for any disputes. Community-governed
+								resolution ensures fairness and transparency in all competitions.
 							</p>
 						</div>
 						<div className="relative flex h-64 items-center justify-center">

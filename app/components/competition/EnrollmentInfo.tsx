@@ -11,10 +11,7 @@ interface EnrollmentInfoProps {
 	isExpired: boolean;
 }
 
-const EnrollmentInfo: React.FC<EnrollmentInfoProps> = ({
-	enrollment,
-	isExpired,
-}) => {
+const EnrollmentInfo: React.FC<EnrollmentInfoProps> = ({ enrollment, isExpired }) => {
 	const currentMembers = Number(enrollment.current_members);
 	const maxMembers = Number(enrollment.max_members);
 	const minMembers = enrollment.min_members

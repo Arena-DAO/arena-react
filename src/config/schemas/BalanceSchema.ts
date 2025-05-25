@@ -8,7 +8,7 @@ const BalanceSchema = z.object({
 			z.object({
 				address: AddressSchema,
 				amount: Uint128Schema,
-			}),
+			})
 		)
 		.optional(),
 	cw721: z
@@ -16,7 +16,7 @@ const BalanceSchema = z.object({
 			z.object({
 				address: AddressSchema,
 				token_ids: z.array(z.string().min(1, "Token Id is required")).min(1),
-			}),
+			})
 		)
 		.optional(),
 	native: z
@@ -24,7 +24,7 @@ const BalanceSchema = z.object({
 			z.object({
 				denom: z.string().min(1, "Denom is required"),
 				amount: Uint128Schema,
-			}),
+			})
 		)
 		.optional(),
 });

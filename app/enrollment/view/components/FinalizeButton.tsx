@@ -29,8 +29,7 @@ const FinalizeButton: React.FC<TriggerButtonProps> = ({
 }) => {
 	const env = useEnv();
 	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
-	const finalizeEnrollmentMutation =
-		useArenaCompetitionEnrollmentFinalizeMutation();
+	const finalizeEnrollmentMutation = useArenaCompetitionEnrollmentFinalizeMutation();
 	const queryClient = useQueryClient();
 	const isExpired = useIsExpired(competitionDate, undefined, deadlineBefore);
 
@@ -48,7 +47,7 @@ const FinalizeButton: React.FC<TriggerButtonProps> = ({
 					client: new ArenaCompetitionEnrollmentClient(
 						signingCosmWasmClient,
 						address,
-						env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+						env.ARENA_COMPETITION_ENROLLMENT_ADDRESS
 					),
 					msg: {
 						id: enrollmentId,
@@ -59,10 +58,8 @@ const FinalizeButton: React.FC<TriggerButtonProps> = ({
 						const competitionId = response.events
 							.find((event) =>
 								event.attributes.find(
-									(attr) =>
-										attr.key === "action" &&
-										attr.value === "create_competition",
-								),
+									(attr) => attr.key === "action" && attr.value === "create_competition"
+								)
 							)
 							?.attributes.find((attr) => attr.key === "competition_id")?.value;
 
@@ -70,7 +67,7 @@ const FinalizeButton: React.FC<TriggerButtonProps> = ({
 							queryClient.setQueryData<EnrollmentEntryResponse | undefined>(
 								arenaCompetitionEnrollmentQueryKeys.enrollment(
 									env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
-									{ enrollmentId },
+									{ enrollmentId }
 								),
 								(old) => {
 									if (!old) return old;
@@ -83,13 +80,13 @@ const FinalizeButton: React.FC<TriggerButtonProps> = ({
 											competition_id: competitionId,
 										},
 									};
-								},
+								}
 							);
 						} else {
 							queryClient.setQueryData<EnrollmentEntryResponse | undefined>(
 								arenaCompetitionEnrollmentQueryKeys.enrollment(
 									env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
-									{ enrollmentId },
+									{ enrollmentId }
 								),
 								(old) => {
 									if (!old) return old;
@@ -98,11 +95,11 @@ const FinalizeButton: React.FC<TriggerButtonProps> = ({
 										...old,
 										has_finalized: true,
 									};
-								},
+								}
 							);
 						}
 					},
-				},
+				}
 			);
 			addToast({
 				color: "success",

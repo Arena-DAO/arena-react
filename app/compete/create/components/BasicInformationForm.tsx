@@ -117,9 +117,7 @@ const BasicInformationSection = () => {
 							selectedKeys={[field.value]}
 						>
 							{DurationUnits.map((unit) => (
-								<SelectItem key={unit}>
-									{unit.charAt(0).toUpperCase() + unit.slice(1)}
-								</SelectItem>
+								<SelectItem key={unit}>{unit.charAt(0).toUpperCase() + unit.slice(1)}</SelectItem>
 							))}
 						</Select>
 					)}
@@ -165,9 +163,7 @@ const BasicInformationSection = () => {
 								>
 									<span className="mb-3 text-4xl">{emoji}</span>
 									<h3 className="font-semibold text-lg">{label}</h3>
-									<p className="mt-1 text-center text-default-500 text-sm">
-										{desc}
-									</p>
+									<p className="mt-1 text-center text-default-500 text-sm">{desc}</p>
 								</Button>
 							))}
 						</div>

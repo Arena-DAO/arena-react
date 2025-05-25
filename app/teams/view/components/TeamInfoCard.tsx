@@ -3,25 +3,9 @@
 
 import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
-import {
-	Avatar,
-	Button,
-	Card,
-	CardBody,
-	Chip,
-	Progress,
-	addToast,
-} from "@heroui/react";
+import { Avatar, Button, Card, CardBody, Chip, Progress, addToast } from "@heroui/react";
 import { formatDistanceToNow } from "date-fns";
-import {
-	Calendar,
-	Clock,
-	Shield,
-	UserCheck,
-	UserMinus,
-	UserX,
-	Users,
-} from "lucide-react";
+import { Calendar, Clock, Shield, UserCheck, UserMinus, UserX, Users } from "lucide-react";
 import React from "react";
 import { ArenaTeamEnrollmentsClient } from "~/codegen/ArenaTeamEnrollments.client";
 import {
@@ -124,7 +108,7 @@ export const TeamInfoCard = ({
 			const enrollmentClient = new ArenaTeamEnrollmentsClient(
 				signingClient,
 				walletAddress,
-				env.ARENA_TEAM_ENROLLMENTS_ADDRESS,
+				env.ARENA_TEAM_ENROLLMENTS_ADDRESS
 			);
 
 			await applyMutation({
@@ -153,7 +137,7 @@ export const TeamInfoCard = ({
 			const enrollmentClient = new ArenaTeamEnrollmentsClient(
 				signingClient,
 				walletAddress,
-				env.ARENA_TEAM_ENROLLMENTS_ADDRESS,
+				env.ARENA_TEAM_ENROLLMENTS_ADDRESS
 			);
 
 			await withdrawMutation({
@@ -169,8 +153,7 @@ export const TeamInfoCard = ({
 			console.error("Withdraw error:", error);
 			addToast({
 				color: "danger",
-				description:
-					(error as Error).message || "Failed to withdraw application",
+				description: (error as Error).message || "Failed to withdraw application",
 			});
 		}
 	};
@@ -209,9 +192,7 @@ export const TeamInfoCard = ({
 					<div className="flex-1 space-y-4">
 						<div>
 							<h1 className="mb-2 font-bold text-3xl">{entry.title}</h1>
-							<p className="text-default-600 leading-relaxed">
-								{entry.description}
-							</p>
+							<p className="text-default-600 leading-relaxed">{entry.description}</p>
 						</div>
 
 						{/* Team Stats */}
@@ -219,13 +200,9 @@ export const TeamInfoCard = ({
 							<div className="rounded-lg border border-primary/10 bg-primary/5 p-3 text-center">
 								<div className="mb-1 flex items-center justify-center gap-1">
 									<Users size={16} className="text-primary" />
-									<span className="font-bold text-primary text-xl">
-										{entry.applicants_count}
-									</span>
+									<span className="font-bold text-primary text-xl">{entry.applicants_count}</span>
 								</div>
-								<div className="font-medium text-default-500 text-xs">
-									Total Applicants
-								</div>
+								<div className="font-medium text-default-500 text-xs">Total Applicants</div>
 							</div>
 							<div className="rounded-lg border border-success/10 bg-success/5 p-3 text-center">
 								<div className="mb-1 flex items-center justify-center gap-1">
@@ -234,31 +211,21 @@ export const TeamInfoCard = ({
 										{entry.approved_applicants_count}
 									</span>
 								</div>
-								<div className="font-medium text-default-500 text-xs">
-									Approved
-								</div>
+								<div className="font-medium text-default-500 text-xs">Approved</div>
 							</div>
 							<div className="rounded-lg border border-warning/10 bg-warning/5 p-3 text-center">
 								<div className="mb-1 flex items-center justify-center gap-1">
 									<Clock size={16} className="text-warning" />
-									<span className="font-bold text-warning text-xl">
-										{pendingCount}
-									</span>
+									<span className="font-bold text-warning text-xl">{pendingCount}</span>
 								</div>
-								<div className="font-medium text-default-500 text-xs">
-									Pending
-								</div>
+								<div className="font-medium text-default-500 text-xs">Pending</div>
 							</div>
 							<div className="rounded-lg border border-danger/10 bg-danger/5 p-3 text-center">
 								<div className="mb-1 flex items-center justify-center gap-1">
 									<UserX size={16} className="text-danger" />
-									<span className="font-bold text-danger text-xl">
-										{rejectedCount}
-									</span>
+									<span className="font-bold text-danger text-xl">{rejectedCount}</span>
 								</div>
-								<div className="font-medium text-default-500 text-xs">
-									Rejected
-								</div>
+								<div className="font-medium text-default-500 text-xs">Rejected</div>
 							</div>
 						</div>
 
@@ -266,9 +233,7 @@ export const TeamInfoCard = ({
 						{entry.applicants_count > 0 && (
 							<div>
 								<div className="mb-2 flex items-center justify-between">
-									<span className="font-medium text-default-600 text-sm">
-										Approval Rate
-									</span>
+									<span className="font-medium text-default-600 text-sm">Approval Rate</span>
 									<span className="font-bold text-sm text-success">
 										{Math.round(approvalRate)}%
 									</span>
@@ -279,8 +244,7 @@ export const TeamInfoCard = ({
 									size="md"
 									classNames={{
 										track: "border border-default-200",
-										indicator:
-											"bg-gradient-to-r from-success-400 to-success-600",
+										indicator: "bg-gradient-to-r from-success-400 to-success-600",
 									}}
 								/>
 							</div>
@@ -290,10 +254,7 @@ export const TeamInfoCard = ({
 						<div className="flex flex-wrap items-center gap-4 text-default-500 text-sm">
 							<div className="flex items-center gap-1">
 								<Calendar size={14} />
-								<span>
-									Created{" "}
-									{formatDistanceToNow(createdTime, { addSuffix: true })}
-								</span>
+								<span>Created {formatDistanceToNow(createdTime, { addSuffix: true })}</span>
 							</div>
 							<div className="flex items-center gap-1">
 								<span>By:</span>
@@ -321,18 +282,14 @@ export const TeamInfoCard = ({
 							{hasApplied && !isCreator && (
 								<div className="space-y-2">
 									<div className="rounded-lg border border-primary/20 bg-primary/5 p-3 text-center">
-										<div className="mb-1 font-medium text-primary">
-											Application Status
-										</div>
+										<div className="mb-1 font-medium text-primary">Application Status</div>
 										<Chip
-											color={
-												getApplicantStatusConfig(userApplication?.status).color
-											}
+											color={getApplicantStatusConfig(userApplication?.status).color}
 											variant="solid"
 											size="sm"
 											startContent={React.createElement(
 												getApplicantStatusConfig(userApplication?.status).icon,
-												{ size: 12 },
+												{ size: 12 }
 											)}
 										>
 											{getApplicantStatusConfig(userApplication?.status).label}

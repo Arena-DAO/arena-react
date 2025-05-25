@@ -32,9 +32,7 @@ const CompetitionActions: React.FC<CompetitionActionsProps> = ({
 		isActive(competition.status);
 
 	const showExpiredProcessForm =
-		isExpired &&
-		competition.status !== "inactive" &&
-		competition.status !== "pending";
+		isExpired && competition.status !== "inactive" && competition.status !== "pending";
 
 	const hasAnyAction = showHostProcessForm || showExpiredProcessForm;
 

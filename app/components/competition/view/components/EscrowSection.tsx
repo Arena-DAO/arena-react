@@ -2,24 +2,13 @@
 
 import type { ExecuteInstruction } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
-import {
-	Button,
-	Card,
-	CardBody,
-	CardFooter,
-	CardHeader,
-	Spinner,
-	addToast,
-} from "@heroui/react";
+import { Button, Card, CardBody, CardFooter, CardHeader, Spinner, addToast } from "@heroui/react";
 import { type InfiniteData, useQueryClient } from "@tanstack/react-query";
 import type { PropsWithChildren } from "react";
 
 import { Coin } from "cosmjs-types/cosmos/base/v1beta1/coin";
 import { Vault } from "lucide-react";
-import {
-	ArenaEscrowClient,
-	ArenaEscrowQueryClient,
-} from "~/codegen/ArenaEscrow.client";
+import { ArenaEscrowClient, ArenaEscrowQueryClient } from "~/codegen/ArenaEscrow.client";
 import {
 	arenaEscrowQueryKeys,
 	useArenaEscrowDumpStateQuery,
@@ -72,8 +61,7 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
 	const queryClient = useQueryClient();
 	const { data, isLoading } = useArenaEscrowDumpStateQuery({
-		client:
-			cosmWasmClient && new ArenaEscrowQueryClient(cosmWasmClient, escrow),
+		client: cosmWasmClient && new ArenaEscrowQueryClient(cosmWasmClient, escrow),
 		args: { addr: address },
 	});
 	const withdrawMutation = useArenaEscrowWithdrawMutation();
@@ -89,7 +77,7 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 
 			if (data.due.native && Object.keys(data.due.native).length > 0) {
 				const funds = Object.entries(data.due.native).map(([denom, amount]) =>
-					Coin.fromPartial({ denom, amount }),
+					Coin.fromPartial({ denom, amount })
 				);
 				msgs.push({
 					contractAddress: escrow,
@@ -106,7 +94,7 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 								send: { amount: amount, contract: escrow, msg: "" },
 							} as Cw20ExecuteMsg,
 						};
-					}),
+					})
 				);
 			}
 
@@ -121,23 +109,17 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 			if (context.type === "competition") {
 				if (
 					response.events.find((event) =>
-						event.attributes.find(
-							(attr) => attr.key === "action" && attr.value === "activate",
-						),
+						event.attributes.find((attr) => attr.key === "action" && attr.value === "activate")
 					)
 				) {
 					queryClient.setQueryData<CompetitionResponse | undefined>(
-						getCompetitionQueryKey(
-							env,
-							context.competitionType,
-							context.competitionId,
-						),
+						getCompetitionQueryKey(env, context.competitionType, context.competitionId),
 						(old) => {
 							if (old) {
 								return { ...old, status: { active: { activation_height: 0 } } };
 							}
 							return old;
-						},
+						}
 					);
 					addToast({
 						color: "success",
@@ -147,7 +129,7 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 			}
 
 			await queryClient.invalidateQueries(
-				arenaEscrowQueryKeys.dumpState(escrow, { addr: address }),
+				arenaEscrowQueryKeys.dumpState(escrow, { addr: address })
 			);
 
 			queryClient.setQueryData<InfiniteData<PageData> | undefined>(
@@ -162,11 +144,9 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 							items: page.items.filter((due) => due.addr !== address),
 						})),
 					};
-				},
+				}
 			);
-			await queryClient.invalidateQueries(
-				arenaEscrowQueryKeys.balances(escrow),
-			);
+			await queryClient.invalidateQueries(arenaEscrowQueryKeys.balances(escrow));
 		} catch (e) {
 			console.error(e);
 			addToast({ color: "danger", description: (e as Error).toString() });
@@ -194,7 +174,7 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 						});
 
 						await queryClient.invalidateQueries(
-							arenaEscrowQueryKeys.dumpState(escrow, { addr: address }),
+							arenaEscrowQueryKeys.dumpState(escrow, { addr: address })
 						);
 
 						queryClient.setQueryData<InfiniteData<PageData> | undefined>(
@@ -209,13 +189,11 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 										items: page.items.filter((due) => due.addr !== address),
 									})),
 								};
-							},
+							}
 						);
-						await queryClient.invalidateQueries(
-							arenaEscrowQueryKeys.dues(escrow),
-						);
+						await queryClient.invalidateQueries(arenaEscrowQueryKeys.dues(escrow));
 					},
-				},
+				}
 			);
 		} catch (e) {
 			console.error(e);
@@ -289,14 +267,12 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 				{children}
 			</CardBody>
 			<CardFooter className="gap-4">
-				{context.type === "competition" &&
-					context.competitionStatus === "pending" && (
-						<DuesModal escrow={escrow} />
-					)}
-				{context.type === "competition" &&
-					context.competitionStatus !== "pending" && (
-						<InitialDuesModal escrow={escrow} />
-					)}
+				{context.type === "competition" && context.competitionStatus === "pending" && (
+					<DuesModal escrow={escrow} />
+				)}
+				{context.type === "competition" && context.competitionStatus !== "pending" && (
+					<InitialDuesModal escrow={escrow} />
+				)}
 				<BalancesModal escrow={escrow} />
 				<DonateModal escrow={escrow} />
 			</CardFooter>

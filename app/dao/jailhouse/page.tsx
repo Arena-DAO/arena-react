@@ -27,7 +27,7 @@ const Jailhouse = () => {
 				<div
 					className={cn(
 						"relative z-10 space-y-4 text-center transition-all duration-700",
-						mounted ? "transform-none opacity-100" : "translate-y-8 opacity-0",
+						mounted ? "transform-none opacity-100" : "translate-y-8 opacity-0"
 					)}
 				>
 					<div className="mb-4 inline-flex items-center justify-center">
@@ -37,13 +37,11 @@ const Jailhouse = () => {
 						</div>
 					</div>
 
-					<h1 className="mb-2 font-bold font-cinzel text-6xl text-glow">
-						Jailhouse
-					</h1>
+					<h1 className="mb-2 font-bold font-cinzel text-6xl text-glow">Jailhouse</h1>
 
 					<p className="mx-auto max-w-2xl text-background-600 text-lg dark:text-background-400">
-						Manage competition security and disputed outcomes. Resolve conflicts
-						and ensure fair play across all competitions.
+						Manage competition security and disputed outcomes. Resolve conflicts and ensure fair
+						play across all competitions.
 					</p>
 
 					<Divider className="my-8 opacity-30" />
@@ -54,7 +52,7 @@ const Jailhouse = () => {
 			<Card
 				className={cn(
 					"glassmorphism overflow-hidden border-background-200/20 transition-all delay-300 duration-700",
-					mounted ? "transform-none opacity-100" : "translate-y-8 opacity-0",
+					mounted ? "transform-none opacity-100" : "translate-y-8 opacity-0"
 				)}
 			>
 				<Tabs
@@ -80,10 +78,7 @@ const Jailhouse = () => {
 						}
 					>
 						<div className="p-4">
-							<CompetitionModuleSection
-								path="wager"
-								module_addr={env.ARENA_WAGER_MODULE_ADDRESS}
-							/>
+							<CompetitionModuleSection path="wager" module_addr={env.ARENA_WAGER_MODULE_ADDRESS} />
 						</div>
 					</Tab>
 

@@ -20,9 +20,7 @@ const RulesDisplay: React.FC<RulesSectionProps> = ({ rules, rulesets }) => {
 	const category = useCategoryContext();
 
 	const { data } = useArenaCoreQueryExtensionQuery({
-		client:
-			cosmWasmClient &&
-			new ArenaCoreQueryClient(cosmWasmClient, env.ARENA_CORE_ADDRESS),
+		client: cosmWasmClient && new ArenaCoreQueryClient(cosmWasmClient, env.ARENA_CORE_ADDRESS),
 		args: {
 			msg: {
 				rulesets: {
@@ -33,8 +31,7 @@ const RulesDisplay: React.FC<RulesSectionProps> = ({ rules, rulesets }) => {
 			},
 		},
 		options: {
-			enabled:
-				!!cosmWasmClient && !!rulesets && rulesets.length > 0 && !!category,
+			enabled: !!cosmWasmClient && !!rulesets && rulesets.length > 0 && !!category,
 		},
 	});
 

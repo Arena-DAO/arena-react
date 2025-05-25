@@ -1,23 +1,11 @@
 // app/teams/entry/[entryId]/components/ApplicantsSection.tsx
 "use client";
 
-import {
-	Card,
-	CardBody,
-	CardHeader,
-	Chip,
-	Spinner,
-	Tab,
-	Tabs,
-	Tooltip,
-} from "@heroui/react";
+import { Card, CardBody, CardHeader, Chip, Spinner, Tab, Tabs, Tooltip } from "@heroui/react";
 import type { Key } from "@react-types/shared";
 import { Clock, UserCheck, UserX, Users } from "lucide-react";
 import { useMemo, useState } from "react";
-import type {
-	ApplicantResponse,
-	TeamEntryResponse,
-} from "~/codegen/ArenaTeamEnrollments.types";
+import type { ApplicantResponse, TeamEntryResponse } from "~/codegen/ArenaTeamEnrollments.types";
 import { ApplicantsList } from "./ApplicantsList";
 
 interface ApplicantsSectionProps {
@@ -39,16 +27,13 @@ export const ApplicantsSection = ({
 
 	// Organize applicants by status
 	const organizedApplicants = useMemo(() => {
-		if (!applicants)
-			return { all: [], default: [], approved: [], rejected: [] };
+		if (!applicants) return { all: [], default: [], approved: [], rejected: [] };
 
 		return {
 			all: applicants,
 			default: applicants.filter((a) => a.status === "default"),
 			approved: applicants.filter((a) => a.status === "approved"),
-			rejected: applicants.filter(
-				(a) => typeof a.status === "object" && "rejected" in a.status,
-			),
+			rejected: applicants.filter((a) => typeof a.status === "object" && "rejected" in a.status),
 		};
 	}, [applicants]);
 
@@ -91,8 +76,7 @@ export const ApplicantsSection = ({
 						color="primary"
 						variant="underlined"
 						classNames={{
-							tabList:
-								"gap-6 w-full relative rounded-none p-0 border-b border-divider px-6",
+							tabList: "gap-6 w-full relative rounded-none p-0 border-b border-divider px-6",
 							cursor: "w-full bg-primary",
 							tab: "max-w-fit px-0 h-12",
 							tabContent: "group-data-[selected=true]:text-primary",

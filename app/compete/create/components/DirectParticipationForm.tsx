@@ -1,22 +1,10 @@
 "use client";
 
 import { ProfileInput } from "@/components/ProfileInput";
-import {
-	Button,
-	Card,
-	Divider,
-	Switch,
-	Tooltip,
-	useDisclosure,
-} from "@heroui/react";
+import { Button, Card, Divider, Switch, Tooltip, useDisclosure } from "@heroui/react";
 import { Info, Plus, Trash, Users } from "lucide-react";
 import { useEffect, useState } from "react";
-import {
-	Controller,
-	useFieldArray,
-	useFormContext,
-	useWatch,
-} from "react-hook-form";
+import { Controller, useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 import AddDueForm from "./AddDueForm";
 import MemberDue from "./MemberDue";
@@ -91,9 +79,8 @@ const DirectParticipationForm = () => {
 								</div>
 								<h4 className="mb-2 font-semibold">No dues added yet</h4>
 								<p className="mb-4 max-w-md text-foreground/70">
-									Add dues to collect tokens from participants. Each due
-									represents a contributor who must pay to activate the
-									competition.
+									Add dues to collect tokens from participants. Each due represents a contributor
+									who must pay to activate the competition.
 								</p>
 								<Button
 									color="primary"
@@ -140,8 +127,8 @@ const DirectParticipationForm = () => {
 								<div>
 									<div className="font-medium">Use Dues as Members</div>
 									<div className="text-foreground/70 text-sm">
-										Dues' addresses will be automatically set as the
-										competition's members who can receive funds
+										Dues' addresses will be automatically set as the competition's members who can
+										receive funds
 									</div>
 								</div>
 							</div>
@@ -190,8 +177,8 @@ const DirectParticipationForm = () => {
 										</div>
 										<h4 className="mb-2 font-semibold">No members added yet</h4>
 										<p className="mb-4 max-w-md text-foreground/70">
-											Add members who will participate in this competition and
-											can receive funds from the competition pool.
+											Add members who will participate in this competition and can receive funds
+											from the competition pool.
 										</p>
 										<Button
 											color="primary"

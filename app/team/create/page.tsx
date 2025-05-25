@@ -132,9 +132,7 @@ const CreateTeam = () => {
 					description: data.description,
 					image_url: teamImageUrl,
 					name: data.teamName,
-					initial_items: bannerUrl
-						? [{ key: "banner", value: bannerUrl }]
-						: undefined,
+					initial_items: bannerUrl ? [{ key: "banner", value: bannerUrl }] : undefined,
 					proposal_modules_instantiate_info: [
 						{
 							admin: { core_module: {} },
@@ -194,7 +192,7 @@ const CreateTeam = () => {
 				"auto",
 				{
 					admin: env.ARENA_DAO_ADDRESS,
-				},
+				}
 			);
 
 			addTeam(contractAddress);
@@ -223,19 +221,13 @@ const CreateTeam = () => {
 					<div className="flex items-center justify-center space-x-2">
 						<h1 className="font-bold font-cinzel text-3xl">Create Your Team</h1>
 						<Tooltip content="A team allows you to participate in competitions with multiple members">
-							<Button
-								isIconOnly
-								variant="light"
-								size="sm"
-								className="cursor-help"
-							>
+							<Button isIconOnly variant="light" size="sm" className="cursor-help">
 								<Info size={18} />
 							</Button>
 						</Tooltip>
 					</div>
 					<p className="text-center text-default-500">
-						Create a team to participate in competitions with friends and manage
-						shared assets
+						Create a team to participate in competitions with friends and manage shared assets
 					</p>
 				</CardHeader>
 
@@ -264,9 +256,7 @@ const CreateTeam = () => {
 													placeholder="Enter your team name"
 													errorMessage={errors.teamName?.message}
 													isInvalid={!!errors.teamName}
-													startContent={
-														<Users size={16} className="text-default-400" />
-													}
+													startContent={<Users size={16} className="text-default-400" />}
 													description="Choose a unique and memorable name"
 												/>
 											)}
@@ -310,12 +300,7 @@ const CreateTeam = () => {
 														field={field}
 														error={fieldState.error}
 														label="Team Logo"
-														startContent={
-															<ImageIcon
-																size={16}
-																className="text-default-400"
-															/>
-														}
+														startContent={<ImageIcon size={16} className="text-default-400" />}
 														ref={teamImageRef}
 														description="Square image recommended"
 													/>
@@ -341,12 +326,7 @@ const CreateTeam = () => {
 														field={field}
 														error={fieldState.error}
 														label="Banner Image"
-														startContent={
-															<ImageIcon
-																size={16}
-																className="text-default-400"
-															/>
-														}
+														startContent={<ImageIcon size={16} className="text-default-400" />}
 														ref={bannerImageRef}
 														description="16:9 ratio recommended for banners"
 													/>
@@ -411,9 +391,7 @@ const CreateTeam = () => {
 														{index === 0 && address ? (
 															<div className="flex items-center space-x-2">
 																<Profile address={address} />
-																<span className="text-default-500 text-xs">
-																	(You)
-																</span>
+																<span className="text-default-500 text-xs">(You)</span>
 															</div>
 														) : (
 															<Controller
@@ -468,9 +446,8 @@ const CreateTeam = () => {
 										<div>
 											<h3 className="font-medium text-md">Team Governance</h3>
 											<p className="mt-1 text-default-500 text-sm">
-												Your team will be created as a DAO with equal voting
-												power for all members. Decisions will require all
-												members to agree within 24-hours.
+												Your team will be created as a DAO with equal voting power for all members.
+												Decisions will require all members to agree within 24-hours.
 											</p>
 											<div className="mt-2 flex items-center text-primary text-sm">
 												<Link
@@ -478,9 +455,7 @@ const CreateTeam = () => {
 													isExternal
 													className="flex items-center"
 													showAnchorIcon
-													anchorIcon={
-														<ExternalLink size={14} className="ml-1" />
-													}
+													anchorIcon={<ExternalLink size={14} className="ml-1" />}
 												>
 													Need more customization options? Visit DAO DAO
 												</Link>

@@ -2,14 +2,7 @@
 
 import TokenAmount from "@/components/TokenAmount";
 import TokenInfo from "@/components/TokenInfo";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableColumn,
-	TableHeader,
-	TableRow,
-} from "@heroui/react";
+import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/react";
 import type { BalanceVerified } from "~/codegen/ArenaEscrow.types";
 
 interface BalanceDisplayProps {
@@ -42,11 +35,7 @@ const BalanceDisplay = ({ balance }: BalanceDisplayProps) => {
 										<TokenInfo denomOrAddress={denom} isNative />
 									</TableCell>
 									<TableCell className="text-right">
-										<TokenAmount
-											amount={BigInt(amount)}
-											denomOrAddress={denom}
-											isNative
-										/>
+										<TokenAmount amount={BigInt(amount)} denomOrAddress={denom} isNative />
 									</TableCell>
 								</TableRow>
 							);
@@ -67,10 +56,7 @@ const BalanceDisplay = ({ balance }: BalanceDisplayProps) => {
 									<TokenInfo denomOrAddress={address} />
 								</TableCell>
 								<TableCell className="text-right">
-									<TokenAmount
-										amount={BigInt(amount)}
-										denomOrAddress={address}
-									/>
+									<TokenAmount amount={BigInt(amount)} denomOrAddress={address} />
 								</TableCell>
 							</TableRow>
 						))}

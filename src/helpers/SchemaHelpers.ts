@@ -3,28 +3,18 @@ import type { z } from "zod";
 import type { DistributionForString } from "~/codegen/ArenaCore.types";
 import type { InstantiateMsg as ArenaEscrowInstantiateMsg } from "~/codegen/ArenaEscrow.types";
 import type { EscrowContractInfo } from "~/codegen/ArenaWagerModule.types";
-import type {
-	DistributionSchema,
-	DueSchema,
-	MemberPercentageSchema,
-} from "~/config/schemas";
+import type { DistributionSchema, DueSchema, MemberPercentageSchema } from "~/config/schemas";
 
 export function convertToDistribution(
-	distributionSchema: z.infer<typeof DistributionSchema>,
+	distributionSchema: z.infer<typeof DistributionSchema>
 ): DistributionForString | undefined {
-	if (
-		!distributionSchema ||
-		distributionSchema.member_percentages.length === 0
-	) {
+	if (!distributionSchema || distributionSchema.member_percentages.length === 0) {
 		return undefined;
 	}
 	return {
-		member_percentages: distributionSchema.member_percentages.map(
-			({ addr, percentage }) => {
-				return { addr, percentage: percentage.toString() };
-			},
-		),
-		// biome-ignore lint/style/noNonNullAssertion: This is handled by the distributionSchema superRefine check
+		member_percentages: distributionSchema.member_percentages.map(({ addr, percentage }) => {
+			return { addr, percentage: percentage.toString() };
+		}),
 		remainder_addr: distributionSchema.remainder_addr!,
 	};
 }
@@ -33,7 +23,7 @@ export function convertToEscrowInstantiate(
 	escrowCodeId: number,
 	dues: z.infer<typeof DueSchema>[],
 	additionalLayeredFees?: z.infer<typeof MemberPercentageSchema>[],
-	is_enrollment?: boolean,
+	is_enrollment?: boolean
 ): EscrowContractInfo {
 	return {
 		new: {

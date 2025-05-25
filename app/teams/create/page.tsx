@@ -93,9 +93,7 @@ const CreateTeamEnrollment = () => {
 	const categoryParam = searchParams?.get("category") || "";
 	const { data: categories } = useCategoryMap();
 	const env = useEnv();
-	const { address: walletAddress, getSigningCosmWasmClient } = useChain(
-		env.CHAIN,
-	);
+	const { address: walletAddress, getSigningCosmWasmClient } = useChain(env.CHAIN);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const teamImageRef = useRef<ImageUploaderRef>(null);
 
@@ -113,17 +111,14 @@ const CreateTeamEnrollment = () => {
 
 		while (currentItem) {
 			result.unshift(currentItem);
-			currentItem = currentItem.parent_url
-				? categories.get(currentItem.parent_url)
-				: undefined;
+			currentItem = currentItem.parent_url ? categories.get(currentItem.parent_url) : undefined;
 		}
 
 		result.unshift({ title: "Categories", url: "", children: [], img: "" });
 		return result;
 	}, [categoryItem, categories]);
 
-	const { mutateAsync: createEntry } =
-		useArenaTeamEnrollmentsCreateEntryMutation();
+	const { mutateAsync: createEntry } = useArenaTeamEnrollmentsCreateEntryMutation();
 
 	const {
 		control,
@@ -184,7 +179,7 @@ const CreateTeamEnrollment = () => {
 			const enrollmentClient = new ArenaTeamEnrollmentsClient(
 				client,
 				walletAddress,
-				env.ARENA_TEAM_ENROLLMENTS_ADDRESS,
+				env.ARENA_TEAM_ENROLLMENTS_ADDRESS
 			);
 
 			await createEntry({
@@ -208,8 +203,7 @@ const CreateTeamEnrollment = () => {
 			console.error("Error creating team enrollment:", error);
 			addToast({
 				color: "danger",
-				description:
-					(error as Error).message || "Failed to create team enrollment",
+				description: (error as Error).message || "Failed to create team enrollment",
 			});
 		} finally {
 			setIsSubmitting(false);
@@ -229,9 +223,7 @@ const CreateTeamEnrollment = () => {
 			<div className="flex min-h-[60vh] flex-col items-center justify-center p-4">
 				<Card className="w-full max-w-md">
 					<CardBody className="flex flex-col items-center gap-4 p-8 md:p-12">
-						<h1 className="text-center font-bold text-3xl md:text-4xl">
-							Wallet Required
-						</h1>
+						<h1 className="text-center font-bold text-3xl md:text-4xl">Wallet Required</h1>
 						<p className="text-center opacity-80">
 							Please connect your wallet to create a team enrollment.
 						</p>
@@ -251,11 +243,7 @@ const CreateTeamEnrollment = () => {
 	}
 
 	return (
-		<motion.div
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			className="min-h-screen"
-		>
+		<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen">
 			<div className="container mx-auto max-w-4xl space-y-6 px-4 py-6 md:space-y-8 md:py-8">
 				{/* Header Section */}
 				<div className="flex flex-col gap-4 md:gap-6">
@@ -288,12 +276,8 @@ const CreateTeamEnrollment = () => {
 							>
 								Back to Team Enrollments
 							</Button>
-							<h1 className="font-bold text-2xl md:text-3xl">
-								Create Team Enrollment
-							</h1>
-							<p className="mt-1 opacity-70">
-								{categoryItem.title} • Team Formation
-							</p>
+							<h1 className="font-bold text-2xl md:text-3xl">Create Team Enrollment</h1>
+							<p className="mt-1 opacity-70">{categoryItem.title} • Team Formation</p>
 						</div>
 					</div>
 				</div>
@@ -321,9 +305,7 @@ const CreateTeamEnrollment = () => {
 													field={field}
 													error={fieldState.error}
 													label="Team Logo"
-													startContent={
-														<ImageIcon size={16} className="text-default-400" />
-													}
+													startContent={<ImageIcon size={16} className="text-default-400" />}
 													ref={teamImageRef}
 													description="Square image recommended for best results"
 												/>
@@ -354,9 +336,7 @@ const CreateTeamEnrollment = () => {
 										isInvalid={!!errors.title}
 										isRequired
 										variant="bordered"
-										startContent={
-											<Shield size={16} className="text-default-400" />
-										}
+										startContent={<Shield size={16} className="text-default-400" />}
 									/>
 
 									<Textarea
@@ -385,8 +365,7 @@ const CreateTeamEnrollment = () => {
 									<h2 className="font-bold text-xl">Team Governance</h2>
 								</div>
 								<p className="text-sm opacity-70">
-									Configure how your team will make decisions and vote on
-									proposals
+									Configure how your team will make decisions and vote on proposals
 								</p>
 							</div>
 						</CardHeader>
@@ -409,15 +388,10 @@ const CreateTeamEnrollment = () => {
 												const value = Array.from(keys)[0] as string;
 												field.onChange(Number.parseInt(value));
 											}}
-											startContent={
-												<Clock size={16} className="text-default-400" />
-											}
+											startContent={<Clock size={16} className="text-default-400" />}
 										>
 											{VOTING_PERIOD_OPTIONS.map((option) => (
-												<SelectItem
-													key={option.value.toString()}
-													description={option.description}
-												>
+												<SelectItem key={option.value.toString()} description={option.description}>
 													{option.label}
 												</SelectItem>
 											))}
@@ -442,15 +416,10 @@ const CreateTeamEnrollment = () => {
 												const value = Array.from(keys)[0] as string;
 												field.onChange(Number.parseInt(value));
 											}}
-											startContent={
-												<Users size={16} className="text-default-400" />
-											}
+											startContent={<Users size={16} className="text-default-400" />}
 										>
 											{THRESHOLD_OPTIONS.map((option) => (
-												<SelectItem
-													key={option.value.toString()}
-													description={option.description}
-												>
+												<SelectItem key={option.value.toString()} description={option.description}>
 													{option.label}
 												</SelectItem>
 											))}
@@ -478,8 +447,7 @@ const CreateTeamEnrollment = () => {
 											{watchVotingPeriod !== 1 ? "s" : ""}
 										</p>
 										<p className="mt-2 text-xs opacity-80">
-											💡 New teams often start with 100% approval threshold for
-											important decisions
+											💡 New teams often start with 100% approval threshold for important decisions
 										</p>
 										<div className="flex items-center text-primary text-sm">
 											<Link
@@ -513,9 +481,7 @@ const CreateTeamEnrollment = () => {
 							color="primary"
 							variant="shadow"
 							size="lg"
-							startContent={
-								isSubmitting ? <Spinner size="sm" /> : <Shield size={18} />
-							}
+							startContent={isSubmitting ? <Spinner size="sm" /> : <Shield size={18} />}
 							isLoading={isSubmitting}
 							isDisabled={!isValid || isSubmitting}
 							className="min-w-[200px]"

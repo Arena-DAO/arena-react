@@ -19,30 +19,18 @@ import {
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
-import {
-	Clock,
-	MessageSquare,
-	UserCheck,
-	UserMinus,
-	UserX,
-} from "lucide-react";
+import { Clock, MessageSquare, UserCheck, UserMinus, UserX } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { ArenaTeamEnrollmentsClient } from "~/codegen/ArenaTeamEnrollments.client";
 import { useArenaTeamEnrollmentsUpdateApplicantStatusMutation } from "~/codegen/ArenaTeamEnrollments.react-query";
-import type {
-	ApplicantResponse,
-	ApplicantStatus,
-} from "~/codegen/ArenaTeamEnrollments.types";
+import type { ApplicantResponse, ApplicantStatus } from "~/codegen/ArenaTeamEnrollments.types";
 import { useEnv } from "~/hooks/useEnv";
 
 // Schema for rejection reason
 const rejectionSchema = z.object({
-	reason: z
-		.string()
-		.min(5, "Reason must be at least 5 characters")
-		.max(500, "Reason too long"),
+	reason: z.string().min(5, "Reason must be at least 5 characters").max(500, "Reason too long"),
 });
 
 type RejectionForm = z.infer<typeof rejectionSchema>;
@@ -75,17 +63,10 @@ interface ApplicantsListProps {
 	entryId: number;
 }
 
-export const ApplicantsList = ({
-	applicants,
-	isCreator,
-	entryId,
-}: ApplicantsListProps) => {
+export const ApplicantsList = ({ applicants, isCreator, entryId }: ApplicantsListProps) => {
 	const env = useEnv();
-	const { address: walletAddress, getSigningCosmWasmClient } = useChain(
-		env.CHAIN,
-	);
-	const [selectedApplicant, setSelectedApplicant] =
-		useState<ApplicantResponse | null>(null);
+	const { address: walletAddress, getSigningCosmWasmClient } = useChain(env.CHAIN);
+	const [selectedApplicant, setSelectedApplicant] = useState<ApplicantResponse | null>(null);
 	const {
 		isOpen: isRejectModalOpen,
 		onOpen: onRejectModalOpen,
@@ -134,7 +115,7 @@ export const ApplicantsList = ({
 			const enrollmentClient = new ArenaTeamEnrollmentsClient(
 				signingClient,
 				walletAddress,
-				env.ARENA_TEAM_ENROLLMENTS_ADDRESS,
+				env.ARENA_TEAM_ENROLLMENTS_ADDRESS
 			);
 
 			await updateStatusMutation({
@@ -160,7 +141,7 @@ export const ApplicantsList = ({
 			const enrollmentClient = new ArenaTeamEnrollmentsClient(
 				signingClient,
 				walletAddress,
-				env.ARENA_TEAM_ENROLLMENTS_ADDRESS,
+				env.ARENA_TEAM_ENROLLMENTS_ADDRESS
 			);
 
 			await updateStatusMutation({
@@ -194,12 +175,8 @@ export const ApplicantsList = ({
 		return (
 			<div className="py-12 text-center">
 				<UserMinus size={48} className="mx-auto mb-4 opacity-30" />
-				<h3 className="mb-2 font-medium text-lg">
-					No applicants in this category
-				</h3>
-				<p className="text-default-500">
-					Check other tabs to see all applicants
-				</p>
+				<h3 className="mb-2 font-medium text-lg">No applicants in this category</h3>
+				<p className="text-default-500">Check other tabs to see all applicants</p>
 			</div>
 		);
 	}
@@ -235,23 +212,16 @@ export const ApplicantsList = ({
 														{statusConfig.label}
 													</Chip>
 												</div>
-												<p className="text-default-500 text-xs">
-													{statusConfig.description}
-												</p>
+												<p className="text-default-500 text-xs">{statusConfig.description}</p>
 												{rejectionReason && (
 													<div className="mt-2 rounded-md border border-danger-200 bg-danger-50 p-2">
 														<div className="flex items-start gap-2">
-															<MessageSquare
-																size={12}
-																className="mt-0.5 text-danger"
-															/>
+															<MessageSquare size={12} className="mt-0.5 text-danger" />
 															<div>
 																<p className="mb-1 font-medium text-danger text-xs">
 																	Rejection Reason:
 																</p>
-																<p className="text-danger-700 text-xs">
-																	{rejectionReason}
-																</p>
+																<p className="text-danger-700 text-xs">{rejectionReason}</p>
 															</div>
 														</div>
 													</div>

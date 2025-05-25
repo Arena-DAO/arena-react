@@ -33,7 +33,6 @@ const TeamMembersModal = ({ daoAddress }: TeamMembersModalProps) => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure({
 		id: `teams_${daoAddress}`,
 	});
-	// biome-ignore lint/style/noNonNullAssertion: correct
 	const targetRef = useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
@@ -74,12 +73,7 @@ const TeamMembersModal = ({ daoAddress }: TeamMembersModalProps) => {
 	return (
 		<>
 			<Button onPress={onOpen}>Team Members</Button>
-			<Modal
-				ref={targetRef}
-				isOpen={isOpen}
-				onOpenChange={onOpenChange}
-				size="xl"
-			>
+			<Modal ref={targetRef} isOpen={isOpen} onOpenChange={onOpenChange} size="xl">
 				<ModalContent>
 					<ModalHeader {...moveProps}>
 						<h2>Team Members</h2>

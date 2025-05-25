@@ -46,35 +46,25 @@ const InitialDuesModal = ({ escrow }: InitialDuesModalProps) => {
 
 		return {
 			items: data,
-			nextCursor:
-				data.length === env.PAGINATION_LIMIT
-					? data[data.length - 1]?.addr
-					: undefined,
+			nextCursor: data.length === env.PAGINATION_LIMIT ? data[data.length - 1]?.addr : undefined,
 		};
 	};
 
-	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-		useInfiniteQuery({
-			queryKey: arenaEscrowQueryKeys.initialDues(escrow),
-			queryFn: fetchInitialDues,
-			getNextPageParam: (lastPage) => lastPage.nextCursor,
-			enabled: !!cosmWasmClient && isOpen,
-		});
+	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery({
+		queryKey: arenaEscrowQueryKeys.initialDues(escrow),
+		queryFn: fetchInitialDues,
+		getNextPageParam: (lastPage) => lastPage.nextCursor,
+		enabled: !!cosmWasmClient && isOpen,
+	});
 
 	const allDues = data?.pages.flatMap((page) => page.items) ?? [];
-	// biome-ignore lint/style/noNonNullAssertion: correct
 	const targetRef = React.useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
 	return (
 		<>
 			<Button onPress={onOpen}>View Initial Dues</Button>
-			<Modal
-				ref={targetRef}
-				isOpen={isOpen}
-				onOpenChange={onOpenChange}
-				size="5xl"
-			>
+			<Modal ref={targetRef} isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
 				<ModalContent>
 					<ModalHeader {...moveProps}>
 						<h2 className="font-semibold text-xl">Initial Dues</h2>
@@ -112,10 +102,7 @@ const InitialDuesModal = ({ escrow }: InitialDuesModalProps) => {
 					</ModalBody>
 					{hasNextPage && (
 						<ModalFooter>
-							<Button
-								isLoading={isFetchingNextPage}
-								onPress={() => fetchNextPage()}
-							>
+							<Button isLoading={isFetchingNextPage} onPress={() => fetchNextPage()}>
 								Load More
 							</Button>
 						</ModalFooter>

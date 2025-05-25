@@ -9,10 +9,7 @@ interface MaybeLinkProps {
 
 const MaybeLink = ({ content }: MaybeLinkProps) => {
 	const maybeIpfsUrl = withIpfsSupport(content);
-	const url =
-		maybeIpfsUrl && URL.canParse(maybeIpfsUrl)
-			? new URL(maybeIpfsUrl)
-			: undefined;
+	const url = maybeIpfsUrl && URL.canParse(maybeIpfsUrl) ? new URL(maybeIpfsUrl) : undefined;
 
 	if (url?.href) {
 		return (

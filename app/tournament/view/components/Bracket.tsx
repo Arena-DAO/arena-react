@@ -13,21 +13,13 @@ import {
 	ArenaTournamentModuleClient,
 	ArenaTournamentModuleQueryClient,
 } from "~/codegen/ArenaTournamentModule.client";
-import type {
-	Match,
-	MatchResult,
-	MatchResultMsg,
-} from "~/codegen/ArenaTournamentModule.types";
+import type { Match, MatchResult, MatchResultMsg } from "~/codegen/ArenaTournamentModule.types";
 import { useEnv } from "~/hooks/useEnv";
 import "reactflow/dist/style.css";
 import { useChain } from "@cosmos-kit/react";
 import dagre from "@dagrejs/dagre";
 import { Button, ButtonGroup, addToast } from "@heroui/react";
-import {
-	type QueryClient,
-	useInfiniteQuery,
-	useQueryClient,
-} from "@tanstack/react-query";
+import { type QueryClient, useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { Fullscreen, Minimize, Share, Upload } from "lucide-react";
 
 import useClipboard from "react-use-clipboard";
@@ -95,7 +87,7 @@ export const useMatchResultsStore = create<MatchResultsState>()((set, get) => ({
 			return {
 				matchResults: new Map(state.matchResults).set(
 					matchResult.match_number,
-					matchResult.match_result,
+					matchResult.match_result
 				),
 			};
 		}),
@@ -110,30 +102,19 @@ export const useMatchResultsStore = create<MatchResultsState>()((set, get) => ({
 	get: (matchNumber) => get().matchResults.get(matchNumber),
 }));
 
-const getLayoutedElements = (
-	queryClient: QueryClient,
-	nodes: Node[],
-	edges: Edge[],
-) => {
+const getLayoutedElements = (queryClient: QueryClient, nodes: Node[], edges: Edge[]) => {
 	dagreGraph.setGraph({
 		rankdir: "LR",
 		ranker: "tight-tree",
 	});
 
 	for (const node of nodes) {
-		const profile1 = queryClient.getQueryData<Profile>([
-			"profile",
-			node.data.team_1,
-		]);
-		const profile2 = queryClient.getQueryData<Profile>([
-			"profile",
-			node.data.team_2,
-		]);
+		const profile1 = queryClient.getQueryData<Profile>(["profile", node.data.team_1]);
+		const profile2 = queryClient.getQueryData<Profile>(["profile", node.data.team_2]);
 		dagreGraph.setNode(node.id, {
 			width: Math.max(
-				Math.max(profile1?.name?.length ?? 46, profile2?.name?.length ?? 46) *
-					22,
-				325,
+				Math.max(profile1?.name?.length ?? 46, profile2?.name?.length ?? 46) * 22,
+				325
 			),
 			height: 315,
 		});
@@ -182,9 +163,7 @@ function convertMatchesToNodesEdges(matches: Match[]) {
 				target: match.next_match_winner.toString(),
 				type: "smoothstep",
 				sourceHandle: "winner",
-				style: match.is_losers_bracket
-					? EDGE_STYLES.redemption
-					: EDGE_STYLES.winner,
+				style: match.is_losers_bracket ? EDGE_STYLES.redemption : EDGE_STYLES.winner,
 			});
 		}
 		if (match.next_match_loser) {
@@ -203,12 +182,7 @@ function convertMatchesToNodesEdges(matches: Match[]) {
 	return { nodes, edges };
 }
 
-function Bracket({
-	tournamentId,
-	escrow,
-	isHost,
-	showBracket = false,
-}: BracketProps) {
+function Bracket({ tournamentId, escrow, isHost, showBracket = false }: BracketProps) {
 	const queryClient = useQueryClient();
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
@@ -245,7 +219,7 @@ function Bracket({
 
 		const client = new ArenaTournamentModuleQueryClient(
 			cosmWasmClient,
-			env.ARENA_TOURNAMENT_MODULE_ADDRESS,
+			env.ARENA_TOURNAMENT_MODULE_ADDRESS
 		);
 
 		const data = (await client.queryExtension({
@@ -255,24 +229,18 @@ function Bracket({
 		return {
 			items: data,
 			nextCursor:
-				data.length === env.PAGINATION_LIMIT
-					? data[data.length - 1]?.match_number
-					: undefined,
+				data.length === env.PAGINATION_LIMIT ? data[data.length - 1]?.match_number : undefined,
 		};
 	};
 
-	const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-		useInfiniteQuery({
-			queryKey: arenaTournamentModuleQueryKeys.queryExtension(
-				env.ARENA_TOURNAMENT_MODULE_ADDRESS,
-				{
-					msg: { bracket: { tournament_id: tournamentId } },
-				},
-			),
-			queryFn: fetchMatches,
-			getNextPageParam: (lastPage) => lastPage.nextCursor,
-			enabled: !!cosmWasmClient,
-		});
+	const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+		queryKey: arenaTournamentModuleQueryKeys.queryExtension(env.ARENA_TOURNAMENT_MODULE_ADDRESS, {
+			msg: { bracket: { tournament_id: tournamentId } },
+		}),
+		queryFn: fetchMatches,
+		getNextPageParam: (lastPage) => lastPage.nextCursor,
+		enabled: !!cosmWasmClient,
+	});
 
 	useEffect(() => {
 		if (hasNextPage && !isFetchingNextPage) {
@@ -283,10 +251,12 @@ function Bracket({
 	useEffect(() => {
 		if (data) {
 			const allMatches = data.pages.flatMap((page) => page.items);
-			const { nodes: newNodes, edges: newEdges } =
-				convertMatchesToNodesEdges(allMatches);
-			const { nodes: layoutedNodes, edges: layoutedEdges } =
-				getLayoutedElements(queryClient, newNodes, newEdges);
+			const { nodes: newNodes, edges: newEdges } = convertMatchesToNodesEdges(allMatches);
+			const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+				queryClient,
+				newNodes,
+				newEdges
+			);
 
 			setNodes(layoutedNodes);
 			setEdges(layoutedEdges);
@@ -303,7 +273,7 @@ function Bracket({
 			const tournamentModuleClient = new ArenaTournamentModuleClient(
 				client,
 				address,
-				env.ARENA_TOURNAMENT_MODULE_ADDRESS,
+				env.ARENA_TOURNAMENT_MODULE_ADDRESS
 			);
 
 			await processMatchesMutation.mutateAsync(
@@ -329,12 +299,9 @@ function Bracket({
 
 						// Update the query data
 						await queryClient.invalidateQueries(
-							arenaTournamentModuleQueryKeys.queryExtension(
-								env.ARENA_TOURNAMENT_MODULE_ADDRESS,
-								{
-									msg: { bracket: { tournament_id: tournamentId } },
-								},
-							),
+							arenaTournamentModuleQueryKeys.queryExtension(env.ARENA_TOURNAMENT_MODULE_ADDRESS, {
+								msg: { bracket: { tournament_id: tournamentId } },
+							})
 						);
 
 						useMatchResultsStore.setState(() => ({ matchResults: new Map() }));
@@ -342,9 +309,8 @@ function Bracket({
 						if (category?.category_id) {
 							const ratingAdjustmentsEvent = response.events.find((event) =>
 								event.attributes.find(
-									(attr) =>
-										attr.key === "action" && attr.value === "adjust_ratings",
-								),
+									(attr) => attr.key === "action" && attr.value === "adjust_ratings"
+								)
 							);
 							if (ratingAdjustmentsEvent) {
 								for (const attr of ratingAdjustmentsEvent.attributes) {
@@ -359,7 +325,7 @@ function Bracket({
 												},
 											},
 										}),
-										() => attr.value,
+										() => attr.value
 									);
 								}
 							}
@@ -368,10 +334,8 @@ function Bracket({
 						if (
 							response.events.find((event) =>
 								event.attributes.find(
-									(attr) =>
-										attr.key === "action" &&
-										attr.value === "process_competition",
-								),
+									(attr) => attr.key === "action" && attr.value === "process_competition"
+								)
 							)
 						) {
 							queryClient.setQueryData<CompetitionResponse | undefined>(
@@ -381,16 +345,14 @@ function Bracket({
 										return { ...old, status: "inactive" };
 									}
 									return old;
-								},
+								}
 							);
 
 							if (escrow) {
 								await queryClient.invalidateQueries(
-									arenaEscrowQueryKeys.dumpState(escrow, { addr: address }),
+									arenaEscrowQueryKeys.dumpState(escrow, { addr: address })
 								);
-								await queryClient.invalidateQueries(
-									arenaEscrowQueryKeys.balances(escrow),
-								);
+								await queryClient.invalidateQueries(arenaEscrowQueryKeys.balances(escrow));
 							}
 
 							addToast({
@@ -399,7 +361,7 @@ function Bracket({
 							});
 						}
 					},
-				},
+				}
 			);
 		} catch (e) {
 			console.error(e);
@@ -408,11 +370,7 @@ function Bracket({
 	};
 
 	return (
-		<div
-			className={
-				isFullscreen ? "fixed inset-0 z-50 bg-background" : "h-full w-full"
-			}
-		>
+		<div className={isFullscreen ? "fixed inset-0 z-50 bg-background" : "h-full w-full"}>
 			<ReactFlow
 				nodes={nodes}
 				edges={edges}
@@ -457,10 +415,7 @@ function Bracket({
 						)}
 					</ButtonGroup>
 				</Panel>
-				<Panel
-					position="top-left"
-					style={{ padding: "10px", borderRadius: "5px" }}
-				>
+				<Panel position="top-left" style={{ padding: "10px", borderRadius: "5px" }}>
 					<h3>Legend</h3>
 					<div
 						style={{
@@ -490,8 +445,7 @@ function Bracket({
 							style={{
 								width: "20px",
 								height: "2px",
-								backgroundImage:
-									"linear-gradient(to right, #FF5722 50%, transparent 50%)",
+								backgroundImage: "linear-gradient(to right, #FF5722 50%, transparent 50%)",
 								backgroundSize: "4px 100%",
 								backgroundRepeat: "repeat-x",
 								marginRight: "10px",

@@ -7,10 +7,7 @@ import { formatDistanceToNow } from "date-fns";
 import { motion } from "framer-motion";
 import { Calendar, Shield, Target, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
-import type {
-	EntryStatus,
-	TeamEntryResponse,
-} from "~/codegen/ArenaTeamEnrollments.types";
+import type { EntryStatus, TeamEntryResponse } from "~/codegen/ArenaTeamEnrollments.types";
 
 interface TeamEnrollmentCardProps {
 	entry: TeamEntryResponse;
@@ -60,8 +57,8 @@ const TeamEnrollmentCard = ({ entry }: TeamEnrollmentCardProps) => {
 		}
 	};
 
-	const statusConfig = getStatusConfig(entry.status);
-	const approvalRate =
+	const _statusConfig = getStatusConfig(entry.status);
+	const _approvalRate =
 		entry.applicants_count > 0
 			? (entry.approved_applicants_count / entry.applicants_count) * 100
 			: 0;
@@ -102,9 +99,7 @@ const TeamEnrollmentCard = ({ entry }: TeamEnrollmentCardProps) => {
 								</h3>
 								<div className="flex items-center gap-2 text-default-500 text-xs">
 									<Calendar size={12} />
-									<span>
-										{formatDistanceToNow(createdTime, { addSuffix: true })}
-									</span>
+									<span>{formatDistanceToNow(createdTime, { addSuffix: true })}</span>
 								</div>
 							</div>
 						</div>
@@ -119,13 +114,9 @@ const TeamEnrollmentCard = ({ entry }: TeamEnrollmentCardProps) => {
 							<div className="rounded-lg border border-primary/10 bg-primary/5 p-3 text-center">
 								<div className="mb-1 flex items-center justify-center gap-1">
 									<Users size={14} className="text-primary" />
-									<span className="font-bold text-lg text-primary">
-										{entry.applicants_count}
-									</span>
+									<span className="font-bold text-lg text-primary">{entry.applicants_count}</span>
 								</div>
-								<div className="font-medium text-default-500 text-xs">
-									Total Applicants
-								</div>
+								<div className="font-medium text-default-500 text-xs">Total Applicants</div>
 							</div>
 							<div className="rounded-lg border border-success/10 bg-success/5 p-3 text-center">
 								<div className="mb-1 flex items-center justify-center gap-1">
@@ -134,18 +125,14 @@ const TeamEnrollmentCard = ({ entry }: TeamEnrollmentCardProps) => {
 										{entry.approved_applicants_count}
 									</span>
 								</div>
-								<div className="font-medium text-default-500 text-xs">
-									Approved
-								</div>
+								<div className="font-medium text-default-500 text-xs">Approved</div>
 							</div>
 						</div>
 
 						{/* Creator Profile */}
 						<div className="mb-4">
 							<div className="flex items-center gap-2">
-								<span className="font-medium text-default-500 text-xs">
-									Created by:
-								</span>
+								<span className="font-medium text-default-500 text-xs">Created by:</span>
 								<Profile address={entry.creator} />
 							</div>
 						</div>

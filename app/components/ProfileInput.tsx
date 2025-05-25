@@ -1,11 +1,7 @@
 "use client";
 
 import { useChain } from "@cosmos-kit/react";
-import {
-	Autocomplete,
-	AutocompleteItem,
-	type AutocompleteProps,
-} from "@heroui/react";
+import { Autocomplete, AutocompleteItem, type AutocompleteProps } from "@heroui/react";
 import { useMemo } from "react";
 import type { FieldError, FieldValues } from "react-hook-form";
 import { useEnv } from "~/hooks/useEnv";
@@ -52,19 +48,12 @@ export const ProfileInput = ({
 						// Filter out user's address if excludeSelf is true
 						return excludeSelf ? team !== address : true;
 					})
-					.map((team) => ({ address: team })),
+					.map((team) => ({ address: team }))
 			);
 		}
 
 		return result;
-	}, [
-		teams,
-		emptyTeams,
-		address,
-		excludeSelf,
-		includeArena,
-		env.ARENA_DAO_ADDRESS,
-	]);
+	}, [teams, emptyTeams, address, excludeSelf, includeArena, env.ARENA_DAO_ADDRESS]);
 
 	return (
 		<div className="flex w-full items-center">
@@ -86,10 +75,7 @@ export const ProfileInput = ({
 				{(item) => {
 					const typedItem = item as { address: string };
 					return (
-						<AutocompleteItem
-							key={typedItem.address}
-							textValue={typedItem.address}
-						>
+						<AutocompleteItem key={typedItem.address} textValue={typedItem.address}>
 							<Profile address={typedItem.address} />
 						</AutocompleteItem>
 					);

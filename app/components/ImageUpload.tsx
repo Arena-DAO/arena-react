@@ -125,7 +125,7 @@ const ImageUploader = forwardRef<ImageUploaderRef, ImageUploaderProps>(
 				{...props}
 			/>
 		);
-	},
+	}
 );
 
 export default ImageUploader;

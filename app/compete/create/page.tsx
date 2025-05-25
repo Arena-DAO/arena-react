@@ -6,15 +6,7 @@ import {
 	toBinary,
 } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
-import {
-	Button,
-	Card,
-	CardBody,
-	CardHeader,
-	Switch,
-	Tooltip,
-	addToast,
-} from "@heroui/react";
+import { Button, Card, CardBody, CardHeader, Switch, Tooltip, addToast } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { Info, Plus } from "lucide-react";
@@ -36,10 +28,7 @@ import {
 	CreateCompetitionSchema,
 } from "~/config/schemas/CreateCompetitionSchema";
 import { convertToNanoseconds } from "~/config/schemas/TimestampSchema";
-import {
-	CategoryProvider,
-	useCategoryContext,
-} from "~/contexts/CategoryContext";
+import { CategoryProvider, useCategoryContext } from "~/contexts/CategoryContext";
 import { convertToEscrowInstantiate } from "~/helpers/SchemaHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import BasicInformationForm from "./components/BasicInformationForm";
@@ -54,9 +43,7 @@ const CreateCompetitionPage = () => {
 	const params = useSearchParams();
 	const category = useCategoryContext(params.get("category"));
 	const router = useRouter();
-	const { getSigningCosmWasmClient, address, isWalletConnected } = useChain(
-		env.CHAIN,
-	);
+	const { getSigningCosmWasmClient, address, isWalletConnected } = useChain(env.CHAIN);
 
 	const formMethods = useForm<CreateCompetitionFormValues>({
 		resolver: zodResolver(CreateCompetitionSchema),
@@ -90,7 +77,7 @@ const CreateCompetitionPage = () => {
 	const {
 		handleSubmit,
 		watch,
-		formState: { isSubmitting, isLoading },
+		formState: { isSubmitting },
 	} = formMethods;
 
 	const competitionType = watch("competitionType");
@@ -100,7 +87,7 @@ const CreateCompetitionPage = () => {
 		client: SigningCosmWasmClient,
 		values: CreateCompetitionFormValues,
 		address: string,
-		categoryId?: string,
+		categoryId?: string
 	) => {
 		if (!values.enrollmentInfo) {
 			throw new Error("Enrollment information is required");
@@ -109,7 +96,7 @@ const CreateCompetitionPage = () => {
 		const enrollmentClient = new ArenaCompetitionEnrollmentClient(
 			client,
 			address,
-			env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+			env.ARENA_COMPETITION_ENROLLMENT_ADDRESS
 		);
 
 		let competitionType: CompetitionType;
@@ -123,9 +110,7 @@ const CreateCompetitionPage = () => {
 				}
 				competitionType = {
 					league: {
-						distribution: values.leagueInfo.distribution.map((mp) =>
-							mp.percent.toString(),
-						),
+						distribution: values.leagueInfo.distribution.map((mp) => mp.percent.toString()),
 						match_win_points: values.leagueInfo.matchWinPoints.toString(),
 						match_draw_points: values.leagueInfo.matchDrawPoints.toString(),
 						match_lose_points: values.leagueInfo.matchLosePoints.toString(),
@@ -138,15 +123,12 @@ const CreateCompetitionPage = () => {
 				}
 				competitionType = {
 					tournament: {
-						distribution: values.tournamentInfo.distribution.map((mp) =>
-							mp.percent.toString(),
-						),
+						distribution: values.tournamentInfo.distribution.map((mp) => mp.percent.toString()),
 						elimination_type:
 							values.tournamentInfo.eliminationType === "single"
 								? {
 										single_elimination: {
-											play_third_place_match:
-												values.tournamentInfo.playThirdPlace ?? false,
+											play_third_place_match: values.tournamentInfo.playThirdPlace ?? false,
 										},
 									}
 								: "double_elimination",
@@ -206,7 +188,7 @@ const CreateCompetitionPage = () => {
 		client: SigningCosmWasmClient,
 		values: CreateCompetitionFormValues,
 		address: string,
-		categoryId?: string,
+		categoryId?: string
 	) => {
 		if (!values.directParticipation) {
 			throw new Error("Direct participation information is required");
@@ -237,7 +219,7 @@ const CreateCompetitionPage = () => {
 		const escrow = convertToEscrowInstantiate(
 			env.CODE_ID_ESCROW,
 			values.directParticipation.dues ?? [],
-			values.additionalLayeredFees,
+			values.additionalLayeredFees
 		);
 
 		const commonMsg = {
@@ -260,7 +242,7 @@ const CreateCompetitionPage = () => {
 				const wagerClient = new ArenaWagerModuleClient(
 					client,
 					address,
-					env.ARENA_WAGER_MODULE_ADDRESS,
+					env.ARENA_WAGER_MODULE_ADDRESS
 				);
 				result = await wagerClient.createCompetition({
 					...commonMsg,
@@ -269,19 +251,16 @@ const CreateCompetitionPage = () => {
 				break;
 			}
 			case "league": {
-				if (!values.leagueInfo)
-					throw new Error("League information is required");
+				if (!values.leagueInfo) throw new Error("League information is required");
 				const leagueClient = new ArenaLeagueModuleClient(
 					client,
 					address,
-					env.ARENA_LEAGUE_MODULE_ADDRESS,
+					env.ARENA_LEAGUE_MODULE_ADDRESS
 				);
 				result = await leagueClient.createCompetition({
 					...commonMsg,
 					instantiateExtension: {
-						distribution: values.leagueInfo.distribution.map((mp) =>
-							mp.percent.toString(),
-						),
+						distribution: values.leagueInfo.distribution.map((mp) => mp.percent.toString()),
 						match_win_points: values.leagueInfo.matchWinPoints.toString(),
 						match_draw_points: values.leagueInfo.matchDrawPoints.toString(),
 						match_lose_points: values.leagueInfo.matchLosePoints.toString(),
@@ -290,25 +269,21 @@ const CreateCompetitionPage = () => {
 				break;
 			}
 			case "tournament": {
-				if (!values.tournamentInfo)
-					throw new Error("Tournament information is required");
+				if (!values.tournamentInfo) throw new Error("Tournament information is required");
 				const tournamentClient = new ArenaTournamentModuleClient(
 					client,
 					address,
-					env.ARENA_TOURNAMENT_MODULE_ADDRESS,
+					env.ARENA_TOURNAMENT_MODULE_ADDRESS
 				);
 				result = await tournamentClient.createCompetition({
 					...commonMsg,
 					instantiateExtension: {
-						distribution: values.tournamentInfo.distribution.map((mp) =>
-							mp.percent.toString(),
-						),
+						distribution: values.tournamentInfo.distribution.map((mp) => mp.percent.toString()),
 						elimination_type:
 							values.tournamentInfo.eliminationType === "single"
 								? {
 										single_elimination: {
-											play_third_place_match:
-												values.tournamentInfo.playThirdPlace ?? false,
+											play_third_place_match: values.tournamentInfo.playThirdPlace ?? false,
 										},
 									}
 								: "double_elimination",
@@ -345,9 +320,7 @@ const CreateCompetitionPage = () => {
 			let id: string | undefined;
 			for (const event of result.events) {
 				for (const attribute of event.attributes) {
-					if (
-						attribute.key === (values.useEnrollments ? "id" : "competition_id")
-					) {
+					if (attribute.key === (values.useEnrollments ? "id" : "competition_id")) {
 						id = attribute.value;
 						break;
 					}
@@ -359,7 +332,7 @@ const CreateCompetitionPage = () => {
 				router.push(
 					values.useEnrollments
 						? `/enrollment/view?enrollmentId=${id}`
-						: `/${values.competitionType}/view?competitionId=${id}`,
+						: `/${values.competitionType}/view?competitionId=${id}`
 				);
 				addToast({
 					color: "success",
@@ -394,8 +367,7 @@ const CreateCompetitionPage = () => {
 							Create a Competition
 						</h1>
 						<p className="mx-auto mb-8 max-w-2xl text-center text-foreground/80">
-							Set up your competition details, rules, and participation
-							requirements.
+							Set up your competition details, rules, and participation requirements.
 						</p>
 					</motion.div>
 
@@ -469,9 +441,7 @@ const CreateCompetitionPage = () => {
 								<Card className="border border-primary/10">
 									<CardHeader className="border-primary/10 border-b">
 										<div className="flex items-center gap-2">
-											<h2 className="font-cinzel font-semibold text-xl md:text-2xl">
-												Rules
-											</h2>
+											<h2 className="font-cinzel font-semibold text-xl md:text-2xl">Rules</h2>
 											<Tooltip content="The competition's rules and rulesets if applicable">
 												<span className="cursor-help text-foreground/70 transition-colors hover:text-foreground/90">
 													<Info size={18} aria-hidden="true" />
@@ -512,11 +482,7 @@ const CreateCompetitionPage = () => {
 											animate={{ opacity: 1, height: "auto" }}
 											transition={{ duration: 0.3 }}
 										>
-											{useEnrollments ? (
-												<EnrollmentInformationForm />
-											) : (
-												<MembersAndDuesForm />
-											)}
+											{useEnrollments ? <EnrollmentInformationForm /> : <MembersAndDuesForm />}
 										</motion.div>
 									</CardBody>
 								</Card>

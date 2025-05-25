@@ -18,15 +18,8 @@ import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { ArenaTeamEnrollmentsQueryClient } from "~/codegen/ArenaTeamEnrollments.client";
 import { useArenaTeamEnrollmentsListEntriesQuery } from "~/codegen/ArenaTeamEnrollments.react-query";
-import type {
-	EntryStatus,
-	TeamEntryResponse,
-} from "~/codegen/ArenaTeamEnrollments.types";
-import {
-	type CategoryItem,
-	type CategoryLeaf,
-	useCategoryMap,
-} from "~/hooks/useCategoryMap";
+import type { EntryStatus, TeamEntryResponse } from "~/codegen/ArenaTeamEnrollments.types";
+import { type CategoryItem, type CategoryLeaf, useCategoryMap } from "~/hooks/useCategoryMap";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import TeamEnrollmentCard from "./components/TeamEnrollmentCard";
@@ -57,9 +50,7 @@ const STATUSES: { key: EntryStatus; label: string; description: string }[] = [
 const TeamEnrollments = () => {
 	const searchParams = useSearchParams();
 	const categoryId = searchParams?.get("category") || undefined;
-	const { data: client } = useCosmWasmClient();
 	const { data: categories } = useCategoryMap();
-	const env = useEnv();
 	const [selectedStatus, setSelectedStatus] = useState<EntryStatus>("open");
 	const limit = 50;
 
@@ -77,9 +68,7 @@ const TeamEnrollments = () => {
 
 		while (currentItem) {
 			result.unshift(currentItem);
-			currentItem = currentItem.parent_url
-				? categories.get(currentItem.parent_url)
-				: undefined;
+			currentItem = currentItem.parent_url ? categories.get(currentItem.parent_url) : undefined;
 		}
 
 		result.unshift({ title: "Categories", url: "", children: [], img: "" });
@@ -95,11 +84,7 @@ const TeamEnrollments = () => {
 	}
 
 	return (
-		<motion.div
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			className="min-h-screen"
-		>
+		<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen">
 			<div className="container mx-auto space-y-6 px-4 py-6 md:space-y-8 md:py-8">
 				{/* Header Section */}
 				<div className="flex flex-col gap-4 md:gap-6">
@@ -153,8 +138,7 @@ const TeamEnrollments = () => {
 					color="primary"
 					variant="underlined"
 					classNames={{
-						tabList:
-							"gap-6 w-full relative rounded-none p-0 border-b border-divider",
+						tabList: "gap-6 w-full relative rounded-none p-0 border-b border-divider",
 						cursor: "w-full bg-primary",
 						tab: "max-w-fit px-0 h-12",
 						tabContent: "group-data-[selected=true]:text-primary",
@@ -194,33 +178,24 @@ interface TeamEnrollmentsListProps {
 	limit: number;
 }
 
-const TeamEnrollmentsList = ({
-	categoryItem,
-	status,
-	limit,
-}: TeamEnrollmentsListProps) => {
+const TeamEnrollmentsList = ({ categoryItem, status, limit }: TeamEnrollmentsListProps) => {
 	const env = useEnv();
 	const { data: client } = useCosmWasmClient();
 
-	const { data: entries, isLoading: isEntriesLoading } =
-		useArenaTeamEnrollmentsListEntriesQuery({
-			client:
-				client &&
-				new ArenaTeamEnrollmentsQueryClient(
-					client,
-					env.ARENA_TEAM_ENROLLMENTS_ADDRESS,
-				),
-			args: {
-				categoryStatus: categoryItem && {
-					category_id: categoryItem.category_id?.toString(),
-					status: status,
-				},
-				limit,
+	const { data: entries, isLoading: isEntriesLoading } = useArenaTeamEnrollmentsListEntriesQuery({
+		client:
+			client && new ArenaTeamEnrollmentsQueryClient(client, env.ARENA_TEAM_ENROLLMENTS_ADDRESS),
+		args: {
+			categoryStatus: categoryItem && {
+				category_id: categoryItem.category_id?.toString(),
+				status: status,
 			},
-			options: {
-				enabled: !!client && !!categoryItem,
-			},
-		});
+			limit,
+		},
+		options: {
+			enabled: !!client && !!categoryItem,
+		},
+	});
 
 	if (isEntriesLoading) {
 		return (
@@ -235,9 +210,7 @@ const TeamEnrollmentsList = ({
 			<Card className="w-full">
 				<CardBody className="flex flex-col items-center justify-center py-16">
 					<Users size={48} className="mb-4 opacity-30" />
-					<h3 className="mb-2 font-medium text-xl">
-						No {status} Team Enrollments
-					</h3>
+					<h3 className="mb-2 font-medium text-xl">No {status} Team Enrollments</h3>
 					<p className="text-center opacity-70">
 						There are no {status} team enrollments in this category yet.
 					</p>

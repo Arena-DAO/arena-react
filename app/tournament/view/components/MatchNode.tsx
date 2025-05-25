@@ -48,15 +48,10 @@ const MatchNode = memo(({ data }: MatchNodeProps) => {
 			<Card
 				className={clsx(
 					"min-w-80",
-					data.team_1 &&
-						data.team_2 &&
-						!data.result &&
-						"border-4 border-primary",
+					data.team_1 && data.team_2 && !data.result && "border-4 border-primary"
 				)}
 			>
-				<CardHeader className="font-bold text-4xl">
-					Match {data.match_number}
-				</CardHeader>
+				<CardHeader className="font-bold text-4xl">Match {data.match_number}</CardHeader>
 				<CardBody className="gap-4 text-center align-middle text-4xl">
 					{data.team_1 ? (
 						<Profile address={data.team_1} classNames={{ name: "text-4xl" }} />

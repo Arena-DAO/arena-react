@@ -1,12 +1,6 @@
-import type {
-	Coin,
-	CompetitionType,
-} from "~/codegen/ArenaCompetitionEnrollment.types";
+import type { Coin, CompetitionType } from "~/codegen/ArenaCompetitionEnrollment.types";
 
-export const calculateCurrentPool = (
-	entryFee: Coin,
-	currentMembers: string,
-): Coin => {
+export const calculateCurrentPool = (entryFee: Coin, currentMembers: string): Coin => {
 	const totalAmount = BigInt(entryFee.amount) * BigInt(currentMembers);
 	return { amount: totalAmount.toString(), denom: entryFee.denom };
 };

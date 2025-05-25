@@ -29,11 +29,7 @@ import {
 	useDraggable,
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-	type InfiniteData,
-	useInfiniteQuery,
-	useQueryClient,
-} from "@tanstack/react-query";
+import { type InfiniteData, useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { chunk } from "lodash";
 import { FileCheck, Plus, Trash } from "lucide-react";
 import React from "react";
@@ -63,10 +59,7 @@ const EvidenceFormSchema = z.object({
 
 type EvidenceFormValues = z.infer<typeof EvidenceFormSchema>;
 
-const EvidenceSection = ({
-	competitionId,
-	moduleAddr,
-}: EvidenceSectionProps) => {
+const EvidenceSection = ({ competitionId, moduleAddr }: EvidenceSectionProps) => {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const queryClient = useQueryClient();
@@ -85,10 +78,7 @@ const EvidenceSection = ({
 
 		return {
 			items: data,
-			nextCursor:
-				data.length === env.PAGINATION_LIMIT
-					? data[data.length - 1]?.id
-					: undefined,
+			nextCursor: data.length === env.PAGINATION_LIMIT ? data[data.length - 1]?.id : undefined,
 		};
 	};
 
@@ -120,11 +110,7 @@ const EvidenceSection = ({
 			if (!address) throw "Could not get user address";
 
 			const client = await getSigningCosmWasmClient();
-			const competitionClient = new ArenaWagerModuleClient(
-				client,
-				address,
-				moduleAddr,
-			);
+			const competitionClient = new ArenaWagerModuleClient(client, address, moduleAddr);
 
 			const response = await competitionClient.submitEvidence({
 				competitionId,
@@ -165,13 +151,10 @@ const EvidenceSection = ({
 						const newPages = chunk(newData, env.PAGINATION_LIMIT);
 
 						return {
-							pageParams: [
-								undefined,
-								...newPages.slice(0, -1).map((page) => page.at(-1)?.id),
-							],
+							pageParams: [undefined, ...newPages.slice(0, -1).map((page) => page.at(-1)?.id)],
 							pages: newPages,
 						};
-					},
+					}
 				);
 			} else {
 				query.refetch();
@@ -184,10 +167,9 @@ const EvidenceSection = ({
 
 	const evidence = useMemo(
 		() => query.data?.pages.flatMap((page) => page.items) ?? [],
-		[query.data],
+		[query.data]
 	);
 
-	// biome-ignore lint/style/noNonNullAssertion: correct
 	const targetRef = React.useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
@@ -248,9 +230,7 @@ const EvidenceSection = ({
 								>
 									{(item: Evidence) => (
 										<TableRow key={item.id}>
-											<TableCell>
-												{formatTimestampToDisplay(item.submit_time)}
-											</TableCell>
+											<TableCell>{formatTimestampToDisplay(item.submit_time)}</TableCell>
 											<TableCell>
 												<Profile address={item.submit_user} />
 											</TableCell>
@@ -270,12 +250,7 @@ const EvidenceSection = ({
 					</Accordion>
 				</CardBody>
 			</Card>
-			<Modal
-				isOpen={isOpen}
-				onOpenChange={onOpenChange}
-				size="4xl"
-				ref={targetRef}
-			>
+			<Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl" ref={targetRef}>
 				<ModalContent>
 					<ModalHeader {...moveProps}>Add Evidence</ModalHeader>
 					<ModalBody className="space-y-4">
@@ -322,10 +297,7 @@ const EvidenceSection = ({
 						>
 							Add Item
 						</Button>
-						<Button
-							onPress={() => handleSubmit(onSubmit)()}
-							isLoading={isSubmitting}
-						>
+						<Button onPress={() => handleSubmit(onSubmit)()} isLoading={isSubmitting}>
 							Submit
 						</Button>
 					</ModalFooter>

@@ -28,9 +28,7 @@ interface ResultSectionProps {
 const ResultSection = ({ competitionId, moduleAddr }: ResultSectionProps) => {
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { data, isLoading, isError } = useArenaWagerModuleResultQuery({
-		client:
-			cosmWasmClient &&
-			new ArenaWagerModuleQueryClient(cosmWasmClient, moduleAddr),
+		client: cosmWasmClient && new ArenaWagerModuleQueryClient(cosmWasmClient, moduleAddr),
 		args: { competitionId },
 		options: { enabled: !!cosmWasmClient },
 	});

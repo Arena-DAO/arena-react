@@ -11,20 +11,13 @@ const Layout = ({ children }: PropsWithChildren) => {
 				<title>The Arena 🏆</title>
 				<meta charSet="UTF-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
-				<meta
-					name="description"
-					content="Empowering Communities to Compete, Govern, and Win"
-				/>
+				<meta name="description" content="Empowering Communities to Compete, Govern, and Win" />
 				<meta
 					name="keywords"
 					content="wagers, leagues, tournaments, dao, arena dao, arena, gaming, esports, neutron, competitive gaming, decentralized competition, open-source"
 				/>
 				<link rel="icon" href="/favicon.ico" />
-				<link
-					rel="apple-touch-icon"
-					sizes="180x180"
-					href="/apple-touch-icon.png"
-				/>
+				<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 				<meta property="og:image" content="/logo.png" />
 				<meta property="og:image:type" content="image/png" />
 				<meta property="og:image:width" content="1081" />
