@@ -79,7 +79,7 @@ const TeamEnrollmentCard = ({ entry }: TeamEnrollmentCardProps) => {
 			<Card
 				className="group h-full cursor-pointer border border-transparent transition-all duration-300 hover:border-primary/20 hover:shadow-primary/10 hover:shadow-xl"
 				isPressable
-				onPress={() => router.push(`/teams/entry/${entry.entry_id}`)}
+				onPress={() => router.push(`/teams/view?id=${entry.entry_id}`)}
 			>
 				<CardBody className="flex flex-col overflow-hidden p-0">
 					<div className="flex flex-1 flex-col p-5">
