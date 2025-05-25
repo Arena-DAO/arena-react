@@ -9,22 +9,50 @@ import {
 	CardBody,
 	Link,
 	Spinner,
+	Tab,
+	Tabs,
 } from "@heroui/react";
-import { formatDistanceToNow } from "date-fns";
 import { motion } from "framer-motion";
-import { ArrowLeft, Calendar, ChevronRight, Shield, Users } from "lucide-react";
+import { ArrowLeft, ChevronRight, Shield, Users } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { ArenaTeamEnrollmentsQueryClient } from "~/codegen/ArenaTeamEnrollments.client";
 import { useArenaTeamEnrollmentsListEntriesQuery } from "~/codegen/ArenaTeamEnrollments.react-query";
 import type {
 	EntryStatus,
 	TeamEntryResponse,
 } from "~/codegen/ArenaTeamEnrollments.types";
-import { type CategoryItem, useCategoryMap } from "~/hooks/useCategoryMap";
+import {
+	type CategoryItem,
+	type CategoryLeaf,
+	useCategoryMap,
+} from "~/hooks/useCategoryMap";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import { useProfileData } from "~/hooks/useProfile";
+import TeamEnrollmentCard from "./components/TeamEnrollmentCard";
+
+const STATUSES: { key: EntryStatus; label: string; description: string }[] = [
+	{
+		key: "open",
+		label: "Open",
+		description: "Teams currently recruiting members",
+	},
+	{
+		key: "created",
+		label: "Created",
+		description: "Teams that have been successfully formed",
+	},
+	{
+		key: "closed",
+		label: "Closed",
+		description: "Teams no longer accepting applications",
+	},
+	{
+		key: "aborted",
+		label: "Aborted",
+		description: "Teams that were cancelled or abandoned",
+	},
+];
 
 const TeamEnrollments = () => {
 	const searchParams = useSearchParams();
@@ -32,12 +60,15 @@ const TeamEnrollments = () => {
 	const { data: client } = useCosmWasmClient();
 	const { data: categories } = useCategoryMap();
 	const env = useEnv();
+	const [selectedStatus, setSelectedStatus] = useState<EntryStatus>("open");
 	const limit = 50;
+
 	const categoryItem = useMemo(() => {
-		const category = categories.get(searchParams.get("category") ?? "");
+		const category = categories.get(categoryId ?? "");
 		if (category && "category_id" in category) return category;
 		return undefined;
-	}, [searchParams.get, categories.get]);
+	}, [categoryId, categories]);
+
 	const breadcrumbItems: CategoryItem[] = useMemo(() => {
 		if (!categoryItem) return [];
 
@@ -53,25 +84,9 @@ const TeamEnrollments = () => {
 
 		result.unshift({ title: "Categories", url: "", children: [], img: "" });
 		return result;
-	}, [categoryItem, categories.get]);
-	const { data: entries, isLoading: isEntriesLoading } =
-		useArenaTeamEnrollmentsListEntriesQuery({
-			client:
-				client &&
-				new ArenaTeamEnrollmentsQueryClient(
-					client,
-					env.ARENA_TEAM_ENROLLMENTS_ADDRESS,
-				),
-			args: {
-				categoryId: categoryItem?.category_id?.toString() || undefined,
-				limit,
-			},
-			options: {
-				enabled: !!client && !!categoryItem?.category_id,
-			},
-		});
+	}, [categoryItem, categories]);
 
-	if (!categoryItem || isEntriesLoading) {
+	if (!categoryItem) {
 		return (
 			<div className="flex min-h-[60vh] items-center justify-center">
 				<Spinner size="lg" />
@@ -131,117 +146,122 @@ const TeamEnrollments = () => {
 					</div>
 				</div>
 
-				{/* Team Enrollments List */}
-				{!entries || entries.length === 0 ? (
-					<Card className="w-full">
-						<CardBody className="flex flex-col items-center justify-center py-16">
-							<Users size={48} className="mb-4 opacity-30" />
-							<h3 className="mb-2 font-medium text-xl">No Team Enrollments</h3>
-							<p className="text-center opacity-70">
-								There are no team enrollments in this category yet.
-							</p>
-						</CardBody>
-					</Card>
-				) : (
-					<motion.div
-						className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
-						initial="hidden"
-						animate="visible"
-						variants={{
-							visible: {
-								transition: {
-									staggerChildren: 0.05,
-								},
-							},
-						}}
-					>
-						{entries.map((entry) => (
-							<TeamEnrollmentCard key={entry.entry_id} entry={entry} />
-						))}
-					</motion.div>
-				)}
+				{/* Status Tabs */}
+				<Tabs
+					selectedKey={selectedStatus}
+					onSelectionChange={(key) => setSelectedStatus(key as EntryStatus)}
+					color="primary"
+					variant="underlined"
+					classNames={{
+						tabList:
+							"gap-6 w-full relative rounded-none p-0 border-b border-divider",
+						cursor: "w-full bg-primary",
+						tab: "max-w-fit px-0 h-12",
+						tabContent: "group-data-[selected=true]:text-primary",
+					}}
+				>
+					{STATUSES.map((status) => (
+						<Tab
+							key={status.key}
+							title={
+								<div className="flex items-center space-x-2">
+									<span>{status.label}</span>
+								</div>
+							}
+						>
+							<div className="py-4">
+								<div className="mb-4">
+									<p className="text-default-600">{status.description}</p>
+								</div>
+								<TeamEnrollmentsList
+									categoryItem={categoryItem}
+									status={status.key}
+									limit={limit}
+								/>
+							</div>
+						</Tab>
+					))}
+				</Tabs>
 			</div>
 		</motion.div>
 	);
 };
 
-// TeamEnrollmentCard component to show each team enrollment entry
-const TeamEnrollmentCard = ({ entry }: { entry: TeamEntryResponse }) => {
-	const { data: creatorProfile } = useProfileData(entry.creator);
-	const createdTime = new Date(Number(entry.created_at) * 1000);
+// Separate component for the team enrollments list
+interface TeamEnrollmentsListProps {
+	categoryItem: CategoryLeaf;
+	status: EntryStatus;
+	limit: number;
+}
 
-	const getStatusColor = (status: EntryStatus) => {
-		switch (status) {
-			case "open":
-				return "success";
-			case "created":
-				return "primary";
-			case "closed":
-				return "warning";
-			case "aborted":
-				return "danger";
-			default:
-				return "default";
-		}
-	};
+const TeamEnrollmentsList = ({
+	categoryItem,
+	status,
+	limit,
+}: TeamEnrollmentsListProps) => {
+	const env = useEnv();
+	const { data: client } = useCosmWasmClient();
+
+	const { data: entries, isLoading: isEntriesLoading } =
+		useArenaTeamEnrollmentsListEntriesQuery({
+			client:
+				client &&
+				new ArenaTeamEnrollmentsQueryClient(
+					client,
+					env.ARENA_TEAM_ENROLLMENTS_ADDRESS,
+				),
+			args: {
+				categoryStatus: categoryItem && {
+					category_id: categoryItem.category_id?.toString(),
+					status: status,
+				},
+				limit,
+			},
+			options: {
+				enabled: !!client && !!categoryItem,
+			},
+		});
+
+	if (isEntriesLoading) {
+		return (
+			<div className="flex min-h-[40vh] items-center justify-center">
+				<Spinner size="lg" />
+			</div>
+		);
+	}
+
+	if (!entries || entries.length === 0) {
+		return (
+			<Card className="w-full">
+				<CardBody className="flex flex-col items-center justify-center py-16">
+					<Users size={48} className="mb-4 opacity-30" />
+					<h3 className="mb-2 font-medium text-xl">
+						No {status} Team Enrollments
+					</h3>
+					<p className="text-center opacity-70">
+						There are no {status} team enrollments in this category yet.
+					</p>
+				</CardBody>
+			</Card>
+		);
+	}
 
 	return (
 		<motion.div
+			className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+			initial="hidden"
+			animate="visible"
 			variants={{
-				hidden: { y: 20, opacity: 0 },
-				visible: { y: 0, opacity: 1 },
+				visible: {
+					transition: {
+						staggerChildren: 0.05,
+					},
+				},
 			}}
-			transition={{ duration: 0.4 }}
 		>
-			<Card className="h-full">
-				<CardBody className="flex flex-col p-0">
-					<div className="p-4">
-						<div className="mb-2 flex items-start justify-between">
-							<h3 className="line-clamp-2 font-bold text-lg">{entry.title}</h3>
-							<span
-								className={`text-${getStatusColor(entry.status)} rounded-full px-2 py-1 font-medium text-sm bg-${getStatusColor(entry.status)}-100`}
-							>
-								{entry.status}
-							</span>
-						</div>
-
-						<p className="mb-4 line-clamp-3 text-sm opacity-80">
-							{entry.description}
-						</p>
-
-						<div className="mb-2 flex items-center gap-3 text-sm opacity-70">
-							<div className="flex items-center gap-1">
-								<Calendar size={14} />
-								<span>
-									{formatDistanceToNow(createdTime, { addSuffix: true })}
-								</span>
-							</div>
-							<div className="flex items-center gap-1">
-								<Users size={14} />
-								<Link
-									href={`/profile/${entry.creator}`}
-									className="hover:underline"
-								>
-									{creatorProfile?.name || `${entry.creator.slice(0, 8)}...`}
-								</Link>
-							</div>
-						</div>
-					</div>
-
-					<div className="mt-auto">
-						<div className="flex justify-end border-t p-3">
-							<Button
-								as={Link}
-								href={`/teams/entry/${entry.entry_id}`}
-								color="primary"
-								size="sm"
-							>
-								View Details
-							</Button>
-						</div>
-					</div>
-				</CardBody>
-			</Card>
+			{entries.map((entry: TeamEntryResponse) => (
+				<TeamEnrollmentCard key={entry.entry_id} entry={entry} />
+			))}
 		</motion.div>
 	);
 };

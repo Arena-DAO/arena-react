@@ -133,9 +133,12 @@ export interface ApplicantResponse {
   status: ApplicantStatus;
 }
 export interface TeamEntryResponse {
+  applicants_count: number;
+  approved_applicants_count: number;
   category_id?: Uint128 | null;
-  created_at: number;
+  created_at: Timestamp;
   creator: Addr;
+  dao_config: TeamDaoConfig;
   description: string;
   entry_id: number;
   status: EntryStatus;

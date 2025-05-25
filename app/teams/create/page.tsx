@@ -32,7 +32,7 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { ArenaTeamEnrollmentsClient } from "~/codegen/ArenaTeamEnrollments.client";
 import { useArenaTeamEnrollmentsCreateEntryMutation } from "~/codegen/ArenaTeamEnrollments.react-query";
-import type { DaoConfigForUint64 } from "~/codegen/ArenaTeamEnrollments.types";
+import type { TeamDaoConfig } from "~/codegen/ArenaTeamEnrollments.types";
 import { type CategoryItem, useCategoryMap } from "~/hooks/useCategoryMap";
 import { useEnv } from "~/hooks/useEnv";
 
@@ -52,13 +52,11 @@ const createTeamSchema = z.object({
 	votingPeriodDays: z
 		.number()
 		.min(1, "Voting period must be at least 1 day")
-		.max(30, "Voting period cannot exceed 30 days")
-		.default(7),
+		.max(30, "Voting period cannot exceed 30 days"),
 	approvalThreshold: z
 		.number()
 		.min(1, "Threshold must be at least 1%")
-		.max(100, "Threshold cannot exceed 100%")
-		.default(51),
+		.max(100, "Threshold cannot exceed 100%"),
 });
 
 type CreateTeamForm = z.infer<typeof createTeamSchema>;
@@ -132,7 +130,7 @@ const CreateTeamEnrollment = () => {
 			const teamImageUrl = await teamImageRef.current?.uploadToS3();
 
 			// Create DAO config with form data
-			const daoConfig: DaoConfigForUint64 = {
+			const daoConfig: TeamDaoConfig = {
 				dao_code_id: env.CODE_ID_DAO_CORE,
 				cw4_voting_code_id: env.CODE_ID_CW4_VOTING,
 				proposal_single_code_id: env.CODE_ID_DAO_PROPOSAL_SINGLE,
@@ -148,7 +146,7 @@ const CreateTeamEnrollment = () => {
 					},
 				},
 				image_url: teamImageUrl,
-				extension: env.CODE_ID_CW4_GROUP,
+				cw4_group_code_id: env.CODE_ID_CW4_GROUP,
 			};
 
 			const client = await getSigningCosmWasmClient();
