@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { Coin, StdFee } from "@cosmjs/amino";
-import { InstantiateMsg, ExecuteMsg, Uint128, DaoConfigForUint64, Duration, Threshold, PercentageThreshold, Decimal, EntryStatus, ApplicantStatus, Action, Expiration, Timestamp, Uint64, QueryMsg, Addr, ApplicantResponse, TeamEntryResponse, ArrayOfApplicantResponse, ArrayOfTeamEntryResponse, ArrayOfAddr, OwnershipForString } from "./ArenaTeamEnrollments.types";
+import { InstantiateMsg, ExecuteMsg, Uint128, Duration, Threshold, PercentageThreshold, Decimal, EntryStatus, ApplicantStatus, Action, Expiration, Timestamp, Uint64, TeamDaoConfig, QueryMsg, CategoryStatusMsg, Addr, ApplicantResponse, TeamEntryResponse, ArrayOfApplicantResponse, ArrayOfTeamEntryResponse, ArrayOfAddr, OwnershipForString } from "./ArenaTeamEnrollments.types";
 export interface ArenaTeamEnrollmentsReadOnlyInterface {
   contractAddress: string;
   getEntry: ({
@@ -15,15 +15,13 @@ export interface ArenaTeamEnrollmentsReadOnlyInterface {
     entryId: number;
   }) => Promise<TeamEntryResponse>;
   listEntries: ({
-    categoryId,
+    categoryStatus,
     limit,
-    startAfter,
-    status
+    startAfter
   }: {
-    categoryId?: Uint128;
+    categoryStatus?: CategoryStatusMsg;
     limit?: number;
     startAfter?: number;
-    status?: EntryStatus;
   }) => Promise<ArrayOfTeamEntryResponse>;
   getApplicant: ({
     applicant,
@@ -77,22 +75,19 @@ export class ArenaTeamEnrollmentsQueryClient implements ArenaTeamEnrollmentsRead
     });
   };
   listEntries = async ({
-    categoryId,
+    categoryStatus,
     limit,
-    startAfter,
-    status
+    startAfter
   }: {
-    categoryId?: Uint128;
+    categoryStatus?: CategoryStatusMsg;
     limit?: number;
     startAfter?: number;
-    status?: EntryStatus;
   }): Promise<ArrayOfTeamEntryResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
       list_entries: {
-        category_id: categoryId,
+        category_status: categoryStatus,
         limit,
-        start_after: startAfter,
-        status
+        start_after: startAfter
       }
     });
   };
@@ -160,7 +155,7 @@ export interface ArenaTeamEnrollmentsInterface extends ArenaTeamEnrollmentsReadO
     title
   }: {
     categoryId?: Uint128;
-    daoConfig: DaoConfigForUint64;
+    daoConfig: TeamDaoConfig;
     description: string;
     title: string;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
@@ -215,7 +210,7 @@ export class ArenaTeamEnrollmentsClient extends ArenaTeamEnrollmentsQueryClient 
     title
   }: {
     categoryId?: Uint128;
-    daoConfig: DaoConfigForUint64;
+    daoConfig: TeamDaoConfig;
     description: string;
     title: string;
   }, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {

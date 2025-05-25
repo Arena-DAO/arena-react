@@ -21,7 +21,7 @@ import type {
 	EntryStatus,
 	TeamEntryResponse,
 } from "~/codegen/ArenaTeamEnrollments.types";
-import { useCategoryMap, type CategoryItem } from "~/hooks/useCategoryMap";
+import { type CategoryItem, useCategoryMap } from "~/hooks/useCategoryMap";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import { useProfileData } from "~/hooks/useProfile";

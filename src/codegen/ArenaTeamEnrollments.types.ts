@@ -10,7 +10,7 @@ export interface InstantiateMsg {
 export type ExecuteMsg = {
   create_entry: {
     category_id?: Uint128 | null;
-    dao_config: DaoConfigForUint64;
+    dao_config: TeamDaoConfig;
     description: string;
     title: string;
   };
@@ -37,16 +37,6 @@ export type ExecuteMsg = {
   update_ownership: Action;
 };
 export type Uint128 = string;
-export type DaoConfigForUint64 = {
-  cw4_voting_code_id: number;
-  dao_code_id: number;
-  image_url?: string | null;
-  max_voting_period: Duration;
-  prepropose_single_code_id: number;
-  proposal_single_code_id: number;
-  threshold: Threshold;
-  extension: number
-};
 export type Duration = {
   height: number;
 } | {
@@ -93,16 +83,25 @@ export type Expiration = {
 };
 export type Timestamp = Uint64;
 export type Uint64 = string;
+export interface TeamDaoConfig {
+  cw4_group_code_id: number;
+  cw4_voting_code_id: number;
+  dao_code_id: number;
+  image_url?: string | null;
+  max_voting_period: Duration;
+  prepropose_single_code_id: number;
+  proposal_single_code_id: number;
+  threshold: Threshold;
+}
 export type QueryMsg = {
   get_entry: {
     entry_id: number;
   };
 } | {
   list_entries: {
-    category_id?: Uint128 | null;
+    category_status?: CategoryStatusMsg | null;
     limit?: number | null;
     start_after?: number | null;
-    status?: EntryStatus | null;
   };
 } | {
   get_applicant: {
@@ -124,6 +123,10 @@ export type QueryMsg = {
 } | {
   ownership: {};
 };
+export interface CategoryStatusMsg {
+  category_id?: Uint128 | null;
+  status: EntryStatus;
+}
 export type Addr = string;
 export interface ApplicantResponse {
   applicant: Addr;

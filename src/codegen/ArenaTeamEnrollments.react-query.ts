@@ -7,7 +7,7 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from "@tanstack/react-query";
 import { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee, Coin } from "@cosmjs/amino";
-import { InstantiateMsg, ExecuteMsg, Uint128, DaoConfigForUint64, Duration, Threshold, PercentageThreshold, Decimal, EntryStatus, ApplicantStatus, Action, Expiration, Timestamp, Uint64, QueryMsg, Addr, ApplicantResponse, TeamEntryResponse, ArrayOfApplicantResponse, ArrayOfTeamEntryResponse, ArrayOfAddr, OwnershipForString } from "./ArenaTeamEnrollments.types";
+import { InstantiateMsg, ExecuteMsg, Uint128, Duration, Threshold, PercentageThreshold, Decimal, EntryStatus, ApplicantStatus, Action, Expiration, Timestamp, Uint64, TeamDaoConfig, QueryMsg, CategoryStatusMsg, Addr, ApplicantResponse, TeamEntryResponse, ArrayOfApplicantResponse, ArrayOfTeamEntryResponse, ArrayOfAddr, OwnershipForString } from "./ArenaTeamEnrollments.types";
 import { ArenaTeamEnrollmentsQueryClient, ArenaTeamEnrollmentsClient } from "./ArenaTeamEnrollments.client";
 export const arenaTeamEnrollmentsQueryKeys = {
   contract: ([{
@@ -68,10 +68,9 @@ export const arenaTeamEnrollmentsQueries = {
   }: ArenaTeamEnrollmentsListEntriesQuery<TData>): UseQueryOptions<ArrayOfTeamEntryResponse, Error, TData> => ({
     queryKey: arenaTeamEnrollmentsQueryKeys.listEntries(client?.contractAddress, args),
     queryFn: () => client ? client.listEntries({
-      categoryId: args.categoryId,
+      categoryStatus: args.categoryStatus,
       limit: args.limit,
-      startAfter: args.startAfter,
-      status: args.status
+      startAfter: args.startAfter
     }) : Promise.reject(new Error("Invalid client")),
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
@@ -206,10 +205,9 @@ export function useArenaTeamEnrollmentsGetApplicantQuery<TData = ApplicantRespon
 }
 export interface ArenaTeamEnrollmentsListEntriesQuery<TData> extends ArenaTeamEnrollmentsReactQuery<ArrayOfTeamEntryResponse, TData> {
   args: {
-    categoryId?: Uint128;
+    categoryStatus?: CategoryStatusMsg;
     limit?: number;
     startAfter?: number;
-    status?: EntryStatus;
   };
 }
 export function useArenaTeamEnrollmentsListEntriesQuery<TData = ArrayOfTeamEntryResponse>({
@@ -218,10 +216,9 @@ export function useArenaTeamEnrollmentsListEntriesQuery<TData = ArrayOfTeamEntry
   options
 }: ArenaTeamEnrollmentsListEntriesQuery<TData>) {
   return useQuery<ArrayOfTeamEntryResponse, Error, TData>(arenaTeamEnrollmentsQueryKeys.listEntries(client?.contractAddress, args), () => client ? client.listEntries({
-    categoryId: args.categoryId,
+    categoryStatus: args.categoryStatus,
     limit: args.limit,
-    startAfter: args.startAfter,
-    status: args.status
+    startAfter: args.startAfter
   }) : Promise.reject(new Error("Invalid client")), {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
@@ -359,7 +356,7 @@ export interface ArenaTeamEnrollmentsCreateEntryMutation {
   client: ArenaTeamEnrollmentsClient;
   msg: {
     categoryId?: Uint128;
-    daoConfig: DaoConfigForUint64;
+    daoConfig: TeamDaoConfig;
     description: string;
     title: string;
   };

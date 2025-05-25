@@ -23,8 +23,8 @@ import { motion } from "framer-motion";
 import {
 	ArrowLeft,
 	ChevronRight,
-	Shield,
 	Image as ImageIcon,
+	Shield,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
@@ -33,7 +33,7 @@ import { z } from "zod";
 import { ArenaTeamEnrollmentsClient } from "~/codegen/ArenaTeamEnrollments.client";
 import { useArenaTeamEnrollmentsCreateEntryMutation } from "~/codegen/ArenaTeamEnrollments.react-query";
 import type { DaoConfigForUint64 } from "~/codegen/ArenaTeamEnrollments.types";
-import { useCategoryMap, type CategoryItem } from "~/hooks/useCategoryMap";
+import { type CategoryItem, useCategoryMap } from "~/hooks/useCategoryMap";
 import { useEnv } from "~/hooks/useEnv";
 
 // Zod schema for form validation
