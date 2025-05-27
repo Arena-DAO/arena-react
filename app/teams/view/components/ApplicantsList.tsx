@@ -13,6 +13,7 @@ import {
 	ModalContent,
 	ModalFooter,
 	ModalHeader,
+	Spinner,
 	Textarea,
 	addToast,
 	useDisclosure,
@@ -59,11 +60,17 @@ const APPLICANT_STATUS_CONFIG = {
 
 interface ApplicantsListProps {
 	applicants: ApplicantResponse[];
+	isApplicantsLoading: boolean;
 	isCreator: boolean;
 	entryId: number;
 }
 
-export const ApplicantsList = ({ applicants, isCreator, entryId }: ApplicantsListProps) => {
+export const ApplicantsList = ({
+	applicants,
+	isApplicantsLoading,
+	isCreator,
+	entryId,
+}: ApplicantsListProps) => {
 	const env = useEnv();
 	const { address: walletAddress, getSigningCosmWasmClient } = useChain(env.CHAIN);
 	const [selectedApplicant, setSelectedApplicant] = useState<ApplicantResponse | null>(null);
@@ -170,6 +177,14 @@ export const ApplicantsList = ({ applicants, isCreator, entryId }: ApplicantsLis
 		setSelectedApplicant(applicant);
 		onRejectModalOpen();
 	};
+
+	if (isApplicantsLoading) {
+		return (
+			<div className="flex items-center justify-center py-12">
+				<Spinner size="lg" />
+			</div>
+		);
+	}
 
 	if (applicants.length === 0) {
 		return (

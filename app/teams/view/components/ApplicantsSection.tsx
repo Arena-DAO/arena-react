@@ -1,38 +1,56 @@
-// app/teams/entry/[entryId]/components/ApplicantsSection.tsx
 "use client";
 
-import { Card, CardBody, CardHeader, Chip, Spinner, Tab, Tabs, Tooltip } from "@heroui/react";
+import { Card, CardBody, CardHeader, Chip, Tab, Tabs, Tooltip } from "@heroui/react";
 import type { Key } from "@react-types/shared";
 import { Clock, UserCheck, UserX, Users } from "lucide-react";
-import { useMemo, useState } from "react";
-import type { ApplicantResponse } from "~/codegen/ArenaTeamEnrollments.types";
+import { useState } from "react";
+import { ArenaTeamEnrollmentsQueryClient } from "~/codegen/ArenaTeamEnrollments.client";
+import { useArenaTeamEnrollmentsListApplicantsQuery } from "~/codegen/ArenaTeamEnrollments.react-query";
+import type { ApplicantStatus } from "~/codegen/ArenaTeamEnrollments.types";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
+import { useEnv } from "~/hooks/useEnv";
 import { ApplicantsList } from "./ApplicantsList";
 
 interface ApplicantsSectionProps {
-	applicants?: ApplicantResponse[];
-	isApplicantsLoading: boolean;
 	isCreator: boolean;
 	entryId: number;
 }
 
-export const ApplicantsSection = ({
-	applicants,
-	isApplicantsLoading,
-	isCreator,
-	entryId,
-}: ApplicantsSectionProps) => {
+export const ApplicantsSection = ({ isCreator, entryId }: ApplicantsSectionProps) => {
+	const env = useEnv();
+	const { data: client } = useCosmWasmClient();
 	const [selectedTab, setSelectedTab] = useState<Key>("default");
 
-	// Organize applicants by status
-	const organizedApplicants = useMemo(() => {
-		if (!applicants) return { default: [], approved: [], rejected: [] };
+	// Status configurations
+	const statusTabs: {
+		key: string;
+		status: ApplicantStatus | undefined;
+		label: string;
+		icon: typeof Clock;
+	}[] = [
+		{ key: "default", status: "default", label: "Pending", icon: Clock },
+		{ key: "approved", status: "approved", label: "Approved", icon: UserCheck },
+		{ key: "rejected", status: { rejected: { reason: "" } }, label: "Rejected", icon: UserX },
+	];
 
-		return {
-			default: applicants.filter((a) => a.status === "default"),
-			approved: applicants.filter((a) => a.status === "approved"),
-			rejected: applicants.filter((a) => typeof a.status === "object" && "rejected" in a.status),
-		};
-	}, [applicants]);
+	// Get current status for queries
+	const getCurrentStatus = (): ApplicantStatus | undefined => {
+		const tab = statusTabs.find((t) => t.key === selectedTab);
+		return tab?.status;
+	};
+
+	// Fetch applicants for the selected status
+	const { data: applicants, isLoading: isApplicantsLoading } =
+		useArenaTeamEnrollmentsListApplicantsQuery({
+			client:
+				client && new ArenaTeamEnrollmentsQueryClient(client, env.ARENA_TEAM_ENROLLMENTS_ADDRESS),
+			args: {
+				entryId,
+				status: getCurrentStatus(),
+				limit: 100,
+			},
+			options: { enabled: !!client },
+		});
 
 	return (
 		<Card>
@@ -52,70 +70,40 @@ export const ApplicantsSection = ({
 				</div>
 			</CardHeader>
 			<CardBody className="p-0">
-				{isApplicantsLoading ? (
-					<div className="flex items-center justify-center py-12">
-						<Spinner size="lg" />
-					</div>
-				) : (
-					<Tabs
-						selectedKey={selectedTab}
-						onSelectionChange={setSelectedTab}
-						color="primary"
-						variant="underlined"
-						classNames={{
-							tabList: "gap-6 w-full relative rounded-none p-0 border-b border-divider px-6",
-							cursor: "w-full bg-primary",
-							tab: "max-w-fit px-0 h-12",
-							tabContent: "group-data-[selected=true]:text-primary",
-						}}
-					>
-						<Tab
-							key="default"
-							title={
-								<div className="flex items-center space-x-2">
-									<Clock size={14} />
-									<span>Pending</span>
-								</div>
-							}
-						>
-							<ApplicantsList
-								applicants={organizedApplicants.default}
-								isCreator={isCreator}
-								entryId={entryId}
-							/>
-						</Tab>
-						<Tab
-							key="approved"
-							title={
-								<div className="flex items-center space-x-2">
-									<UserCheck size={14} />
-									<span>Approved</span>
-								</div>
-							}
-						>
-							<ApplicantsList
-								applicants={organizedApplicants.approved}
-								isCreator={isCreator}
-								entryId={entryId}
-							/>
-						</Tab>
-						<Tab
-							key="rejected"
-							title={
-								<div className="flex items-center space-x-2">
-									<UserX size={14} />
-									<span>Rejected</span>
-								</div>
-							}
-						>
-							<ApplicantsList
-								applicants={organizedApplicants.rejected}
-								isCreator={isCreator}
-								entryId={entryId}
-							/>
-						</Tab>
-					</Tabs>
-				)}
+				<Tabs
+					selectedKey={selectedTab}
+					onSelectionChange={setSelectedTab}
+					color="primary"
+					variant="underlined"
+					classNames={{
+						tabList: "gap-6 w-full relative rounded-none p-0 border-b border-divider px-6",
+						cursor: "w-full bg-primary",
+						tab: "max-w-fit px-0 h-12",
+						tabContent: "group-data-[selected=true]:text-primary",
+					}}
+				>
+					{statusTabs.map((status) => {
+						const IconComponent = status.icon;
+						return (
+							<Tab
+								key={status.key}
+								title={
+									<div className="flex items-center space-x-2">
+										<IconComponent size={14} />
+										<span>{status.label}</span>
+									</div>
+								}
+							>
+								<ApplicantsList
+									applicants={applicants || []}
+									isApplicantsLoading={isApplicantsLoading}
+									isCreator={isCreator}
+									entryId={entryId}
+								/>
+							</Tab>
+						);
+					})}
+				</Tabs>
 			</CardBody>
 		</Card>
 	);

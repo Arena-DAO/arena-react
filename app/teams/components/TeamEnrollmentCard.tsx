@@ -71,7 +71,7 @@ const TeamEnrollmentCard = ({ entry }: TeamEnrollmentCardProps) => {
 			<Card
 				isPressable
 				as={Link}
-				href={`/teams/entry/${entry.entry_id}?id=${entry.entry_id}`}
+				href={`/teams/view?entryId=${entry.entry_id}${entry.category_id ? `&category=${entry.category_id}` : ""}`}
 				className="h-full transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
 			>
 				<CardHeader className="flex gap-3 pb-2">
