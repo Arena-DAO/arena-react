@@ -1,12 +1,21 @@
-// components/TeamEnrollmentCard.tsx
+// app/teams/components/TeamEnrollmentCard.tsx
 "use client";
 
 import Profile from "@/components/Profile";
-import { Avatar, Card, CardBody } from "@heroui/react";
+import {
+	Avatar,
+	Button,
+	Card,
+	CardBody,
+	CardFooter,
+	CardHeader,
+	Chip,
+	Link,
+	Progress,
+} from "@heroui/react";
 import { formatDistanceToNow } from "date-fns";
 import { motion } from "framer-motion";
-import { Calendar, Shield, Target, Users } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Calendar, Clock, Shield, UserCheck, UserX, Users } from "lucide-react";
 import type { EntryStatus, TeamEntryResponse } from "~/codegen/ArenaTeamEnrollments.types";
 
 interface TeamEnrollmentCardProps {
@@ -14,54 +23,43 @@ interface TeamEnrollmentCardProps {
 }
 
 const TeamEnrollmentCard = ({ entry }: TeamEnrollmentCardProps) => {
-	const router = useRouter();
 	const createdTime = new Date(Number(entry.created_at) / 10 ** 6);
+	const totalApplicants =
+		entry.approved_applicants_count +
+		entry.pending_applicants_count +
+		entry.rejected_applicants_count;
+	const approvalRate =
+		totalApplicants > 0 ? (entry.approved_applicants_count / totalApplicants) * 100 : 0;
 
-	const getStatusConfig = (status: EntryStatus) => {
+	const getStatusColor = (status: EntryStatus) => {
 		switch (status) {
 			case "open":
-				return {
-					color: "success" as const,
-					label: "Open",
-					bgGradient: "from-success-50 to-success-100",
-					textColor: "text-success-600",
-				};
+				return "success";
 			case "created":
-				return {
-					color: "primary" as const,
-					label: "Created",
-					bgGradient: "from-primary-50 to-primary-100",
-					textColor: "text-primary-600",
-				};
+				return "primary";
 			case "closed":
-				return {
-					color: "warning" as const,
-					label: "Closed",
-					bgGradient: "from-warning-50 to-warning-100",
-					textColor: "text-warning-600",
-				};
+				return "warning";
 			case "aborted":
-				return {
-					color: "danger" as const,
-					label: "Aborted",
-					bgGradient: "from-danger-50 to-danger-100",
-					textColor: "text-danger-600",
-				};
+				return "danger";
 			default:
-				return {
-					color: "default" as const,
-					label: status,
-					bgGradient: "from-default-50 to-default-100",
-					textColor: "text-default-600",
-				};
+				return "default";
 		}
 	};
 
-	const _statusConfig = getStatusConfig(entry.status);
-	const _approvalRate =
-		entry.applicants_count > 0
-			? (entry.approved_applicants_count / entry.applicants_count) * 100
-			: 0;
+	const getStatusIcon = (status: EntryStatus) => {
+		switch (status) {
+			case "open":
+				return <Shield size={14} />;
+			case "created":
+				return <UserCheck size={14} />;
+			case "closed":
+				return <Clock size={14} />;
+			case "aborted":
+				return <UserX size={14} />;
+			default:
+				return <Shield size={14} />;
+		}
+	};
 
 	return (
 		<motion.div
@@ -69,84 +67,120 @@ const TeamEnrollmentCard = ({ entry }: TeamEnrollmentCardProps) => {
 				hidden: { y: 20, opacity: 0 },
 				visible: { y: 0, opacity: 1 },
 			}}
-			transition={{ duration: 0.4 }}
-			whileHover={{ y: -4 }}
-			className="h-full"
 		>
 			<Card
-				className="group h-full cursor-pointer border border-transparent transition-all duration-300 hover:border-primary/20 hover:shadow-primary/10 hover:shadow-xl"
 				isPressable
-				onPress={() => router.push(`/teams/view?id=${entry.entry_id}`)}
+				as={Link}
+				href={`/teams/entry/${entry.entry_id}?id=${entry.entry_id}`}
+				className="h-full transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
 			>
-				<CardBody className="flex flex-col overflow-hidden p-0">
-					<div className="flex flex-1 flex-col p-5">
-						{/* Team Avatar and Title */}
-						<div className="mb-4 flex items-start gap-4">
-							<Avatar
-								src={entry.dao_config.image_url ?? undefined}
-								name={entry.title}
-								size="lg"
-								className="flex-shrink-0 ring-2 ring-default-200 transition-all group-hover:ring-primary/30"
-								fallback={<Shield size={24} className="text-default-400" />}
-								classNames={{
-									base: "bg-gradient-to-br from-primary-100 to-secondary-100",
-									fallback: "text-default-500",
-								}}
-							/>
-							<div className="min-w-0 flex-1">
-								<h3 className="mb-1 line-clamp-2 font-bold text-lg transition-colors group-hover:text-primary">
-									{entry.title}
-								</h3>
-								<div className="flex items-center gap-2 text-default-500 text-xs">
-									<Calendar size={12} />
-									<span>{formatDistanceToNow(createdTime, { addSuffix: true })}</span>
-								</div>
-							</div>
-						</div>
-
-						{/* Description */}
-						<p className="mb-4 line-clamp-3 flex-1 text-default-600 text-sm leading-relaxed">
-							{entry.description}
-						</p>
-
-						{/* Enhanced Stats Grid */}
-						<div className="mb-4 grid grid-cols-2 gap-3">
-							<div className="rounded-lg border border-primary/10 bg-primary/5 p-3 text-center">
-								<div className="mb-1 flex items-center justify-center gap-1">
-									<Users size={14} className="text-primary" />
-									<span className="font-bold text-lg text-primary">{entry.applicants_count}</span>
-								</div>
-								<div className="font-medium text-default-500 text-xs">Total Applicants</div>
-							</div>
-							<div className="rounded-lg border border-success/10 bg-success/5 p-3 text-center">
-								<div className="mb-1 flex items-center justify-center gap-1">
-									<Target size={14} className="text-success" />
-									<span className="font-bold text-lg text-success">
-										{entry.approved_applicants_count}
-									</span>
-								</div>
-								<div className="font-medium text-default-500 text-xs">Approved</div>
-							</div>
-						</div>
-
-						{/* Creator Profile */}
-						<div className="mb-4">
-							<div className="flex items-center gap-2">
-								<span className="font-medium text-default-500 text-xs">Created by:</span>
-								<Profile address={entry.creator} />
-							</div>
-						</div>
-
-						{/* Hover effect indicator */}
-						<div className="mt-auto border-default-100 border-t pt-3">
-							<div className="text-center">
-								<span className="font-medium text-default-400 text-xs transition-colors group-hover:text-primary">
-									Click to view details →
-								</span>
-							</div>
+				<CardHeader className="flex gap-3 pb-2">
+					<Avatar
+						src={entry.dao_config.image_url ?? ""}
+						name={entry.title}
+						size="md"
+						fallback={<Shield size={20} className="text-default-400" />}
+						classNames={{
+							base: "bg-gradient-to-br from-primary-100 to-secondary-100",
+						}}
+					/>
+					<div className="flex min-w-0 flex-1 flex-col">
+						<h3 className="truncate font-bold text-foreground text-large">{entry.title}</h3>
+						<div className="flex items-center gap-2">
+							<Chip
+								color={getStatusColor(entry.status)}
+								variant="flat"
+								size="sm"
+								startContent={getStatusIcon(entry.status)}
+								className="font-medium"
+							>
+								{entry.status.charAt(0).toUpperCase() + entry.status.slice(1)}
+							</Chip>
 						</div>
 					</div>
+				</CardHeader>
+
+				<CardBody className="pt-0 pb-2">
+					<p className="mb-4 line-clamp-3 text-default-600 text-sm">{entry.description}</p>
+
+					{/* Team Stats */}
+					<div className="mb-4 grid grid-cols-3 gap-2">
+						<div className="rounded-lg border border-primary/10 bg-primary/5 p-2 text-center">
+							<div className="mb-1 flex items-center justify-center gap-1">
+								<Users size={12} className="text-primary" />
+								<span className="font-bold text-primary text-sm">{totalApplicants}</span>
+							</div>
+							<div className="text-default-500 text-xs">Total</div>
+						</div>
+						<div className="rounded-lg border border-success/10 bg-success/5 p-2 text-center">
+							<div className="mb-1 flex items-center justify-center gap-1">
+								<UserCheck size={12} className="text-success" />
+								<span className="font-bold text-sm text-success">
+									{entry.approved_applicants_count}
+								</span>
+							</div>
+							<div className="text-default-500 text-xs">Approved</div>
+						</div>
+						<div className="rounded-lg border border-warning/10 bg-warning/5 p-2 text-center">
+							<div className="mb-1 flex items-center justify-center gap-1">
+								<Clock size={12} className="text-warning" />
+								<span className="font-bold text-sm text-warning">
+									{entry.pending_applicants_count}
+								</span>
+							</div>
+							<div className="text-default-500 text-xs">Pending</div>
+						</div>
+					</div>
+
+					{/* Approval Progress */}
+					{totalApplicants > 0 && (
+						<div className="mb-4">
+							<div className="mb-1 flex items-center justify-between">
+								<span className="text-default-600 text-xs">Approval Rate</span>
+								<span className="font-bold text-success text-xs">{Math.round(approvalRate)}%</span>
+							</div>
+							<Progress
+								value={approvalRate}
+								color="success"
+								size="sm"
+								classNames={{
+									track: "border border-default-200",
+									indicator: "bg-gradient-to-r from-success-400 to-success-600",
+								}}
+							/>
+						</div>
+					)}
 				</CardBody>
+
+				<CardFooter className="flex flex-col gap-2 pt-0">
+					{/* Meta Info */}
+					<div className="flex w-full items-center justify-between text-default-500 text-xs">
+						<div className="flex items-center gap-1">
+							<Calendar size={12} />
+							<span>{formatDistanceToNow(createdTime, { addSuffix: true })}</span>
+						</div>
+					</div>
+
+					{/* Creator */}
+					<div className="flex w-full items-center justify-between">
+						<div className="flex items-center gap-1 text-default-500 text-xs">
+							<span>Created by:</span>
+						</div>
+						<Profile address={entry.creator} />
+					</div>
+
+					{entry.status === "open" && (
+						<Button
+							color="primary"
+							variant="flat"
+							size="sm"
+							className="mt-2 w-full"
+							startContent={<Shield size={14} />}
+						>
+							View Details
+						</Button>
+					)}
+				</CardFooter>
 			</Card>
 		</motion.div>
 	);

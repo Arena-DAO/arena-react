@@ -33,11 +33,13 @@ export interface ArenaTeamEnrollmentsReadOnlyInterface {
   listApplicants: ({
     entryId,
     limit,
-    startAfter
+    startAfter,
+    status
   }: {
     entryId: number;
     limit?: number;
     startAfter?: string;
+    status?: ApplicantStatus;
   }) => Promise<ArrayOfApplicantResponse>;
   listTeams: ({
     limit,
@@ -108,17 +110,20 @@ export class ArenaTeamEnrollmentsQueryClient implements ArenaTeamEnrollmentsRead
   listApplicants = async ({
     entryId,
     limit,
-    startAfter
+    startAfter,
+    status
   }: {
     entryId: number;
     limit?: number;
     startAfter?: string;
+    status?: ApplicantStatus;
   }): Promise<ArrayOfApplicantResponse> => {
     return this.client.queryContractSmart(this.contractAddress, {
       list_applicants: {
         entry_id: entryId,
         limit,
-        start_after: startAfter
+        start_after: startAfter,
+        status
       }
     });
   };

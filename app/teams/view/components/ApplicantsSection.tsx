@@ -5,11 +5,10 @@ import { Card, CardBody, CardHeader, Chip, Spinner, Tab, Tabs, Tooltip } from "@
 import type { Key } from "@react-types/shared";
 import { Clock, UserCheck, UserX, Users } from "lucide-react";
 import { useMemo, useState } from "react";
-import type { ApplicantResponse, TeamEntryResponse } from "~/codegen/ArenaTeamEnrollments.types";
+import type { ApplicantResponse } from "~/codegen/ArenaTeamEnrollments.types";
 import { ApplicantsList } from "./ApplicantsList";
 
 interface ApplicantsSectionProps {
-	entry: TeamEntryResponse;
 	applicants?: ApplicantResponse[];
 	isApplicantsLoading: boolean;
 	isCreator: boolean;
@@ -17,20 +16,18 @@ interface ApplicantsSectionProps {
 }
 
 export const ApplicantsSection = ({
-	entry,
 	applicants,
 	isApplicantsLoading,
 	isCreator,
 	entryId,
 }: ApplicantsSectionProps) => {
-	const [selectedTab, setSelectedTab] = useState<Key>("all");
+	const [selectedTab, setSelectedTab] = useState<Key>("default");
 
 	// Organize applicants by status
 	const organizedApplicants = useMemo(() => {
-		if (!applicants) return { all: [], default: [], approved: [], rejected: [] };
+		if (!applicants) return { default: [], approved: [], rejected: [] };
 
 		return {
-			all: applicants,
 			default: applicants.filter((a) => a.status === "default"),
 			approved: applicants.filter((a) => a.status === "approved"),
 			rejected: applicants.filter((a) => typeof a.status === "object" && "rejected" in a.status),
@@ -59,16 +56,6 @@ export const ApplicantsSection = ({
 					<div className="flex items-center justify-center py-12">
 						<Spinner size="lg" />
 					</div>
-				) : !applicants || applicants.length === 0 ? (
-					<div className="py-12 text-center">
-						<Users size={48} className="mx-auto mb-4 opacity-30" />
-						<h3 className="mb-2 font-medium text-xl">No Applicants Yet</h3>
-						<p className="text-default-500">
-							{entry.status === "open"
-								? "Be the first to apply for this team!"
-								: "This team enrollment is no longer accepting applications."}
-						</p>
-					</div>
 				) : (
 					<Tabs
 						selectedKey={selectedTab}
@@ -82,20 +69,6 @@ export const ApplicantsSection = ({
 							tabContent: "group-data-[selected=true]:text-primary",
 						}}
 					>
-						<Tab
-							key="all"
-							title={
-								<div className="flex items-center space-x-2">
-									<span>All</span>
-								</div>
-							}
-						>
-							<ApplicantsList
-								applicants={organizedApplicants.all}
-								isCreator={isCreator}
-								entryId={entryId}
-							/>
-						</Tab>
 						<Tab
 							key="default"
 							title={

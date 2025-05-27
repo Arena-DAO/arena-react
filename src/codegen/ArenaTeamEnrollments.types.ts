@@ -113,6 +113,7 @@ export type QueryMsg = {
     entry_id: number;
     limit?: number | null;
     start_after?: string | null;
+    status?: ApplicantStatus | null;
   };
 } | {
   list_teams: {
@@ -133,7 +134,6 @@ export interface ApplicantResponse {
   status: ApplicantStatus;
 }
 export interface TeamEntryResponse {
-  applicants_count: number;
   approved_applicants_count: number;
   category_id?: Uint128 | null;
   created_at: Timestamp;
@@ -141,6 +141,8 @@ export interface TeamEntryResponse {
   dao_config: TeamDaoConfig;
   description: string;
   entry_id: number;
+  pending_applicants_count: number;
+  rejected_applicants_count: number;
   status: EntryStatus;
   title: string;
 }

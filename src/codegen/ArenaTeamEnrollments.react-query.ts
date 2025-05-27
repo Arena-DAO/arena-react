@@ -97,7 +97,8 @@ export const arenaTeamEnrollmentsQueries = {
     queryFn: () => client ? client.listApplicants({
       entryId: args.entryId,
       limit: args.limit,
-      startAfter: args.startAfter
+      startAfter: args.startAfter,
+      status: args.status
     }) : Promise.reject(new Error("Invalid client")),
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)
@@ -168,6 +169,7 @@ export interface ArenaTeamEnrollmentsListApplicantsQuery<TData> extends ArenaTea
     entryId: number;
     limit?: number;
     startAfter?: string;
+    status?: ApplicantStatus;
   };
 }
 export function useArenaTeamEnrollmentsListApplicantsQuery<TData = ArrayOfApplicantResponse>({
@@ -178,7 +180,8 @@ export function useArenaTeamEnrollmentsListApplicantsQuery<TData = ArrayOfApplic
   return useQuery<ArrayOfApplicantResponse, Error, TData>(arenaTeamEnrollmentsQueryKeys.listApplicants(client?.contractAddress, args), () => client ? client.listApplicants({
     entryId: args.entryId,
     limit: args.limit,
-    startAfter: args.startAfter
+    startAfter: args.startAfter,
+    status: args.status
   }) : Promise.reject(new Error("Invalid client")), {
     ...options,
     enabled: !!client && (options?.enabled != undefined ? options.enabled : true)

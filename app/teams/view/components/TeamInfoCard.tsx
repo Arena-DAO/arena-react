@@ -68,10 +68,14 @@ export const TeamInfoCard = ({
 
 	const hasApplied = !!userApplication;
 	const createdTime = new Date(Number(entry.created_at) / 10 ** 6);
+
+	// Calculate total applicants from the response
+	const totalApplicants =
+		entry.approved_applicants_count +
+		entry.pending_applicants_count +
+		entry.rejected_applicants_count;
 	const approvalRate =
-		entry.applicants_count > 0
-			? (entry.approved_applicants_count / entry.applicants_count) * 100
-			: 0;
+		totalApplicants > 0 ? (entry.approved_applicants_count / totalApplicants) * 100 : 0;
 
 	// Helper functions
 	const getStatusColor = (status: EntryStatus) => {
@@ -158,10 +162,6 @@ export const TeamInfoCard = ({
 		}
 	};
 
-	// Calculate pending and rejected counts for display
-	const pendingCount = entry.applicants_count - entry.approved_applicants_count;
-	const rejectedCount = 0; // This would need to be calculated from applicants data if available
-
 	return (
 		<Card className="overflow-visible">
 			<CardBody className="p-6">
@@ -200,7 +200,7 @@ export const TeamInfoCard = ({
 							<div className="rounded-lg border border-primary/10 bg-primary/5 p-3 text-center">
 								<div className="mb-1 flex items-center justify-center gap-1">
 									<Users size={16} className="text-primary" />
-									<span className="font-bold text-primary text-xl">{entry.applicants_count}</span>
+									<span className="font-bold text-primary text-xl">{totalApplicants}</span>
 								</div>
 								<div className="font-medium text-default-500 text-xs">Total Applicants</div>
 							</div>
@@ -216,21 +216,25 @@ export const TeamInfoCard = ({
 							<div className="rounded-lg border border-warning/10 bg-warning/5 p-3 text-center">
 								<div className="mb-1 flex items-center justify-center gap-1">
 									<Clock size={16} className="text-warning" />
-									<span className="font-bold text-warning text-xl">{pendingCount}</span>
+									<span className="font-bold text-warning text-xl">
+										{entry.pending_applicants_count}
+									</span>
 								</div>
 								<div className="font-medium text-default-500 text-xs">Pending</div>
 							</div>
 							<div className="rounded-lg border border-danger/10 bg-danger/5 p-3 text-center">
 								<div className="mb-1 flex items-center justify-center gap-1">
 									<UserX size={16} className="text-danger" />
-									<span className="font-bold text-danger text-xl">{rejectedCount}</span>
+									<span className="font-bold text-danger text-xl">
+										{entry.rejected_applicants_count}
+									</span>
 								</div>
 								<div className="font-medium text-default-500 text-xs">Rejected</div>
 							</div>
 						</div>
 
 						{/* Approval Progress */}
-						{entry.applicants_count > 0 && (
+						{totalApplicants > 0 && (
 							<div>
 								<div className="mb-2 flex items-center justify-between">
 									<span className="font-medium text-default-600 text-sm">Approval Rate</span>
