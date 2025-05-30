@@ -32,7 +32,9 @@ import { convertToNanoseconds } from "~/config/schemas/TimestampSchema";
 import { CategoryProvider, useCategoryContext } from "~/contexts/CategoryContext";
 import { convertToEscrowInstantiate } from "~/helpers/SchemaHelpers";
 import { useEnv } from "~/hooks/useEnv";
-import BasicInformationForm, { type BasicInformationFormRef } from "./components/BasicInformationForm";
+import BasicInformationForm, {
+	type BasicInformationFormRef,
+} from "./components/BasicInformationForm";
 import MembersAndDuesForm from "./components/DirectParticipationForm";
 import EnrollmentInformationForm from "./components/EnrollmentInformationForm";
 import LeagueInformationForm from "./components/LeagueInformationForm";

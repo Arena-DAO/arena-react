@@ -24,7 +24,7 @@ const BasicInformationSection = forwardRef<BasicInformationFormRef>((_props, ref
 	useImperativeHandle(ref, () => ({
 		uploadBannerImage: async () => {
 			return bannerImageRef.current?.uploadToS3() ?? null;
-		}
+		},
 	}));
 
 	return (

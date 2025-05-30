@@ -81,3 +81,52 @@ h6 {
 [data-overlay-container="true"] {
 	height: 100dvh;
 }
+
+/* Custom animations */
+@keyframes slide-down {
+	from {
+		transform: translateY(-10px);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+@keyframes glow {
+	0%,
+	100% {
+		text-shadow: 0 0 5px rgba(255, 128, 0, 0.5);
+	}
+	50% {
+		text-shadow: 0 0 20px rgba(255, 128, 0, 0.8), 0 0 30px rgba(255, 128, 0, 0.6);
+	}
+}
+
+/* Utility classes */
+.animate-slide-down {
+	animation: slide-down 0.2s ease-out;
+}
+
+.text-glow {
+	animation: glow 3s ease-in-out infinite;
+}
+
+.shadow-inner-glow {
+	box-shadow: inset 0 0 10px rgba(255, 128, 0, 0.3);
+}
+
+.glassmorphism {
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+}
+
+.card-hover {
+	transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 10px 25px rgba(255, 128, 0, 0.15);
+}
