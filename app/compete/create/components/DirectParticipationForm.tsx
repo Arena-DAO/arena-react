@@ -10,7 +10,12 @@ import AddDueForm from "./AddDueForm";
 import MemberDue from "./MemberDue";
 
 const DirectParticipationForm = () => {
-	const { control, setValue } = useFormContext<CreateCompetitionFormValues>();
+	const {
+		control,
+		setValue,
+		formState: { errors },
+	} = useFormContext<CreateCompetitionFormValues>();
+
 	const membersFromDues = useWatch({
 		control,
 		name: "directParticipation.membersFromDues",
@@ -41,32 +46,85 @@ const DirectParticipationForm = () => {
 	const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 	const [editingDueIndex, setEditingDueIndex] = useState<number | null>(null);
 
-	// Handler to add a new due
+	// Handler to add a new due with error handling
 	const handleAddDue = () => {
-		appendDue({ addr: "", balance: { native: [], cw20: [] } });
-		setEditingDueIndex(duesFields.length);
-		onOpen();
+		try {
+			appendDue({ addr: "", balance: { native: [], cw20: [], cw721: [] } });
+			setEditingDueIndex(duesFields.length);
+			onOpen();
+		} catch (error) {
+			console.error("Error adding due:", error);
+		}
 	};
 
+	// Handler to remove due with error handling
+	const handleRemoveDue = (index: number) => {
+		try {
+			removeDue(index);
+		} catch (error) {
+			console.error("Error removing due:", error);
+		}
+	};
+
+	// Handler to add member with error handling
+	const handleAddMember = () => {
+		try {
+			appendMember({ address: "" });
+		} catch (error) {
+			console.error("Error adding member:", error);
+		}
+	};
+
+	// Handler to remove member with error handling
+	const handleRemoveMember = (index: number) => {
+		try {
+			removeMember(index);
+		} catch (error) {
+			console.error("Error removing member:", error);
+		}
+	};
+
+	// Get field-level errors
+	const duesErrors = errors?.directParticipation?.dues;
+	const membersErrors = errors?.directParticipation?.members;
+
 	return (
-		<div className="space-y-8">
+		<div className="space-y-6">
+			{/* Info Banner */}
+			<div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+				<div className="flex items-start gap-3">
+					<div className="text-xl">💰</div>
+					<div>
+						<h4 className="font-semibold text-primary">Direct Participation Setup</h4>
+						<p className="mt-1 text-primary/80 text-sm">
+							Add specific participants and collect their entry funds upfront. Perfect for private
+							competitions with known participants.
+						</p>
+					</div>
+				</div>
+			</div>
+
 			{/* Dues Section */}
 			<div className="space-y-4">
 				<div className="flex items-center justify-between">
 					<div>
-						<h3 className="font-semibold text-xl">Dues</h3>
+						<h3 className="font-semibold text-xl">Competition Dues</h3>
 						<p className="mt-1 text-foreground/70 text-sm">
-							Contributors who must pay to activate the competition
+							Collect dues from each participant. These funds go into the competition prize pool.
 						</p>
+						{duesErrors && (
+							<p className="mt-1 text-danger text-sm">
+								Please check the participant entries for errors
+							</p>
+						)}
 					</div>
 					<Button
 						color="primary"
-						variant="ghost"
+						variant="flat"
 						startContent={<Plus size={18} />}
 						onPress={handleAddDue}
-						className="card-hover"
 					>
-						Add Due
+						Add Participant
 					</Button>
 				</div>
 
@@ -77,145 +135,161 @@ const DirectParticipationForm = () => {
 								<div className="mb-3 rounded-full bg-primary/10 p-3">
 									<Users size={24} className="text-primary" />
 								</div>
-								<h4 className="mb-2 font-semibold">No dues added yet</h4>
+								<h4 className="mb-2 font-semibold">No participants added yet</h4>
 								<p className="mb-4 max-w-md text-foreground/70">
-									Add dues to collect tokens from participants. Each due represents a contributor
-									who must pay to activate the competition.
+									Add participants and specify their dues for the competition. Funds are collected
+									upfront and held in escrow.
 								</p>
-								<Button
-									color="primary"
-									startContent={<Plus size={18} />}
-									onPress={handleAddDue}
-									className="card-hover"
-								>
-									Add Your First Due
+								<Button color="primary" startContent={<Plus size={18} />} onPress={handleAddDue}>
+									Add First Participant
 								</Button>
 							</div>
 						</Card>
 					) : (
 						duesFields.map((field, index) => (
-							<MemberDue
-								key={field.id}
-								dueIndex={index}
-								onEdit={() => {
-									setEditingDueIndex(index);
-									onOpen();
-								}}
-								onRemove={() => removeDue(index)}
-							/>
+							<div key={field.id} className="relative">
+								<MemberDue
+									dueIndex={index}
+									onEdit={() => {
+										setEditingDueIndex(index);
+										onOpen();
+									}}
+									onRemove={() => handleRemoveDue(index)}
+								/>
+								{duesErrors?.[index] && (
+									<div className="mt-2 rounded-md border border-danger-200 bg-danger-50 p-2">
+										<p className="text-danger text-sm">
+											Please check this participant's information for errors
+										</p>
+									</div>
+								)}
+							</div>
 						))
 					)}
 				</div>
 			</div>
 
-			{/* Members from Dues Toggle */}
-			<div className="rounded-xl border border-primary/10 bg-primary/5 p-4">
-				<Controller
-					name="directParticipation.membersFromDues"
-					control={control}
-					render={({ field }) => (
-						<div className="flex items-center justify-between">
-							<div className="flex items-center gap-2">
-								<Switch
-									{...field}
-									size="lg"
-									value={field.value?.toString()}
-									isSelected={field.value}
-									onValueChange={field.onChange}
-									color="primary"
-								/>
-								<div>
-									<div className="font-medium">Use Dues as Members</div>
-									<div className="text-foreground/70 text-sm">
-										Dues' addresses will be automatically set as the competition's members who can
-										receive funds
+			{/* Members Configuration */}
+			{duesFields.length > 0 && (
+				<div className="rounded-xl border border-success/20 bg-success/5 p-4">
+					<Controller
+						name="directParticipation.membersFromDues"
+						control={control}
+						render={({ field }) => (
+							<div className="flex items-center justify-between">
+								<div className="flex items-center gap-3">
+									<Switch
+										{...field}
+										size="lg"
+										value={field.value?.toString()}
+										isSelected={field.value}
+										onValueChange={field.onChange}
+										color="success"
+									/>
+									<div>
+										<div className="font-medium text-success-700">Auto-assign as competitors</div>
+										<div className="text-sm text-success-600">
+											Participants who pay dues automatically become eligible competitors
+										</div>
 									</div>
 								</div>
+								<Tooltip
+									content="Recommended: People who pay dues will automatically be eligible to compete and receive prizes"
+									placement="left"
+								>
+									<Button isIconOnly variant="light" className="cursor-help">
+										<Info size={18} className="text-success-600" />
+									</Button>
+								</Tooltip>
 							</div>
-							<Tooltip
-								content="When enabled, the addresses added as dues will automatically be added as members who can participate and receive funds"
-								placement="left"
-							>
-								<Button isIconOnly variant="light" className="cursor-help">
-									<Info size={18} />
-								</Button>
-							</Tooltip>
-						</div>
-					)}
-				/>
-			</div>
+						)}
+					/>
+				</div>
+			)}
 
 			{/* Manual Members Section (when not using dues as members) */}
-			{!membersFromDues && (
+			{!membersFromDues && duesFields.length > 0 && (
 				<>
 					<Divider className="my-6" />
 					<div className="space-y-4">
 						<div className="flex items-center justify-between">
 							<div>
-								<h3 className="font-semibold text-xl">Members</h3>
+								<h3 className="font-semibold text-xl">Eligible Competitors</h3>
 								<p className="mt-1 text-foreground/70 text-sm">
-									Participants who can compete and receive funds
+									Add who can actually compete (different from who pays dues)
 								</p>
+								{membersErrors && (
+									<p className="mt-1 text-danger text-sm">
+										Please check the competitor addresses for errors
+									</p>
+								)}
 							</div>
 							<Button
 								color="primary"
-								variant="ghost"
+								variant="flat"
 								startContent={<Plus size={18} />}
-								onPress={() => appendMember({ address: "" })}
-								className="card-hover"
+								onPress={handleAddMember}
 							>
-								Add Member
+								Add Competitor
 							</Button>
 						</div>
 
 						<div className="space-y-3">
 							{membersFields.length === 0 ? (
-								<Card className="border border-primary/10 border-dashed">
-									<div className="flex flex-col items-center justify-center px-6 py-12 text-center">
-										<div className="mb-3 rounded-full bg-primary/10 p-3">
-											<Users size={24} className="text-primary" />
+								<Card className="border border-warning/20 border-dashed bg-warning/5">
+									<div className="flex flex-col items-center justify-center px-6 py-8 text-center">
+										<div className="mb-3 rounded-full bg-warning/20 p-3">
+											<Users size={20} className="text-warning-600" />
 										</div>
-										<h4 className="mb-2 font-semibold">No members added yet</h4>
-										<p className="mb-4 max-w-md text-foreground/70">
-											Add members who will participate in this competition and can receive funds
-											from the competition pool.
+										<h4 className="mb-2 font-semibold text-warning-700">
+											No competitors specified
+										</h4>
+										<p className="mb-4 max-w-md text-sm text-warning-600">
+											Since auto-assign is disabled, you need to manually add who can compete.
+											Consider enabling auto-assign above for simpler setup.
 										</p>
 										<Button
-											color="primary"
-											startContent={<Plus size={18} />}
-											onPress={() => appendMember({ address: "" })}
-											className="card-hover"
+											color="warning"
+											variant="flat"
+											startContent={<Plus size={16} />}
+											onPress={handleAddMember}
 										>
-											Add Your First Member
+											Add Competitor
 										</Button>
 									</div>
 								</Card>
 							) : (
 								membersFields.map((field, index) => (
-									<div key={field.id} className="flex items-center gap-2">
-										<Controller
-											control={control}
-											name={`directParticipation.members.${index}.address`}
-											render={({ field: inputField, fieldState }) => (
-												<ProfileInput
-													field={inputField}
-													error={fieldState.error}
-													labelPlacement="outside"
-													className="flex-grow"
-													excludeSelf={false}
-													label={`Member ${index + 1}`}
-												/>
-											)}
-										/>
-										<Button
-											isIconOnly
-											color="danger"
-											variant="light"
-											onPress={() => removeMember(index)}
-											className="mt-7"
-										>
-											<Trash />
-										</Button>
+									<div key={field.id} className="space-y-2">
+										<div className="flex items-center gap-2">
+											<Controller
+												control={control}
+												name={`directParticipation.members.${index}.address`}
+												render={({ field: inputField, fieldState }) => (
+													<ProfileInput
+														field={inputField}
+														error={fieldState.error}
+														labelPlacement="outside"
+														className="flex-grow"
+														excludeSelf={false}
+														label={`Competitor ${index + 1}`}
+														isInvalid={!!fieldState.error}
+														errorMessage={fieldState.error?.message}
+														menuTrigger="manual"
+													/>
+												)}
+											/>
+											<Button
+												isIconOnly
+												color="danger"
+												variant="light"
+												onPress={() => handleRemoveMember(index)}
+												className="mt-7"
+												aria-label={`Remove competitor ${index + 1}`}
+											>
+												<Trash />
+											</Button>
+										</div>
 									</div>
 								))
 							)}
