@@ -49,7 +49,6 @@ const DonateModal: React.FC<DonateModalProps> = ({ escrow }) => {
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const { getSigningCosmWasmClient, address, assets } = useChain(env.CHAIN);
 	const [isLoading, setIsLoading] = useState(false);
-	// biome-ignore lint/style/noNonNullAssertion: correct
 	const targetRef = useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 	const queryClient = useQueryClient();
@@ -84,16 +83,9 @@ const DonateModal: React.FC<DonateModalProps> = ({ escrow }) => {
 		try {
 			if (!address) throw new Error("Wallet not connected");
 
-			const native = await getNativeAsset(
-				data.denom,
-				env.RPC_URL,
-				assets?.assets,
-			);
+			const native = await getNativeAsset(data.denom, env.RPC_URL, assets?.assets);
 
-			const token = getBaseToken(
-				{ denom: data.denom, amount: data.amount.toString() },
-				native,
-			);
+			const token = getBaseToken({ denom: data.denom, amount: data.amount.toString() }, native);
 
 			const client = await getSigningCosmWasmClient();
 			const escrowClient = new ArenaEscrowClient(client, address, escrow);
@@ -110,12 +102,10 @@ const DonateModal: React.FC<DonateModalProps> = ({ escrow }) => {
 				},
 			});
 			await queryClient.invalidateQueries(
-				arenaEscrowQueryKeys.dumpState(escrow, { addr: address }),
+				arenaEscrowQueryKeys.dumpState(escrow, { addr: address })
 			);
 
-			await queryClient.invalidateQueries(
-				arenaEscrowQueryKeys.balances(escrow),
-			);
+			await queryClient.invalidateQueries(arenaEscrowQueryKeys.balances(escrow));
 
 			addToast({ color: "success", description: "Donation successful!" });
 			reset();
@@ -191,11 +181,7 @@ const DonateModal: React.FC<DonateModalProps> = ({ escrow }) => {
 							>
 								Cancel
 							</Button>
-							<Button
-								color="primary"
-								type="submit"
-								isLoading={isSubmitting || isLoading}
-							>
+							<Button color="primary" type="submit" isLoading={isSubmitting || isLoading}>
 								Donate
 							</Button>
 						</ModalFooter>

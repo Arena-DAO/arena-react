@@ -1,17 +1,7 @@
 import type { ApplicationStatus } from "~/codegen/ArenaTokenGateway.types";
-import type {
-	CompetitionStatus,
-	StatValue,
-} from "~/codegen/ArenaWagerModule.types";
+import type { CompetitionStatus, StatValue } from "~/codegen/ArenaWagerModule.types";
 
-type Colors =
-	| "default"
-	| "primary"
-	| "secondary"
-	| "success"
-	| "warning"
-	| "danger"
-	| undefined;
+type Colors = "default" | "primary" | "secondary" | "success" | "warning" | "danger" | undefined;
 
 export const getStatusColor = (status: CompetitionStatus): Colors => {
 	if (status === "pending") {

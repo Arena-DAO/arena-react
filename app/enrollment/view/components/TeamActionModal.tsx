@@ -15,10 +15,7 @@ import type React from "react";
 import { useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-import {
-	AddressFormSchema,
-	type AddressFormValues,
-} from "~/config/schemas/AddressSchema";
+import { AddressFormSchema, type AddressFormValues } from "~/config/schemas/AddressSchema";
 import { useEnv } from "~/hooks/useEnv";
 
 interface TeamActionModalProps {
@@ -36,7 +33,6 @@ const TeamActionModal: React.FC<TeamActionModalProps> = ({
 }) => {
 	const env = useEnv();
 	const { address } = useChain(env.CHAIN);
-	// biome-ignore lint/style/noNonNullAssertion: correct
 	const targetRef = useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 	const {
@@ -69,22 +65,12 @@ const TeamActionModal: React.FC<TeamActionModalProps> = ({
 							name="address"
 							control={control}
 							render={({ field }) => (
-								<ProfileInput
-									label="Address"
-									field={field}
-									error={errors.address}
-									isRequired
-								/>
+								<ProfileInput label="Address" field={field} error={errors.address} isRequired />
 							)}
 						/>
 					</ModalBody>
 					<ModalFooter>
-						<Button
-							color="primary"
-							type="submit"
-							isLoading={isLoading}
-							isDisabled={isSubmitting}
-						>
+						<Button color="primary" type="submit" isLoading={isLoading} isDisabled={isSubmitting}>
 							Submit
 						</Button>
 					</ModalFooter>

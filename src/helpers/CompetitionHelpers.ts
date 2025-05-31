@@ -9,30 +9,21 @@ import { formatTimestampToDisplay } from "./DateHelpers";
 export const getCompetitionQueryKey = (
 	env: Env,
 	competitionType: CompetitionType,
-	competitionId: string,
+	competitionId: string
 ) => {
 	switch (competitionType) {
 		case "wager":
-			return arenaWagerModuleQueryKeys.competition(
-				env.ARENA_WAGER_MODULE_ADDRESS,
-				{
-					competitionId,
-				},
-			);
+			return arenaWagerModuleQueryKeys.competition(env.ARENA_WAGER_MODULE_ADDRESS, {
+				competitionId,
+			});
 		case "league":
-			return arenaLeagueModuleQueryKeys.competition(
-				env.ARENA_LEAGUE_MODULE_ADDRESS,
-				{
-					competitionId,
-				},
-			);
+			return arenaLeagueModuleQueryKeys.competition(env.ARENA_LEAGUE_MODULE_ADDRESS, {
+				competitionId,
+			});
 		case "tournament":
-			return arenaTournamentModuleQueryKeys.competition(
-				env.ARENA_TOURNAMENT_MODULE_ADDRESS,
-				{
-					competitionId,
-				},
-			);
+			return arenaTournamentModuleQueryKeys.competition(env.ARENA_TOURNAMENT_MODULE_ADDRESS, {
+				competitionId,
+			});
 		default:
 			throw new Error("Invalid competition type");
 	}
@@ -40,7 +31,6 @@ export const getCompetitionQueryKey = (
 
 export const formatExpiration = (expiration: Expiration): string => {
 	if ("at_height" in expiration) return `At height: ${expiration.at_height}`;
-	if ("at_time" in expiration)
-		return formatTimestampToDisplay(expiration.at_time);
+	if ("at_time" in expiration) return formatTimestampToDisplay(expiration.at_time);
 	return "Never";
 };

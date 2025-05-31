@@ -8,10 +8,7 @@ interface CopyAddressButtonProps extends ButtonProps {
 	address: string;
 }
 
-export function CopyAddressButton({
-	address,
-	...props
-}: CopyAddressButtonProps) {
+export function CopyAddressButton({ address, ...props }: CopyAddressButtonProps) {
 	const [isCopied, setCopied] = useClipboard(address, {
 		successDuration: 1000,
 	});

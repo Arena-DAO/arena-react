@@ -46,6 +46,31 @@ export type ExecuteMsg = {
     rankings: MemberMsgForString[];
   };
 } | {
+  edit_enrollment: {
+    banner?: FieldActionForString | null;
+    date?: Timestamp | null;
+    description?: string | null;
+    duration?: number | null;
+    duration_before?: number | null;
+    id: Uint128;
+    max_members?: Uint64 | null;
+    min_members?: FieldActionForUint64 | null;
+    name?: string | null;
+    required_team_size?: FieldActionForUint32 | null;
+    use_dao_host?: DaoConfig | null;
+  };
+} | {
+  revert: {
+    id: Uint128;
+  };
+} | {
+  migrate_escrow: {
+    escrow: string;
+    escrow_code_id: number;
+    id: Uint128;
+    msg: MigrateMsg;
+  };
+} | {
   update_ownership: Action;
 };
 export type Uint128 = string;
@@ -117,6 +142,24 @@ export type PercentageThreshold = {
 } | {
   percent: Decimal;
 };
+export type FieldActionForString = "remove" | {
+  update: string;
+};
+export type FieldActionForUint64 = "remove" | {
+  update: Uint64;
+};
+export type FieldActionForUint32 = "remove" | {
+  update: number;
+};
+export type MigrateMsg = {
+  from_compatible: {};
+} | {
+  remove_third_place_match: {
+    enrollment_id: Uint128;
+  };
+} | {
+  from_v2_3: {};
+};
 export type Action = {
   transfer_ownership: {
     expiry?: Expiration | null;
@@ -142,7 +185,6 @@ export interface CompetitionInfoMsg {
 export interface Coin {
   amount: Uint128;
   denom: string;
-  [k: string]: unknown;
 }
 export interface FeeInformationForString {
   cw20_msg?: Binary | null;
@@ -153,13 +195,15 @@ export interface FeeInformationForString {
 export interface ModuleInstantiateInfo {
   admin?: Admin | null;
   code_id: number;
-  funds: Coin[];
+  funds?: Coin[] | null;
   label: string;
   msg: Binary;
+  salt?: Binary | null;
 }
 export interface DaoConfig {
   cw4_voting_code_id: number;
   dao_code_id: number;
+  image_url?: string | null;
   max_voting_period: Duration;
   prepropose_single_code_id: number;
   proposal_single_code_id: number;
@@ -196,15 +240,6 @@ export type EnrollmentFilter = {
   };
 } | {
   host: string;
-};
-export type MigrateMsg = {
-  from_compatible: {};
-} | {
-  remove_third_place_match: {
-    enrollment_id: Uint128;
-  };
-} | {
-  from_v2_3: {};
 };
 export type Addr = string;
 export interface SudoMsg {

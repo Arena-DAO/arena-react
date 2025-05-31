@@ -33,9 +33,7 @@ export const nanosToZonedDateTime = (nanos: bigint): ZonedDateTime => {
 
 	// Ensure the date is valid
 	if (Number.isNaN(date.getTime())) {
-		throw new Error(
-			"Invalid timestamp: cannot convert nanoseconds to a valid date.",
-		);
+		throw new Error("Invalid timestamp: cannot convert nanoseconds to a valid date.");
 	}
 
 	// Convert to ZonedDateTime using the local time zone

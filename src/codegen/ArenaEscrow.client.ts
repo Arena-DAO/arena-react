@@ -6,7 +6,7 @@
 
 import { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 import { StdFee } from "@cosmjs/amino";
-import { Uint128, InstantiateMsg, MemberBalanceUnchecked, BalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, Cw20ReceiveMsg, Cw721ReceiveMsg, DistributionForString, MemberPercentageForString, FeeInformationForString, TransferEscrowOwnershipMsg, QueryMsg, MigrateMsg, NullableBalanceVerified, Addr, BalanceVerified, Cw20CoinVerified, Cw721CollectionVerified, ArrayOfMemberBalanceChecked, MemberBalanceChecked, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
+import { Uint128, InstantiateMsg, MemberBalanceUnchecked, Cw20Coin, Cw721Collection, Coin, ExecuteMsg, Binary, Decimal, Action, Expiration, Timestamp, Uint64, Cw20ReceiveMsg, Cw721ReceiveMsg, DistributionForString, MemberPercentageForString, FeeInformationForString, TransferEscrowOwnershipMsg, QueryMsg, MigrateMsg, BalanceVerified, Addr, ArrayOfMemberBalanceChecked, MemberBalanceChecked, DumpStateResponse, Boolean, OwnershipForString } from "./ArenaEscrow.types";
 export interface ArenaEscrowReadOnlyInterface {
   contractAddress: string;
   balances: ({
@@ -20,12 +20,12 @@ export interface ArenaEscrowReadOnlyInterface {
     addr
   }: {
     addr: string;
-  }) => Promise<NullableBalanceVerified>;
+  }) => Promise<BalanceVerified>;
   due: ({
     addr
   }: {
     addr: string;
-  }) => Promise<NullableBalanceVerified>;
+  }) => Promise<BalanceVerified>;
   dues: ({
     limit,
     startAfter
@@ -46,7 +46,7 @@ export interface ArenaEscrowReadOnlyInterface {
     addr: string;
   }) => Promise<Boolean>;
   isFullyFunded: () => Promise<Boolean>;
-  totalBalance: () => Promise<NullableBalanceVerified>;
+  totalBalance: () => Promise<BalanceVerified>;
   isLocked: () => Promise<Boolean>;
   dumpState: ({
     addr
@@ -91,7 +91,7 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
     addr
   }: {
     addr: string;
-  }): Promise<NullableBalanceVerified> => {
+  }): Promise<BalanceVerified> => {
     return this.client.queryContractSmart(this.contractAddress, {
       balance: {
         addr
@@ -102,7 +102,7 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
     addr
   }: {
     addr: string;
-  }): Promise<NullableBalanceVerified> => {
+  }): Promise<BalanceVerified> => {
     return this.client.queryContractSmart(this.contractAddress, {
       due: {
         addr
@@ -153,7 +153,7 @@ export class ArenaEscrowQueryClient implements ArenaEscrowReadOnlyInterface {
       is_fully_funded: {}
     });
   };
-  totalBalance = async (): Promise<NullableBalanceVerified> => {
+  totalBalance = async (): Promise<BalanceVerified> => {
     return this.client.queryContractSmart(this.contractAddress, {
       total_balance: {}
     });
@@ -234,6 +234,7 @@ export interface ArenaEscrowInterface extends ArenaEscrowReadOnlyInterface {
     transferOwnership?: TransferEscrowOwnershipMsg;
     value: boolean;
   }, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
+  claw: (fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
   updateOwnership: (action: Action, fee_?: number | StdFee | "auto", memo_?: string, funds_?: Coin[]) => Promise<ExecuteResult>;
 }
 export class ArenaEscrowClient extends ArenaEscrowQueryClient implements ArenaEscrowInterface {
@@ -252,6 +253,7 @@ export class ArenaEscrowClient extends ArenaEscrowQueryClient implements ArenaEs
     this.receiveNft = this.receiveNft.bind(this);
     this.distribute = this.distribute.bind(this);
     this.lock = this.lock.bind(this);
+    this.claw = this.claw.bind(this);
     this.updateOwnership = this.updateOwnership.bind(this);
   }
   withdraw = async ({
@@ -353,6 +355,11 @@ export class ArenaEscrowClient extends ArenaEscrowQueryClient implements ArenaEs
         transfer_ownership: transferOwnership,
         value
       }
+    }, fee_, memo_, funds_);
+  };
+  claw = async (fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {
+    return await this.client.execute(this.sender, this.contractAddress, {
+      claw: {}
     }, fee_, memo_, funds_);
   };
   updateOwnership = async (action: Action, fee_: number | StdFee | "auto" = "auto", memo_?: string, funds_?: Coin[]): Promise<ExecuteResult> => {

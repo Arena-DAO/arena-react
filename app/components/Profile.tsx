@@ -20,10 +20,7 @@ import { ArenaCoreQueryClient } from "~/codegen/ArenaCore.client";
 import { useArenaCoreQueryExtensionQuery } from "~/codegen/ArenaCore.react-query";
 import type { Rating } from "~/codegen/ArenaCore.types";
 import { useCategoryContext } from "~/contexts/CategoryContext";
-import {
-	isValidBech32Address,
-	isValidContractAddress,
-} from "~/helpers/AddressHelpers";
+import { isValidBech32Address, isValidContractAddress } from "~/helpers/AddressHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import { useProfileData } from "~/hooks/useProfile";
@@ -56,11 +53,7 @@ const CardContent = memo(
 		parsedRating?: string;
 		statProps?: StatProps;
 	}) => (
-		<Card
-			shadow="none"
-			className="min-w-64"
-			classNames={{ footer: "px-0 py-1" }}
-		>
+		<Card shadow="none" className="min-w-64" classNames={{ footer: "px-0 py-1" }}>
 			{data?.name && (
 				<CardHeader>
 					{data.link ? (
@@ -73,19 +66,14 @@ const CardContent = memo(
 				</CardHeader>
 			)}
 			{!isEnrollmentContract && parsedRating && (
-				<CardBody className="pt-0">
-					Rating {Number.parseFloat(parsedRating).toFixed(2)}
-				</CardBody>
+				<CardBody className="pt-0">Rating {Number.parseFloat(parsedRating).toFixed(2)}</CardBody>
 			)}
 			{data?.address && (
 				<CardFooter className="gap-2">
 					<CopyAddressButton address={data.address} />
 					{!isEnrollmentContract && (
 						<>
-							<Button
-								as={Link}
-								href={`/user/competitions?host=${data.address}`}
-							>
+							<Button as={Link} href={`/user/competitions?host=${data.address}`}>
 								Competitions
 							</Button>
 
@@ -93,15 +81,13 @@ const CardContent = memo(
 								<TeamMembersModal daoAddress={data.address} />
 							)}
 
-							{statProps && (
-								<UserStatsModal userAddress={data.address} {...statProps} />
-							)}
+							{statProps && <UserStatsModal userAddress={data.address} {...statProps} />}
 						</>
 					)}
 				</CardFooter>
 			)}
 		</Card>
-	),
+	)
 );
 
 CardContent.displayName = "ProfileCardContent";
@@ -122,20 +108,17 @@ const Profile = ({
 	// Validate address against current chain's prefix
 	const isValid = useMemo(
 		() => Boolean(address) && isValidBech32Address(address, env.BECH32_PREFIX),
-		[address, env.BECH32_PREFIX],
+		[address, env.BECH32_PREFIX]
 	);
 
 	// Check if this is the enrollment contract address
 	const isEnrollmentContract = useMemo(
 		() => address === env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
-		[address, env.ARENA_COMPETITION_ENROLLMENT_ADDRESS],
+		[address, env.ARENA_COMPETITION_ENROLLMENT_ADDRESS]
 	);
 
 	// Fetch profile data - always call this hook regardless of isValid
-	const { data: profileData, error: profileError } = useProfileData(
-		address,
-		isValid,
-	);
+	const { data: profileData, error: profileError } = useProfileData(address, isValid);
 
 	// Always calculate this - the enabled option in the query will prevent the actual fetch
 	const shouldFetchRating = useMemo(
@@ -145,13 +128,7 @@ const Profile = ({
 			!isRatingDisabled &&
 			Boolean(category?.category_id) &&
 			!isEnrollmentContract,
-		[
-			isValid,
-			cosmWasmClient,
-			isRatingDisabled,
-			category?.category_id,
-			isEnrollmentContract,
-		],
+		[isValid, cosmWasmClient, isRatingDisabled, category?.category_id, isEnrollmentContract]
 	);
 
 	// Always call this hook with appropriate enabled option
@@ -161,7 +138,7 @@ const Profile = ({
 				cosmWasmClient && env?.ARENA_CORE_ADDRESS
 					? new ArenaCoreQueryClient(cosmWasmClient, env.ARENA_CORE_ADDRESS)
 					: undefined,
-			[cosmWasmClient, env?.ARENA_CORE_ADDRESS],
+			[cosmWasmClient, env?.ARENA_CORE_ADDRESS]
 		),
 		args: {
 			msg: {
@@ -179,11 +156,8 @@ const Profile = ({
 
 	// Calculate rating display value
 	const parsedRating = useMemo(
-		() =>
-			category && ratingData
-				? (ratingData as unknown as Rating).value
-				: undefined,
-		[category, ratingData],
+		() => (category && ratingData ? (ratingData as unknown as Rating).value : undefined),
+		[category, ratingData]
 	);
 
 	// Memoize UI elements to avoid recreating them on every render
@@ -233,10 +207,7 @@ const Profile = ({
 		return (
 			<User
 				{...props}
-				name={
-					profileData?.name ??
-					(address ? `${address.slice(0, 12)}...` : "Unknown")
-				}
+				name={profileData?.name ?? (address ? `${address.slice(0, 12)}...` : "Unknown")}
 				className="cursor-pointer"
 				avatarProps={{
 					src: profileData?.imageUrl || undefined,
@@ -262,13 +233,7 @@ const Profile = ({
 				statProps={statProps}
 			/>
 		);
-	}, [
-		profileData,
-		isEnrollmentContract,
-		parsedRating,
-		statProps,
-		isPopoverDisabled,
-	]);
+	}, [profileData, isEnrollmentContract, parsedRating, statProps, isPopoverDisabled]);
 
 	// Early return if we shouldn't render
 	if (!isValid) {

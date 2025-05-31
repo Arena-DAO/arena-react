@@ -1,14 +1,7 @@
 "use client";
 
 import TokenInfo from "@/components/TokenInfo";
-import {
-	Button,
-	ButtonGroup,
-	Input,
-	Select,
-	SelectItem,
-	useDisclosure,
-} from "@heroui/react";
+import { Button, ButtonGroup, Input, Select, SelectItem, useDisclosure } from "@heroui/react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 import { DurationUnits } from "~/config/schemas/DurationSchema";
@@ -127,9 +120,7 @@ const EnrollmentInformationForm = () => {
 								selectedKeys={[field.value]}
 							>
 								{DurationUnits.map((unit) => (
-									<SelectItem key={unit}>
-										{unit.charAt(0).toUpperCase() + unit.slice(1)}
-									</SelectItem>
+									<SelectItem key={unit}>{unit.charAt(0).toUpperCase() + unit.slice(1)}</SelectItem>
 								))}
 							</Select>
 						)}
@@ -152,9 +143,7 @@ const EnrollmentInformationForm = () => {
 								isNative={true}
 							/>
 							<ButtonGroup isDisabled={isSubmitting}>
-								<Button
-									onPress={() => setValue("enrollmentInfo.entryFee", undefined)}
-								>
+								<Button onPress={() => setValue("enrollmentInfo.entryFee", undefined)}>
 									Remove Fee
 								</Button>
 								<Button onPress={onOpen}>Update Fee</Button>
@@ -173,11 +162,7 @@ const EnrollmentInformationForm = () => {
 				<DaoConfigForm />
 			</div>
 
-			<EntryFeeForm
-				isOpen={isOpen}
-				onOpenChange={onOpenChange}
-				onClose={onOpenChange}
-			/>
+			<EntryFeeForm isOpen={isOpen} onOpenChange={onOpenChange} onClose={onOpenChange} />
 		</div>
 	);
 };

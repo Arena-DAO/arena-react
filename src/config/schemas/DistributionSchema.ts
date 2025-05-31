@@ -16,10 +16,7 @@ const DistributionSchema = z
 					message: "Remainder address is required",
 				});
 			}
-			const sum = val.member_percentages.reduce(
-				(acc, cur) => acc + Number(cur.percentage),
-				0,
-			);
+			const sum = val.member_percentages.reduce((acc, cur) => acc + Number(cur.percentage), 0);
 			if (Math.abs(sum - 1) > 0.000001) {
 				ctx.addIssue({
 					code: ZodIssueCode.custom,

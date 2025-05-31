@@ -1,8 +1,4 @@
-import {
-	type ZonedDateTime,
-	getLocalTimeZone,
-	now,
-} from "@internationalized/date";
+import { type ZonedDateTime, getLocalTimeZone, now } from "@internationalized/date";
 import { useEffect, useState } from "react";
 import type { Timestamp } from "~/codegen/ArenaWagerModule.types";
 import { nanosToZonedDateTime } from "~/config/schemas/TimestampSchema";
@@ -18,7 +14,7 @@ import { nanosToZonedDateTime } from "~/config/schemas/TimestampSchema";
 export const useIsExpired = (
 	competitionDateNanos: Timestamp,
 	duration?: number,
-	deadlineBefore?: number,
+	deadlineBefore?: number
 ): boolean => {
 	if (!duration && !deadlineBefore) {
 		throw new Error("Either duration or deadlineBefore must be supplied.");
@@ -68,8 +64,7 @@ export const useIsExpired = (
 			return; // Already expired, no timeout needed
 		}
 
-		const delay =
-			nextTriggerTime.toDate().getTime() - current.toDate().getTime();
+		const delay = nextTriggerTime.toDate().getTime() - current.toDate().getTime();
 
 		const timeoutId = setTimeout(() => {
 			setIsExpired(true);

@@ -1,11 +1,5 @@
 "use client";
-import {
-	Button,
-	Card,
-	CardBody,
-	CardFooter,
-	type CardProps,
-} from "@heroui/react";
+import { Button, Card, CardBody, CardFooter, type CardProps } from "@heroui/react";
 import { useState } from "react";
 import type { CompetitionResponseForLeagueExt } from "~/codegen/ArenaLeagueModule.types";
 import RoundDisplay from "./RoundDisplay";
@@ -15,11 +9,7 @@ interface RoundsDisplayProps extends CardProps {
 	moduleAddr: string;
 }
 
-const RoundsDisplay = ({
-	moduleAddr,
-	league,
-	...props
-}: RoundsDisplayProps) => {
+const RoundsDisplay = ({ moduleAddr, league, ...props }: RoundsDisplayProps) => {
 	const teams = Number(BigInt(league.extension.teams));
 	const total_rounds = teams % 2 === 0 ? teams - 1 : teams;
 	const [currentRound, setCurrentRound] = useState(
@@ -27,9 +17,9 @@ const RoundsDisplay = ({
 			1,
 			Math.ceil(
 				Number(BigInt(league.extension.processed_matches)) /
-					(Number(BigInt(league.extension.matches)) / total_rounds),
-			),
-		),
+					(Number(BigInt(league.extension.matches)) / total_rounds)
+			)
+		)
 	);
 
 	return (
@@ -47,15 +37,10 @@ const RoundsDisplay = ({
 			</CardBody>
 			<CardFooter>
 				{currentRound > 1 && (
-					<Button onPress={() => setCurrentRound((x) => x - 1)}>
-						Previous Round
-					</Button>
+					<Button onPress={() => setCurrentRound((x) => x - 1)}>Previous Round</Button>
 				)}
 				{currentRound < total_rounds && (
-					<Button
-						onPress={() => setCurrentRound((x) => x + 1)}
-						className="ml-auto"
-					>
+					<Button onPress={() => setCurrentRound((x) => x + 1)} className="ml-auto">
 						Next Round
 					</Button>
 				)}

@@ -8,10 +8,7 @@ import { wallets as leapWallets } from "@cosmos-kit/leap";
 import { ChainProvider } from "@cosmos-kit/react";
 import { HeroUIProvider, ToastProvider } from "@heroui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-	assets as mainnetAssets,
-	chain as mainnetChain,
-} from "chain-registry/mainnet/neutron";
+import { assets as mainnetAssets, chain as mainnetChain } from "chain-registry/mainnet/neutron";
 import {
 	assets as testnetAssets,
 	chain as testnetChain,
@@ -34,27 +31,27 @@ function InnerProviders({ children }: PropsWithChildren) {
 					gasPrice: GasPrice.fromString(
 						`${chain.fees?.fee_tokens[0]?.average_gas_price?.toString()}${
 							chain.fees?.fee_tokens[0]?.denom
-						}`,
+						}`
 					),
 				};
 			return undefined;
 		},
 	};
 	const chainsMemo = useMemo(() => {
-		if (env.ENV === "development") return [testnetChain];
+		if (env.ENV === "development") return [testnetChain, mainnetChain];
 
 		const filteredMainnet = { ...mainnetChain };
 		if (filteredMainnet.apis) {
 			filteredMainnet.apis = {
 				...filteredMainnet.apis,
 				rpc: filteredMainnet.apis.rpc?.filter(
-					(api) => !api.address.toLowerCase().includes("quokkastake"),
+					(api: { address: string }) => !api.address.toLowerCase().includes("quokkastake")
 				),
 				rest: filteredMainnet.apis.rest?.filter(
-					(api) => !api.address.toLowerCase().includes("quokkastake"),
+					(api: { address: string }) => !api.address.toLowerCase().includes("quokkastake")
 				),
 				grpc: filteredMainnet.apis.grpc?.filter(
-					(grpc) => !grpc.address.includes("quokkastake"),
+					(grpc: { address: string | string[] }) => !grpc.address.includes("quokkastake")
 				),
 			};
 		}
@@ -108,8 +105,7 @@ export function Providers({ children }: PropsWithChildren) {
 						size: "lg",
 						classNames: {
 							base: "min-w-[350px] max-w-[90vw] sm:max-w-[400px] md:max-w-[500px] w-auto", // Responsive width
-							content:
-								"whitespace-normal break-words overflow-y-auto max-h-[200px]", // Text wrapping and overflow
+							content: "whitespace-normal break-words overflow-y-auto max-h-[200px]", // Text wrapping and overflow
 						},
 					}}
 				/>

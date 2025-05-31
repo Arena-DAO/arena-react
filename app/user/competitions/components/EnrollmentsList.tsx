@@ -18,14 +18,14 @@ const EnrollmentsList: React.FC<EnrollmentsListProps> = ({ hostAddress }) => {
 	const enrollmentQuery = useInfiniteQuery({
 		queryKey: arenaCompetitionEnrollmentQueryKeys.enrollments(
 			env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
-			{ filter: { host: hostAddress } },
+			{ filter: { host: hostAddress } }
 		),
 		queryFn: async ({ pageParam = undefined }) => {
 			if (!cosmWasmClient) throw new Error("Could not get CosmWasm client");
 
 			const client = new ArenaCompetitionEnrollmentQueryClient(
 				cosmWasmClient,
-				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS
 			);
 
 			return client.enrollments({
@@ -35,9 +35,7 @@ const EnrollmentsList: React.FC<EnrollmentsListProps> = ({ hostAddress }) => {
 			});
 		},
 		getNextPageParam: (lastPage) =>
-			lastPage.length === env.PAGINATION_LIMIT
-				? lastPage[lastPage.length - 1]?.id
-				: undefined,
+			lastPage.length === env.PAGINATION_LIMIT ? lastPage[lastPage.length - 1]?.id : undefined,
 		enabled: !!cosmWasmClient,
 	});
 
@@ -49,9 +47,7 @@ const EnrollmentsList: React.FC<EnrollmentsListProps> = ({ hostAddress }) => {
 		<div className="gap-4">
 			<div className="grid grid-cols-1 justify-items-center gap-10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 				{enrollmentQuery.data?.pages.map((page) =>
-					page.map((x) => (
-						<CompetitionCard key={x.id} competition={x} hideHost />
-					)),
+					page.map((x) => <CompetitionCard key={x.id} competition={x} hideHost />)
 				)}
 			</div>
 			{enrollmentQuery.hasNextPage && (
@@ -62,9 +58,7 @@ const EnrollmentsList: React.FC<EnrollmentsListProps> = ({ hostAddress }) => {
 					{enrollmentQuery.isFetchingNextPage ? "Loading more..." : "Load More"}
 				</Button>
 			)}
-			{(enrollmentQuery.data?.pages[0]?.length ?? 0) === 0 && (
-				<p>No enrollments found.</p>
-			)}
+			{(enrollmentQuery.data?.pages[0]?.length ?? 0) === 0 && <p>No enrollments found.</p>}
 		</div>
 	);
 };

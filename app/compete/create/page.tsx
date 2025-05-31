@@ -6,19 +6,12 @@ import {
 	toBinary,
 } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
-import {
-	Button,
-	Card,
-	CardBody,
-	CardHeader,
-	Switch,
-	Tooltip,
-	addToast,
-} from "@heroui/react";
+import { Button, Card, CardBody, CardHeader, Tooltip, addToast } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { Info, Plus } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useRef } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import type { CompetitionType } from "~/codegen/ArenaCompetitionEnrollment.types";
@@ -36,13 +29,12 @@ import {
 	CreateCompetitionSchema,
 } from "~/config/schemas/CreateCompetitionSchema";
 import { convertToNanoseconds } from "~/config/schemas/TimestampSchema";
-import {
-	CategoryProvider,
-	useCategoryContext,
-} from "~/contexts/CategoryContext";
+import { CategoryProvider, useCategoryContext } from "~/contexts/CategoryContext";
 import { convertToEscrowInstantiate } from "~/helpers/SchemaHelpers";
 import { useEnv } from "~/hooks/useEnv";
-import BasicInformationForm from "./components/BasicInformationForm";
+import BasicInformationForm, {
+	type BasicInformationFormRef,
+} from "./components/BasicInformationForm";
 import MembersAndDuesForm from "./components/DirectParticipationForm";
 import EnrollmentInformationForm from "./components/EnrollmentInformationForm";
 import LeagueInformationForm from "./components/LeagueInformationForm";
@@ -54,9 +46,8 @@ const CreateCompetitionPage = () => {
 	const params = useSearchParams();
 	const category = useCategoryContext(params.get("category"));
 	const router = useRouter();
-	const { getSigningCosmWasmClient, address, isWalletConnected } = useChain(
-		env.CHAIN,
-	);
+	const { getSigningCosmWasmClient, address, isWalletConnected } = useChain(env.CHAIN);
+	const basicInformationFormRef = useRef<BasicInformationFormRef>(null);
 
 	const formMethods = useForm<CreateCompetitionFormValues>({
 		resolver: zodResolver(CreateCompetitionSchema),
@@ -81,7 +72,7 @@ const CreateCompetitionPage = () => {
 				distribution: [{ percent: "100" }],
 			},
 			enrollmentInfo: {
-				maxMembers: "16",
+				maxMembers: "2",
 				duration_before: { units: "minutes", amount: "30" },
 			},
 		},
@@ -90,7 +81,7 @@ const CreateCompetitionPage = () => {
 	const {
 		handleSubmit,
 		watch,
-		formState: { isSubmitting, isLoading },
+		formState: { isSubmitting },
 	} = formMethods;
 
 	const competitionType = watch("competitionType");
@@ -100,7 +91,7 @@ const CreateCompetitionPage = () => {
 		client: SigningCosmWasmClient,
 		values: CreateCompetitionFormValues,
 		address: string,
-		categoryId?: string,
+		categoryId?: string
 	) => {
 		if (!values.enrollmentInfo) {
 			throw new Error("Enrollment information is required");
@@ -109,7 +100,7 @@ const CreateCompetitionPage = () => {
 		const enrollmentClient = new ArenaCompetitionEnrollmentClient(
 			client,
 			address,
-			env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+			env.ARENA_COMPETITION_ENROLLMENT_ADDRESS
 		);
 
 		let competitionType: CompetitionType;
@@ -123,9 +114,7 @@ const CreateCompetitionPage = () => {
 				}
 				competitionType = {
 					league: {
-						distribution: values.leagueInfo.distribution.map((mp) =>
-							mp.percent.toString(),
-						),
+						distribution: values.leagueInfo.distribution.map((mp) => mp.percent.toString()),
 						match_win_points: values.leagueInfo.matchWinPoints.toString(),
 						match_draw_points: values.leagueInfo.matchDrawPoints.toString(),
 						match_lose_points: values.leagueInfo.matchLosePoints.toString(),
@@ -138,15 +127,12 @@ const CreateCompetitionPage = () => {
 				}
 				competitionType = {
 					tournament: {
-						distribution: values.tournamentInfo.distribution.map((mp) =>
-							mp.percent.toString(),
-						),
+						distribution: values.tournamentInfo.distribution.map((mp) => mp.percent.toString()),
 						elimination_type:
 							values.tournamentInfo.eliminationType === "single"
 								? {
 										single_elimination: {
-											play_third_place_match:
-												values.tournamentInfo.playThirdPlace ?? false,
+											play_third_place_match: values.tournamentInfo.playThirdPlace ?? false,
 										},
 									}
 								: "double_elimination",
@@ -206,7 +192,7 @@ const CreateCompetitionPage = () => {
 		client: SigningCosmWasmClient,
 		values: CreateCompetitionFormValues,
 		address: string,
-		categoryId?: string,
+		categoryId?: string
 	) => {
 		if (!values.directParticipation) {
 			throw new Error("Direct participation information is required");
@@ -237,7 +223,7 @@ const CreateCompetitionPage = () => {
 		const escrow = convertToEscrowInstantiate(
 			env.CODE_ID_ESCROW,
 			values.directParticipation.dues ?? [],
-			values.additionalLayeredFees,
+			values.additionalLayeredFees
 		);
 
 		const commonMsg = {
@@ -260,7 +246,7 @@ const CreateCompetitionPage = () => {
 				const wagerClient = new ArenaWagerModuleClient(
 					client,
 					address,
-					env.ARENA_WAGER_MODULE_ADDRESS,
+					env.ARENA_WAGER_MODULE_ADDRESS
 				);
 				result = await wagerClient.createCompetition({
 					...commonMsg,
@@ -269,19 +255,16 @@ const CreateCompetitionPage = () => {
 				break;
 			}
 			case "league": {
-				if (!values.leagueInfo)
-					throw new Error("League information is required");
+				if (!values.leagueInfo) throw new Error("League information is required");
 				const leagueClient = new ArenaLeagueModuleClient(
 					client,
 					address,
-					env.ARENA_LEAGUE_MODULE_ADDRESS,
+					env.ARENA_LEAGUE_MODULE_ADDRESS
 				);
 				result = await leagueClient.createCompetition({
 					...commonMsg,
 					instantiateExtension: {
-						distribution: values.leagueInfo.distribution.map((mp) =>
-							mp.percent.toString(),
-						),
+						distribution: values.leagueInfo.distribution.map((mp) => mp.percent.toString()),
 						match_win_points: values.leagueInfo.matchWinPoints.toString(),
 						match_draw_points: values.leagueInfo.matchDrawPoints.toString(),
 						match_lose_points: values.leagueInfo.matchLosePoints.toString(),
@@ -290,25 +273,21 @@ const CreateCompetitionPage = () => {
 				break;
 			}
 			case "tournament": {
-				if (!values.tournamentInfo)
-					throw new Error("Tournament information is required");
+				if (!values.tournamentInfo) throw new Error("Tournament information is required");
 				const tournamentClient = new ArenaTournamentModuleClient(
 					client,
 					address,
-					env.ARENA_TOURNAMENT_MODULE_ADDRESS,
+					env.ARENA_TOURNAMENT_MODULE_ADDRESS
 				);
 				result = await tournamentClient.createCompetition({
 					...commonMsg,
 					instantiateExtension: {
-						distribution: values.tournamentInfo.distribution.map((mp) =>
-							mp.percent.toString(),
-						),
+						distribution: values.tournamentInfo.distribution.map((mp) => mp.percent.toString()),
 						elimination_type:
 							values.tournamentInfo.eliminationType === "single"
 								? {
 										single_elimination: {
-											play_third_place_match:
-												values.tournamentInfo.playThirdPlace ?? false,
+											play_third_place_match: values.tournamentInfo.playThirdPlace ?? false,
 										},
 									}
 								: "double_elimination",
@@ -333,6 +312,12 @@ const CreateCompetitionPage = () => {
 				return;
 			}
 
+			// Upload banner image first if one was selected
+			const uploadedBannerUrl = await basicInformationFormRef.current?.uploadBannerImage();
+			if (uploadedBannerUrl) {
+				values.banner = uploadedBannerUrl;
+			}
+
 			const client = await getSigningCosmWasmClient();
 			if (!address) throw new Error("Could not get user address");
 
@@ -345,9 +330,7 @@ const CreateCompetitionPage = () => {
 			let id: string | undefined;
 			for (const event of result.events) {
 				for (const attribute of event.attributes) {
-					if (
-						attribute.key === (values.useEnrollments ? "id" : "competition_id")
-					) {
+					if (attribute.key === (values.useEnrollments ? "id" : "competition_id")) {
 						id = attribute.value;
 						break;
 					}
@@ -359,7 +342,7 @@ const CreateCompetitionPage = () => {
 				router.push(
 					values.useEnrollments
 						? `/enrollment/view?enrollmentId=${id}`
-						: `/${values.competitionType}/view?competitionId=${id}`,
+						: `/${values.competitionType}/view?competitionId=${id}`
 				);
 				addToast({
 					color: "success",
@@ -383,170 +366,253 @@ const CreateCompetitionPage = () => {
 
 	return (
 		<CategoryProvider value={category?.url}>
-			<div className="min-h-screen bg-background/50">
-				<div className="container mx-auto max-w-6xl px-4 py-8 md:py-12">
-					<motion.div
-						initial={{ opacity: 0, y: -20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.5 }}
-					>
-						<h1 className="mb-4 text-center font-bold font-cinzel text-3xl md:text-4xl">
-							Create a Competition
-						</h1>
-						<p className="mx-auto mb-8 max-w-2xl text-center text-foreground/80">
-							Set up your competition details, rules, and participation
-							requirements.
-						</p>
-					</motion.div>
+			<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen">
+				<div className="container mx-auto space-y-6 px-4 py-6 md:space-y-8 md:py-8">
+					{/* Header Section */}
+					<div className="flex flex-col gap-4 md:gap-6">
+						<motion.div
+							initial={{ opacity: 0, y: -20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.5 }}
+						>
+							<div className="text-center">
+								<h1 className="mb-4 font-bold text-3xl md:text-4xl">Create Competition</h1>
+								<p className="mx-auto mb-8 max-w-2xl opacity-70">
+									Choose your competition type and set up the details
+								</p>
+							</div>
+						</motion.div>
+					</div>
 
 					<FormProvider {...formMethods}>
-						<form
-							onSubmit={handleSubmit(onSubmit)}
-							className="space-y-6 md:space-y-8"
-							aria-label="Competition creation form"
-						>
-							<motion.div
-								initial={{ opacity: 0, y: 20 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ delay: 0.2 }}
-								className="space-y-6 md:space-y-8"
-							>
-								{/* Competition Information */}
-								<Card className="border border-primary/10">
-									<CardHeader className="border-primary/10 border-b">
-										<h2 className="font-cinzel font-semibold text-xl md:text-2xl">
-											Competition Information
-										</h2>
-									</CardHeader>
-									<CardBody className="p-6">
-										<BasicInformationForm />
-									</CardBody>
-								</Card>
-
-								{/* League Settings */}
-								{competitionType === "league" && (
-									<motion.div
-										initial={{ opacity: 0, height: 0 }}
-										animate={{ opacity: 1, height: "auto" }}
-										exit={{ opacity: 0, height: 0 }}
-										transition={{ duration: 0.3 }}
-									>
-										<Card className="border border-primary/10">
-											<CardHeader className="border-primary/10 border-b">
-												<h2 className="font-cinzel font-semibold text-xl md:text-2xl">
-													League Settings
-												</h2>
-											</CardHeader>
-											<CardBody className="p-6">
-												<LeagueInformationForm />
-											</CardBody>
-										</Card>
-									</motion.div>
-								)}
-
-								{/* Tournament Settings */}
-								{competitionType === "tournament" && (
-									<motion.div
-										initial={{ opacity: 0, height: 0 }}
-										animate={{ opacity: 1, height: "auto" }}
-										exit={{ opacity: 0, height: 0 }}
-										transition={{ duration: 0.3 }}
-									>
-										<Card className="border border-primary/10">
-											<CardHeader className="border-primary/10 border-b">
-												<h2 className="font-cinzel font-semibold text-xl md:text-2xl">
-													Tournament Settings
-												</h2>
-											</CardHeader>
-											<CardBody className="p-6">
-												<TournamentInformationForm />
-											</CardBody>
-										</Card>
-									</motion.div>
-								)}
-
-								{/* Rules */}
-								<Card className="border border-primary/10">
-									<CardHeader className="border-primary/10 border-b">
-										<div className="flex items-center gap-2">
-											<h2 className="font-cinzel font-semibold text-xl md:text-2xl">
-												Rules
-											</h2>
-											<Tooltip content="The competition's rules and rulesets if applicable">
-												<span className="cursor-help text-foreground/70 transition-colors hover:text-foreground/90">
-													<Info size={18} aria-hidden="true" />
-												</span>
-											</Tooltip>
-										</div>
-									</CardHeader>
-									<CardBody className="p-6">
-										<RulesAndRulesetsForm />
-									</CardBody>
-								</Card>
-
-								{/* Participation Details */}
-								<Card className="border border-primary/10">
-									<CardBody className="p-6">
-										<div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-											<h2 className="font-cinzel font-semibold text-xl md:text-2xl">
-												Participation Details
-											</h2>
-											<div className="flex items-center gap-2">
-												<Controller
-													name="useEnrollments"
-													render={({ field }) => (
-														<Switch
-															{...field}
-															isSelected={field.value}
-															isDisabled={isSubmitting}
-															aria-label="Toggle enrollment mode"
-														>
-															Using Enrollments
-														</Switch>
-													)}
-												/>
+						<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+							{/* Competition Type Selection */}
+							<Card>
+								<CardHeader className="px-6 py-4">
+									<h2 className="font-bold text-xl">Choose Competition Type</h2>
+								</CardHeader>
+								<CardBody className="px-6 py-4">
+									<Controller
+										name="competitionType"
+										control={formMethods.control}
+										render={({ field }) => (
+											<div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+												{[
+													{
+														value: "wager",
+														title: "Wager",
+														icon: "🎯",
+														description: "Simple head-to-head competition with direct wagering",
+													},
+													{
+														value: "tournament",
+														title: "Tournament",
+														icon: "🏆",
+														description: "Elimination-style brackets with multiple rounds",
+													},
+													{
+														value: "league",
+														title: "League",
+														icon: "🥇",
+														description: "Round-robin format with point-based scoring",
+													},
+												].map(({ value, title, icon, description }) => (
+													<Card
+														key={value}
+														isPressable
+														onPress={() => field.onChange(value)}
+														className={`relative border-2 transition-all duration-200 hover:scale-[1.02] ${
+															field.value === value
+																? "border-primary bg-primary/5 shadow-lg"
+																: "border-default-200 hover:border-primary/30"
+														}`}
+													>
+														<CardBody className="space-y-4 p-6 text-center">
+															<div className="text-4xl">{icon}</div>
+															<div>
+																<h3 className="mb-2 font-bold text-lg">{title}</h3>
+																<p className="text-default-600 text-sm">{description}</p>
+															</div>
+														</CardBody>
+													</Card>
+												))}
 											</div>
-										</div>
-										<motion.div
-											initial={false}
-											animate={{ opacity: 1, height: "auto" }}
-											transition={{ duration: 0.3 }}
-										>
-											{useEnrollments ? (
-												<EnrollmentInformationForm />
-											) : (
-												<MembersAndDuesForm />
-											)}
-										</motion.div>
-									</CardBody>
-								</Card>
-							</motion.div>
+										)}
+									/>
+								</CardBody>
+							</Card>
+
+							{/* Basic Information */}
+							<Card>
+								<CardHeader className="px-6 py-4">
+									<h2 className="font-bold text-xl">Competition Details</h2>
+								</CardHeader>
+								<CardBody className="space-y-6 px-6 py-4">
+									<BasicInformationForm ref={basicInformationFormRef} />
+								</CardBody>
+							</Card>
+
+							{/* Competition-specific Settings */}
+							{competitionType === "league" && (
+								<motion.div
+									initial={{ opacity: 0, height: 0 }}
+									animate={{ opacity: 1, height: "auto" }}
+									exit={{ opacity: 0, height: 0 }}
+									transition={{ duration: 0.3 }}
+								>
+									<Card>
+										<CardHeader className="px-6 py-4">
+											<h2 className="font-bold text-xl">League Settings</h2>
+										</CardHeader>
+										<CardBody className="space-y-6 px-6 py-4">
+											<LeagueInformationForm />
+										</CardBody>
+									</Card>
+								</motion.div>
+							)}
+
+							{competitionType === "tournament" && (
+								<motion.div
+									initial={{ opacity: 0, height: 0 }}
+									animate={{ opacity: 1, height: "auto" }}
+									exit={{ opacity: 0, height: 0 }}
+									transition={{ duration: 0.3 }}
+								>
+									<Card>
+										<CardHeader className="px-6 py-4">
+											<h2 className="font-bold text-xl">Tournament Settings</h2>
+										</CardHeader>
+										<CardBody className="space-y-6 px-6 py-4">
+											<TournamentInformationForm />
+										</CardBody>
+									</Card>
+								</motion.div>
+							)}
+
+							{/* Rules */}
+							<Card>
+								<CardHeader className="px-6 py-4">
+									<div className="flex items-center gap-2">
+										<h2 className="font-bold text-xl">Rules & Guidelines</h2>
+										<Tooltip content="Set competition rules and select rulesets">
+											<Info size={16} className="cursor-help opacity-60" />
+										</Tooltip>
+									</div>
+								</CardHeader>
+								<CardBody className="space-y-6 px-6 py-4">
+									<RulesAndRulesetsForm />
+								</CardBody>
+							</Card>
+
+							{/* Participation Mode Selection */}
+							<Card>
+								<CardHeader className="px-6 py-4">
+									<h2 className="font-bold text-xl">How will participants join?</h2>
+								</CardHeader>
+								<CardBody className="px-6 py-4">
+									<Controller
+										name="useEnrollments"
+										render={({ field }) => (
+											<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+												<Card
+													isPressable
+													onPress={() => field.onChange(true)}
+													className={`border-2 transition-all duration-200 ${
+														field.value
+															? "border-primary bg-primary/5 shadow-lg"
+															: "border-default-200 hover:border-primary/30"
+													}`}
+												>
+													<CardBody className="space-y-3 p-6">
+														<div className="flex items-center gap-3">
+															<div className="text-2xl">📝</div>
+															<div>
+																<h3 className="font-bold text-lg">Open Enrollments</h3>
+																<p className="text-default-600 text-sm">
+																	Recommended for most competitions
+																</p>
+															</div>
+														</div>
+														<ul className="space-y-1 text-default-600 text-sm">
+															<li>• Anyone can sign up and pay entry fees</li>
+															<li>• Set registration deadlines</li>
+															<li>• Configure min/max participants</li>
+															<li>• Perfect for public competitions</li>
+														</ul>
+													</CardBody>
+												</Card>
+
+												<Card
+													isPressable
+													onPress={() => field.onChange(false)}
+													className={`border-2 transition-all duration-200 ${
+														!field.value
+															? "border-primary bg-primary/5 shadow-lg"
+															: "border-default-200 hover:border-primary/30"
+													}`}
+												>
+													<CardBody className="space-y-3 p-6">
+														<div className="flex items-center gap-3">
+															<div className="text-2xl">👥</div>
+															<div>
+																<h3 className="font-bold text-lg">Direct Participation</h3>
+																<p className="text-default-600 text-sm">
+																	For private/invited competitions
+																</p>
+															</div>
+														</div>
+														<ul className="space-y-1 text-default-600 text-sm">
+															<li>• Manually add specific participants</li>
+															<li>• Pre-collect funds from participants</li>
+															<li>• Immediate competition start</li>
+															<li>• Great for friend groups</li>
+														</ul>
+													</CardBody>
+												</Card>
+											</div>
+										)}
+									/>
+								</CardBody>
+							</Card>
+
+							{/* Participation Configuration */}
+							<Card>
+								<CardHeader className="px-6 py-4">
+									<h2 className="font-bold text-xl">
+										{useEnrollments ? "Enrollment Settings" : "Participant Setup"}
+									</h2>
+								</CardHeader>
+								<CardBody className="space-y-6 px-6 py-4">
+									<motion.div
+										initial={false}
+										animate={{ opacity: 1, height: "auto" }}
+										transition={{ duration: 0.3 }}
+									>
+										{useEnrollments ? <EnrollmentInformationForm /> : <MembersAndDuesForm />}
+									</motion.div>
+								</CardBody>
+							</Card>
 
 							{/* Submit Button */}
-							<div className="flex">
+							<div className="flex justify-end gap-4 pt-4">
 								<Button
 									type="submit"
-									href={`/compete/create?category=${category}`}
 									color="primary"
 									variant="shadow"
-									className="ml-auto"
-									endContent={
-										<motion.div
-											initial={{ rotate: 0 }}
-											whileHover={{ rotate: 90 }}
-											transition={{ duration: 0.2 }}
-										>
-											<Plus />
-										</motion.div>
-									}
+									size="lg"
+									isLoading={isSubmitting}
+									startContent={!isSubmitting && <Plus size={18} />}
+									className="min-w-[200px]"
 								>
-									Create Competition
+									{isSubmitting
+										? "Creating..."
+										: `Create ${competitionType.charAt(0).toUpperCase() + competitionType.slice(1)}`}
 								</Button>
 							</div>
 						</form>
 					</FormProvider>
 				</div>
-			</div>
+			</motion.div>
 		</CategoryProvider>
 	);
 };

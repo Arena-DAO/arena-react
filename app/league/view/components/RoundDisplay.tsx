@@ -28,10 +28,7 @@ import {
 	useArenaLeagueModuleExtensionMutation,
 	useArenaLeagueModuleQueryExtensionQuery,
 } from "~/codegen/ArenaLeagueModule.react-query";
-import type {
-	MatchResult,
-	RoundResponse,
-} from "~/codegen/ArenaLeagueModule.types";
+import type { MatchResult, RoundResponse } from "~/codegen/ArenaLeagueModule.types";
 import { useCategoryContext } from "~/contexts/CategoryContext";
 import { LeagueResultValues } from "~/helpers/ArenaHelpers";
 import { getCompetitionQueryKey } from "~/helpers/CompetitionHelpers";
@@ -46,21 +43,14 @@ interface RoundDisplayProps {
 	escrow?: string | null;
 }
 
-const RoundDisplay = ({
-	moduleAddr,
-	leagueId,
-	roundNumber,
-	escrow,
-}: RoundDisplayProps) => {
+const RoundDisplay = ({ moduleAddr, leagueId, roundNumber, escrow }: RoundDisplayProps) => {
 	const queryClient = useQueryClient();
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { address, getSigningCosmWasmClient } = useChain(env.CHAIN);
 	const category = useCategoryContext();
 	const { data } = useArenaLeagueModuleQueryExtensionQuery({
-		client:
-			cosmWasmClient &&
-			new ArenaLeagueModuleQueryClient(cosmWasmClient, moduleAddr),
+		client: cosmWasmClient && new ArenaLeagueModuleQueryClient(cosmWasmClient, moduleAddr),
 		args: {
 			msg: { round: { league_id: leagueId, round_number: roundNumber } },
 		},
@@ -77,10 +67,7 @@ const RoundDisplay = ({
 	if (!data) return null;
 
 	const parsedData = data as unknown as RoundResponse;
-	const handleSelectionChange = (
-		match_number: string,
-		e: React.ChangeEvent<HTMLSelectElement>,
-	) => {
+	const handleSelectionChange = (match_number: string, e: React.ChangeEvent<HTMLSelectElement>) => {
 		const { value } = e.target;
 
 		if (!value) {
@@ -104,7 +91,7 @@ const RoundDisplay = ({
 			const leagueModuleClient = new ArenaLeagueModuleClient(
 				cosmWasmClient,
 				address,
-				env.ARENA_LEAGUE_MODULE_ADDRESS,
+				env.ARENA_LEAGUE_MODULE_ADDRESS
 			);
 
 			await roundMutation.mutateAsync(
@@ -131,22 +118,17 @@ const RoundDisplay = ({
 						});
 
 						queryClient.setQueryData<string | undefined>(
-							arenaLeagueModuleQueryKeys.queryExtension(
-								env.ARENA_LEAGUE_MODULE_ADDRESS,
-								{
-									msg: {
-										round: { league_id: leagueId, round_number: roundNumber },
-									},
+							arenaLeagueModuleQueryKeys.queryExtension(env.ARENA_LEAGUE_MODULE_ADDRESS, {
+								msg: {
+									round: { league_id: leagueId, round_number: roundNumber },
 								},
-							),
+							}),
 							(old) => {
 								if (old) {
 									const parsedData = data as unknown as RoundResponse;
 
 									for (const change of changeMap) {
-										const foundData = parsedData.matches.find(
-											(x) => x.match_number === change[0],
-										);
+										const foundData = parsedData.matches.find((x) => x.match_number === change[0]);
 										if (foundData) {
 											foundData.result = change[1];
 										}
@@ -156,22 +138,20 @@ const RoundDisplay = ({
 								}
 
 								return old;
-							},
+							}
 						);
 
 						await queryClient.invalidateQueries(
-							arenaLeagueModuleQueryKeys.queryExtension(
-								env.ARENA_LEAGUE_MODULE_ADDRESS,
-								{ msg: { leaderboard: { league_id: leagueId } } },
-							),
+							arenaLeagueModuleQueryKeys.queryExtension(env.ARENA_LEAGUE_MODULE_ADDRESS, {
+								msg: { leaderboard: { league_id: leagueId } },
+							})
 						);
 
 						if (category?.category_id) {
 							const ratingAdjustmentsEvent = response.events.find((event) =>
 								event.attributes.find(
-									(attr) =>
-										attr.key === "action" && attr.value === "adjust_ratings",
-								),
+									(attr) => attr.key === "action" && attr.value === "adjust_ratings"
+								)
 							);
 							if (ratingAdjustmentsEvent) {
 								for (const attr of ratingAdjustmentsEvent.attributes) {
@@ -186,7 +166,7 @@ const RoundDisplay = ({
 												},
 											},
 										}),
-										() => attr.value,
+										() => attr.value
 									);
 								}
 							}
@@ -195,10 +175,8 @@ const RoundDisplay = ({
 						if (
 							response.events.find((event) =>
 								event.attributes.find(
-									(attr) =>
-										attr.key === "action" &&
-										attr.value === "process_competition",
-								),
+									(attr) => attr.key === "action" && attr.value === "process_competition"
+								)
 							)
 						) {
 							queryClient.setQueryData<CompetitionResponse | undefined>(
@@ -208,16 +186,14 @@ const RoundDisplay = ({
 										return { ...old, status: "inactive" };
 									}
 									return old;
-								},
+								}
 							);
 
 							if (escrow) {
 								await queryClient.invalidateQueries(
-									arenaEscrowQueryKeys.dumpState(escrow, { addr: address }),
+									arenaEscrowQueryKeys.dumpState(escrow, { addr: address })
 								);
-								await queryClient.invalidateQueries(
-									arenaEscrowQueryKeys.balances(escrow),
-								);
+								await queryClient.invalidateQueries(arenaEscrowQueryKeys.balances(escrow));
 							}
 
 							addToast({
@@ -226,7 +202,7 @@ const RoundDisplay = ({
 							});
 						}
 					},
-				},
+				}
 			);
 		} catch (e) {
 			console.error(e);

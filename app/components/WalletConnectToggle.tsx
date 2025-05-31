@@ -161,12 +161,7 @@ export default function WalletConnectToggle() {
 				<Dropdown placement="bottom-end">
 					<DropdownTrigger>
 						<Button variant="light" isIconOnly>
-							<Profile
-								address={walletAddress}
-								justAvatar
-								isRatingDisabled
-								isPopoverDisabled
-							/>
+							<Profile address={walletAddress} justAvatar isRatingDisabled isPopoverDisabled />
 						</Button>
 					</DropdownTrigger>
 					<DropdownMenu

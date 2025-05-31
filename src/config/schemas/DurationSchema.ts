@@ -1,8 +1,4 @@
-import {
-	type ZonedDateTime,
-	getLocalTimeZone,
-	now,
-} from "@internationalized/date";
+import { type ZonedDateTime, getLocalTimeZone, now } from "@internationalized/date";
 import { z } from "zod";
 
 export const DurationUnits = [
@@ -89,14 +85,14 @@ export const getCurrentDateTime = (): ZonedDateTime => {
 
 export const calculateExpirationDateTime = (
 	duration: Duration,
-	fromDate: ZonedDateTime = getCurrentDateTime(),
+	fromDate: ZonedDateTime = getCurrentDateTime()
 ) => {
 	return duration.addToDateTime(fromDate);
 };
 
 export const calculateStartDateTime = (
 	duration: Duration,
-	fromDate: ZonedDateTime = getCurrentDateTime(),
+	fromDate: ZonedDateTime = getCurrentDateTime()
 ) => {
 	return duration.subtractFromDateTime(fromDate);
 };

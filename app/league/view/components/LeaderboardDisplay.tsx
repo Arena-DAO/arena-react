@@ -32,10 +32,7 @@ const LeaderboardDisplay = ({ league, ...props }: LeaderboardDisplayProps) => {
 	const { data } = useArenaLeagueModuleQueryExtensionQuery({
 		client:
 			cosmWasmClient &&
-			new ArenaLeagueModuleQueryClient(
-				cosmWasmClient,
-				env.ARENA_LEAGUE_MODULE_ADDRESS,
-			),
+			new ArenaLeagueModuleQueryClient(cosmWasmClient, env.ARENA_LEAGUE_MODULE_ADDRESS),
 		args: { msg: { leaderboard: { league_id: league.id } } },
 		options: { enabled: !!cosmWasmClient },
 	});
@@ -52,8 +49,7 @@ const LeaderboardDisplay = ({ league, ...props }: LeaderboardDisplayProps) => {
 			<CardBody className="space-y-4">
 				<div className="flex justify-between">
 					<div>
-						Matches Played: {league.extension.processed_matches}/
-						{league.extension.matches}
+						Matches Played: {league.extension.processed_matches}/{league.extension.matches}
 					</div>
 					<div>Teams: {league.extension.teams}</div>
 				</div>
@@ -69,10 +65,7 @@ const LeaderboardDisplay = ({ league, ...props }: LeaderboardDisplayProps) => {
 						<TableColumn>Matches Played</TableColumn>
 						<TableColumn>Points</TableColumn>
 					</TableHeader>
-					<TableBody
-						items={parsedData}
-						emptyContent="No matches have been played yet..."
-					>
+					<TableBody items={parsedData} emptyContent="No matches have been played yet...">
 						{(x) => (
 							<TableRow key={x.member}>
 								<TableCell>

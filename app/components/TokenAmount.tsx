@@ -11,21 +11,10 @@ interface TokenAmountProps {
 	className?: string;
 }
 
-const TokenAmount = ({
-	amount,
-	denomOrAddress,
-	isNative = false,
-	className,
-}: TokenAmountProps) => {
-	denomOrAddress = isNative
-		? denomOrAddress
-		: denomOrAddress.replace("cw20:", "");
+const TokenAmount = ({ amount, denomOrAddress, isNative = false, className }: TokenAmountProps) => {
+	denomOrAddress = isNative ? denomOrAddress : denomOrAddress.replace("cw20:", "");
 
-	const {
-		data: token,
-		isLoading,
-		isError,
-	} = useToken(denomOrAddress, isNative);
+	const { data: token, isLoading, isError } = useToken(denomOrAddress, isNative);
 
 	if (isError) {
 		return <div className={className}>{amount.toString()}</div>;
@@ -38,7 +27,7 @@ const TokenAmount = ({
 	}
 	const displayAmount = getDisplayToken(
 		{ denom: denomOrAddress, amount: amount.toString() },
-		token,
+		token
 	);
 
 	return <div className={className}>{displayAmount.amount}</div>;

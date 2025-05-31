@@ -27,9 +27,7 @@ interface RulesetsSelectionProps {
 	category_id: string;
 }
 
-const RulesetsSelection: React.FC<RulesetsSelectionProps> = ({
-	category_id,
-}) => {
+const RulesetsSelection: React.FC<RulesetsSelectionProps> = ({ category_id }) => {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { control } = useFormContext<CreateCompetitionFormValues>();
@@ -42,10 +40,7 @@ const RulesetsSelection: React.FC<RulesetsSelectionProps> = ({
 		if (!cosmWasmClient) {
 			throw Error("Could not get CosmWasm client");
 		}
-		const client = new ArenaCoreQueryClient(
-			cosmWasmClient,
-			env.ARENA_CORE_ADDRESS,
-		);
+		const client = new ArenaCoreQueryClient(cosmWasmClient, env.ARENA_CORE_ADDRESS);
 
 		const data = await client.queryExtension({
 			msg: {
@@ -83,7 +78,7 @@ const RulesetsSelection: React.FC<RulesetsSelectionProps> = ({
 
 	const rulesets = useMemo(
 		() => query.data?.pages.flatMap((page) => page.items ?? []) ?? [],
-		[query.data],
+		[query.data]
 	);
 
 	return (
@@ -97,10 +92,7 @@ const RulesetsSelection: React.FC<RulesetsSelectionProps> = ({
 				bottomContent={
 					query.hasNextPage && (
 						<div className="flex justify-center">
-							<Button
-								isLoading={query.isFetchingNextPage}
-								onPress={() => query.fetchNextPage()}
-							>
+							<Button isLoading={query.isFetchingNextPage} onPress={() => query.fetchNextPage()}>
 								Load More
 							</Button>
 						</div>

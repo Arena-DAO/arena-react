@@ -1,17 +1,10 @@
 "use client";
 
 import ViewCompetition from "@/components/competition/view/ViewCompetition";
+import DistributionDisplay from "@/components/competition/view/components/DistributionDisplay";
 import { useChain } from "@cosmos-kit/react";
-import {
-	Card,
-	CardBody,
-	CardFooter,
-	CardHeader,
-	Input,
-	Spinner,
-	Tab,
-	Tabs,
-} from "@heroui/react";
+import { Card, CardBody, CardFooter, CardHeader, Input, Spinner, Tab, Tabs } from "@heroui/react";
+import { Share2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { ArenaLeagueModuleQueryClient } from "~/codegen/ArenaLeagueModule.client";
 import { useArenaLeagueModuleCompetitionQuery } from "~/codegen/ArenaLeagueModule.react-query";
@@ -20,8 +13,6 @@ import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import LeaderboardDisplay from "./components/LeaderboardDisplay";
 import RoundsDisplay from "./components/RoundsDisplay";
-import { Share2 } from "lucide-react";
-import DistributionDisplay from "@/components/competition/view/components/DistributionDisplay";
 
 const ViewLeague = () => {
 	const env = useEnv();
@@ -33,10 +24,7 @@ const ViewLeague = () => {
 	const { data, isLoading } = useArenaLeagueModuleCompetitionQuery({
 		client:
 			cosmWasmClient &&
-			new ArenaLeagueModuleQueryClient(
-				cosmWasmClient,
-				env.ARENA_LEAGUE_MODULE_ADDRESS,
-			),
+			new ArenaLeagueModuleQueryClient(cosmWasmClient, env.ARENA_LEAGUE_MODULE_ADDRESS),
 		args: {
 			competitionId: competitionId || "",
 		},
@@ -46,9 +34,7 @@ const ViewLeague = () => {
 	});
 
 	if (!competitionId) {
-		return (
-			<h1 className="title text-center text-5xl">League id not provided...</h1>
-		);
+		return <h1 className="title text-center text-5xl">League id not provided...</h1>;
 	}
 	if (isLoading) {
 		return (
@@ -68,18 +54,10 @@ const ViewLeague = () => {
 						competitionType="league"
 					>
 						<Tabs aria-label="League Info" color="primary">
-							<Tab
-								key="leaderboard"
-								title="Leaderboard"
-								className="text-xs md:text-lg"
-							>
+							<Tab key="leaderboard" title="Leaderboard" className="text-xs md:text-lg">
 								<LeaderboardDisplay league={data} />
 							</Tab>
-							<Tab
-								key="basic"
-								title="Configuration"
-								className="text-xs md:text-lg"
-							>
+							<Tab key="basic" title="Configuration" className="text-xs md:text-lg">
 								<Card>
 									<CardHeader>
 										<div className="flex items-center gap-2">
@@ -89,12 +67,9 @@ const ViewLeague = () => {
 									</CardHeader>
 									<CardBody className="space-y-4">
 										<p>
-											How the league's funds will be distributed after all
-											matches are processed.
+											How the league's funds will be distributed after all matches are processed.
 										</p>
-										<DistributionDisplay
-											distribution={data.extension.distribution}
-										/>
+										<DistributionDisplay distribution={data.extension.distribution} />
 									</CardBody>
 									<CardFooter className="grid grid-cols-12 gap-4">
 										<Input
@@ -122,10 +97,7 @@ const ViewLeague = () => {
 								</Card>
 							</Tab>
 							<Tab key="rounds" title="Rounds" className="text-xs md:text-lg">
-								<RoundsDisplay
-									moduleAddr={env.ARENA_LEAGUE_MODULE_ADDRESS}
-									league={data}
-								/>
+								<RoundsDisplay moduleAddr={env.ARENA_LEAGUE_MODULE_ADDRESS} league={data} />
 							</Tab>
 						</Tabs>
 					</ViewCompetition>

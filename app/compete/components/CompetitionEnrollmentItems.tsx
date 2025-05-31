@@ -52,28 +52,21 @@ function CompetitionSection<T extends Competition>({
 			</div>
 			<div className="grid grid-cols-1 justify-items-center gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 				{competitions.map((competition) => (
-					<CompetitionCard
-						key={competition.id.toString()}
-						competition={competition}
-					/>
+					<CompetitionCard key={competition.id.toString()} competition={competition} />
 				))}
 			</div>
 		</section>
 	);
 }
 
-export default function CompetitionsView({
-	category,
-}: { category: CategoryLeaf }) {
+export default function CompetitionsView({ category }: { category: CategoryLeaf }) {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const queryClient = useQueryClient();
 
 	// Always fetch core data first
 	const coreQuery = useArenaCoreQueryExtensionQuery({
-		client:
-			cosmWasmClient &&
-			new ArenaCoreQueryClient(cosmWasmClient, env.ARENA_CORE_ADDRESS),
+		client: cosmWasmClient && new ArenaCoreQueryClient(cosmWasmClient, env.ARENA_CORE_ADDRESS),
 		args: {
 			msg: {
 				competitions: {
@@ -99,22 +92,20 @@ export default function CompetitionsView({
 		// Process leagues
 		for (const league of parsedData.leagues) {
 			queryClient.setQueryData(
-				arenaLeagueModuleQueryKeys.competition(
-					env.ARENA_LEAGUE_MODULE_ADDRESS,
-					{ competitionId: league.id },
-				),
-				league,
+				arenaLeagueModuleQueryKeys.competition(env.ARENA_LEAGUE_MODULE_ADDRESS, {
+					competitionId: league.id,
+				}),
+				league
 			);
 		}
 
 		// Process tournaments
 		for (const tournament of parsedData.tournaments) {
 			queryClient.setQueryData(
-				arenaTournamentModuleQueryKeys.competition(
-					env.ARENA_TOURNAMENT_MODULE_ADDRESS,
-					{ competitionId: tournament.id },
-				),
-				tournament,
+				arenaTournamentModuleQueryKeys.competition(env.ARENA_TOURNAMENT_MODULE_ADDRESS, {
+					competitionId: tournament.id,
+				}),
+				tournament
 			);
 		}
 
@@ -124,18 +115,17 @@ export default function CompetitionsView({
 				arenaWagerModuleQueryKeys.competition(env.ARENA_WAGER_MODULE_ADDRESS, {
 					competitionId: wager.id,
 				}),
-				wager,
+				wager
 			);
 		}
 
 		// Process enrollments
 		for (const enrollment of parsedData.enrollments) {
 			queryClient.setQueryData(
-				arenaCompetitionEnrollmentQueryKeys.enrollment(
-					env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
-					{ enrollmentId: enrollment.id },
-				),
-				enrollment,
+				arenaCompetitionEnrollmentQueryKeys.enrollment(env.ARENA_COMPETITION_ENROLLMENT_ADDRESS, {
+					enrollmentId: enrollment.id,
+				}),
+				enrollment
 			);
 		}
 
@@ -144,15 +134,13 @@ export default function CompetitionsView({
 
 	// All infinite queries are always initialized, but only enabled when conditions are met
 	const leaguesQuery = useInfiniteQuery({
-		queryKey: arenaLeagueModuleQueryKeys.competitions(
-			env.ARENA_LEAGUE_MODULE_ADDRESS,
-		),
+		queryKey: arenaLeagueModuleQueryKeys.competitions(env.ARENA_LEAGUE_MODULE_ADDRESS),
 		queryFn: async ({ pageParam }) => {
 			if (!cosmWasmClient) return { items: [], nextCursor: undefined };
 
 			const client = new ArenaLeagueModuleQueryClient(
 				cosmWasmClient,
-				env.ARENA_LEAGUE_MODULE_ADDRESS,
+				env.ARENA_LEAGUE_MODULE_ADDRESS
 			);
 			const data = await client.competitions({
 				startAfter: pageParam,
@@ -161,20 +149,16 @@ export default function CompetitionsView({
 
 			for (const league of data) {
 				queryClient.setQueryData(
-					arenaLeagueModuleQueryKeys.competition(
-						env.ARENA_LEAGUE_MODULE_ADDRESS,
-						{ competitionId: league.id },
-					),
-					league,
+					arenaLeagueModuleQueryKeys.competition(env.ARENA_LEAGUE_MODULE_ADDRESS, {
+						competitionId: league.id,
+					}),
+					league
 				);
 			}
 
 			return {
 				items: data,
-				nextCursor:
-					data.length === env.PAGINATION_LIMIT
-						? data[data.length - 1]?.id
-						: undefined,
+				nextCursor: data.length === env.PAGINATION_LIMIT ? data[data.length - 1]?.id : undefined,
 			};
 		},
 		getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -184,8 +168,7 @@ export default function CompetitionsView({
 					pages: [
 						{
 							items: initialData.leagues,
-							nextCursor:
-								initialData.leagues[initialData.leagues.length - 1]?.id,
+							nextCursor: initialData.leagues[initialData.leagues.length - 1]?.id,
 						},
 					],
 					pageParams: [undefined],
@@ -194,15 +177,13 @@ export default function CompetitionsView({
 	});
 
 	const tournamentsQuery = useInfiniteQuery({
-		queryKey: arenaTournamentModuleQueryKeys.competitions(
-			env.ARENA_TOURNAMENT_MODULE_ADDRESS,
-		),
+		queryKey: arenaTournamentModuleQueryKeys.competitions(env.ARENA_TOURNAMENT_MODULE_ADDRESS),
 		queryFn: async ({ pageParam }) => {
 			if (!cosmWasmClient) return { items: [], nextCursor: undefined };
 
 			const client = new ArenaTournamentModuleQueryClient(
 				cosmWasmClient,
-				env.ARENA_TOURNAMENT_MODULE_ADDRESS,
+				env.ARENA_TOURNAMENT_MODULE_ADDRESS
 			);
 			const data = await client.competitions({
 				startAfter: pageParam,
@@ -211,20 +192,16 @@ export default function CompetitionsView({
 
 			for (const tournament of data) {
 				queryClient.setQueryData(
-					arenaTournamentModuleQueryKeys.competition(
-						env.ARENA_TOURNAMENT_MODULE_ADDRESS,
-						{ competitionId: tournament.id },
-					),
-					tournament,
+					arenaTournamentModuleQueryKeys.competition(env.ARENA_TOURNAMENT_MODULE_ADDRESS, {
+						competitionId: tournament.id,
+					}),
+					tournament
 				);
 			}
 
 			return {
 				items: data,
-				nextCursor:
-					data.length === env.PAGINATION_LIMIT
-						? data[data.length - 1]?.id
-						: undefined,
+				nextCursor: data.length === env.PAGINATION_LIMIT ? data[data.length - 1]?.id : undefined,
 			};
 		},
 		getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -234,8 +211,7 @@ export default function CompetitionsView({
 					pages: [
 						{
 							items: initialData.tournaments,
-							nextCursor:
-								initialData.tournaments[initialData.tournaments.length - 1]?.id,
+							nextCursor: initialData.tournaments[initialData.tournaments.length - 1]?.id,
 						},
 					],
 					pageParams: [undefined],
@@ -244,15 +220,13 @@ export default function CompetitionsView({
 	});
 
 	const wagersQuery = useInfiniteQuery({
-		queryKey: arenaWagerModuleQueryKeys.competitions(
-			env.ARENA_WAGER_MODULE_ADDRESS,
-		),
+		queryKey: arenaWagerModuleQueryKeys.competitions(env.ARENA_WAGER_MODULE_ADDRESS),
 		queryFn: async ({ pageParam }) => {
 			if (!cosmWasmClient) return { items: [], nextCursor: undefined };
 
 			const client = new ArenaWagerModuleQueryClient(
 				cosmWasmClient,
-				env.ARENA_WAGER_MODULE_ADDRESS,
+				env.ARENA_WAGER_MODULE_ADDRESS
 			);
 			const data = await client.competitions({
 				startAfter: pageParam,
@@ -261,20 +235,16 @@ export default function CompetitionsView({
 
 			for (const wager of data) {
 				queryClient.setQueryData(
-					arenaWagerModuleQueryKeys.competition(
-						env.ARENA_WAGER_MODULE_ADDRESS,
-						{ competitionId: wager.id },
-					),
-					wager,
+					arenaWagerModuleQueryKeys.competition(env.ARENA_WAGER_MODULE_ADDRESS, {
+						competitionId: wager.id,
+					}),
+					wager
 				);
 			}
 
 			return {
 				items: data,
-				nextCursor:
-					data.length === env.PAGINATION_LIMIT
-						? data[data.length - 1]?.id
-						: undefined,
+				nextCursor: data.length === env.PAGINATION_LIMIT ? data[data.length - 1]?.id : undefined,
 			};
 		},
 		getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -294,14 +264,14 @@ export default function CompetitionsView({
 
 	const enrollmentsQuery = useInfiniteQuery({
 		queryKey: arenaCompetitionEnrollmentQueryKeys.enrollments(
-			env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+			env.ARENA_COMPETITION_ENROLLMENT_ADDRESS
 		),
 		queryFn: async ({ pageParam }) => {
 			if (!cosmWasmClient) return { items: [], nextCursor: undefined };
 
 			const client = new ArenaCompetitionEnrollmentQueryClient(
 				cosmWasmClient,
-				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
+				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS
 			);
 
 			const data = await client.enrollments({
@@ -311,20 +281,16 @@ export default function CompetitionsView({
 
 			for (const enrollment of data) {
 				queryClient.setQueryData(
-					arenaCompetitionEnrollmentQueryKeys.enrollment(
-						env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
-						{ enrollmentId: enrollment.id },
-					),
-					enrollment,
+					arenaCompetitionEnrollmentQueryKeys.enrollment(env.ARENA_COMPETITION_ENROLLMENT_ADDRESS, {
+						enrollmentId: enrollment.id,
+					}),
+					enrollment
 				);
 			}
 
 			return {
 				items: data,
-				nextCursor:
-					data.length === env.PAGINATION_LIMIT
-						? data[data.length - 1]?.id
-						: undefined,
+				nextCursor: data.length === env.PAGINATION_LIMIT ? data[data.length - 1]?.id : undefined,
 			};
 		},
 		getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -334,8 +300,7 @@ export default function CompetitionsView({
 					pages: [
 						{
 							items: initialData.enrollments,
-							nextCursor:
-								initialData.enrollments[initialData.enrollments.length - 1]?.id,
+							nextCursor: initialData.enrollments[initialData.enrollments.length - 1]?.id,
 						},
 					],
 					pageParams: [undefined],
@@ -347,18 +312,11 @@ export default function CompetitionsView({
 	const allData = useMemo(
 		() => ({
 			leagues: leaguesQuery.data?.pages.flatMap((page) => page.items) ?? [],
-			tournaments:
-				tournamentsQuery.data?.pages.flatMap((page) => page.items) ?? [],
+			tournaments: tournamentsQuery.data?.pages.flatMap((page) => page.items) ?? [],
 			wagers: wagersQuery.data?.pages.flatMap((page) => page.items) ?? [],
-			enrollments:
-				enrollmentsQuery.data?.pages.flatMap((page) => page.items) ?? [],
+			enrollments: enrollmentsQuery.data?.pages.flatMap((page) => page.items) ?? [],
 		}),
-		[
-			leaguesQuery.data,
-			tournamentsQuery.data,
-			wagersQuery.data,
-			enrollmentsQuery.data,
-		],
+		[leaguesQuery.data, tournamentsQuery.data, wagersQuery.data, enrollmentsQuery.data]
 	);
 
 	// Loading state

@@ -1,19 +1,7 @@
-import {
-	Button,
-	Input,
-	Progress,
-	Radio,
-	RadioGroup,
-	Switch,
-} from "@heroui/react";
+import { Button, Input, Progress, Radio, RadioGroup, Switch } from "@heroui/react";
 import { Minus, Percent, Plus } from "lucide-react";
 import { useMemo } from "react";
-import {
-	Controller,
-	useFieldArray,
-	useFormContext,
-	useWatch,
-} from "react-hook-form";
+import { Controller, useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 import { getNumberWithOrdinal } from "~/helpers/UIHelpers";
 
@@ -38,12 +26,7 @@ const TournamentInformationForm = () => {
 	});
 
 	const totalPercentage = useMemo(() => {
-		return (
-			distribution?.reduce(
-				(sum, item) => sum + (Number(item.percent) || 0),
-				0,
-			) || 0
-		);
+		return distribution?.reduce((sum, item) => sum + (Number(item.percent) || 0), 0) || 0;
 	}, [distribution]);
 
 	return (

@@ -24,6 +24,6 @@ export const useTeamStore = create(
 		{
 			name: "team-storage",
 			storage: createJSONStorage(() => localStorage),
-		},
-	),
+		}
+	)
 );

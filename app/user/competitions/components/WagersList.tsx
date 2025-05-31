@@ -17,18 +17,15 @@ const WagersList: React.FC<WagersListProps> = ({ hostAddress }) => {
 	const { data: cosmWasmClient } = useCosmWasmClient();
 
 	const wagersQuery = useInfiniteQuery({
-		queryKey: arenaWagerModuleQueryKeys.competitions(
-			env.ARENA_WAGER_MODULE_ADDRESS,
-			{
-				filter: { host: hostAddress },
-			},
-		),
+		queryKey: arenaWagerModuleQueryKeys.competitions(env.ARENA_WAGER_MODULE_ADDRESS, {
+			filter: { host: hostAddress },
+		}),
 		queryFn: async ({ pageParam = undefined }) => {
 			if (!cosmWasmClient) throw new Error("Could not get CosmWasm client");
 
 			const client = new ArenaWagerModuleQueryClient(
 				cosmWasmClient,
-				env.ARENA_WAGER_MODULE_ADDRESS,
+				env.ARENA_WAGER_MODULE_ADDRESS
 			);
 
 			return client.competitions({
@@ -38,9 +35,7 @@ const WagersList: React.FC<WagersListProps> = ({ hostAddress }) => {
 			});
 		},
 		getNextPageParam: (lastPage) =>
-			lastPage.length === env.PAGINATION_LIMIT
-				? lastPage[lastPage.length - 1]?.id
-				: undefined,
+			lastPage.length === env.PAGINATION_LIMIT ? lastPage[lastPage.length - 1]?.id : undefined,
 		enabled: !!cosmWasmClient,
 	});
 
@@ -52,9 +47,7 @@ const WagersList: React.FC<WagersListProps> = ({ hostAddress }) => {
 		<div className="gap-4">
 			<div className="grid grid-cols-1 justify-items-center gap-10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 				{wagersQuery.data?.pages.map((page) =>
-					page.map((x) => (
-						<CompetitionCard key={x.id} competition={x} hideHost />
-					)),
+					page.map((x) => <CompetitionCard key={x.id} competition={x} hideHost />)
 				)}
 			</div>
 			{wagersQuery.hasNextPage && (
@@ -65,9 +58,7 @@ const WagersList: React.FC<WagersListProps> = ({ hostAddress }) => {
 					{wagersQuery.isFetchingNextPage ? "Loading more..." : "Load More"}
 				</Button>
 			)}
-			{(wagersQuery.data?.pages[0]?.length ?? 0) === 0 && (
-				<p>No wagers found.</p>
-			)}
+			{(wagersQuery.data?.pages[0]?.length ?? 0) === 0 && <p>No wagers found.</p>}
 		</div>
 	);
 };

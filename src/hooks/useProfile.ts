@@ -36,10 +36,7 @@ type FetchProfileResponse = UserProfile | ErrorResponse;
 /**
  * Fetches a user profile from the PFPK service
  */
-const fetchProfile = async (
-	pfpk_url: string,
-	address: string,
-): Promise<Profile> => {
+const fetchProfile = async (pfpk_url: string, address: string): Promise<Profile> => {
 	if (!pfpk_url || !address) {
 		return { address };
 	}
@@ -51,9 +48,7 @@ const fetchProfile = async (
 		});
 
 		if (!response.ok) {
-			console.warn(
-				`Failed to fetch profile for ${address}: ${response.status}`,
-			);
+			console.warn(`Failed to fetch profile for ${address}: ${response.status}`);
 			return { address };
 		}
 
@@ -67,9 +62,7 @@ const fetchProfile = async (
 		return {
 			address,
 			name: data.name ?? undefined,
-			imageUrl: data.nft?.imageUrl
-				? withIpfsSupport(data.nft.imageUrl)
-				: undefined,
+			imageUrl: data.nft?.imageUrl ? withIpfsSupport(data.nft.imageUrl) : undefined,
 		};
 	} catch (error) {
 		console.error(`Exception fetching profile for ${address}:`, error);
@@ -114,7 +107,7 @@ const isValidDiscordImage = async (imageUrl: string): Promise<boolean> => {
 export const useProfileData = (address: string, isValid = true) => {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
-	const { getCosmWasmClient } = useChain("neutron");
+	const { getCosmWasmClient: getMainnetCosmWasmClient } = useChain("neutron");
 
 	return useQuery({
 		queryKey: ["profile", address, env?.ENV],
@@ -144,15 +137,12 @@ export const useProfileData = (address: string, isValid = true) => {
 					// Check Discord identity first
 					if (env?.ARENA_DISCORD_IDENTITY_ADDRESS) {
 						try {
-							const mainnetClient =
-								env.ENV === "production"
-									? cosmWasmClient
-									: await getCosmWasmClient();
+							const mainnetClient = await getMainnetCosmWasmClient();
 
 							if (mainnetClient) {
 								const identityClient = new ArenaDiscordIdentityQueryClient(
 									mainnetClient,
-									env.ARENA_DISCORD_IDENTITY_ADDRESS,
+									env.ARENA_DISCORD_IDENTITY_ADDRESS
 								);
 
 								const discordProfile = await identityClient.discordProfile({
@@ -166,9 +156,7 @@ export const useProfileData = (address: string, isValid = true) => {
 										? `https://cdn.discordapp.com/avatars/${user_id}/${avatar_hash}.png`
 										: null;
 
-									const isImageValid = imageUrl
-										? await isValidDiscordImage(imageUrl)
-										: false;
+									const isImageValid = imageUrl ? await isValidDiscordImage(imageUrl) : false;
 
 									return {
 										address,
@@ -197,12 +185,8 @@ export const useProfileData = (address: string, isValid = true) => {
 					return {
 						address,
 						name: config.name,
-						imageUrl: config.image_url
-							? withIpfsSupport(config.image_url)
-							: null,
-						link: env?.DAO_DAO_URL
-							? `${env.DAO_DAO_URL}/dao/${address}`
-							: undefined,
+						imageUrl: config.image_url ? withIpfsSupport(config.image_url) : null,
+						link: env?.DAO_DAO_URL ? `${env.DAO_DAO_URL}/dao/${address}` : undefined,
 					};
 				} catch (daoError) {
 					console.error(`Error fetching DAO profile for ${address}:`, daoError);

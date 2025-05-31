@@ -7,11 +7,7 @@ import { Cw20BaseQueryClient } from "~/codegen/Cw20Base.client";
 import { isValidContractAddress } from "./AddressHelpers";
 import { withIpfsSupport } from "./IPFSHelpers";
 
-export function getTokenConversion(
-	coin: Coin,
-	to_denom: string,
-	asset: Asset,
-): Coin {
+export function getTokenConversion(coin: Coin, to_denom: string, asset: Asset): Coin {
 	if (asset.type_asset === "cw20") {
 		if (isValidContractAddress(coin.denom)) {
 			coin.denom = `cw20:${coin.denom}`;
@@ -20,11 +16,9 @@ export function getTokenConversion(
 
 	if (coin.denom === to_denom) return coin;
 	const original_units = asset.denom_units.find(
-		(x) => x.denom.toLowerCase() === coin.denom.toLowerCase(),
+		(x) => x.denom.toLowerCase() === coin.denom.toLowerCase()
 	);
-	const new_units = asset.denom_units.find(
-		(x) => x.denom.toLowerCase() === to_denom.toLowerCase(),
-	);
+	const new_units = asset.denom_units.find((x) => x.denom.toLowerCase() === to_denom.toLowerCase());
 	if (!original_units || !new_units)
 		throw new Error(`Cannot convert token from ${coin.denom} to ${to_denom}`);
 
@@ -52,25 +46,19 @@ export function getBaseToken(coin: Coin, asset: Asset): Coin {
 	return getTokenConversion(coin, asset.base, asset);
 }
 
-function findAssetInAssets(
-	denomOrAddress: string,
-	assets?: Asset[],
-	isCw20 = false,
-) {
+function findAssetInAssets(denomOrAddress: string, assets?: Asset[], isCw20 = false) {
 	if (assets) {
 		if (isCw20) {
 			return assets
 				.filter((x) => x.type_asset === "cw20")
 				.find((asset) =>
 					asset?.denom_units?.find(
-						(denomUnit) => denomUnit?.denom?.toLowerCase() === denomOrAddress,
-					),
+						(denomUnit) => denomUnit?.denom?.toLowerCase() === denomOrAddress
+					)
 				);
 		}
 		return assets.find((asset) =>
-			asset?.denom_units?.find(
-				(denomUnit) => denomUnit?.denom?.toLowerCase() === denomOrAddress,
-			),
+			asset?.denom_units?.find((denomUnit) => denomUnit?.denom?.toLowerCase() === denomOrAddress)
 		);
 	}
 	return undefined;
@@ -80,16 +68,14 @@ export async function getCw20Asset(
 	cosmWasmClient: CosmWasmClient,
 	denomOrAddress: string,
 	assets?: Asset[],
-	prefix?: string,
+	prefix?: string
 ): Promise<Asset> {
 	// Try to find the asset locally
 	const isAddress = isValidContractAddress(denomOrAddress, prefix);
 	const localAsset = findAssetInAssets(
-		isAddress
-			? `cw20:${denomOrAddress.toLowerCase()}`
-			: denomOrAddress.toLowerCase(),
+		isAddress ? `cw20:${denomOrAddress.toLowerCase()}` : denomOrAddress.toLowerCase(),
 		assets,
-		true,
+		true
 	);
 	if (localAsset) {
 		return localAsset;
@@ -100,10 +86,7 @@ export async function getCw20Asset(
 		const client = new Cw20BaseQueryClient(cosmWasmClient, denomOrAddress);
 		const tokenInfo = await client.tokenInfo();
 		const marketingInfo = await client.marketingInfo();
-		const logo =
-			marketingInfo?.logo === "embedded"
-				? await client.downloadLogo()
-				: undefined;
+		const logo = marketingInfo?.logo === "embedded" ? await client.downloadLogo() : undefined;
 		return {
 			description: "A cw20 token with information form the contract",
 			type_asset: "cw20",
@@ -133,7 +116,7 @@ export async function getCw20Asset(
 export async function getNativeAsset(
 	denom: string,
 	rpcUrl: string,
-	assets?: Asset[],
+	assets?: Asset[]
 ): Promise<Asset> {
 	// Try to find the asset locally
 	const localAsset = findAssetInAssets(denom.toLowerCase(), assets);

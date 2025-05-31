@@ -3,7 +3,7 @@ import type React from "react";
 import type { CompetitionType } from "~/codegen/ArenaCompetitionEnrollment.types";
 
 const getCompetitionTypeInfo = (
-	type: CompetitionType,
+	type: CompetitionType
 ): {
 	display: string;
 	color: "primary" | "secondary" | "success" | "warning";
@@ -18,10 +18,7 @@ interface CompetitionTypeDisplayProps extends ChipProps {
 	type: CompetitionType;
 }
 
-const CompetitionTypeDisplay: React.FC<CompetitionTypeDisplayProps> = ({
-	type,
-	...props
-}) => {
+const CompetitionTypeDisplay: React.FC<CompetitionTypeDisplayProps> = ({ type, ...props }) => {
 	const { display, color } = getCompetitionTypeInfo(type);
 
 	return (

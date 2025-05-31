@@ -10,20 +10,9 @@ interface TokenCardProps extends Omit<UserProps, "name"> {
 	amount?: bigint | string;
 }
 
-const TokenInfo = ({
-	denomOrAddress,
-	isNative = false,
-	amount,
-	...props
-}: TokenCardProps) => {
-	denomOrAddress = isNative
-		? denomOrAddress
-		: denomOrAddress.replace("cw20:", "");
-	const {
-		data: token,
-		isLoading,
-		isError,
-	} = useToken(denomOrAddress, isNative);
+const TokenInfo = ({ denomOrAddress, isNative = false, amount, ...props }: TokenCardProps) => {
+	denomOrAddress = isNative ? denomOrAddress : denomOrAddress.replace("cw20:", "");
+	const { data: token, isLoading, isError } = useToken(denomOrAddress, isNative);
 
 	let displayName = token?.symbol || denomOrAddress;
 
@@ -33,7 +22,7 @@ const TokenInfo = ({
 				denom: denomOrAddress,
 				amount: amount.toLocaleString(),
 			},
-			token,
+			token
 		);
 		displayName = `${displayAmount.amount} ${token.symbol}`;
 	}

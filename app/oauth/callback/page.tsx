@@ -50,9 +50,7 @@ export default function DiscordCallback() {
 		<div className="flex min-h-screen items-center justify-center">
 			<Card className="w-full max-w-md">
 				<CardHeader>
-					<h1 className="text-center font-bold text-2xl">
-						Completing Authentication
-					</h1>
+					<h1 className="text-center font-bold text-2xl">Completing Authentication</h1>
 				</CardHeader>
 				<CardBody>
 					<div className="flex justify-center">

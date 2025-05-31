@@ -62,12 +62,10 @@ const PaymentRegistry = () => {
 
 	// Query params & state
 	const searchParams = useSearchParams();
-	const [queryAddress, setQueryAddress] = useState(
-		searchParams.get("addr") || address || "",
-	);
+	const [queryAddress, setQueryAddress] = useState(searchParams.get("addr") || address || "");
 	const [height, setHeight] = useState(searchParams.get("height") || "");
 	const [queryHeight, setQueryHeight] = useState<number | undefined>(
-		searchParams.get("height") ? Number(searchParams.get("height")) : undefined,
+		searchParams.get("height") ? Number(searchParams.get("height")) : undefined
 	);
 
 	// Tabs state
@@ -75,10 +73,8 @@ const PaymentRegistry = () => {
 	const isOwnRegistry = address === queryAddress;
 
 	// Mutations
-	const setDistributionMutation =
-		useArenaPaymentRegistrySetDistributionMutation();
-	const removeDistributionMutation =
-		useArenaPaymentRegistryRemoveDistributionMutation();
+	const setDistributionMutation = useArenaPaymentRegistrySetDistributionMutation();
+	const removeDistributionMutation = useArenaPaymentRegistryRemoveDistributionMutation();
 
 	// Get distribution data
 	const {
@@ -86,18 +82,13 @@ const PaymentRegistry = () => {
 		isLoading,
 		refetch,
 	} = useArenaPaymentRegistryGetDistributionQuery({
-		client:
-			cosmWasmClient &&
-			new ArenaPaymentRegistryQueryClient(cosmWasmClient, contractAddress),
+		client: cosmWasmClient && new ArenaPaymentRegistryQueryClient(cosmWasmClient, contractAddress),
 		args: {
 			addr: queryAddress,
 			height: queryHeight,
 		},
 		options: {
-			enabled:
-				!!queryAddress &&
-				!!cosmWasmClient &&
-				isValidBech32Address(queryAddress),
+			enabled: !!queryAddress && !!cosmWasmClient && isValidBech32Address(queryAddress),
 		},
 	});
 
@@ -134,10 +125,7 @@ const PaymentRegistry = () => {
 	});
 
 	// Calculate total percentage
-	const totalPercentage = percentages.reduce(
-		(acc, x) => acc + Number(x.percentage || 0),
-		0,
-	);
+	const totalPercentage = percentages.reduce((acc, x) => acc + Number(x.percentage || 0), 0);
 
 	// Load existing distribution data into form
 	useEffect(() => {
@@ -148,7 +136,7 @@ const PaymentRegistry = () => {
 					member_percentages: distribution.member_percentages,
 					remainder_addr: distribution.remainder_addr,
 				},
-				{ shouldDirty: false },
+				{ shouldDirty: false }
 			);
 		}
 	}, [distribution, activeTab, isOwnRegistry, setValue]);
@@ -184,12 +172,11 @@ const PaymentRegistry = () => {
 			const paymentRegistryClient = new ArenaPaymentRegistryClient(
 				client,
 				address,
-				contractAddress,
+				contractAddress
 			);
 
 			const distributionData = convertToDistribution(values.distribution);
-			if (!distributionData)
-				throw new Error("Distribution value was undefined");
+			if (!distributionData) throw new Error("Distribution value was undefined");
 
 			await setDistributionMutation.mutateAsync(
 				{
@@ -202,7 +189,7 @@ const PaymentRegistry = () => {
 							arenaPaymentRegistryQueryKeys.getDistribution(contractAddress, {
 								addr: address,
 							}),
-							() => variables.msg.distribution,
+							() => variables.msg.distribution
 						);
 						addToast({
 							color: "success",
@@ -210,7 +197,7 @@ const PaymentRegistry = () => {
 						});
 						setActiveTab("view");
 					},
-				},
+				}
 			);
 		} catch (e) {
 			console.error(e);
@@ -227,7 +214,7 @@ const PaymentRegistry = () => {
 			const paymentRegistryClient = new ArenaPaymentRegistryClient(
 				client,
 				address,
-				contractAddress,
+				contractAddress
 			);
 
 			await removeDistributionMutation.mutateAsync(
@@ -240,7 +227,7 @@ const PaymentRegistry = () => {
 							arenaPaymentRegistryQueryKeys.getDistribution(contractAddress, {
 								addr: address,
 							}),
-							() => null,
+							() => null
 						);
 						reset({
 							distribution: {
@@ -254,7 +241,7 @@ const PaymentRegistry = () => {
 						});
 						setActiveTab("view");
 					},
-				},
+				}
 			);
 		} catch (e) {
 			console.error(e);
@@ -268,9 +255,7 @@ const PaymentRegistry = () => {
 				<Card>
 					<CardBody className="flex flex-col items-center justify-center py-8">
 						<HelpCircle size={36} className="mb-4 text-default-400" />
-						<p className="mb-2 text-center font-medium text-lg">
-							Connect Wallet
-						</p>
+						<p className="mb-2 text-center font-medium text-lg">Connect Wallet</p>
 						<p className="text-center text-default-500">
 							Connect your wallet to view or set up your payment distribution.
 						</p>
@@ -352,9 +337,7 @@ const PaymentRegistry = () => {
 										className="sm:self-end"
 										onPress={handleQuery}
 										isLoading={isLoading}
-										isDisabled={
-											!queryAddress || !isValidBech32Address(queryAddress)
-										}
+										isDisabled={!queryAddress || !isValidBech32Address(queryAddress)}
 									>
 										View Distribution
 									</Button>
@@ -374,13 +357,8 @@ const PaymentRegistry = () => {
 						/* No distribution found */
 						<Card>
 							<CardBody className="py-8 text-center">
-								<HelpCircle
-									size={36}
-									className="mx-auto mb-3 text-default-400"
-								/>
-								<h3 className="mb-2 font-medium text-lg">
-									No Distribution Set
-								</h3>
+								<HelpCircle size={36} className="mx-auto mb-3 text-default-400" />
+								<h3 className="mb-2 font-medium text-lg">No Distribution Set</h3>
 								<p className="mx-auto mb-6 max-w-md text-default-500">
 									{isOwnRegistry
 										? "You haven't set up a payment distribution yet. When you win a competition, all funds will be sent directly to your address with no automatic splitting."
@@ -447,10 +425,7 @@ const PaymentRegistry = () => {
 														<TableCell>
 															<div className="flex items-center gap-3">
 																<div className="w-14 text-right font-medium">
-																	{(
-																		Number.parseFloat(item.percentage) * 100
-																	).toFixed(1)}
-																	%
+																	{(Number.parseFloat(item.percentage) * 100).toFixed(1)}%
 																</div>
 																<div className="max-w-xs flex-1">
 																	<div
@@ -470,8 +445,7 @@ const PaymentRegistry = () => {
 								) : (
 									<div className="rounded-lg border border-dashed bg-default-50 p-4 text-center">
 										<p className="text-default-500">
-											No specific recipients defined. All funds will go to the
-											default recipient.
+											No specific recipients defined. All funds will go to the default recipient.
 										</p>
 									</div>
 								)}
@@ -495,9 +469,7 @@ const PaymentRegistry = () => {
 							</CardHeader>
 							<CardBody>
 								<div className="flex items-center gap-2">
-									{remainderAddr && (
-										<Profile address={remainderAddr} justAvatar />
-									)}
+									{remainderAddr && <Profile address={remainderAddr} justAvatar />}
 									<Controller
 										control={control}
 										name="distribution.remainder_addr"
@@ -508,12 +480,8 @@ const PaymentRegistry = () => {
 												autoFocus
 												isDisabled={isSubmitting}
 												isInvalid={!!errors.distribution?.remainder_addr}
-												errorMessage={
-													errors.distribution?.remainder_addr?.message
-												}
-												startContent={
-													remainderAddr ? null : <Search size={16} />
-												}
+												errorMessage={errors.distribution?.remainder_addr?.message}
+												startContent={remainderAddr ? null : <Search size={16} />}
 												className="flex-1"
 												{...field}
 											/>
@@ -553,10 +521,7 @@ const PaymentRegistry = () => {
 												<div className="flex-1">
 													<div className="mb-1 flex items-center gap-2">
 														{percentages[index]?.addr && (
-															<Profile
-																address={percentages[index]?.addr}
-																justAvatar
-															/>
+															<Profile address={percentages[index]?.addr} justAvatar />
 														)}
 														<Controller
 															control={control}
@@ -567,19 +532,13 @@ const PaymentRegistry = () => {
 																	placeholder="Enter address"
 																	isDisabled={isSubmitting}
 																	isInvalid={
-																		!!errors.distribution?.member_percentages?.[
-																			index
-																		]?.addr
+																		!!errors.distribution?.member_percentages?.[index]?.addr
 																	}
 																	errorMessage={
-																		errors.distribution?.member_percentages?.[
-																			index
-																		]?.addr?.message
+																		errors.distribution?.member_percentages?.[index]?.addr?.message
 																	}
 																	startContent={
-																		percentages[index]?.addr ? null : (
-																			<Search size={16} />
-																		)
+																		percentages[index]?.addr ? null : <Search size={16} />
 																	}
 																	size="sm"
 																	className="flex-1"
@@ -604,14 +563,11 @@ const PaymentRegistry = () => {
 																placeholder="0"
 																isDisabled={isSubmitting}
 																isInvalid={
-																	!!errors.distribution?.member_percentages?.[
-																		index
-																	]?.percentage
+																	!!errors.distribution?.member_percentages?.[index]?.percentage
 																}
 																errorMessage={
-																	errors.distribution?.member_percentages?.[
-																		index
-																	]?.percentage?.message
+																	errors.distribution?.member_percentages?.[index]?.percentage
+																		?.message
 																}
 																endContent={<Percent size={16} />}
 																classNames={{ input: "text-right" }}
@@ -639,8 +595,7 @@ const PaymentRegistry = () => {
 								) : (
 									<div className="rounded-lg border border-dashed p-8 text-center">
 										<p className="text-default-500">
-											No recipients added yet. Add recipients to split your
-											winnings.
+											No recipients added yet. Add recipients to split your winnings.
 										</p>
 									</div>
 								)}
@@ -648,9 +603,7 @@ const PaymentRegistry = () => {
 								{(errors.distribution?.message ||
 									errors.distribution?.member_percentages?.message) && (
 									<div className="mt-2 rounded bg-danger-50 p-2 text-danger text-sm">
-										{errors.distribution?.message && (
-											<p>{errors.distribution.message}</p>
-										)}
+										{errors.distribution?.message && <p>{errors.distribution.message}</p>}
 										{errors.distribution?.member_percentages?.message && (
 											<p>{errors.distribution.member_percentages.message}</p>
 										)}
@@ -709,19 +662,13 @@ const PaymentRegistry = () => {
 									{totalPercentage < 100 ? (
 										<p className="text-sm">
 											Remaining{" "}
-											<span className="font-bold">
-												{(100 - totalPercentage).toFixed(1)}%
-											</span>{" "}
-											will go to the default recipient.
+											<span className="font-bold">{(100 - totalPercentage).toFixed(1)}%</span> will
+											go to the default recipient.
 										</p>
 									) : totalPercentage > 100 ? (
-										<p className="text-sm">
-											Total exceeds 100%. Please adjust your percentages.
-										</p>
+										<p className="text-sm">Total exceeds 100%. Please adjust your percentages.</p>
 									) : (
-										<p className="text-sm">
-											Perfect! 100% of your funds are allocated.
-										</p>
+										<p className="text-sm">Perfect! 100% of your funds are allocated.</p>
 									)}
 								</div>
 							</CardBody>

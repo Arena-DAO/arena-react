@@ -42,10 +42,7 @@ import { useSearchParams } from "next/navigation";
 import { ArenaCompetitionEnrollmentQueryClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import { useArenaCompetitionEnrollmentEnrollmentQuery } from "~/codegen/ArenaCompetitionEnrollment.react-query";
 import { CategoryProvider } from "~/contexts/CategoryContext";
-import {
-	calculateCurrentPool,
-	calculateMinMembers,
-} from "~/helpers/EnrollmentHelpers";
+import { calculateCurrentPool, calculateMinMembers } from "~/helpers/EnrollmentHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import GroupMembersModal from "../../components/competition/GroupMembersModal";
@@ -62,17 +59,16 @@ const EnrollmentView = () => {
 	const enrollmentId = searchParams?.get("enrollmentId");
 	const { address } = useChain(env.CHAIN);
 
-	const { data: enrollment, isLoading } =
-		useArenaCompetitionEnrollmentEnrollmentQuery({
-			client:
-				cosmWasmClient &&
-				new ArenaCompetitionEnrollmentQueryClient(
-					cosmWasmClient,
-					env.ARENA_COMPETITION_ENROLLMENT_ADDRESS,
-				),
-			args: { enrollmentId: enrollmentId || "" },
-			options: { enabled: !!enrollmentId && !!cosmWasmClient },
-		});
+	const { data: enrollment, isLoading } = useArenaCompetitionEnrollmentEnrollmentQuery({
+		client:
+			cosmWasmClient &&
+			new ArenaCompetitionEnrollmentQueryClient(
+				cosmWasmClient,
+				env.ARENA_COMPETITION_ENROLLMENT_ADDRESS
+			),
+		args: { enrollmentId: enrollmentId || "" },
+		options: { enabled: !!enrollmentId && !!cosmWasmClient },
+	});
 
 	if (isLoading)
 		return (
@@ -80,8 +76,7 @@ const EnrollmentView = () => {
 				<Spinner label="Loading enrollment..." />
 			</div>
 		);
-	if (!enrollment)
-		return <div className="text-center text-lg">No enrollment found</div>;
+	if (!enrollment) return <div className="text-center text-lg">No enrollment found</div>;
 
 	const currentMembers = Number(enrollment.current_members);
 	const maxMembers = Number(enrollment.max_members);
@@ -103,9 +98,7 @@ const EnrollmentView = () => {
 			<div className="container mx-auto space-y-8">
 				{/* Header Section */}
 				<div className="space-y-4 text-center">
-					<h1 className="font-bold text-4xl tracking-tight">
-						{enrollment.competition_info.name}
-					</h1>
+					<h1 className="font-bold text-4xl tracking-tight">{enrollment.competition_info.name}</h1>
 					<div className="flex items-center justify-center space-x-2">
 						<Chip color="primary">Enrollment</Chip>
 						<CompetitionTypeDisplay type={enrollment.competition_type} />
@@ -144,13 +137,10 @@ const EnrollmentView = () => {
 							<CardFooter className="flex-col items-stretch gap-3">
 								<GroupMembersModal
 									groupContract={enrollment.competition_info.group_contract}
-									enrollmentId={
-										address === enrollment.host ? enrollment.id : undefined
-									}
+									enrollmentId={address === enrollment.host ? enrollment.id : undefined}
 								/>
 								{!enrollment.has_finalized &&
-									(enrollment.host === address ||
-										enrollment.host === env.ARENA_DAO_ADDRESS) && (
+									(enrollment.host === address || enrollment.host === env.ARENA_DAO_ADDRESS) && (
 										<FinalizeButton
 											enrollmentId={enrollment.id}
 											competitionDate={enrollment.competition_info.date}
@@ -222,9 +212,7 @@ const EnrollmentView = () => {
 							<CardHeader>
 								<div className="flex items-center gap-2">
 									<Info className="text-primary-500" />
-									<h2 className="font-semibold text-xl">
-										About this Competition
-									</h2>
+									<h2 className="font-semibold text-xl">About this Competition</h2>
 								</div>
 							</CardHeader>
 							<CardBody className="space-y-4">
@@ -236,9 +224,7 @@ const EnrollmentView = () => {
 									<div className="flex items-center gap-2 rounded-lg p-3">
 										<Users size={18} className="text-primary-500" />
 										<span className="font-medium">Required Team Size:</span>{" "}
-										<span className="text-default-700">
-											{enrollment.required_team_size}
-										</span>
+										<span className="text-default-700">{enrollment.required_team_size}</span>
 									</div>
 								)}
 
@@ -271,9 +257,7 @@ const EnrollmentView = () => {
 										<div className="space-y-2">
 											<h3 className="font-semibold">Distribution</h3>
 											<DistributionDisplay
-												distribution={
-													enrollment.competition_type.league.distribution
-												}
+												distribution={enrollment.competition_type.league.distribution}
 											/>
 										</div>
 									</div>
@@ -291,9 +275,8 @@ const EnrollmentView = () => {
 											enrollment.competition_type.tournament.elimination_type
 												? "Double Elimination"
 												: `Single Elimination (Play Third Place Match: ${
-														enrollment.competition_type.tournament
-															.elimination_type.single_elimination
-															.play_third_place_match
+														enrollment.competition_type.tournament.elimination_type
+															.single_elimination.play_third_place_match
 															? "Yes"
 															: "No"
 													})`}
@@ -304,9 +287,7 @@ const EnrollmentView = () => {
 												Distribution
 											</h3>
 											<DistributionDisplay
-												distribution={
-													enrollment.competition_type.tournament.distribution
-												}
+												distribution={enrollment.competition_type.tournament.distribution}
 											/>
 										</div>
 									</div>
@@ -324,15 +305,12 @@ const EnrollmentView = () => {
 							context={{ type: "enrollment", enrollmentId: enrollment.id }}
 						>
 							{enrollment.competition_info.additional_layered_fees &&
-								enrollment.competition_info.additional_layered_fees.length >
-									0 && (
+								enrollment.competition_info.additional_layered_fees.length > 0 && (
 									<Card shadow="md">
 										<CardHeader>
 											<div className="flex items-center gap-2">
 												<Percent className="text-primary-500" />
-												<h2 className="font-semibold text-xl">
-													Additional Layered Fees
-												</h2>
+												<h2 className="font-semibold text-xl">Additional Layered Fees</h2>
 											</div>
 										</CardHeader>
 										<CardBody>
@@ -342,19 +320,15 @@ const EnrollmentView = () => {
 													<TableColumn>Percentage</TableColumn>
 												</TableHeader>
 												<TableBody emptyContent="No additional fees">
-													{enrollment.competition_info.additional_layered_fees.map(
-														(x, i) => (
-															// biome-ignore lint/suspicious/noArrayIndexKey: Best option for now
-															<TableRow key={i}>
-																<TableCell>
-																	<Profile address={x.receiver} />
-																</TableCell>
-																<TableCell>
-																	{Number.parseFloat(x.tax) * 100}%
-																</TableCell>
-															</TableRow>
-														),
-													)}
+													{enrollment.competition_info.additional_layered_fees.map((x, i) => (
+														// biome-ignore lint/suspicious/noArrayIndexKey: Best option for now
+														<TableRow key={i}>
+															<TableCell>
+																<Profile address={x.receiver} />
+															</TableCell>
+															<TableCell>{Number.parseFloat(x.tax) * 100}%</TableCell>
+														</TableRow>
+													))}
 												</TableBody>
 											</Table>
 										</CardBody>
@@ -363,17 +337,14 @@ const EnrollmentView = () => {
 						</EscrowSection>
 
 						{/* Rules Section */}
-						{((enrollment.competition_info.rules &&
-							enrollment.competition_info.rules.length > 0) ||
+						{((enrollment.competition_info.rules && enrollment.competition_info.rules.length > 0) ||
 							(enrollment.competition_info.rulesets &&
 								enrollment.competition_info.rulesets.length > 0)) && (
 							<Card shadow="md">
 								<CardHeader>
 									<div className="flex items-center gap-2">
 										<Scroll className="text-primary-500" />
-										<h2 className="font-semibold text-xl">
-											Rules and Rulesets
-										</h2>
+										<h2 className="font-semibold text-xl">Rules and Rulesets</h2>
 									</div>
 								</CardHeader>
 								<CardBody>
@@ -419,15 +390,13 @@ const EnrollmentView = () => {
 								<div className="mt-2 flex justify-between text-sm">
 									<Tooltip content="Minimum required members">
 										<span className="flex items-center">
-											<Users size={14} className="mr-1 text-warning-500" /> Min:{" "}
-											{minMembers}
+											<Users size={14} className="mr-1 text-warning-500" /> Min: {minMembers}
 										</span>
 									</Tooltip>
 									<span className="font-medium">Current: {currentMembers}</span>
 									<Tooltip content="Maximum allowed members">
 										<span className="flex items-center">
-											<Users size={14} className="mr-1 text-success-500" /> Max:{" "}
-											{maxMembers}
+											<Users size={14} className="mr-1 text-success-500" /> Max: {maxMembers}
 										</span>
 									</Tooltip>
 								</div>
@@ -448,16 +417,15 @@ const EnrollmentView = () => {
 							</CardBody>
 							<Divider />
 							<CardFooter className="justify-end gap-2">
-								{enrollment.has_finalized &&
-									enrollment.competition_info.competition_id && (
-										<Button
-											color="primary"
-											as={Link}
-											href={`/${path}/view?competitionId=${enrollment.competition_info.competition_id}`}
-										>
-											View Competition
-										</Button>
-									)}
+								{enrollment.has_finalized && enrollment.competition_info.competition_id && (
+									<Button
+										color="primary"
+										as={Link}
+										href={`/${path}/view?competitionId=${enrollment.competition_info.competition_id}`}
+									>
+										View Competition
+									</Button>
+								)}
 								{!enrollment.has_finalized && (
 									<EnrollmentActionsButton
 										enrollmentId={enrollment.id}

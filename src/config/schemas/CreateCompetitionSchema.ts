@@ -36,9 +36,7 @@ export const EnrollmentInfoSchema = z
 		entryFee: z
 			.object({
 				amount: z.coerce.number().transform((x) => x.toString()),
-				denom: z
-					.string()
-					.min(1, { message: "Entry fee denomination is required" }),
+				denom: z.string().min(1, { message: "Entry fee denomination is required" }),
 			})
 			.optional(),
 		duration_before: DurationSchema,
@@ -53,14 +51,10 @@ export const EnrollmentInfoSchema = z
 			.transform((x) => x?.toString()),
 		useDaoHost: DaoConfigSchema.optional(),
 	})
-	.refine(
-		(data) =>
-			!data.minMembers || Number(data.minMembers) <= Number(data.maxMembers),
-		{
-			message: "Minimum members must be less than or equal to maximum members",
-			path: ["minMembers"],
-		},
-	);
+	.refine((data) => !data.minMembers || Number(data.minMembers) <= Number(data.maxMembers), {
+		message: "Minimum members must be less than or equal to maximum members",
+		path: ["minMembers"],
+	});
 
 const DirectParticipationSchema = z
 	.object({
@@ -78,10 +72,9 @@ const DirectParticipationSchema = z
 			return data.members.length > 0;
 		},
 		{
-			message:
-				"Either non-zero dues with members from dues or non-zero members are required",
+			message: "Either non-zero dues with members from dues or non-zero members are required",
 			path: ["members"],
-		},
+		}
 	);
 
 const BaseCreateCompetitionSchema = z.object({
@@ -103,10 +96,7 @@ const BaseCreateCompetitionSchema = z.object({
 
 const LeagueSchema = z
 	.object({
-		matchWinPoints: z.coerce
-			.number()
-			.int()
-			.min(0, { message: "Win points must be non-negative" }),
+		matchWinPoints: z.coerce.number().int().min(0, { message: "Win points must be non-negative" }),
 		matchDrawPoints: z.coerce
 			.number()
 			.int()
@@ -119,13 +109,12 @@ const LeagueSchema = z
 	})
 	.refine(
 		(data) =>
-			data.matchWinPoints > data.matchDrawPoints &&
-			data.matchDrawPoints > data.matchLosePoints,
+			data.matchWinPoints > data.matchDrawPoints && data.matchDrawPoints > data.matchLosePoints,
 		{
 			message:
 				"Win points should be greater than draw points, which should be greater than lose points",
 			path: ["matchWinPoints"],
-		},
+		}
 	);
 
 const TournamentSchema = z.object({
@@ -152,8 +141,7 @@ const CreateCompetitionSchema = BaseCreateCompetitionSchema.extend({
 	if (!data.useEnrollments && !data.directParticipation) {
 		ctx.addIssue({
 			code: z.ZodIssueCode.custom,
-			message:
-				"Direct participation information is required when not using enrollments",
+			message: "Direct participation information is required when not using enrollments",
 			path: ["directParticipation"],
 		});
 	}

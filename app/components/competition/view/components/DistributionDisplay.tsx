@@ -6,9 +6,7 @@ interface DistributionDisplayProps {
 	distribution: string[];
 }
 
-const DistributionDisplay: React.FC<DistributionDisplayProps> = ({
-	distribution,
-}) => {
+const DistributionDisplay: React.FC<DistributionDisplayProps> = ({ distribution }) => {
 	return (
 		<>
 			{distribution.map((value, index) => {

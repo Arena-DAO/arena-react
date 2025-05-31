@@ -1,33 +1,51 @@
 "use client";
 
-import { Button, DatePicker, Input, Textarea } from "@heroui/react";
+import ImageUpload from "@/components/ImageUpload";
+import type { ImageUploaderRef } from "@/components/ImageUpload";
+import { DatePicker, Input, Textarea } from "@heroui/react";
 import { Select, SelectItem } from "@heroui/react";
 import { getLocalTimeZone, now } from "@internationalized/date";
+import { Image as ImageIcon } from "lucide-react";
+import { forwardRef, useImperativeHandle, useRef } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { DurationUnits } from "~/config/schemas/DurationSchema";
 
-const BasicInformationSection = () => {
+export type BasicInformationFormRef = {
+	uploadBannerImage: () => Promise<string | null>;
+};
+
+const BasicInformationSection = forwardRef<BasicInformationFormRef>((_props, ref) => {
 	const {
 		control,
 		formState: { isSubmitting },
 	} = useFormContext();
+	const bannerImageRef = useRef<ImageUploaderRef>(null);
+
+	useImperativeHandle(ref, () => ({
+		uploadBannerImage: async () => {
+			return bannerImageRef.current?.uploadToS3() ?? null;
+		},
+	}));
 
 	return (
-		<div className="flex flex-col gap-6">
-			<Controller
-				name="banner"
-				control={control}
-				render={({ field, fieldState: { error } }) => (
-					<Input
-						{...field}
-						label="Banner Image URL"
-						placeholder="Enter the URL for your banner image (16:9 recommended)"
-						isDisabled={isSubmitting}
-						isInvalid={!!error}
-						errorMessage={error?.message}
-					/>
-				)}
-			/>
+		<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+			<div className="lg:col-span-2">
+				<Controller
+					name="banner"
+					control={control}
+					render={({ field, fieldState: { error } }) => (
+						<ImageUpload
+							field={field}
+							error={error}
+							label="Banner Image"
+							startContent={<ImageIcon size={16} className="text-default-400" />}
+							ref={bannerImageRef}
+							description="Optional banner image (16:9 ratio recommended)"
+							className="w-full"
+						/>
+					)}
+				/>
+			</div>
 
 			<Controller
 				name="name"
@@ -37,27 +55,12 @@ const BasicInformationSection = () => {
 						{...field}
 						label="Competition Name"
 						placeholder="Enter a unique and memorable name"
+						description="Choose a clear, descriptive name"
 						isRequired
 						isDisabled={isSubmitting}
 						isInvalid={!!error}
 						errorMessage={error?.message}
-					/>
-				)}
-			/>
-
-			<Controller
-				name="description"
-				control={control}
-				render={({ field, fieldState: { error } }) => (
-					<Textarea
-						{...field}
-						label="Description"
-						placeholder="Describe your competition"
-						isDisabled={isSubmitting}
-						isRequired
-						isInvalid={!!error}
-						errorMessage={error?.message}
-						minRows={4}
+						variant="bordered"
 					/>
 				)}
 			/>
@@ -73,13 +76,36 @@ const BasicInformationSection = () => {
 						placeholderValue={now(getLocalTimeZone())}
 						isDisabled={isSubmitting}
 						granularity="minute"
-						label="Date"
+						label="Start Date & Time"
+						description="When the competition begins"
 						isRequired
 						isInvalid={!!error}
 						errorMessage={error?.message}
+						variant="bordered"
 					/>
 				)}
 			/>
+
+			<div className="lg:col-span-2">
+				<Controller
+					name="description"
+					control={control}
+					render={({ field, fieldState: { error } }) => (
+						<Textarea
+							{...field}
+							label="Description"
+							placeholder="Describe your competition rules, objectives, and any special requirements..."
+							description="Provide clear details about what participants can expect"
+							isDisabled={isSubmitting}
+							isRequired
+							isInvalid={!!error}
+							errorMessage={error?.message}
+							minRows={4}
+							variant="bordered"
+						/>
+					)}
+				/>
+			</div>
 
 			<div className="flex flex-row gap-4">
 				<Controller
@@ -90,7 +116,7 @@ const BasicInformationSection = () => {
 							{...field}
 							type="number"
 							label="Duration"
-							description="Duration needed for competition to be fully processed"
+							description="How long the competition runs"
 							isDisabled={isSubmitting}
 							isInvalid={!!error}
 							errorMessage={error?.message}
@@ -98,6 +124,7 @@ const BasicInformationSection = () => {
 							className="flex-1"
 							step="1"
 							min="1"
+							variant="bordered"
 						/>
 					)}
 				/>
@@ -115,67 +142,17 @@ const BasicInformationSection = () => {
 							isRequired
 							className="flex-1"
 							selectedKeys={[field.value]}
+							variant="bordered"
 						>
 							{DurationUnits.map((unit) => (
-								<SelectItem key={unit}>
-									{unit.charAt(0).toUpperCase() + unit.slice(1)}
-								</SelectItem>
+								<SelectItem key={unit}>{unit.charAt(0).toUpperCase() + unit.slice(1)}</SelectItem>
 							))}
 						</Select>
 					)}
 				/>
 			</div>
-			<Controller
-				name="competitionType"
-				control={control}
-				render={({ field }) => (
-					<div className="space-y-2">
-						<div className="block font-medium text-sm">Competition Type</div>
-						<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-							{[
-								{
-									value: "wager",
-									label: "Wager",
-									emoji: "🎲",
-									desc: "Simple competition with wagering",
-								},
-								{
-									value: "league",
-									label: "League",
-									emoji: "🥇",
-									desc: "Round-robin style matches",
-								},
-								{
-									value: "tournament",
-									label: "Tournament",
-									emoji: "🏆",
-									desc: "Elimination brackets",
-								},
-							].map(({ value, label, emoji, desc }) => (
-								<Button
-									key={value}
-									isDisabled={isSubmitting}
-									onPress={() => field.onChange(value)}
-									variant="bordered"
-									className={`flex min-h-40 flex-col items-center rounded-xl border-2 p-6 transition-all ${
-										field.value === value
-											? "border-primary bg-primary/10"
-											: "border-default-200 hover:border-primary/50"
-									}`}
-								>
-									<span className="mb-3 text-4xl">{emoji}</span>
-									<h3 className="font-semibold text-lg">{label}</h3>
-									<p className="mt-1 text-center text-default-500 text-sm">
-										{desc}
-									</p>
-								</Button>
-							))}
-						</div>
-					</div>
-				)}
-			/>
 		</div>
 	);
-};
+});
 
 export default BasicInformationSection;

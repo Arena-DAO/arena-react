@@ -8,8 +8,7 @@ interface TournamentInfoProps {
 
 const TournamentInfo: React.FC<TournamentInfoProps> = ({ tournament }) => {
 	const progress =
-		(Number(tournament.extension.processed_matches) /
-			Number(tournament.extension.total_matches)) *
+		(Number(tournament.extension.processed_matches) / Number(tournament.extension.total_matches)) *
 		100;
 
 	return (
@@ -25,16 +24,14 @@ const TournamentInfo: React.FC<TournamentInfoProps> = ({ tournament }) => {
 				"single_elimination" in tournament.extension.elimination_type && (
 					<div className="text-sm">
 						<span className="font-semibold">Play Third Place Match:</span>{" "}
-						{tournament.extension.elimination_type.single_elimination
-							.play_third_place_match
+						{tournament.extension.elimination_type.single_elimination.play_third_place_match
 							? "Yes"
 							: "No"}
 					</div>
 				)}
 
 			<div className="text-sm">
-				<span className="font-semibold">Matches:</span>{" "}
-				{tournament.extension.processed_matches}/
+				<span className="font-semibold">Matches:</span> {tournament.extension.processed_matches}/
 				{tournament.extension.total_matches}
 			</div>
 

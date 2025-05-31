@@ -105,22 +105,16 @@ const DaoConfigForm = () => {
 					<p className="mb-2 font-medium">DAO Governance System:</p>
 					<ul className="list-disc space-y-1 pl-5 text-foreground/80">
 						<li>
-							Creates a DAO where <strong>all competition members</strong>{" "}
-							participate in voting
+							Creates a DAO where <strong>all competition members</strong> participate in voting
 						</li>
 						<li>
-							Members{" "}
-							<strong>collectively decide on competition outcomes</strong>{" "}
-							through voting
+							Members <strong>collectively decide on competition outcomes</strong> through voting
 						</li>
 						<li>
-							If consensus is not reached by the competition's expiration,
-							members must submit evidence
+							If consensus is not reached by the competition's expiration, members must submit
+							evidence
 						</li>
-						<li>
-							The Arena DAO will review evidence and process disputes when
-							consensus fails
-						</li>
+						<li>The Arena DAO will review evidence and process disputes when consensus fails</li>
 					</ul>
 				</div>
 			</Card>
@@ -131,9 +125,7 @@ const DaoConfigForm = () => {
 
 					<div className="space-y-6">
 						<div>
-							<h4 className="mb-2 font-medium">
-								How long can participants vote?
-							</h4>
+							<h4 className="mb-2 font-medium">How long can participants vote?</h4>
 							<Controller
 								name="enrollmentInfo.useDaoHost.max_voting_period.time"
 								control={control}
@@ -141,9 +133,7 @@ const DaoConfigForm = () => {
 									<Select
 										label="Voting Duration"
 										selectedKeys={[field.value.toString()]}
-										onChange={(e) =>
-											field.onChange(Number.parseInt(e.target.value))
-										}
+										onChange={(e) => field.onChange(Number.parseInt(e.target.value))}
 										isDisabled={isSubmitting}
 										isInvalid={!!error}
 										errorMessage={error?.message}
@@ -151,16 +141,13 @@ const DaoConfigForm = () => {
 										aria-label="Select voting duration"
 									>
 										{VOTING_DURATIONS.map((duration) => (
-											<SelectItem key={duration.value}>
-												{duration.label}
-											</SelectItem>
+											<SelectItem key={duration.value}>{duration.label}</SelectItem>
 										))}
 									</Select>
 								)}
 							/>
 							<p className="mt-2 text-foreground/70 text-sm">
-								This is the maximum time allowed for members to vote on
-								proposals
+								This is the maximum time allowed for members to vote on proposals
 							</p>
 						</div>
 
@@ -175,15 +162,12 @@ const DaoConfigForm = () => {
 									// Helper to determine current type
 									const getCurrentType = () => {
 										if (field.value && "absolute_percentage" in field.value) {
-											const percentage =
-												field.value.absolute_percentage.percentage;
+											const percentage = field.value.absolute_percentage.percentage;
 											if ("majority" in percentage) return "majority";
 											return "custom_percentage";
 										}
-										if (field.value && "threshold_quorum" in field.value)
-											return "threshold_quorum";
-										if (field.value && "absolute_count" in field.value)
-											return "absolute_count";
+										if (field.value && "threshold_quorum" in field.value) return "threshold_quorum";
+										if (field.value && "absolute_count" in field.value) return "absolute_count";
 										return "majority"; // Default
 									};
 
@@ -336,9 +320,7 @@ const DaoConfigForm = () => {
 							"absolute_percentage" in thresholdType &&
 							"percent" in thresholdType.absolute_percentage.percentage && (
 								<Card className="p-4">
-									<h4 className="mb-3 font-medium">
-										Custom Percentage Requirement
-									</h4>
+									<h4 className="mb-3 font-medium">Custom Percentage Requirement</h4>
 									<Controller
 										name="enrollmentInfo.useDaoHost.threshold.absolute_percentage.percentage.percent"
 										control={control}
@@ -411,25 +393,15 @@ const DaoConfigForm = () => {
 						)}
 
 						<Card className="border border-primary/10 bg-primary/5 p-4">
-							<h4 className="mb-2 font-medium">
-								What happens if consensus fails?
-							</h4>
+							<h4 className="mb-2 font-medium">What happens if consensus fails?</h4>
 							<p className="text-foreground/80 text-sm">
-								If members cannot reach a consensus by the competition's
-								expiration date:
+								If members cannot reach a consensus by the competition's expiration date:
 							</p>
 							<ol className="mt-2 list-decimal space-y-1 pl-5 text-foreground/80 text-sm">
-								<li>
-									Members should submit evidence supporting their position
-								</li>
+								<li>Members should submit evidence supporting their position</li>
 								<li>The Arena DAO will review all submitted evidence</li>
-								<li>
-									Arena DAO will make the final decision based on the evidence
-								</li>
-								<li>
-									Funds will be distributed according to the Arena DAO's
-									decision
-								</li>
+								<li>Arena DAO will make the final decision based on the evidence</li>
+								<li>Funds will be distributed according to the Arena DAO's decision</li>
 							</ol>
 						</Card>
 					</div>

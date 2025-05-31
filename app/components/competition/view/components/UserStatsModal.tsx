@@ -36,13 +36,11 @@ const UserStatsModal: React.FC<UserStatsModalProps> = ({
 	userAddress,
 }) => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
-	const env = useEnv();
+	const _env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
 
 	const { data, isLoading } = useArenaWagerModuleHistoricalStatsQuery({
-		client:
-			cosmWasmClient &&
-			new ArenaWagerModuleQueryClient(cosmWasmClient, moduleAddr),
+		client: cosmWasmClient && new ArenaWagerModuleQueryClient(cosmWasmClient, moduleAddr),
 		args: { addr: userAddress, competitionId },
 		options: {
 			enabled: isOpen && !!cosmWasmClient,
@@ -54,13 +52,10 @@ const UserStatsModal: React.FC<UserStatsModalProps> = ({
 	});
 
 	const { rows, columns } = useMemo(() => {
-		if (!data || data.length === 0)
-			return { rows: [], columns: [{ key: "name", label: "STAT" }] };
+		if (!data || data.length === 0) return { rows: [], columns: [{ key: "name", label: "STAT" }] };
 
 		const allStats = data.flat();
-		const uniqueStatNames = Array.from(
-			new Set(allStats.map((stat) => stat.name)),
-		);
+		const uniqueStatNames = Array.from(new Set(allStats.map((stat) => stat.name)));
 
 		const columns = [
 			{ key: "blockHeight", label: "BLOCK HEIGHT" },
@@ -87,19 +82,13 @@ const UserStatsModal: React.FC<UserStatsModalProps> = ({
 		return { rows, columns };
 	}, [data]);
 
-	// biome-ignore lint/style/noNonNullAssertion: correct
 	const targetRef = React.useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
 	return (
 		<>
 			<Button onPress={onOpen}>View Historical Stats</Button>
-			<Modal
-				ref={targetRef}
-				isOpen={isOpen}
-				onOpenChange={onOpenChange}
-				size="2xl"
-			>
+			<Modal ref={targetRef} isOpen={isOpen} onOpenChange={onOpenChange} size="2xl">
 				<ModalContent>
 					<ModalHeader {...moveProps}>
 						<h2 className="font-semibold text-xl">User Historical Stats</h2>
@@ -107,9 +96,7 @@ const UserStatsModal: React.FC<UserStatsModalProps> = ({
 					<ModalBody>
 						<Table aria-label="User Historical Stats Table" removeWrapper>
 							<TableHeader columns={columns}>
-								{(column) => (
-									<TableColumn key={column.key}>{column.label}</TableColumn>
-								)}
+								{(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
 							</TableHeader>
 							<TableBody
 								items={rows}

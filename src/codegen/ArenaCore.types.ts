@@ -72,14 +72,14 @@ export interface NewCompetitionCategory {
 export interface ModuleInstantiateInfo {
   admin?: Admin | null;
   code_id: number;
-  funds: Coin[];
+  funds?: Coin[] | null;
   label: string;
   msg: Binary;
+  salt?: Binary | null;
 }
 export interface Coin {
   amount: Uint128;
   denom: string;
-  [k: string]: unknown;
 }
 export interface NewRuleset {
   category_id: Uint128;
@@ -374,7 +374,6 @@ export interface BlockInfo {
   chain_id: string;
   height: number;
   time: Timestamp;
-  [k: string]: unknown;
 }
 export interface Ruleset {
   category_id: Uint128;

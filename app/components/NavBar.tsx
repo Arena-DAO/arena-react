@@ -118,11 +118,7 @@ const AppNavbar = () => {
 				</div>
 				<h3 className="font-extrabold">Arena DAO</h3>
 				{env.ENV === "development" && (
-					<Chip
-						className="ml-1 hidden bg-background-100 lg:flex"
-						size="sm"
-						radius="sm"
-					>
+					<Chip className="ml-1 hidden bg-background-100 lg:flex" size="sm" radius="sm">
 						testnet
 					</Chip>
 				)}
@@ -189,13 +185,7 @@ const AppNavbar = () => {
 								underline="none"
 								isExternal={item.isExternal}
 							>
-								<span
-									className={
-										isActive(item.href)
-											? "text-glow text-primary"
-											: "text-white/70"
-									}
-								>
+								<span className={isActive(item.href) ? "text-glow text-primary" : "text-white/70"}>
 									{item.icon}
 								</span>
 								<span className="font-medium">{item.text}</span>

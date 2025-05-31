@@ -9,10 +9,7 @@ interface AdditionalLayeredFeeProps {
 	remove: (index: number) => void;
 }
 
-const AdditionalLayeredFeeItem: React.FC<AdditionalLayeredFeeProps> = ({
-	index,
-	remove,
-}) => {
+const AdditionalLayeredFeeItem: React.FC<AdditionalLayeredFeeProps> = ({ index, remove }) => {
 	const { control } = useFormContext<CreateCompetitionFormValues>();
 	const addr = useWatch({
 		control,

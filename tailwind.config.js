@@ -17,17 +17,17 @@ const sharedColors = {
 		foreground: "#000000",
 	},
 	secondary: {
-		50: "#F2E6FF",
-		100: "#E0C2FF",
-		200: "#CC99FF",
-		300: "#B870FF",
-		400: "#A347FF",
-		500: "#8F1FFF",
-		600: "#7A00E6",
-		700: "#6600CC",
-		800: "#5200B3",
-		900: "#3D0099",
-		DEFAULT: "#8F1FFF",
+		50: "#ECFEFF",
+		100: "#CFFAFE",
+		200: "#A5F3FC",
+		300: "#67E8F9",
+		400: "#22D3EE",
+		500: "#06B6D4",
+		600: "#0891B2",
+		700: "#0E7490",
+		800: "#155E75",
+		900: "#164E63",
+		DEFAULT: "#0891B2",
 		foreground: "#FFFFFF",
 	},
 	success: {
@@ -109,8 +109,7 @@ export default {
 			backgroundImage: {
 				"grid-pattern":
 					"linear-gradient(to right, rgba(255, 158, 51, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 158, 51, 0.05) 1px, transparent 1px)",
-				"dot-pattern":
-					"radial-gradient(rgba(255, 158, 51, 0.1) 1px, transparent 1px)",
+				"dot-pattern": "radial-gradient(rgba(255, 158, 51, 0.1) 1px, transparent 1px)",
 				"gradient-shine":
 					"linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)",
 			},
@@ -228,8 +227,7 @@ export default {
 					},
 					variants: {
 						gaming: {
-							background:
-								"linear-gradient(135deg, var(--primary-500), var(--primary-600))",
+							background: "linear-gradient(135deg, var(--primary-500), var(--primary-600))",
 							color: "#000000",
 							border: "none",
 							shadow: "0 4px 12px rgba(255, 158, 51, 0.3)",

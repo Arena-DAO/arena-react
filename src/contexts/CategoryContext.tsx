@@ -13,9 +13,7 @@ export const CategoryProvider: React.FC<{
 	<CategoryContext.Provider value={value}>{children}</CategoryContext.Provider>
 );
 
-export const useCategoryContext = (
-	initialValue?: string | null,
-): CategoryLeaf | undefined => {
+export const useCategoryContext = (initialValue?: string | null): CategoryLeaf | undefined => {
 	const contextValue = useContext(CategoryContext);
 	const identifier = contextValue ?? initialValue;
 	return useCategory(identifier);

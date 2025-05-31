@@ -25,10 +25,7 @@ interface CompetitionModuleSectionProps {
 	path: string;
 }
 
-const CompetitionModuleSection = ({
-	module_addr,
-	path,
-}: CompetitionModuleSectionProps) => {
+const CompetitionModuleSection = ({ module_addr, path }: CompetitionModuleSectionProps) => {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
 
@@ -48,24 +45,20 @@ const CompetitionModuleSection = ({
 
 		return {
 			items: data,
-			nextCursor:
-				data.length === env.PAGINATION_LIMIT
-					? data[data.length - 1]?.id
-					: undefined,
+			nextCursor: data.length === env.PAGINATION_LIMIT ? data[data.length - 1]?.id : undefined,
 		};
 	};
 
-	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-		useInfiniteQuery({
-			queryKey: arenaWagerModuleQueryKeys.competitions(module_addr, {
-				filter: {
-					competition_status: { status: { jailed: { activation_height: 0 } } },
-				},
-			}),
-			queryFn: fetchCompetitions,
-			getNextPageParam: (lastPage) => lastPage.nextCursor,
-			enabled: !!cosmWasmClient,
-		});
+	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery({
+		queryKey: arenaWagerModuleQueryKeys.competitions(module_addr, {
+			filter: {
+				competition_status: { status: { jailed: { activation_height: 0 } } },
+			},
+		}),
+		queryFn: fetchCompetitions,
+		getNextPageParam: (lastPage) => lastPage.nextCursor,
+		enabled: !!cosmWasmClient,
+	});
 
 	const allCompetitions = data?.pages.flatMap((page) => page.items) ?? [];
 
@@ -76,10 +69,7 @@ const CompetitionModuleSection = ({
 			bottomContent={
 				hasNextPage && (
 					<div className="flex w-full justify-center">
-						<Button
-							isLoading={isFetchingNextPage}
-							onPress={() => fetchNextPage()}
-						>
+						<Button isLoading={isFetchingNextPage} onPress={() => fetchNextPage()}>
 							Load More
 						</Button>
 					</div>

@@ -26,7 +26,7 @@ function setData(
 	categoryMap: Map<string, CategoryItem>,
 	daoItem: CategoryItem,
 	key: Keys,
-	parent_url?: string,
+	parent_url?: string
 ) {
 	if ("children" in daoItem) {
 		for (const child of daoItem.children) {
@@ -38,10 +38,7 @@ function setData(
 
 	if (key === "id") {
 		if ("category_id" in daoItem)
-			categoryMap.set(
-				daoItem?.category_id ? daoItem.category_id.toString() : "",
-				daoItem,
-			);
+			categoryMap.set(daoItem?.category_id ? daoItem.category_id.toString() : "", daoItem);
 	} else categoryMap.set(daoItem.url, daoItem);
 }
 

@@ -19,14 +19,7 @@ import {
 	TableRow,
 	Tooltip,
 } from "@heroui/react";
-import {
-	AlertTriangle,
-	Calendar,
-	Info,
-	Percent,
-	Scroll,
-	User,
-} from "lucide-react";
+import { AlertTriangle, Calendar, Info, Percent, Scroll, User } from "lucide-react";
 import type { PropsWithChildren } from "react";
 import { BsYinYang } from "react-icons/bs";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
@@ -63,14 +56,9 @@ const ViewCompetition = ({
 		<div className="space-y-8">
 			{/* Competition Header */}
 			<div className="space-y-4 text-center">
-				<h1 className="font-bold text-4xl tracking-tight">
-					{competition.name}
-				</h1>
+				<h1 className="font-bold text-4xl tracking-tight">{competition.name}</h1>
 				<div className="flex justify-center">
-					<CompetitionStatusDisplay
-						status={competition.status}
-						isExpired={isExpired}
-					/>
+					<CompetitionStatusDisplay status={competition.status} isExpired={isExpired} />
 				</div>
 			</div>
 
@@ -100,10 +88,7 @@ const ViewCompetition = ({
 						<CardBody>
 							<div className="flex items-center justify-between">
 								<Profile address={competition.host} />
-								{isValidContractAddress(
-									competition.host,
-									env.BECH32_PREFIX,
-								) && (
+								{isValidContractAddress(competition.host, env.BECH32_PREFIX) && (
 									<Tooltip content="View through DAO DAO">
 										<Button
 											isIconOnly
@@ -156,16 +141,12 @@ const ViewCompetition = ({
 						<CardHeader>
 							<div className="flex items-center gap-2">
 								<Info className="text-primary-500" />
-								<h2 className="font-semibold text-xl">
-									About this Competition
-								</h2>
+								<h2 className="font-semibold text-xl">About this Competition</h2>
 							</div>
 						</CardHeader>
 						<CardBody className="space-y-4">
 							<CategoryDisplay />
-							<p className="text-default-700 leading-relaxed">
-								{competition.description}
-							</p>
+							<p className="text-default-700 leading-relaxed">{competition.description}</p>
 						</CardBody>
 						{competition.status !== "inactive" && (
 							<CardFooter>
@@ -192,9 +173,7 @@ const ViewCompetition = ({
 								<CardHeader>
 									<div className="flex items-center gap-2">
 										<Percent className="text-primary-500" />
-										<h2 className="font-semibold text-xl">
-											Additional Layered Fees
-										</h2>
+										<h2 className="font-semibold text-xl">Additional Layered Fees</h2>
 									</div>
 								</CardHeader>
 								<CardBody>
@@ -210,9 +189,7 @@ const ViewCompetition = ({
 													<TableCell>
 														<Profile address={x.receiver} />
 													</TableCell>
-													<TableCell>
-														{Number.parseFloat(x.tax) * 100}%
-													</TableCell>
+													<TableCell>{Number.parseFloat(x.tax) * 100}%</TableCell>
 												</TableRow>
 											))}
 										</TableBody>
@@ -233,28 +210,19 @@ const ViewCompetition = ({
 								</div>
 							</CardHeader>
 							<CardBody>
-								<RulesDisplay
-									rules={competition.rules}
-									rulesets={competition.rulesets}
-								/>
+								<RulesDisplay rules={competition.rules} rulesets={competition.rulesets} />
 							</CardBody>
 						</Card>
 					)}
 
 					{/* Evidence Section */}
 					{competition.status !== "pending" && (
-						<EvidenceSection
-							moduleAddr={moduleAddr}
-							competitionId={competition.id}
-						/>
+						<EvidenceSection moduleAddr={moduleAddr} competitionId={competition.id} />
 					)}
 
 					{/* Results Section */}
 					{competition.status === "inactive" && (
-						<ResultSection
-							moduleAddr={moduleAddr}
-							competitionId={competition.id}
-						/>
+						<ResultSection moduleAddr={moduleAddr} competitionId={competition.id} />
 					)}
 				</div>
 			</div>

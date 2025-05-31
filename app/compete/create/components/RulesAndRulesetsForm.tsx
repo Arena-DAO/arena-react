@@ -13,11 +13,7 @@ interface RuleInputProps {
 	isSubmitting: boolean;
 }
 
-const RuleInput: React.FC<RuleInputProps> = ({
-	index,
-	removeRule,
-	isSubmitting,
-}) => {
+const RuleInput: React.FC<RuleInputProps> = ({ index, removeRule, isSubmitting }) => {
 	return (
 		<Controller
 			name={`rules.${index}.rule`}
@@ -71,7 +67,7 @@ const RulesAndRulesetsForm = () => {
 		(index: number) => {
 			removeRule(index);
 		},
-		[removeRule],
+		[removeRule]
 	);
 
 	return (
@@ -79,11 +75,7 @@ const RulesAndRulesetsForm = () => {
 			<div>
 				{ruleFields.map((field, index) => (
 					<div key={field.id} className="mt-4 flex items-center space-x-2">
-						<RuleInput
-							index={index}
-							removeRule={handleRemoveRule}
-							isSubmitting={isSubmitting}
-						/>
+						<RuleInput index={index} removeRule={handleRemoveRule} isSubmitting={isSubmitting} />
 					</div>
 				))}
 				<Button

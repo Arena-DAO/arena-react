@@ -36,11 +36,7 @@ interface EntryFeeFormProps {
 	onClose: () => void;
 }
 
-const EntryFeeForm: React.FC<EntryFeeFormProps> = ({
-	isOpen,
-	onOpenChange,
-	onClose,
-}) => {
+const EntryFeeForm: React.FC<EntryFeeFormProps> = ({ isOpen, onOpenChange, onClose }) => {
 	const env = useEnv();
 	const { assets } = useChain(env.CHAIN);
 	const { setValue: setParentValue } = useFormContext();
@@ -62,7 +58,6 @@ const EntryFeeForm: React.FC<EntryFeeFormProps> = ({
 	const watchDenom = watch("denom");
 	const [debouncedDenom, setDebouncedDenom] = useState(watchDenom);
 	const [isLoading, setIsLoading] = useState(false);
-	// biome-ignore lint/style/noNonNullAssertion: correct
 	const targetRef = React.useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 
@@ -75,15 +70,8 @@ const EntryFeeForm: React.FC<EntryFeeFormProps> = ({
 	const onSubmit = async (values: EntryFeeFormValues) => {
 		setIsLoading(true);
 		try {
-			const native = await getNativeAsset(
-				values.denom,
-				env.RPC_URL,
-				assets?.assets,
-			);
-			const token = getBaseToken(
-				{ denom: values.denom, amount: values.amount.toString() },
-				native,
-			);
+			const native = await getNativeAsset(values.denom, env.RPC_URL, assets?.assets);
+			const token = getBaseToken({ denom: values.denom, amount: values.amount.toString() }, native);
 
 			setParentValue("enrollmentInfo.entryFee", {
 				denom: token.denom,
@@ -142,16 +130,11 @@ const EntryFeeForm: React.FC<EntryFeeFormProps> = ({
 					{isLoading ? (
 						<Spinner size="sm" />
 					) : (
-						debouncedDenom && (
-							<TokenInfo denomOrAddress={debouncedDenom} isNative={true} />
-						)
+						debouncedDenom && <TokenInfo denomOrAddress={debouncedDenom} isNative={true} />
 					)}
 				</ModalBody>
 				<ModalFooter>
-					<Button
-						onPress={() => handleSubmit(onSubmit)()}
-						isLoading={isSubmitting || isLoading}
-					>
+					<Button onPress={() => handleSubmit(onSubmit)()} isLoading={isSubmitting || isLoading}>
 						Set Fee
 					</Button>
 				</ModalFooter>

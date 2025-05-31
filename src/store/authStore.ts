@@ -15,6 +15,6 @@ export const useAuthStore = create(
 		{
 			name: "auth-storage",
 			storage: createJSONStorage(() => localStorage),
-		},
-	),
+		}
+	)
 );

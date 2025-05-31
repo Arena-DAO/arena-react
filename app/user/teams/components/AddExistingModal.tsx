@@ -18,10 +18,7 @@ import { useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { DaoDaoCoreClient } from "~/codegen/DaoDaoCore.client";
-import {
-	AddressFormSchema,
-	type AddressFormValues,
-} from "~/config/schemas/AddressSchema";
+import { AddressFormSchema, type AddressFormValues } from "~/config/schemas/AddressSchema";
 import { useEnv } from "~/hooks/useEnv";
 import { useTeamStore } from "~/store/teamStore";
 
@@ -39,7 +36,6 @@ const AddExistingTeamModal: React.FC<AddExistingTeamModalProps> = ({
 	const env = useEnv();
 	const { getSigningCosmWasmClient, address } = useChain(env.CHAIN);
 	const teamStore = useTeamStore();
-	// biome-ignore lint/style/noNonNullAssertion: correct
 	const targetRef = useRef(null!);
 	const { moveProps } = useDraggable({ targetRef, isDisabled: !isOpen });
 	const {
@@ -62,11 +58,7 @@ const AddExistingTeamModal: React.FC<AddExistingTeamModalProps> = ({
 
 			const signingCosmWasmClient = await getSigningCosmWasmClient();
 
-			const client = new DaoDaoCoreClient(
-				signingCosmWasmClient,
-				address,
-				data.address,
-			);
+			const client = new DaoDaoCoreClient(signingCosmWasmClient, address, data.address);
 
 			const votingPower = await client.votingPowerAtHeight({ address });
 
@@ -108,12 +100,7 @@ const AddExistingTeamModal: React.FC<AddExistingTeamModalProps> = ({
 						/>
 					</ModalBody>
 					<ModalFooter>
-						<Button
-							color="primary"
-							type="submit"
-							isLoading={isLoading}
-							isDisabled={isSubmitting}
-						>
+						<Button color="primary" type="submit" isLoading={isLoading} isDisabled={isSubmitting}>
 							Add
 						</Button>
 					</ModalFooter>

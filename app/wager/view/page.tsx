@@ -18,10 +18,7 @@ const ViewWager = () => {
 	const { data, isLoading } = useArenaWagerModuleCompetitionQuery({
 		client:
 			cosmWasmClient &&
-			new ArenaWagerModuleQueryClient(
-				cosmWasmClient,
-				env.ARENA_WAGER_MODULE_ADDRESS,
-			),
+			new ArenaWagerModuleQueryClient(cosmWasmClient, env.ARENA_WAGER_MODULE_ADDRESS),
 		args: {
 			competitionId: competitionId || "",
 		},
@@ -31,9 +28,7 @@ const ViewWager = () => {
 	});
 
 	if (!competitionId) {
-		return (
-			<h1 className="title text-center text-5xl">Wager id not provided...</h1>
-		);
+		return <h1 className="title text-center text-5xl">Wager id not provided...</h1>;
 	}
 	if (isLoading) {
 		return (

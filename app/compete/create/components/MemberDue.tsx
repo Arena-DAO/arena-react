@@ -20,12 +20,7 @@ import {
 	Tooltip,
 } from "@heroui/react";
 import { MoreVertical, Plus, Trash } from "lucide-react";
-import {
-	Controller,
-	useFieldArray,
-	useFormContext,
-	useWatch,
-} from "react-hook-form";
+import { Controller, useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 
 // Type for token balance item
@@ -115,9 +110,7 @@ const MemberDue = ({ dueIndex, onEdit, onRemove }: MemberDueProps) => {
 						<Controller
 							name={`directParticipation.dues.${dueIndex}.addr`}
 							control={control}
-							render={({ field }) => (
-								<ProfileInput field={field} menuTrigger="manual" />
-							)}
+							render={({ field }) => <ProfileInput field={field} menuTrigger="manual" />}
 						/>
 
 						<Dropdown placement="bottom-end">
@@ -127,11 +120,7 @@ const MemberDue = ({ dueIndex, onEdit, onRemove }: MemberDueProps) => {
 								</Button>
 							</DropdownTrigger>
 							<DropdownMenu aria-label="Due actions">
-								<DropdownItem
-									key="add"
-									startContent={<Plus size={16} />}
-									onPress={onEdit}
-								>
+								<DropdownItem key="add" startContent={<Plus size={16} />} onPress={onEdit}>
 									Add Token
 								</DropdownItem>
 								<DropdownItem
@@ -151,24 +140,15 @@ const MemberDue = ({ dueIndex, onEdit, onRemove }: MemberDueProps) => {
 				<div className="p-0">
 					{allBalances.length > 0 ? (
 						<ScrollShadow className="max-h-64">
-							<Table
-								removeWrapper
-								aria-label="Token Balances"
-								isStriped
-								className="min-w-full"
-							>
+							<Table removeWrapper aria-label="Token Balances" isStriped className="min-w-full">
 								<TableHeader>
 									<TableColumn className="w-1/2 pl-6">Token</TableColumn>
 									<TableColumn className="text-right">Amount</TableColumn>
-									<TableColumn className="w-24 pr-6 text-right">
-										Actions
-									</TableColumn>
+									<TableColumn className="w-24 pr-6 text-right">Actions</TableColumn>
 								</TableHeader>
 								<TableBody>
 									{allBalances.map((token) => (
-										<TableRow
-											key={`${token.type}-${token.index}-${token.denom}`}
-										>
+										<TableRow key={`${token.type}-${token.index}-${token.denom}`}>
 											<TableCell className="pl-6">
 												<div className="flex items-center gap-2">
 													<TokenInfo
@@ -179,9 +159,7 @@ const MemberDue = ({ dueIndex, onEdit, onRemove }: MemberDueProps) => {
 														size="sm"
 														variant="flat"
 														className="h-6"
-														color={
-															token.type === "native" ? "primary" : "secondary"
-														}
+														color={token.type === "native" ? "primary" : "secondary"}
 													>
 														{token.type === "native" ? "Native" : "CW20"}
 													</Chip>
@@ -200,9 +178,7 @@ const MemberDue = ({ dueIndex, onEdit, onRemove }: MemberDueProps) => {
 														isIconOnly
 														size="sm"
 														variant="faded"
-														onPress={() =>
-															handleRemoveToken(token.type, token.index)
-														}
+														onPress={() => handleRemoveToken(token.type, token.index)}
 													>
 														<Trash size={16} />
 													</Button>

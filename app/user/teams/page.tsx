@@ -74,11 +74,7 @@ const TeamsPage = () => {
 
 				const signingCosmWasmClient = await getSigningCosmWasmClient();
 
-				const client = new DaoDaoCoreClient(
-					signingCosmWasmClient,
-					address,
-					teamAddress,
-				);
+				const client = new DaoDaoCoreClient(signingCosmWasmClient, address, teamAddress);
 
 				const votingPower = await client.votingPowerAtHeight({ address });
 
@@ -161,9 +157,7 @@ const TeamsPage = () => {
 								aria-label="Action buttons"
 								selectedKeys={selectedOption}
 								selectionMode="single"
-								onSelectionChange={(keys) =>
-									setSelectedOption(getStringSet(keys))
-								}
+								onSelectionChange={(keys) => setSelectedOption(getStringSet(keys))}
 							>
 								<DropdownItem key="create" description={descriptionsMap.create}>
 									{labelsMap.create}
@@ -176,11 +170,7 @@ const TeamsPage = () => {
 					</ButtonGroup>
 				</CardFooter>
 			</Card>
-			<AddExistingTeamModal
-				onClose={onClose}
-				isOpen={isOpen}
-				onOpenChange={onOpenChange}
-			/>
+			<AddExistingTeamModal onClose={onClose} isOpen={isOpen} onOpenChange={onOpenChange} />
 		</div>
 	);
 };

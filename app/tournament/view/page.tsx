@@ -35,10 +35,7 @@ const ViewWager = () => {
 	const { data, isLoading } = useArenaTournamentModuleCompetitionQuery({
 		client:
 			cosmWasmClient &&
-			new ArenaTournamentModuleQueryClient(
-				cosmWasmClient,
-				env.ARENA_TOURNAMENT_MODULE_ADDRESS,
-			),
+			new ArenaTournamentModuleQueryClient(cosmWasmClient, env.ARENA_TOURNAMENT_MODULE_ADDRESS),
 		args: {
 			competitionId: competitionId || "",
 		},
@@ -48,11 +45,7 @@ const ViewWager = () => {
 	});
 
 	if (!competitionId) {
-		return (
-			<h1 className="title text-center text-5xl">
-				Tournament id not provided...
-			</h1>
-		);
+		return <h1 className="title text-center text-5xl">Tournament id not provided...</h1>;
 	}
 	if (isLoading) {
 		return (
@@ -79,20 +72,13 @@ const ViewWager = () => {
 										<Bracket
 											tournamentId={data.id}
 											escrow={data.escrow}
-											isHost={
-												address === data.host ||
-												address === env.ARENA_DAO_ADDRESS
-											}
+											isHost={address === data.host || address === env.ARENA_DAO_ADDRESS}
 											showBracket={showBracket}
 										/>
 									</ReactFlowProvider>
 								</div>
 							</Tab>
-							<Tab
-								key="basic"
-								title="Configuration"
-								className="text-xs md:text-lg"
-							>
+							<Tab key="basic" title="Configuration" className="text-xs md:text-lg">
 								<Card>
 									<CardHeader>
 										<div className="flex items-center gap-2">
@@ -102,12 +88,10 @@ const ViewWager = () => {
 									</CardHeader>
 									<CardBody className="space-y-4">
 										<p>
-											How the tournament's funds will be distributed after all
-											matches are processed.
+											How the tournament's funds will be distributed after all matches are
+											processed.
 										</p>
-										<DistributionDisplay
-											distribution={data.extension.distribution}
-										/>
+										<DistributionDisplay distribution={data.extension.distribution} />
 									</CardBody>
 									<CardFooter className="grid grid-cols-12 gap-4">
 										<Input
@@ -121,8 +105,7 @@ const ViewWager = () => {
 											readOnly
 										/>
 										{typeof data.extension.elimination_type === "object" &&
-											"single_elimination" in
-												data.extension.elimination_type && (
+											"single_elimination" in data.extension.elimination_type && (
 												<Switch
 													className="col-span-12 md:col-span-4"
 													aria-label="Play 3rd place match"
