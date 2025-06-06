@@ -53,6 +53,18 @@ const createTeamSchema = z.object({
 		.min(10, "Description must be at least 10 characters")
 		.max(1000, "Description must be less than 1000 characters")
 		.trim(),
+	daoName: z
+		.string()
+		.min(3, "DAO name must be at least 3 characters")
+		.max(50, "DAO name must be less than 50 characters")
+		.trim()
+		.optional(),
+	daoDescription: z
+		.string()
+		.min(10, "DAO description must be at least 10 characters")
+		.max(500, "DAO description must be less than 500 characters")
+		.trim()
+		.optional(),
 	teamImageUrl: z.string().optional(),
 	votingPeriodDays: z
 		.number()
@@ -131,6 +143,8 @@ const CreateTeamEnrollment = () => {
 		defaultValues: {
 			title: "",
 			description: "",
+			daoName: "",
+			daoDescription: "",
 			teamImageUrl: "",
 			votingPeriodDays: 1, // Default to 1 day
 			approvalThreshold: 100, // Default to 100% (unanimous)
@@ -173,6 +187,8 @@ const CreateTeamEnrollment = () => {
 				},
 				image_url: teamImageUrl,
 				cw4_group_code_id: env.CODE_ID_CW4_GROUP,
+				dao_name: data.daoName || undefined,
+				dao_description: data.daoDescription || undefined,
 			};
 
 			const client = await getSigningCosmWasmClient();
@@ -346,11 +362,34 @@ const CreateTeamEnrollment = () => {
 										description="Provide details about your team's objectives, required skills, experience level, and expectations for new members"
 										errorMessage={errors.description?.message}
 										isInvalid={!!errors.description}
-										minRows={6}
-										maxRows={10}
+										minRows={4}
+										maxRows={6}
 										isRequired
 										variant="bordered"
 									/>
+
+									<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+										<Input
+											{...register("daoName")}
+											label="DAO Name"
+											placeholder="e.g., Apex Legends Champions"
+											description="Optional: Name for your team's governance DAO"
+											errorMessage={errors.daoName?.message}
+											isInvalid={!!errors.daoName}
+											variant="bordered"
+											startContent={<Users size={16} className="text-default-400" />}
+										/>
+
+										<Input
+											{...register("daoDescription")}
+											label="DAO Description"
+											placeholder="e.g., Competitive team focused on tournament play"
+											description="Optional: Brief description of your DAO's purpose"
+											errorMessage={errors.daoDescription?.message}
+											isInvalid={!!errors.daoDescription}
+											variant="bordered"
+										/>
+									</div>
 								</div>
 							</div>
 						</CardBody>

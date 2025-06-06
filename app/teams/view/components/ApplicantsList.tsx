@@ -19,14 +19,27 @@ import {
 	useDisclosure,
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Clock, MessageSquare, UserCheck, UserMinus, UserX } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import { ArenaTeamEnrollmentsClient } from "~/codegen/ArenaTeamEnrollments.client";
-import { useArenaTeamEnrollmentsUpdateApplicantStatusMutation } from "~/codegen/ArenaTeamEnrollments.react-query";
-import type { ApplicantResponse, ApplicantStatus } from "~/codegen/ArenaTeamEnrollments.types";
+import {
+	ArenaTeamEnrollmentsClient,
+	ArenaTeamEnrollmentsQueryClient,
+} from "~/codegen/ArenaTeamEnrollments.client";
+import {
+	arenaTeamEnrollmentsQueryKeys,
+	useArenaTeamEnrollmentsListApplicantsQuery,
+	useArenaTeamEnrollmentsUpdateApplicantStatusMutation,
+} from "~/codegen/ArenaTeamEnrollments.react-query";
+import type {
+	ApplicantResponse,
+	ApplicantStatus,
+	EntryStatus,
+} from "~/codegen/ArenaTeamEnrollments.types";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 
 // Schema for rejection reason
@@ -59,21 +72,36 @@ const APPLICANT_STATUS_CONFIG = {
 };
 
 interface ApplicantsListProps {
-	applicants: ApplicantResponse[];
-	isApplicantsLoading: boolean;
+	status: ApplicantStatus;
 	isCreator: boolean;
 	entryId: number;
+	entryStatus?: EntryStatus;
 }
 
 export const ApplicantsList = ({
-	applicants,
-	isApplicantsLoading,
+	status,
 	isCreator,
 	entryId,
+	entryStatus,
 }: ApplicantsListProps) => {
 	const env = useEnv();
+	const queryClient = useQueryClient();
 	const { address: walletAddress, getSigningCosmWasmClient } = useChain(env.CHAIN);
+	const { data: client } = useCosmWasmClient();
 	const [selectedApplicant, setSelectedApplicant] = useState<ApplicantResponse | null>(null);
+
+	// Query for applicants with the specific status
+	const { data: applicants, isLoading: isApplicantsLoading } =
+		useArenaTeamEnrollmentsListApplicantsQuery({
+			client:
+				client && new ArenaTeamEnrollmentsQueryClient(client, env.ARENA_TEAM_ENROLLMENTS_ADDRESS),
+			args: {
+				entryId,
+				status,
+				limit: 100,
+			},
+			options: { enabled: !!client },
+		});
 	const {
 		isOpen: isRejectModalOpen,
 		onOpen: onRejectModalOpen,
@@ -130,6 +158,20 @@ export const ApplicantsList = ({
 				msg: { entryId, applicant, status: "approved" },
 			});
 
+			// Invalidate all applicant queries for this entry to refresh all tabs
+			await queryClient.invalidateQueries({
+				queryKey: arenaTeamEnrollmentsQueryKeys.listApplicants(env.ARENA_TEAM_ENROLLMENTS_ADDRESS, {
+					entryId,
+				}),
+			});
+
+			// Invalidate team entry query to update counts and related data
+			await queryClient.invalidateQueries({
+				queryKey: arenaTeamEnrollmentsQueryKeys.getEntry(env.ARENA_TEAM_ENROLLMENTS_ADDRESS, {
+					entryId,
+				}),
+			});
+
 			addToast({ color: "success", description: "Applicant approved!" });
 		} catch (error) {
 			console.error("Approve error:", error);
@@ -160,6 +202,20 @@ export const ApplicantsList = ({
 				},
 			});
 
+			// Invalidate all applicant queries for this entry to refresh all tabs
+			await queryClient.invalidateQueries({
+				queryKey: arenaTeamEnrollmentsQueryKeys.listApplicants(env.ARENA_TEAM_ENROLLMENTS_ADDRESS, {
+					entryId,
+				}),
+			});
+
+			// Invalidate team entry query to update counts and related data
+			await queryClient.invalidateQueries({
+				queryKey: arenaTeamEnrollmentsQueryKeys.getEntry(env.ARENA_TEAM_ENROLLMENTS_ADDRESS, {
+					entryId,
+				}),
+			});
+
 			addToast({ color: "success", description: "Applicant rejected" });
 			onRejectModalClose();
 			resetRejectForm();
@@ -186,7 +242,7 @@ export const ApplicantsList = ({
 		);
 	}
 
-	if (applicants.length === 0) {
+	if (applicants?.length === 0) {
 		return (
 			<div className="py-12 text-center">
 				<UserMinus size={48} className="mx-auto mb-4 opacity-30" />
@@ -199,7 +255,7 @@ export const ApplicantsList = ({
 	return (
 		<>
 			<div className="space-y-4 p-6">
-				{applicants.map((applicant) => {
+				{applicants?.map((applicant) => {
 					const statusConfig = getApplicantStatusConfig(applicant.status);
 					const rejectionReason = getRejectionReason(applicant.status);
 					const StatusIcon = statusConfig.icon;
@@ -244,28 +300,34 @@ export const ApplicantsList = ({
 											</div>
 										</div>
 
-										{isCreator && applicant.status === "default" && (
+										{isCreator && entryStatus === "open" && (
 											<div className="flex items-center gap-2">
-												<Button
-													size="sm"
-													color="success"
-													variant="flat"
-													onPress={() => handleApprove(applicant.applicant)}
-													isDisabled={isUpdatingStatus}
-													startContent={<UserCheck size={14} />}
-												>
-													Approve
-												</Button>
-												<Button
-													size="sm"
-													color="danger"
-													variant="flat"
-													onPress={() => openRejectModal(applicant)}
-													isDisabled={isUpdatingStatus}
-													startContent={<UserX size={14} />}
-												>
-													Reject
-												</Button>
+												{applicant.status !== "approved" && (
+													<Button
+														size="sm"
+														color="success"
+														variant="flat"
+														onPress={() => handleApprove(applicant.applicant)}
+														isDisabled={isUpdatingStatus}
+														startContent={<UserCheck size={14} />}
+													>
+														Approve
+													</Button>
+												)}
+												{!(
+													typeof applicant.status === "object" && "rejected" in applicant.status
+												) && (
+													<Button
+														size="sm"
+														color="danger"
+														variant="flat"
+														onPress={() => openRejectModal(applicant)}
+														isDisabled={isUpdatingStatus}
+														startContent={<UserX size={14} />}
+													>
+														Reject
+													</Button>
+												)}
 											</div>
 										)}
 									</div>

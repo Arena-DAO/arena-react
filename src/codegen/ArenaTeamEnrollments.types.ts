@@ -87,6 +87,8 @@ export interface TeamDaoConfig {
   cw4_group_code_id: number;
   cw4_voting_code_id: number;
   dao_code_id: number;
+  dao_description?: string;
+  dao_name?: string;
   image_url?: string | null;
   max_voting_period: Duration;
   prepropose_single_code_id: number;

@@ -15,6 +15,7 @@ import { type CategoryItem, useCategoryMap } from "~/hooks/useCategoryMap";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import { ApplicantsSection } from "./components/ApplicantsSection";
+import { EntryStatusManager } from "./components/EntryStatusManager";
 import { TeamInfoCard } from "./components/TeamInfoCard";
 
 const TeamView = () => {
@@ -162,8 +163,21 @@ const TeamView = () => {
 					entryId={parsedEntryId!}
 				/>
 
+				{/* Entry Status Manager */}
+				{entry?.status && (
+					<EntryStatusManager
+						entryId={parsedEntryId!}
+						currentStatus={entry.status}
+						isCreator={isCreator}
+					/>
+				)}
+
 				{/* Applicants Section */}
-				<ApplicantsSection isCreator={isCreator} entryId={parsedEntryId!} />
+				<ApplicantsSection
+					isCreator={isCreator}
+					entryId={parsedEntryId!}
+					entryStatus={entry?.status}
+				/>
 			</div>
 		</motion.div>
 	);

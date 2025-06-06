@@ -1,7 +1,6 @@
 "use client";
 
 import { DateInput, DateRangePicker } from "@heroui/react";
-import { ZonedDateTime } from "@internationalized/date";
 import React from "react";
 import type { Timestamp } from "~/codegen/ArenaWagerModule.types";
 import { nanosToZonedDateTime } from "~/config/schemas/TimestampSchema";
@@ -34,7 +33,7 @@ const CompetitionDates: React.FC<CompetitionDatesProps> = React.memo(
 				{expirationDate ? (
 					<DateRangePicker
 						label="Competition Date"
-						value={{ start: competitionDate as any, end: expirationDate as any}}
+						value={{ start: competitionDate as any, end: expirationDate as any }}
 						isReadOnly
 						variant="bordered"
 					/>

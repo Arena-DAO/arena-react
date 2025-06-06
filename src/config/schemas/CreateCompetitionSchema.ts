@@ -18,6 +18,8 @@ const DaoConfigSchema = z.object({
 		time: z.coerce.number().int().positive(),
 	}),
 	threshold: ThresholdSchema,
+	dao_name: z.string().min(3).max(50).trim().optional(),
+	dao_description: z.string().min(10).max(500).trim().optional(),
 });
 
 export const EnrollmentInfoSchema = z

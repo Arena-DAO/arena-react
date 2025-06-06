@@ -86,6 +86,9 @@ const TeamEnrollmentCard = ({ entry }: TeamEnrollmentCardProps) => {
 					/>
 					<div className="flex min-w-0 flex-1 flex-col">
 						<h3 className="truncate font-bold text-foreground text-large">{entry.title}</h3>
+						{entry.dao_config.dao_name && (
+							<p className="truncate text-default-500 text-sm">{entry.dao_config.dao_name}</p>
+						)}
 						<div className="flex items-center gap-2">
 							<Chip
 								color={getStatusColor(entry.status)}

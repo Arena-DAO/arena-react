@@ -59,6 +59,8 @@ const DaoConfigForm = () => {
 					percentage: { majority: {} },
 				},
 			},
+			dao_name: undefined,
+			dao_description: undefined,
 		});
 	};
 
@@ -124,6 +126,46 @@ const DaoConfigForm = () => {
 					<Divider className="my-4" />
 
 					<div className="space-y-6">
+						{/* DAO Identity Section */}
+						<div className="space-y-4">
+							<h4 className="mb-3 font-medium">DAO Identity (Optional)</h4>
+							<div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+								<Controller
+									name="enrollmentInfo.useDaoHost.dao_name"
+									control={control}
+									render={({ field, fieldState: { error } }) => (
+										<Input
+											{...field}
+											label="DAO Name"
+											placeholder="e.g., Champions League DAO"
+											description="Optional display name for the governance DAO"
+											errorMessage={error?.message}
+											isInvalid={!!error}
+											variant="bordered"
+											isDisabled={isSubmitting}
+										/>
+									)}
+								/>
+
+								<Controller
+									name="enrollmentInfo.useDaoHost.dao_description"
+									control={control}
+									render={({ field, fieldState: { error } }) => (
+										<Input
+											{...field}
+											label="DAO Description"
+											placeholder="e.g., Community governance for competitive events"
+											description="Optional brief description of the DAO's purpose"
+											errorMessage={error?.message}
+											isInvalid={!!error}
+											variant="bordered"
+											isDisabled={isSubmitting}
+										/>
+									)}
+								/>
+							</div>
+						</div>
+
 						<div>
 							<h4 className="mb-2 font-medium">How long can participants vote?</h4>
 							<Controller

@@ -4,27 +4,22 @@ import { Card, CardBody, CardHeader, Chip, Tab, Tabs, Tooltip } from "@heroui/re
 import type { Key } from "@react-types/shared";
 import { Clock, UserCheck, UserX, Users } from "lucide-react";
 import { useState } from "react";
-import { ArenaTeamEnrollmentsQueryClient } from "~/codegen/ArenaTeamEnrollments.client";
-import { useArenaTeamEnrollmentsListApplicantsQuery } from "~/codegen/ArenaTeamEnrollments.react-query";
-import type { ApplicantStatus } from "~/codegen/ArenaTeamEnrollments.types";
-import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
-import { useEnv } from "~/hooks/useEnv";
+import type { ApplicantStatus, EntryStatus } from "~/codegen/ArenaTeamEnrollments.types";
 import { ApplicantsList } from "./ApplicantsList";
 
 interface ApplicantsSectionProps {
 	isCreator: boolean;
 	entryId: number;
+	entryStatus?: EntryStatus;
 }
 
-export const ApplicantsSection = ({ isCreator, entryId }: ApplicantsSectionProps) => {
-	const env = useEnv();
-	const { data: client } = useCosmWasmClient();
+export const ApplicantsSection = ({ isCreator, entryId, entryStatus }: ApplicantsSectionProps) => {
 	const [selectedTab, setSelectedTab] = useState<Key>("default");
 
 	// Status configurations
 	const statusTabs: {
 		key: string;
-		status: ApplicantStatus | undefined;
+		status: ApplicantStatus;
 		label: string;
 		icon: typeof Clock;
 	}[] = [
@@ -32,25 +27,6 @@ export const ApplicantsSection = ({ isCreator, entryId }: ApplicantsSectionProps
 		{ key: "approved", status: "approved", label: "Approved", icon: UserCheck },
 		{ key: "rejected", status: { rejected: { reason: "" } }, label: "Rejected", icon: UserX },
 	];
-
-	// Get current status for queries
-	const getCurrentStatus = (): ApplicantStatus | undefined => {
-		const tab = statusTabs.find((t) => t.key === selectedTab);
-		return tab?.status;
-	};
-
-	// Fetch applicants for the selected status
-	const { data: applicants, isLoading: isApplicantsLoading } =
-		useArenaTeamEnrollmentsListApplicantsQuery({
-			client:
-				client && new ArenaTeamEnrollmentsQueryClient(client, env.ARENA_TEAM_ENROLLMENTS_ADDRESS),
-			args: {
-				entryId,
-				status: getCurrentStatus(),
-				limit: 100,
-			},
-			options: { enabled: !!client },
-		});
 
 	return (
 		<Card>
@@ -95,10 +71,10 @@ export const ApplicantsSection = ({ isCreator, entryId }: ApplicantsSectionProps
 								}
 							>
 								<ApplicantsList
-									applicants={applicants || []}
-									isApplicantsLoading={isApplicantsLoading}
+									status={status.status}
 									isCreator={isCreator}
 									entryId={entryId}
+									entryStatus={entryStatus}
 								/>
 							</Tab>
 						);

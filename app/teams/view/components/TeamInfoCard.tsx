@@ -192,7 +192,27 @@ export const TeamInfoCard = ({
 					<div className="flex-1 space-y-4">
 						<div>
 							<h1 className="mb-2 font-bold text-3xl">{entry.title}</h1>
+							{entry.dao_config.dao_name && (
+								<div className="mb-2">
+									<Chip
+										variant="flat"
+										color="primary"
+										size="sm"
+										startContent={<Shield size={12} />}
+									>
+										DAO: {entry.dao_config.dao_name}
+									</Chip>
+								</div>
+							)}
 							<p className="text-default-600 leading-relaxed">{entry.description}</p>
+							{entry.dao_config.dao_description && (
+								<div className="mt-3 rounded-lg border border-default-200 bg-default-50 p-3">
+									<p className="text-default-700 text-sm">
+										<span className="font-medium">DAO Purpose:</span>{" "}
+										{entry.dao_config.dao_description}
+									</p>
+								</div>
+							)}
 						</div>
 
 						{/* Team Stats */}

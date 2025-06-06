@@ -4,8 +4,10 @@ import { useChain } from "@cosmos-kit/react";
 import { Autocomplete, AutocompleteItem, type AutocompleteProps } from "@heroui/react";
 import { useMemo } from "react";
 import type { FieldError, FieldValues } from "react-hook-form";
+import { ArenaTeamEnrollmentsQueryClient } from "~/codegen/ArenaTeamEnrollments.client";
+import { useArenaTeamEnrollmentsListTeamsQuery } from "~/codegen/ArenaTeamEnrollments.react-query";
+import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
-import { useTeamStore } from "~/store/teamStore";
 import Profile from "./Profile";
 
 interface ProfileInputProps extends Omit<AutocompleteProps, "children"> {
@@ -25,8 +27,19 @@ export const ProfileInput = ({
 	...props
 }: ProfileInputProps) => {
 	const env = useEnv();
-	const teams = useTeamStore((x) => x.teams);
+	const { data: client } = useCosmWasmClient();
 	const { address } = useChain(env.CHAIN);
+
+	// Query user's teams
+	const { data: teams = [] } = useArenaTeamEnrollmentsListTeamsQuery({
+		client:
+			client && new ArenaTeamEnrollmentsQueryClient(client, env.ARENA_TEAM_ENROLLMENTS_ADDRESS),
+		args: {
+			user: address || "",
+			limit: 100,
+		},
+		options: { enabled: !!client && !!address },
+	});
 
 	const items = useMemo(() => {
 		const result = [];
