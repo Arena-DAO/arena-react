@@ -143,7 +143,7 @@ const CreateTeamEnrollment = () => {
 	const watchThreshold = watch("approvalThreshold");
 
 	const onSubmit = async (data: CreateTeamForm) => {
-		if (!walletAddress || !categoryItem?.category_id) return;
+		if (!walletAddress || !categoryItem) return;
 
 		setIsSubmitting(true);
 		try {
@@ -187,7 +187,7 @@ const CreateTeamEnrollment = () => {
 				msg: {
 					title: data.title,
 					description: data.description,
-					categoryId: categoryItem.category_id?.toString(),
+					categoryId: categoryItem.category_id?.toString() || undefined,
 					daoConfig,
 				},
 			});
