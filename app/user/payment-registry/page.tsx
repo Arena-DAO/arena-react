@@ -3,7 +3,6 @@
 import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
 import {
-	Alert,
 	Button,
 	Card,
 	CardBody,
@@ -277,18 +276,49 @@ const PaymentRegistry = () => {
 				</p>
 			</div>
 
-			{/* Help Card - Always visible for context */}
-			<Alert
-				title="How it works:"
-				description={
-					<div className="text-sm">
-						When you win a competition, your prize will be
-						{distribution
-							? " automatically split according to your settings below."
-							: " sent directly to your address. If your address is a DAO, a governance proposal will be needed to move the funds."}
+			{/* Clean Info Card */}
+			<Card className="mb-6 border-default-200 bg-content2/50">
+				<CardBody className="p-6">
+					<div className="flex items-start gap-4">
+						<div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
+							<HelpCircle className="h-5 w-5 text-primary" />
+						</div>
+						<div className="flex-1">
+							<h3 className="mb-2 font-semibold text-lg">How Prize Distribution Works</h3>
+							<p className="mb-3 text-foreground/80">
+								When you win a competition, your prize will be
+								{distribution
+									? " automatically split according to your settings below."
+									: " distributed based on your account type:"}
+							</p>
+							{!distribution && (
+								<div className="grid gap-2">
+									<div className="flex items-center gap-3 rounded-lg bg-content3/50 p-2">
+										<div className="h-2 w-2 rounded-full bg-primary" />
+										<span className="text-sm">
+											<strong>Individual wallets:</strong> Funds sent directly to your address
+										</span>
+									</div>
+									<div className="flex items-center gap-3 rounded-lg bg-content3/50 p-2">
+										<div className="h-2 w-2 rounded-full bg-secondary" />
+										<span className="text-sm">
+											<strong>DAO addresses:</strong> Funds split equally among all DAO members
+											automatically
+										</span>
+									</div>
+									<div className="flex items-center gap-3 rounded-lg bg-content3/50 p-2">
+										<div className="h-2 w-2 rounded-full bg-success" />
+										<span className="text-sm">
+											<strong>Custom distribution:</strong> Override the default with your own split
+											rules below
+										</span>
+									</div>
+								</div>
+							)}
+						</div>
 					</div>
-				}
-			/>
+				</CardBody>
+			</Card>
 
 			{/* Simple tabs */}
 			<div className="mb-4">
@@ -358,33 +388,46 @@ const PaymentRegistry = () => {
 						<Card>
 							<CardBody className="py-8 text-center">
 								<HelpCircle size={36} className="mx-auto mb-3 text-default-400" />
-								<h3 className="mb-2 font-medium text-lg">No Distribution Set</h3>
+								<h3 className="mb-2 font-medium text-lg">Using Default Distribution</h3>
 								<p className="mx-auto mb-6 max-w-md text-default-500">
 									{isOwnRegistry
-										? "You haven't set up a payment distribution yet. When you win a competition, all funds will be sent directly to your address with no automatic splitting."
-										: `${queryAddress.slice(0, 8)}...${queryAddress.slice(-8)} has not set up a payment distribution.`}
+										? "You're using the default distribution method. For individual addresses, funds go directly to you. For DAO addresses, funds are automatically split equally among all members."
+										: `${queryAddress.slice(0, 8)}...${queryAddress.slice(-8)} is using the default distribution method.`}
 								</p>
 								{isOwnRegistry && (
-									<Button color="primary" onPress={() => setActiveTab("edit")}>
-										Set Up Distribution
-									</Button>
+									<div className="flex flex-col gap-3 sm:flex-row">
+										<Button color="primary" onPress={() => setActiveTab("edit")}>
+											Customize Distribution
+										</Button>
+										<Button variant="flat" color="default">
+											Keep Default
+										</Button>
+									</div>
 								)}
 							</CardBody>
 						</Card>
 					) : (
-						/* Distribution Found - Simple Display */
-						<Card>
-							<CardHeader>
-								<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-									<h2 className="font-medium text-lg">Current Distribution</h2>
+						/* Distribution Found - Enhanced Display */
+						<Card className="shadow-lg">
+							<CardHeader className="bg-gradient-to-r from-primary-50 to-secondary-50">
+								<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+									<div>
+										<h2 className="font-bold text-primary-800 text-xl">
+											Custom Distribution Active
+										</h2>
+										<p className="text-primary-600 text-sm">
+											Your winnings will be split according to these rules
+										</p>
+									</div>
 									{isOwnRegistry && (
 										<Button
 											color="primary"
-											variant="flat"
-											size="sm"
+											variant="solid"
+											size="md"
 											onPress={() => setActiveTab("edit")}
+											startContent={<Plus size={16} />}
 										>
-											Edit Distribution
+											Modify Settings
 										</Button>
 									)}
 								</div>
@@ -445,7 +488,8 @@ const PaymentRegistry = () => {
 								) : (
 									<div className="rounded-lg border border-dashed bg-default-50 p-4 text-center">
 										<p className="text-default-500">
-											No specific recipients defined. All funds will go to the default recipient.
+											No specific recipients defined. All funds will go to the default recipient
+											based on account type.
 										</p>
 									</div>
 								)}
@@ -455,259 +499,323 @@ const PaymentRegistry = () => {
 				</div>
 			)}
 
-			{/* EDIT MODE */}
+			{/* EDIT MODE - Enhanced with step-by-step flow */}
 			{activeTab === "edit" && isOwnRegistry && (
-				<form onSubmit={handleSubmit(onSubmit)}>
-					<div className="space-y-6">
-						{/* Default Recipient Card */}
-						<Card>
-							<CardHeader className="gap-2">
-								<h3 className="font-medium text-lg">Default Recipient</h3>
-								<p className="text-default-500 text-sm">
-									This address will receive all remaining funds after any splits
-								</p>
-							</CardHeader>
-							<CardBody>
-								<div className="flex items-center gap-2">
-									{remainderAddr && <Profile address={remainderAddr} justAvatar />}
-									<Controller
-										control={control}
-										name="distribution.remainder_addr"
-										render={({ field }) => (
-											<Input
-												label="Address"
-												placeholder="Enter recipient address"
-												autoFocus
-												isDisabled={isSubmitting}
-												isInvalid={!!errors.distribution?.remainder_addr}
-												errorMessage={errors.distribution?.remainder_addr?.message}
-												startContent={remainderAddr ? null : <Search size={16} />}
-												className="flex-1"
-												{...field}
-											/>
-										)}
-									/>
+				<div className="space-y-6">
+					{/* Clean Progress indicator */}
+					<Card className="border-primary/20 bg-primary/5">
+						<CardBody className="p-6">
+							<div className="flex items-start gap-4">
+								<div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
+									<Plus className="h-5 w-5 text-primary" />
 								</div>
-							</CardBody>
-						</Card>
-
-						{/* Recipients Card */}
-						<Card>
-							<CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-								<div>
-									<h3 className="font-medium text-lg">Split Recipients</h3>
-									<p className="text-default-500 text-sm">
-										Add people to receive a percentage of your winnings
+								<div className="flex-1">
+									<h2 className="mb-2 font-bold text-lg">Setup Custom Distribution</h2>
+									<p className="mb-4 text-foreground/70 text-sm">
+										Follow these steps to customize how your winnings are distributed:
 									</p>
+									<div className="flex flex-wrap items-center gap-4 text-sm">
+										<div className="flex items-center gap-2">
+											<div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground text-xs">
+												1
+											</div>
+											<span className="text-foreground/80">Set default recipient</span>
+										</div>
+										<div className="flex items-center gap-2">
+											<div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground text-xs">
+												2
+											</div>
+											<span className="text-foreground/80">Add split recipients</span>
+										</div>
+										<div className="flex items-center gap-2">
+											<div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground text-xs">
+												3
+											</div>
+											<span className="text-foreground/80">Review & save</span>
+										</div>
+									</div>
 								</div>
-								<Button
-									onPress={() => append({ addr: "", percentage: "0" })}
-									color="primary"
-									startContent={<Plus size={16} />}
-									isDisabled={isSubmitting}
-								>
-									Add Recipient
-								</Button>
-							</CardHeader>
-							<Divider />
-							<CardBody>
-								{fields.length > 0 ? (
-									<div className="space-y-4">
-										{fields.map((field, index) => (
-											<div
-												key={field.id}
-												className="flex flex-col items-start gap-3 rounded-lg border bg-default-50 p-3 sm:flex-row"
-											>
-												<div className="flex-1">
-													<div className="mb-1 flex items-center gap-2">
-														{percentages[index]?.addr && (
-															<Profile address={percentages[index]?.addr} justAvatar />
-														)}
+							</div>
+						</CardBody>
+					</Card>
+
+					<form onSubmit={handleSubmit(onSubmit)}>
+						<div className="space-y-6">
+							{/* Default Recipient Card - Step 1 */}
+							<Card className="border-l-4 border-l-primary">
+								<CardHeader className="gap-2 bg-primary/5">
+									<div className="flex items-center gap-3">
+										<div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground text-sm">
+											1
+										</div>
+										<div>
+											<h3 className="font-bold text-lg">Default Recipient</h3>
+											<p className="text-foreground/70 text-sm">
+												This address receives all remaining funds after percentage splits
+											</p>
+										</div>
+									</div>
+								</CardHeader>
+								<CardBody>
+									<div className="flex items-center gap-2">
+										{remainderAddr && <Profile address={remainderAddr} justAvatar />}
+										<Controller
+											control={control}
+											name="distribution.remainder_addr"
+											render={({ field }) => (
+												<Input
+													label="Address"
+													placeholder="Enter recipient address"
+													autoFocus
+													isDisabled={isSubmitting}
+													isInvalid={!!errors.distribution?.remainder_addr}
+													errorMessage={errors.distribution?.remainder_addr?.message}
+													startContent={remainderAddr ? null : <Search size={16} />}
+													className="flex-1"
+													{...field}
+												/>
+											)}
+										/>
+									</div>
+								</CardBody>
+							</Card>
+
+							{/* Recipients Card - Step 2 */}
+							<Card className="border-l-4 border-l-secondary">
+								<CardHeader className="flex flex-col gap-3 bg-secondary/5 sm:flex-row sm:items-center sm:justify-between">
+									<div className="flex items-center gap-3">
+										<div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary font-bold text-secondary-foreground text-sm">
+											2
+										</div>
+										<div>
+											<h3 className="font-bold text-lg">Split Recipients</h3>
+											<p className="text-foreground/70 text-sm">
+												Add people to receive a specific percentage of your winnings
+											</p>
+										</div>
+									</div>
+									<Button
+										onPress={() => append({ addr: "", percentage: "0" })}
+										color="primary"
+										startContent={<Plus size={16} />}
+										isDisabled={isSubmitting}
+									>
+										Add Recipient
+									</Button>
+								</CardHeader>
+								<Divider />
+								<CardBody>
+									{fields.length > 0 ? (
+										<div className="space-y-4">
+											{fields.map((field, index) => (
+												<div
+													key={field.id}
+													className="flex flex-col items-start gap-3 rounded-lg border bg-default-50 p-3 sm:flex-row"
+												>
+													<div className="flex-1">
+														<div className="mb-1 flex items-center gap-2">
+															{percentages[index]?.addr && (
+																<Profile address={percentages[index]?.addr} justAvatar />
+															)}
+															<Controller
+																control={control}
+																name={`distribution.member_percentages.${index}.addr`}
+																render={({ field }) => (
+																	<Input
+																		label="Recipient Address"
+																		placeholder="Enter address"
+																		isDisabled={isSubmitting}
+																		isInvalid={
+																			!!errors.distribution?.member_percentages?.[index]?.addr
+																		}
+																		errorMessage={
+																			errors.distribution?.member_percentages?.[index]?.addr
+																				?.message
+																		}
+																		startContent={
+																			percentages[index]?.addr ? null : <Search size={16} />
+																		}
+																		size="sm"
+																		className="flex-1"
+																		{...field}
+																	/>
+																)}
+															/>
+														</div>
+													</div>
+
+													<div className="flex w-full items-center gap-2 sm:w-auto">
 														<Controller
 															control={control}
-															name={`distribution.member_percentages.${index}.addr`}
+															name={`distribution.member_percentages.${index}.percentage`}
 															render={({ field }) => (
 																<Input
-																	label="Recipient Address"
-																	placeholder="Enter address"
+																	label="Percentage"
+																	type="number"
+																	min="0"
+																	max="100"
+																	step="0.1"
+																	placeholder="0"
 																	isDisabled={isSubmitting}
 																	isInvalid={
-																		!!errors.distribution?.member_percentages?.[index]?.addr
+																		!!errors.distribution?.member_percentages?.[index]?.percentage
 																	}
 																	errorMessage={
-																		errors.distribution?.member_percentages?.[index]?.addr?.message
+																		errors.distribution?.member_percentages?.[index]?.percentage
+																			?.message
 																	}
-																	startContent={
-																		percentages[index]?.addr ? null : <Search size={16} />
-																	}
+																	endContent={<Percent size={16} />}
+																	classNames={{ input: "text-right" }}
 																	size="sm"
-																	className="flex-1"
+																	className="w-32"
 																	{...field}
 																/>
 															)}
 														/>
+														<Button
+															isIconOnly
+															aria-label="Remove Recipient"
+															color="danger"
+															variant="light"
+															onPress={() => remove(index)}
+															isDisabled={isSubmitting}
+															className="self-end"
+														>
+															<Trash size={16} />
+														</Button>
 													</div>
 												</div>
+											))}
+										</div>
+									) : (
+										<div className="rounded-lg border border-dashed p-8 text-center">
+											<p className="text-default-500">
+												No recipients added yet. Add recipients to split your winnings.
+											</p>
+										</div>
+									)}
 
-												<div className="flex w-full items-center gap-2 sm:w-auto">
-													<Controller
-														control={control}
-														name={`distribution.member_percentages.${index}.percentage`}
-														render={({ field }) => (
-															<Input
-																label="Percentage"
-																type="number"
-																min="0"
-																max="100"
-																step="0.1"
-																placeholder="0"
-																isDisabled={isSubmitting}
-																isInvalid={
-																	!!errors.distribution?.member_percentages?.[index]?.percentage
-																}
-																errorMessage={
-																	errors.distribution?.member_percentages?.[index]?.percentage
-																		?.message
-																}
-																endContent={<Percent size={16} />}
-																classNames={{ input: "text-right" }}
-																size="sm"
-																className="w-32"
-																{...field}
-															/>
-														)}
-													/>
-													<Button
-														isIconOnly
-														aria-label="Remove Recipient"
-														color="danger"
-														variant="light"
-														onPress={() => remove(index)}
-														isDisabled={isSubmitting}
-														className="self-end"
-													>
-														<Trash size={16} />
-													</Button>
-												</div>
-											</div>
-										))}
-									</div>
-								) : (
-									<div className="rounded-lg border border-dashed p-8 text-center">
-										<p className="text-default-500">
-											No recipients added yet. Add recipients to split your winnings.
-										</p>
-									</div>
-								)}
+									{(errors.distribution?.message ||
+										errors.distribution?.member_percentages?.message) && (
+										<div className="mt-2 rounded bg-danger-50 p-2 text-danger text-sm">
+											{errors.distribution?.message && <p>{errors.distribution.message}</p>}
+											{errors.distribution?.member_percentages?.message && (
+												<p>{errors.distribution.member_percentages.message}</p>
+											)}
+										</div>
+									)}
+								</CardBody>
+							</Card>
 
-								{(errors.distribution?.message ||
-									errors.distribution?.member_percentages?.message) && (
-									<div className="mt-2 rounded bg-danger-50 p-2 text-danger text-sm">
-										{errors.distribution?.message && <p>{errors.distribution.message}</p>}
-										{errors.distribution?.member_percentages?.message && (
-											<p>{errors.distribution.member_percentages.message}</p>
-										)}
+							{/* Total Allocation - Step 3 */}
+							<Card className="border-l-4 border-l-success">
+								<CardHeader className="bg-success/5">
+									<div className="flex items-center gap-3">
+										<div className="flex h-8 w-8 items-center justify-center rounded-full bg-success font-bold text-sm text-success-foreground">
+											3
+										</div>
+										<div>
+											<h3 className="font-bold text-lg">Review Distribution</h3>
+											<p className="text-foreground/70 text-sm">
+												Verify your allocation adds up correctly
+											</p>
+										</div>
 									</div>
-								)}
-							</CardBody>
-						</Card>
+								</CardHeader>
+								<CardBody className="space-y-4">
+									<div className="flex items-center justify-between">
+										<div
+											className={`font-bold text-lg ${
+												totalPercentage > 100
+													? "text-danger"
+													: totalPercentage === 100
+														? "text-success"
+														: ""
+											}`}
+										>
+											{totalPercentage.toFixed(1)}%
+										</div>
+									</div>
 
-						{/* Total Allocation */}
-						<Card>
-							<CardBody className="space-y-4">
-								<div className="flex items-center justify-between">
-									<h3 className="font-medium text-lg">Total Distribution</h3>
-									<div
-										className={`font-bold text-lg ${
+									<Progress
+										aria-label="Total Percentage"
+										value={totalPercentage}
+										maxValue={100}
+										color={
 											totalPercentage > 100
-												? "text-danger"
+												? "danger"
 												: totalPercentage === 100
-													? "text-success"
-													: ""
+													? "success"
+													: "primary"
+										}
+										showValueLabel
+										classNames={{
+											track: "h-4",
+											indicator: "h-4",
+											value: "text-sm font-medium",
+										}}
+										className="mb-2"
+									/>
+
+									<div
+										className={`rounded-lg p-3 ${
+											totalPercentage > 100
+												? "bg-danger-50 text-danger-700"
+												: totalPercentage === 100
+													? "bg-success-50 text-success-700"
+													: "bg-default-50 text-default-700"
 										}`}
 									>
-										{totalPercentage.toFixed(1)}%
+										{totalPercentage < 100 ? (
+											<p className="text-sm">
+												Remaining{" "}
+												<span className="font-bold">{(100 - totalPercentage).toFixed(1)}%</span>{" "}
+												will go to the default recipient.
+											</p>
+										) : totalPercentage > 100 ? (
+											<p className="text-sm">Total exceeds 100%. Please adjust your percentages.</p>
+										) : (
+											<p className="text-sm">Perfect! 100% of your funds are allocated.</p>
+										)}
 									</div>
-								</div>
-
-								<Progress
-									aria-label="Total Percentage"
-									value={totalPercentage}
-									maxValue={100}
-									color={
-										totalPercentage > 100
-											? "danger"
-											: totalPercentage === 100
-												? "success"
-												: "primary"
-									}
-									showValueLabel
-									classNames={{
-										track: "h-4",
-										indicator: "h-4",
-										value: "text-sm font-medium",
-									}}
-									className="mb-2"
-								/>
-
-								<div
-									className={`rounded-lg p-3 ${
-										totalPercentage > 100
-											? "bg-danger-50 text-danger-700"
-											: totalPercentage === 100
-												? "bg-success-50 text-success-700"
-												: "bg-default-50 text-default-700"
-									}`}
-								>
-									{totalPercentage < 100 ? (
-										<p className="text-sm">
-											Remaining{" "}
-											<span className="font-bold">{(100 - totalPercentage).toFixed(1)}%</span> will
-											go to the default recipient.
-										</p>
-									) : totalPercentage > 100 ? (
-										<p className="text-sm">Total exceeds 100%. Please adjust your percentages.</p>
-									) : (
-										<p className="text-sm">Perfect! 100% of your funds are allocated.</p>
-									)}
-								</div>
-							</CardBody>
-							<Divider />
-							<CardFooter className="flex flex-col gap-3 sm:flex-row sm:justify-between">
-								<Button
-									onPress={() => setActiveTab("view")}
-									variant="flat"
-									isDisabled={isSubmitting}
-									className="sm:order-1"
-								>
-									Cancel
-								</Button>
-								<div className="w-full space-y-2 sm:order-2 sm:w-auto sm:space-x-2 sm:space-y-0">
-									{distribution && !queryHeight && (
+								</CardBody>
+								<Divider />
+								<CardFooter className="flex flex-col gap-3 sm:flex-row sm:justify-between">
+									<Button
+										onPress={() => setActiveTab("view")}
+										variant="flat"
+										isDisabled={isSubmitting}
+										className="sm:order-1"
+									>
+										Cancel
+									</Button>
+									<div className="w-full space-y-2 sm:order-2 sm:w-auto sm:space-x-2 sm:space-y-0">
+										{distribution && !queryHeight && (
+											<Button
+												onPress={onRemoveDistribution}
+												isLoading={removeDistributionMutation.isLoading}
+												color="danger"
+												className="w-full sm:w-auto"
+											>
+												Remove Distribution
+											</Button>
+										)}
 										<Button
-											onPress={onRemoveDistribution}
-											isLoading={removeDistributionMutation.isLoading}
-											color="danger"
+											type="submit"
+											isLoading={isSubmitting}
+											color="primary"
+											startContent={<Save size={16} />}
+											isDisabled={!isDirty || totalPercentage > 100}
 											className="w-full sm:w-auto"
 										>
-											Remove Distribution
+											Save Distribution
 										</Button>
-									)}
-									<Button
-										type="submit"
-										isLoading={isSubmitting}
-										color="primary"
-										startContent={<Save size={16} />}
-										isDisabled={!isDirty || totalPercentage > 100}
-										className="w-full sm:w-auto"
-									>
-										Save Distribution
-									</Button>
-								</div>
-							</CardFooter>
-						</Card>
-					</div>
-				</form>
+									</div>
+								</CardFooter>
+							</Card>
+						</div>
+					</form>
+				</div>
 			)}
 		</div>
 	);

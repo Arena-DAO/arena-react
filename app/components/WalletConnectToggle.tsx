@@ -12,6 +12,7 @@ import {
 	useDisclosure,
 } from "@heroui/react";
 import { LogOut, Split, Swords, Users, Vote, Wallet } from "lucide-react";
+import { useRouter } from "next/navigation";
 import type React from "react";
 import { type Key, useMemo } from "react";
 import { BsDiscord } from "react-icons/bs";
@@ -35,6 +36,7 @@ type MenuSection = {
 
 export default function WalletConnectToggle() {
 	const env = useEnv();
+	const router = useRouter();
 	const chainContext = useChain(env.CHAIN);
 	const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -141,6 +143,16 @@ export default function WalletConnectToggle() {
 	};
 
 	const handleMenuAction = (key: Key) => {
+		// Find the item with the matching key to get its href
+		let targetHref: string | undefined;
+		for (const section of menuSections) {
+			const item = section.items.find((item) => item.key === key);
+			if (item?.href) {
+				targetHref = item.href;
+				break;
+			}
+		}
+
 		switch (key) {
 			case "wallet":
 				chainContext.openView();
@@ -150,6 +162,12 @@ export default function WalletConnectToggle() {
 				break;
 			case "teamView":
 				onOpen();
+				break;
+			default:
+				// Handle navigation for items with href using Next.js router
+				if (targetHref) {
+					router.push(targetHref);
+				}
 				break;
 		}
 	};
