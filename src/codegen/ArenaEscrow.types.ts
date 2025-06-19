@@ -150,8 +150,8 @@ export type MigrateMsg = {
 };
 export interface BalanceVerified {
   cw20?: Record<string, Uint128>;
-  cw721?: Record<string, Uint128>
-  native?: Record<string, Uint128>
+  cw721?: Record<string, Uint128>;
+  native?: Record<string, Uint128>;
 }
 export type Addr = string;
 export type ArrayOfMemberBalanceChecked = MemberBalanceChecked[];
