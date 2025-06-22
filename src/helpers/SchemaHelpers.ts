@@ -33,17 +33,15 @@ export function convertToEscrowInstantiate(
 				dues: dues.map(({ addr, balance }) => {
 					return {
 						addr,
-						balance: {
-							native: balance.native?.map(({ denom, amount }) => ({
-								denom,
-								amount: amount.toString(),
-							})),
-							cw20: balance.cw20?.map(({ address, amount }) => ({
-								address,
-								amount: amount.toString(),
-							})),
-							cw721: balance.cw721,
-						},
+						native: balance.native?.map(({ denom, amount }) => ({
+							denom,
+							amount: amount.toString(),
+						})),
+						cw20: balance.cw20?.map(({ address, amount }) => ({
+							address,
+							amount: amount.toString(),
+						})),
+						cw721: balance.cw721,
 					};
 				}),
 				is_enrollment: is_enrollment ?? false,

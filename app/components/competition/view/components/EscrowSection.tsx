@@ -16,6 +16,7 @@ import {
 } from "~/codegen/ArenaEscrow.react-query";
 import type {
 	ArrayOfMemberBalanceChecked,
+	BalanceVerified,
 	ExecuteMsg as EscrowExecuteMsg,
 } from "~/codegen/ArenaEscrow.types";
 import type { CompetitionStatus } from "~/codegen/ArenaWagerModule.types";
@@ -65,6 +66,14 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 		args: { addr: address },
 	});
 	const withdrawMutation = useArenaEscrowWithdrawMutation();
+
+	const isBalanceEmpty = (balance: BalanceVerified) => {
+		if (!balance) return true;
+		const hasNative = balance.native && Object.keys(balance.native).length > 0;
+		const hasCw20 = balance.cw20 && Object.keys(balance.cw20).length > 0;
+		const hasCw721 = balance.cw721 && Object.keys(balance.cw721).length > 0;
+		return !hasNative && !hasCw20 && !hasCw721;
+	};
 
 	const deposit = async () => {
 		try {
@@ -219,7 +228,7 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 			</CardHeader>
 			<CardBody className="space-y-4">
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-					{data.balance && (
+					{!isBalanceEmpty(data.balance) && (
 						<Card shadow="sm">
 							<CardHeader>
 								<h3 className="font-medium text-lg">User Balance</h3>
@@ -236,7 +245,7 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 							)}
 						</Card>
 					)}
-					{data.due && (
+					{!isBalanceEmpty(data.due) && (
 						<Card shadow="sm">
 							<CardHeader>
 								<h3 className="font-medium text-lg">User Due</h3>
@@ -253,7 +262,7 @@ const EscrowSection = ({ escrow, context, children }: EscrowSectionProps) => {
 							)}
 						</Card>
 					)}
-					{data.total_balance && (
+					{!isBalanceEmpty(data.total_balance) && (
 						<Card shadow="sm">
 							<CardHeader>
 								<h3 className="font-medium text-lg">Total Balance</h3>

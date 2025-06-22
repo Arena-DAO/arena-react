@@ -1,7 +1,12 @@
 {
-	"permissions": {
-		"allow": ["Bash(yarn lint)", "Bash(yarn format)", "Bash(yarn lint:*)"],
-		"deny": []
-	},
-	"enableAllProjectMcpServers": false
+  "permissions": {
+    "allow": [
+      "Bash(yarn lint)",
+      "Bash(yarn format)",
+      "Bash(yarn lint:*)",
+      "Bash(rg:*)"
+    ],
+    "deny": []
+  },
+  "enableAllProjectMcpServers": false
 }
