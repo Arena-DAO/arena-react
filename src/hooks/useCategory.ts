@@ -3,7 +3,8 @@ import { useCategoryMap } from "./useCategoryMap";
 
 export function useCategory(identifier?: string | null) {
 	const isNumber = Number.isInteger(Number(identifier));
-	const { data: categoryMap } = isNumber ? useCategoryMap("id") : useCategoryMap("url");
+	const keyType = isNumber ? "id" : "url";
+	const { data: categoryMap } = useCategoryMap(keyType);
 
 	return useMemo(() => {
 		if (!identifier || !categoryMap) return undefined;

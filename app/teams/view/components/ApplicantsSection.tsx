@@ -2,7 +2,7 @@
 
 import { Card, CardBody, CardHeader, Chip, Tab, Tabs, Tooltip } from "@heroui/react";
 import type { Key } from "@react-types/shared";
-import { Clock, UserCheck, UserX, Users } from "lucide-react";
+import { Clock, UserCheck, Users, UserX } from "lucide-react";
 import { useState } from "react";
 import type { ApplicantStatus, EntryStatus } from "~/codegen/ArenaTeamEnrollments.types";
 import { ApplicantsList } from "./ApplicantsList";

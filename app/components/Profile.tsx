@@ -25,8 +25,8 @@ import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import { useProfileData } from "~/hooks/useProfile";
 import { CopyAddressButton } from "./CopyAddressButton";
-import TeamMembersModal from "./TeamMembersModal";
 import UserStatsModal from "./competition/view/components/UserStatsModal";
+import TeamMembersModal from "./TeamMembersModal";
 
 interface StatProps {
 	moduleAddr: string;
@@ -61,7 +61,7 @@ const CardContent = memo(
 							{data.name}
 						</Link>
 					) : (
-						<>{data.name}</>
+						data.name
 					)}
 				</CardHeader>
 			)}

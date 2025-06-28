@@ -16,8 +16,7 @@ import {
 	useDisclosure,
 	useDraggable,
 } from "@heroui/react";
-import React from "react";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { useArenaWagerModuleHistoricalStatsQuery } from "~/codegen/ArenaWagerModule.react-query";
 import { renderStatValue } from "~/helpers/ArenaHelpers";

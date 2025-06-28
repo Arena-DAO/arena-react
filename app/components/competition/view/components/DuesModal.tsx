@@ -1,6 +1,5 @@
 "use client";
 
-import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
 import {
 	Button,
@@ -19,8 +18,8 @@ import {
 	useDraggable,
 } from "@heroui/react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo } from "react";
-import React from "react";
+import React, { useMemo } from "react";
+import Profile from "@/components/Profile";
 import { ArenaEscrowQueryClient } from "~/codegen/ArenaEscrow.client";
 import { arenaEscrowQueryKeys } from "~/codegen/ArenaEscrow.react-query";
 import type { MemberBalanceChecked } from "~/codegen/ArenaEscrow.types";

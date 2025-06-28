@@ -1,11 +1,10 @@
 // app/teams/create/page.tsx
 "use client";
 
-import ImageUploader from "@/components/ImageUpload";
-import type { ImageUploaderRef } from "@/components/ImageUpload";
 import { useChain } from "@cosmos-kit/react";
 import {
 	Alert,
+	addToast,
 	BreadcrumbItem,
 	Breadcrumbs,
 	Button,
@@ -18,7 +17,6 @@ import {
 	SelectItem,
 	Spinner,
 	Textarea,
-	addToast,
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -35,6 +33,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+import type { ImageUploaderRef } from "@/components/ImageUpload";
+import ImageUploader from "@/components/ImageUpload";
 import { ArenaTeamEnrollmentsClient } from "~/codegen/ArenaTeamEnrollments.client";
 import { useArenaTeamEnrollmentsCreateEntryMutation } from "~/codegen/ArenaTeamEnrollments.react-query";
 import type { TeamDaoConfig } from "~/codegen/ArenaTeamEnrollments.types";

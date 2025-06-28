@@ -1,21 +1,21 @@
 "use client";
 
-import { ProfileInput } from "@/components/ProfileInput";
 import { useChain } from "@cosmos-kit/react";
 import {
+	addToast,
 	Button,
 	Modal,
 	ModalBody,
 	ModalContent,
 	ModalFooter,
 	ModalHeader,
-	addToast,
 	useDraggable,
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type React from "react";
 import { useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { ProfileInput } from "@/components/ProfileInput";
 
 import { DaoDaoCoreClient } from "~/codegen/DaoDaoCore.client";
 import { AddressFormSchema, type AddressFormValues } from "~/config/schemas/AddressSchema";

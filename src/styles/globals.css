@@ -100,7 +100,9 @@ h6 {
 		text-shadow: 0 0 5px rgba(255, 128, 0, 0.5);
 	}
 	50% {
-		text-shadow: 0 0 20px rgba(255, 128, 0, 0.8), 0 0 30px rgba(255, 128, 0, 0.6);
+		text-shadow:
+			0 0 20px rgba(255, 128, 0, 0.8),
+			0 0 30px rgba(255, 128, 0, 0.6);
 	}
 }
 

@@ -1,8 +1,8 @@
-import CompetitionCard from "@/components/competition/CompetitionCard";
 import { Button, Spinner } from "@heroui/react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 // components/LeaguesList.tsx
 import type React from "react";
+import CompetitionCard from "@/components/competition/CompetitionCard";
 import { ArenaLeagueModuleQueryClient } from "~/codegen/ArenaLeagueModule.client";
 import { arenaLeagueModuleQueryKeys } from "~/codegen/ArenaLeagueModule.react-query";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";

@@ -1,4 +1,3 @@
-import TokenInfo from "@/components/TokenInfo";
 import { useChain } from "@cosmos-kit/react";
 import {
 	Button,
@@ -13,10 +12,10 @@ import {
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import _ from "lodash";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
+import TokenInfo from "@/components/TokenInfo";
 import { getBaseToken, getNativeAsset } from "~/helpers/TokenHelpers";
 import { useEnv } from "~/hooks/useEnv";
 

@@ -1,6 +1,3 @@
-import { ProfileInput } from "@/components/ProfileInput";
-import TokenAmount from "@/components/TokenAmount";
-import TokenInfo from "@/components/TokenInfo";
 import {
 	Button,
 	Card,
@@ -21,6 +18,9 @@ import {
 } from "@heroui/react";
 import { MoreVertical, Plus, Trash } from "lucide-react";
 import { Controller, useFieldArray, useFormContext, useWatch } from "react-hook-form";
+import { ProfileInput } from "@/components/ProfileInput";
+import TokenAmount from "@/components/TokenAmount";
+import TokenInfo from "@/components/TokenInfo";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 
 // Type for token balance item
@@ -85,21 +85,6 @@ const MemberDue = ({ dueIndex, onEdit, onRemove }: MemberDueProps) => {
 			removeCw20(index);
 		}
 	};
-
-	// Empty state component for when no tokens are added
-	const EmptyTokensState = () => (
-		<div className="flex flex-col items-center justify-center py-6 text-center">
-			<div className="mb-3 text-foreground/60">No tokens added yet</div>
-			<Button
-				variant="faded"
-				startContent={<Plus size={16} />}
-				onPress={onEdit}
-				className="card-hover"
-			>
-				Add Token
-			</Button>
-		</div>
-	);
 
 	return (
 		<Card className="mb-6 overflow-hidden border border-primary/10">
@@ -190,7 +175,17 @@ const MemberDue = ({ dueIndex, onEdit, onRemove }: MemberDueProps) => {
 							</Table>
 						</ScrollShadow>
 					) : (
-						<EmptyTokensState />
+						<div className="flex flex-col items-center justify-center py-6 text-center">
+							<div className="mb-3 text-foreground/60">No tokens added yet</div>
+							<Button
+								variant="faded"
+								startContent={<Plus size={16} />}
+								onPress={onEdit}
+								className="card-hover"
+							>
+								Add Token
+							</Button>
+						</div>
 					)}
 				</div>
 			</CardBody>

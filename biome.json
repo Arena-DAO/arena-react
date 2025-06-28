@@ -6,13 +6,14 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"ignore": [
-			"./src/codegen/*.ts",
-			"./codegen/*.ts",
-			"node_modules/**",
-			".next/**",
-			"dist/**",
-			"build/**"
+		"includes": [
+			"**",
+			"!src/codegen/**/*.ts",
+			"!codegen/**/*.ts",
+			"!**/node_modules/**",
+			"!**/.next/**",
+			"!**/dist/**",
+			"!**/build/**"
 		]
 	},
 	"formatter": {
@@ -20,9 +21,7 @@
 		"indentStyle": "tab",
 		"lineWidth": 100
 	},
-	"organizeImports": {
-		"enabled": true
-	},
+	"assist": { "actions": { "source": { "organizeImports": "on" } } },
 	"linter": {
 		"enabled": true,
 		"rules": {
@@ -34,7 +33,17 @@
 			"style": {
 				"noDefaultExport": "off",
 				"noNonNullAssertion": "off",
-				"useImportType": "error"
+				"useImportType": "error",
+				"noParameterAssign": "error",
+				"useAsConstAssertion": "error",
+				"useDefaultParameterLast": "error",
+				"useEnumInitializers": "error",
+				"useSelfClosingElements": "error",
+				"useSingleVarDeclarator": "error",
+				"noUnusedTemplateLiteral": "error",
+				"useNumberNamespace": "error",
+				"noInferrableTypes": "error",
+				"noUselessElse": "error"
 			},
 			"suspicious": {
 				"noExplicitAny": "warn",

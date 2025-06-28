@@ -1,7 +1,5 @@
 "use client";
 
-import ViewCompetition from "@/components/competition/view/ViewCompetition";
-import DistributionDisplay from "@/components/competition/view/components/DistributionDisplay";
 import { useChain } from "@cosmos-kit/react-lite";
 import {
 	Card,
@@ -17,6 +15,8 @@ import {
 import { Share2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { ReactFlowProvider } from "reactflow";
+import DistributionDisplay from "@/components/competition/view/components/DistributionDisplay";
+import ViewCompetition from "@/components/competition/view/ViewCompetition";
 import { ArenaTournamentModuleQueryClient } from "~/codegen/ArenaTournamentModule.client";
 import { useArenaTournamentModuleCompetitionQuery } from "~/codegen/ArenaTournamentModule.react-query";
 import { CategoryProvider } from "~/contexts/CategoryContext";

@@ -29,19 +29,6 @@ const TeamView = () => {
 
 	// Validate entryId
 	const parsedEntryId = entryId ? Number.parseInt(entryId, 10) : null;
-	if (!entryId || Number.isNaN(parsedEntryId)) {
-		return (
-			<div className="flex min-h-[60vh] items-center justify-center">
-				<div className="text-center">
-					<h2 className="mb-2 font-semibold text-xl">Invalid Team Entry</h2>
-					<p className="text-default-600">Please provide a valid entry ID.</p>
-					<Button as={Link} href="/teams" color="primary" className="mt-4">
-						Browse Teams
-					</Button>
-				</div>
-			</div>
-		);
-	}
 
 	// Fetch team entry
 	const {
@@ -92,6 +79,20 @@ const TeamView = () => {
 	}, [categoryItem, categories]);
 
 	const isCreator = walletAddress === entry?.creator;
+
+	if (!entryId || Number.isNaN(parsedEntryId)) {
+		return (
+			<div className="flex min-h-[60vh] items-center justify-center">
+				<div className="text-center">
+					<h2 className="mb-2 font-semibold text-xl">Invalid Team Entry</h2>
+					<p className="text-default-600">Please provide a valid entry ID.</p>
+					<Button as={Link} href="/teams" color="primary" className="mt-4">
+						Browse Teams
+					</Button>
+				</div>
+			</div>
+		);
+	}
 
 	if (isEntryLoading) {
 		return (

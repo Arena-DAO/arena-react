@@ -1,6 +1,5 @@
 "use client";
 
-import Profile from "@/components/Profile";
 import {
 	Card,
 	CardBody,
@@ -15,6 +14,7 @@ import {
 	TableRow,
 } from "@heroui/react";
 import { Award } from "lucide-react";
+import Profile from "@/components/Profile";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { useArenaWagerModuleResultQuery } from "~/codegen/ArenaWagerModule.react-query";
 import { getNumberWithOrdinal } from "~/helpers/UIHelpers";

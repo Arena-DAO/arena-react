@@ -13,8 +13,8 @@ import {
 	assets as testnetAssets,
 	chain as testnetChain,
 } from "chain-registry/testnet/neutrontestnet";
-import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
+import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
 import { type PropsWithChildren, useMemo } from "react";
 import { useEnv } from "~/hooks/useEnv";
 import "~/styles/globals.css";

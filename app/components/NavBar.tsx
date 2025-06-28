@@ -2,6 +2,7 @@
 
 import { useChain } from "@cosmos-kit/react";
 import {
+	Chip,
 	Image,
 	Link,
 	Navbar,
@@ -12,7 +13,6 @@ import {
 	NavbarMenuItem,
 	NavbarMenuToggle,
 } from "@heroui/react";
-import { Chip } from "@heroui/react";
 import { Book, Coins, Droplet, Home, Lock, Trophy } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React from "react";

@@ -1,6 +1,5 @@
 "use client";
 
-import Profile from "@/components/Profile";
 import {
 	Card,
 	CardBody,
@@ -13,6 +12,7 @@ import {
 	TableRow,
 } from "@heroui/react";
 import { useMemo } from "react";
+import Profile from "@/components/Profile";
 import { ArenaLeagueModuleQueryClient } from "~/codegen/ArenaLeagueModule.client";
 import { useArenaLeagueModuleQueryExtensionQuery } from "~/codegen/ArenaLeagueModule.react-query";
 import type {

@@ -1,7 +1,7 @@
-import Profile from "@/components/Profile";
 import { Button, Input } from "@heroui/react";
 import { Trash } from "lucide-react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
+import Profile from "@/components/Profile";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 
 interface MemberProps {

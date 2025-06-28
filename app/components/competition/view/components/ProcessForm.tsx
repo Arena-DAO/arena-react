@@ -1,8 +1,8 @@
 "use client";
 
-import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
 import {
+	addToast,
 	Button,
 	Card,
 	CardBody,
@@ -21,18 +21,16 @@ import {
 	TableHeader,
 	TableRow,
 	Textarea,
-	addToast,
 	useDisclosure,
 	useDraggable,
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { Percent, Plus, Trash } from "lucide-react";
-import type {} from "react";
 import React from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
-
 import { ZodIssueCode, z } from "zod";
+import Profile from "@/components/Profile";
 import { ArenaCoreQueryClient } from "~/codegen/ArenaCore.client";
 import { arenaCoreQueryKeys } from "~/codegen/ArenaCore.react-query";
 import { arenaEscrowQueryKeys } from "~/codegen/ArenaEscrow.react-query";

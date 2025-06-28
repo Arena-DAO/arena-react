@@ -1,8 +1,8 @@
 "use client";
 
-import ViewCompetition from "@/components/competition/view/ViewCompetition";
 import { Spinner } from "@heroui/react";
 import { useSearchParams } from "next/navigation";
+import ViewCompetition from "@/components/competition/view/ViewCompetition";
 import { ArenaWagerModuleQueryClient } from "~/codegen/ArenaWagerModule.client";
 import { useArenaWagerModuleCompetitionQuery } from "~/codegen/ArenaWagerModule.react-query";
 import { CategoryProvider } from "~/contexts/CategoryContext";

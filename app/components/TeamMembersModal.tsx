@@ -1,4 +1,3 @@
-import Profile from "@/components/Profile";
 import {
 	Button,
 	Modal,
@@ -16,6 +15,7 @@ import {
 	useDraggable,
 } from "@heroui/react";
 import { useRef } from "react";
+import Profile from "@/components/Profile";
 import { Cw4GroupQueryClient } from "~/codegen/Cw4Group.client";
 import { useCw4GroupListMembersQuery } from "~/codegen/Cw4Group.react-query";
 import { DaoDaoCoreQueryClient } from "~/codegen/DaoDaoCore.client";

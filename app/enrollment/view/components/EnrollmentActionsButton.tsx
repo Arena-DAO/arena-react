@@ -2,13 +2,13 @@
 
 import { useChain } from "@cosmos-kit/react";
 import {
+	addToast,
 	Button,
 	ButtonGroup,
 	Dropdown,
 	DropdownItem,
 	DropdownMenu,
 	DropdownTrigger,
-	addToast,
 	useDisclosure,
 } from "@heroui/react";
 import { useQueryClient } from "@tanstack/react-query";

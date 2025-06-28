@@ -1,13 +1,12 @@
 "use client";
 
-import ImageUpload from "@/components/ImageUpload";
-import type { ImageUploaderRef } from "@/components/ImageUpload";
-import { DatePicker, Input, Textarea } from "@heroui/react";
-import { Select, SelectItem } from "@heroui/react";
+import { DatePicker, Input, Select, SelectItem, Textarea } from "@heroui/react";
 import { getLocalTimeZone, now } from "@internationalized/date";
 import { Image as ImageIcon } from "lucide-react";
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import type { ImageUploaderRef } from "@/components/ImageUpload";
+import ImageUpload from "@/components/ImageUpload";
 import { DurationUnits } from "~/config/schemas/DurationSchema";
 
 export type BasicInformationFormRef = {

@@ -1,7 +1,7 @@
-import Profile from "@/components/Profile"; // Adjust the import path as needed
 import { Button, Input } from "@heroui/react";
 import { Minus, Percent } from "lucide-react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
+import Profile from "@/components/Profile"; // Adjust the import path as needed
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 
 interface AdditionalLayeredFeeProps {

@@ -1,8 +1,8 @@
 "use client";
 
-import TokenInfo from "@/components/TokenInfo";
 import { useChain } from "@cosmos-kit/react";
 import {
+	addToast,
 	Button,
 	Input,
 	Modal,
@@ -10,7 +10,6 @@ import {
 	ModalContent,
 	ModalFooter,
 	ModalHeader,
-	addToast,
 	useDisclosure,
 	useDraggable,
 } from "@heroui/react";
@@ -20,8 +19,8 @@ import _ from "lodash";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-
 import { z } from "zod";
+import TokenInfo from "@/components/TokenInfo";
 import { ArenaEscrowClient } from "~/codegen/ArenaEscrow.client";
 import {
 	arenaEscrowQueryKeys,

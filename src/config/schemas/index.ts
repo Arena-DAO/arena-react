@@ -8,8 +8,8 @@ import DueSchema from "./DueSchema";
 import DurationSchema from "./DurationSchema";
 import MemberPercentageSchema from "./MemberPercentageSchema";
 import PercentageThresholdSchema from "./PercentageThresholdSchema";
-import RulesSchema from "./RulesSchema";
 import RulesetsSchema from "./RulesetsSchema";
+import RulesSchema from "./RulesSchema";
 import { TimestampSchema } from "./TimestampSchema";
 
 export {

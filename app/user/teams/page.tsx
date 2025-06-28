@@ -1,6 +1,5 @@
 "use client";
 
-import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
 import {
 	Card,
@@ -15,6 +14,7 @@ import {
 	TableRow,
 } from "@heroui/react";
 import { Users } from "lucide-react";
+import Profile from "@/components/Profile";
 import { ArenaTeamEnrollmentsQueryClient } from "~/codegen/ArenaTeamEnrollments.client";
 import { useArenaTeamEnrollmentsListTeamsQuery } from "~/codegen/ArenaTeamEnrollments.react-query";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";

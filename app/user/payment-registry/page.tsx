@@ -1,8 +1,8 @@
 "use client";
 
-import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
 import {
+	addToast,
 	Button,
 	Card,
 	CardBody,
@@ -20,7 +20,6 @@ import {
 	TableHeader,
 	TableRow,
 	Tabs,
-	addToast,
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
@@ -29,6 +28,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
+import Profile from "@/components/Profile";
 import {
 	ArenaPaymentRegistryClient,
 	ArenaPaymentRegistryQueryClient,

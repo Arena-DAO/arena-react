@@ -2,12 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import ReactFlow, {
 	Background,
 	Controls,
-	useNodesState,
-	useEdgesState,
 	type Edge,
-	Panel,
 	type Node,
+	Panel,
 	Position,
+	useEdgesState,
+	useNodesState,
 } from "reactflow";
 import {
 	ArenaTournamentModuleClient,
@@ -18,7 +18,7 @@ import { useEnv } from "~/hooks/useEnv";
 import "reactflow/dist/style.css";
 import { useChain } from "@cosmos-kit/react";
 import dagre from "@dagrejs/dagre";
-import { Button, ButtonGroup, addToast } from "@heroui/react";
+import { addToast, Button, ButtonGroup } from "@heroui/react";
 import { type QueryClient, useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { Fullscreen, Minimize, Share, Upload } from "lucide-react";
 

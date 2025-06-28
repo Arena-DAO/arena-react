@@ -1,6 +1,5 @@
 "use client";
 
-import Profile from "@/components/Profile";
 import {
 	Button,
 	Modal,
@@ -20,6 +19,7 @@ import {
 } from "@heroui/react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import React from "react";
+import Profile from "@/components/Profile";
 import { ArenaEscrowQueryClient } from "~/codegen/ArenaEscrow.client";
 import { arenaEscrowQueryKeys } from "~/codegen/ArenaEscrow.react-query";
 import type { MemberBalanceChecked } from "~/codegen/ArenaEscrow.types";

@@ -1,12 +1,12 @@
 // app/teams/entry/[entryId]/components/TeamInfoCard.tsx
 "use client";
 
-import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
-import { Avatar, Button, Card, CardBody, Chip, Progress, addToast } from "@heroui/react";
+import { Avatar, addToast, Button, Card, CardBody, Chip, Progress } from "@heroui/react";
 import { formatDistanceToNow } from "date-fns";
-import { Calendar, Clock, Shield, UserCheck, UserMinus, UserX, Users } from "lucide-react";
+import { Calendar, Clock, Shield, UserCheck, UserMinus, Users, UserX } from "lucide-react";
 import React from "react";
+import Profile from "@/components/Profile";
 import { ArenaTeamEnrollmentsClient } from "~/codegen/ArenaTeamEnrollments.client";
 import {
 	useArenaTeamEnrollmentsApplyMutation,

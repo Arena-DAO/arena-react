@@ -1,8 +1,8 @@
 "use client";
 
-import Profile from "@/components/Profile";
 import { Tab, Tabs } from "@heroui/react";
 import { useSearchParams } from "next/navigation";
+import Profile from "@/components/Profile";
 import EnrollmentsList from "./components/EnrollmentsList";
 import LeaguesList from "./components/LeaguesList";
 import TournamentsList from "./components/TournamentsList";

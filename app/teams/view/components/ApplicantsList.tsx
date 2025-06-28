@@ -1,9 +1,9 @@
 // app/teams/entry/[entryId]/components/ApplicantsList.tsx
 "use client";
 
-import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
 import {
+	addToast,
 	Button,
 	Card,
 	CardBody,
@@ -15,7 +15,6 @@ import {
 	ModalHeader,
 	Spinner,
 	Textarea,
-	addToast,
 	useDisclosure,
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,6 +24,7 @@ import { Clock, MessageSquare, UserCheck, UserMinus, UserX } from "lucide-react"
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+import Profile from "@/components/Profile";
 import {
 	ArenaTeamEnrollmentsClient,
 	ArenaTeamEnrollmentsQueryClient,

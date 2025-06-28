@@ -1,9 +1,4 @@
 "use client";
-import Profile from "@/components/Profile";
-import TokenInfo from "@/components/TokenInfo";
-import CompetitionTypeDisplay from "@/components/competition/CompetitionTypeDisplay";
-import CompetitionDates from "@/components/competition/view/components/CompetitionDates";
-import EscrowSection from "@/components/competition/view/components/EscrowSection";
 import { useChain } from "@cosmos-kit/react";
 import {
 	Button,
@@ -39,6 +34,11 @@ import {
 	Users,
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import CompetitionTypeDisplay from "@/components/competition/CompetitionTypeDisplay";
+import CompetitionDates from "@/components/competition/view/components/CompetitionDates";
+import EscrowSection from "@/components/competition/view/components/EscrowSection";
+import Profile from "@/components/Profile";
+import TokenInfo from "@/components/TokenInfo";
 import { ArenaCompetitionEnrollmentQueryClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import { useArenaCompetitionEnrollmentEnrollmentQuery } from "~/codegen/ArenaCompetitionEnrollment.react-query";
 import { CategoryProvider } from "~/contexts/CategoryContext";

@@ -1,8 +1,8 @@
 "use client";
 
-import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
 import {
+	addToast,
 	Button,
 	Checkbox,
 	Input,
@@ -18,12 +18,12 @@ import {
 	TableColumn,
 	TableHeader,
 	TableRow,
-	addToast,
 	useDisclosure,
 	useDraggable,
 } from "@heroui/react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useCallback, useMemo, useState } from "react";
+import Profile from "@/components/Profile";
 
 import { ArenaCompetitionEnrollmentClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import { ArenaGroupQueryClient } from "~/codegen/ArenaGroup.client";

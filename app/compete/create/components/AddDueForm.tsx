@@ -1,7 +1,5 @@
 "use client";
 
-import NFTInfo from "@/components/NFTInfo";
-import TokenInfo from "@/components/TokenInfo";
 import { useChain } from "@cosmos-kit/react";
 import {
 	Button,
@@ -20,10 +18,11 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import _ from "lodash";
 import { Coins, ImagePlus, Trash } from "lucide-react";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
+import NFTInfo from "@/components/NFTInfo";
+import TokenInfo from "@/components/TokenInfo";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 import { getBaseToken, getCw20Asset, getNativeAsset } from "~/helpers/TokenHelpers";
 import { useCosmWasmClient } from "~/hooks/useCosmWamClient";

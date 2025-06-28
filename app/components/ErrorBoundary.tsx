@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, addToast } from "@heroui/react";
+import { addToast, Button } from "@heroui/react";
 import { Component, type ErrorInfo, type PropsWithChildren } from "react";
 
 type ErrorBoundaryState = {

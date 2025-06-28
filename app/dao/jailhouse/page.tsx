@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Divider, Tab, Tabs, cn } from "@heroui/react";
+import { Card, cn, Divider, Tab, Tabs } from "@heroui/react";
 import { Lock, Trophy, Users, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useEnv } from "~/hooks/useEnv";

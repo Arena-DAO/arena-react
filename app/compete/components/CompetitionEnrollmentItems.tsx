@@ -1,10 +1,10 @@
 "use client";
 
-import CompetitionCard from "@/components/competition/CompetitionCard";
-import type Competition from "@/components/competition/CompetitionCard";
 import { Button, Spinner } from "@heroui/react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
+import type Competition from "@/components/competition/CompetitionCard";
+import CompetitionCard from "@/components/competition/CompetitionCard";
 import { ArenaCompetitionEnrollmentQueryClient } from "~/codegen/ArenaCompetitionEnrollment.client";
 import { arenaCompetitionEnrollmentQueryKeys } from "~/codegen/ArenaCompetitionEnrollment.react-query";
 import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollment.types";

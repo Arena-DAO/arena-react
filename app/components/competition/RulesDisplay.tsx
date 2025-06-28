@@ -1,7 +1,7 @@
-import MaybeLink from "@/components/MaybeLink";
 import { Accordion, AccordionItem } from "@heroui/react";
 import type React from "react";
 import { useMemo } from "react";
+import MaybeLink from "@/components/MaybeLink";
 import { ArenaCoreQueryClient } from "~/codegen/ArenaCore.client";
 import { useArenaCoreQueryExtensionQuery } from "~/codegen/ArenaCore.react-query";
 import type { Ruleset } from "~/codegen/ArenaCore.types";

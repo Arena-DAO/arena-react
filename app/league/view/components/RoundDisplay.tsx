@@ -1,8 +1,8 @@
 "use client";
 
-import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
 import {
+	addToast,
 	Button,
 	Select,
 	SelectItem,
@@ -12,10 +12,10 @@ import {
 	TableColumn,
 	TableHeader,
 	TableRow,
-	addToast,
 } from "@heroui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import Profile from "@/components/Profile";
 
 import { arenaCoreQueryKeys } from "~/codegen/ArenaCore.react-query";
 import { arenaEscrowQueryKeys } from "~/codegen/ArenaEscrow.react-query";

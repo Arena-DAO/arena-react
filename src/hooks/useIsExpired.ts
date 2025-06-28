@@ -1,6 +1,9 @@
-import { type ZonedDateTime, getLocalTimeZone, now } from "@internationalized/date";
+import { getLocalTimeZone, now, type ZonedDateTime } from "@internationalized/date";
 import { useEffect, useState } from "react";
-import type { Timestamp } from "~/codegen/ArenaWagerModule.types";
+import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollment.types";
+import type { CompetitionResponseForLeagueExt } from "~/codegen/ArenaLeagueModule.types";
+import type { CompetitionResponseForTournamentExt } from "~/codegen/ArenaTournamentModule.types";
+import type { CompetitionResponseForWagerExt, Timestamp } from "~/codegen/ArenaWagerModule.types";
 import { nanosToZonedDateTime } from "~/config/schemas/TimestampSchema";
 
 /**
@@ -74,4 +77,27 @@ export const useIsExpired = (
 	}, [duration, deadlineBefore, competitionDate.add, competitionDate.subtract]);
 
 	return isExpired;
+};
+
+type Competition =
+	| CompetitionResponseForWagerExt
+	| CompetitionResponseForLeagueExt
+	| CompetitionResponseForTournamentExt
+	| EnrollmentEntryResponse;
+
+const isEnrollment = (competition: Competition): competition is EnrollmentEntryResponse =>
+	"competition_info" in competition;
+
+/**
+ * Hook to determine if a competition has expired based on its type.
+ * Handles both enrollment and regular competitions automatically.
+ */
+export const useIsCompetitionExpired = (competition: Competition): boolean => {
+	const isEnrollmentCompetition = isEnrollment(competition);
+
+	return useIsExpired(
+		isEnrollmentCompetition ? competition.competition_info.date : competition.date,
+		isEnrollmentCompetition ? undefined : competition.duration,
+		isEnrollmentCompetition ? competition.duration_before : undefined
+	);
 };

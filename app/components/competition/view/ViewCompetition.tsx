@@ -1,7 +1,4 @@
 "use client";
-import Profile from "@/components/Profile";
-import RulesDisplay from "@/components/competition/RulesDisplay";
-import CategoryDisplay from "@/components/competition/view/components/CategoryDisplay";
 import {
 	Button,
 	Card,
@@ -22,6 +19,9 @@ import {
 import { AlertTriangle, Calendar, Info, Percent, Scroll, User } from "lucide-react";
 import type { PropsWithChildren } from "react";
 import { BsYinYang } from "react-icons/bs";
+import RulesDisplay from "@/components/competition/RulesDisplay";
+import CategoryDisplay from "@/components/competition/view/components/CategoryDisplay";
+import Profile from "@/components/Profile";
 import { isValidContractAddress } from "~/helpers/AddressHelpers";
 import { useEnv } from "~/hooks/useEnv";
 import { useIsExpired } from "~/hooks/useIsExpired";

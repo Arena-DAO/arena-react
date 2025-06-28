@@ -4,8 +4,8 @@ import DueSchema from "./DueSchema";
 import DurationSchema from "./DurationSchema";
 import MemberPercentageSchema from "./MemberPercentageSchema";
 import PercentageListSchema from "./PercentageListSchema";
-import RulesSchema from "./RulesSchema";
 import RulesetsSchema from "./RulesetsSchema";
+import RulesSchema from "./RulesSchema";
 import { ThresholdSchema } from "./ThresholdSchema";
 import { TimestampSchema } from "./TimestampSchema";
 

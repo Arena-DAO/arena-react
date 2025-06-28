@@ -1,7 +1,6 @@
 // app/teams/components/TeamEnrollmentCard.tsx
 "use client";
 
-import Profile from "@/components/Profile";
 import {
 	Avatar,
 	Button,
@@ -15,7 +14,8 @@ import {
 } from "@heroui/react";
 import { formatDistanceToNow } from "date-fns";
 import { motion } from "framer-motion";
-import { Calendar, Clock, Shield, UserCheck, UserX, Users } from "lucide-react";
+import { Calendar, Clock, Shield, UserCheck, Users, UserX } from "lucide-react";
+import Profile from "@/components/Profile";
 import type { EntryStatus, TeamEntryResponse } from "~/codegen/ArenaTeamEnrollments.types";
 
 interface TeamEnrollmentCardProps {

@@ -2,6 +2,7 @@
 
 import { useChain } from "@cosmos-kit/react";
 import {
+	addToast,
 	Button,
 	Card,
 	CardBody,
@@ -16,7 +17,6 @@ import {
 	ModalContent,
 	ModalFooter,
 	ModalHeader,
-	addToast,
 	useDisclosure,
 } from "@heroui/react";
 import { useQueryClient } from "@tanstack/react-query";

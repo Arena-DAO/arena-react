@@ -2,12 +2,11 @@
 
 import type { ExecuteInstruction } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
-import { Button, Card, CardBody, CardFooter, CardHeader, Spinner, addToast } from "@heroui/react";
+import { addToast, Button, Card, CardBody, CardFooter, CardHeader, Spinner } from "@heroui/react";
 import { type InfiniteData, useQueryClient } from "@tanstack/react-query";
-import type { PropsWithChildren } from "react";
-
 import { Coin } from "cosmjs-types/cosmos/base/v1beta1/coin";
 import { Vault } from "lucide-react";
+import type { PropsWithChildren } from "react";
 import { ArenaEscrowClient, ArenaEscrowQueryClient } from "~/codegen/ArenaEscrow.client";
 import {
 	arenaEscrowQueryKeys,

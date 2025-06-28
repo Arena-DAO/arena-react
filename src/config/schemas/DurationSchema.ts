@@ -1,4 +1,4 @@
-import { type ZonedDateTime, getLocalTimeZone, now } from "@internationalized/date";
+import { getLocalTimeZone, now, type ZonedDateTime } from "@internationalized/date";
 import { z } from "zod";
 
 export const DurationUnits = [

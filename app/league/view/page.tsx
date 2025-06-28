@@ -1,11 +1,11 @@
 "use client";
 
-import ViewCompetition from "@/components/competition/view/ViewCompetition";
-import DistributionDisplay from "@/components/competition/view/components/DistributionDisplay";
 import { useChain } from "@cosmos-kit/react";
 import { Card, CardBody, CardFooter, CardHeader, Input, Spinner, Tab, Tabs } from "@heroui/react";
 import { Share2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import DistributionDisplay from "@/components/competition/view/components/DistributionDisplay";
+import ViewCompetition from "@/components/competition/view/ViewCompetition";
 import { ArenaLeagueModuleQueryClient } from "~/codegen/ArenaLeagueModule.client";
 import { useArenaLeagueModuleCompetitionQuery } from "~/codegen/ArenaLeagueModule.react-query";
 import { CategoryProvider } from "~/contexts/CategoryContext";

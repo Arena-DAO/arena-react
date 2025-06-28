@@ -1,11 +1,10 @@
 "use client";
 
-import MaybeLink from "@/components/MaybeLink";
-import Profile from "@/components/Profile";
 import { useChain } from "@cosmos-kit/react";
 import {
 	Accordion,
 	AccordionItem,
+	addToast,
 	Button,
 	Card,
 	CardBody,
@@ -24,7 +23,6 @@ import {
 	TableHeader,
 	TableRow,
 	Tooltip,
-	addToast,
 	useDisclosure,
 	useDraggable,
 } from "@heroui/react";
@@ -32,11 +30,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { type InfiniteData, useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { chunk } from "lodash";
 import { FileCheck, Plus, Trash } from "lucide-react";
-import React from "react";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-
 import { z } from "zod";
+import MaybeLink from "@/components/MaybeLink";
+import Profile from "@/components/Profile";
 import {
 	ArenaWagerModuleClient,
 	ArenaWagerModuleQueryClient,

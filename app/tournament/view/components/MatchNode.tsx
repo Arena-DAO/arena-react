@@ -1,6 +1,5 @@
 "use client";
 
-import Profile from "@/components/Profile";
 import {
 	Card,
 	CardBody,
@@ -8,12 +7,13 @@ import {
 	CardHeader,
 	Divider,
 	Select,
-	SelectItem,
 	type SelectedItems,
+	SelectItem,
 } from "@heroui/react";
 import clsx from "clsx";
-import { memo } from "react";
+import { memo, useId } from "react";
 import { Handle, type NodeProps, Position } from "reactflow";
+import Profile from "@/components/Profile";
 import type { Match, MatchResult } from "~/codegen/ArenaTournamentModule.types";
 import { useMatchResultsStore } from "./Bracket";
 
@@ -122,7 +122,7 @@ const MatchNode = memo(({ data }: MatchNodeProps) => {
 			</Card>
 			<Handle
 				type="source"
-				id="winner"
+				id={useId()}
 				position={Position.Right}
 				style={{
 					...HANDLE_STYLES.winner,
@@ -131,7 +131,7 @@ const MatchNode = memo(({ data }: MatchNodeProps) => {
 			/>
 			<Handle
 				type="source"
-				id="loser"
+				id={useId()}
 				position={Position.Right}
 				style={{
 					...HANDLE_STYLES.loser,

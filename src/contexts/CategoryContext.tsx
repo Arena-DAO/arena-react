@@ -1,6 +1,6 @@
 // contexts/CategoryContext.tsx
 import type React from "react";
-import { type ReactNode, createContext, useContext } from "react";
+import { createContext, type ReactNode, useContext } from "react";
 import { useCategory } from "../hooks/useCategory";
 import type { CategoryLeaf } from "../hooks/useCategoryMap";
 

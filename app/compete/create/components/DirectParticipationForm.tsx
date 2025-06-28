@@ -1,10 +1,10 @@
 "use client";
 
-import { ProfileInput } from "@/components/ProfileInput";
 import { Button, Card, Divider, Switch, Tooltip, useDisclosure } from "@heroui/react";
 import { Info, Plus, Trash, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useFormContext, useWatch } from "react-hook-form";
+import { ProfileInput } from "@/components/ProfileInput";
 import type { CreateCompetitionFormValues } from "~/config/schemas/CreateCompetitionSchema";
 import AddDueForm from "./AddDueForm";
 import MemberDue from "./MemberDue";

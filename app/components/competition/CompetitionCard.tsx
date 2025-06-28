@@ -5,7 +5,7 @@ import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollme
 import type { CompetitionResponseForLeagueExt } from "~/codegen/ArenaLeagueModule.types";
 import type { CompetitionResponseForTournamentExt } from "~/codegen/ArenaTournamentModule.types";
 import type { CompetitionResponseForWagerExt } from "~/codegen/ArenaWagerModule.types";
-import { useIsExpired } from "~/hooks/useIsExpired";
+import { useIsCompetitionExpired } from "~/hooks/useIsExpired";
 import Profile from "../Profile";
 import CompetitionStatusDisplay from "./CompetitionStatusDisplay";
 import CompetitionTypeDisplay from "./CompetitionTypeDisplay";
@@ -49,9 +49,7 @@ const getViewPath = (competition: Competition): string => {
 const Competition: React.FC<CompetitionProps> = ({ competition, hideHost = false }) => {
 	const router = useRouter();
 	const isEnrollmentCompetition = isEnrollment(competition);
-	const isExpired = isEnrollmentCompetition
-		? useIsExpired(competition.competition_info.date, undefined, competition.duration_before)
-		: useIsExpired(competition.date, competition.duration);
+	const isExpired = useIsCompetitionExpired(competition);
 	const banner = isEnrollmentCompetition ? competition.competition_info.banner : competition.banner;
 	const name = isEnrollmentCompetition ? competition.competition_info.name : competition.name;
 	const description = isEnrollmentCompetition

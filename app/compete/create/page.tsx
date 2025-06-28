@@ -6,7 +6,7 @@ import {
 	toBinary,
 } from "@cosmjs/cosmwasm-stargate";
 import { useChain } from "@cosmos-kit/react";
-import { Button, Card, CardBody, CardHeader, Tooltip, addToast } from "@heroui/react";
+import { addToast, Button, Card, CardBody, CardHeader, Tooltip } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { Info, Plus } from "lucide-react";

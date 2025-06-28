@@ -1,7 +1,7 @@
-import TokenInfo from "@/components/TokenInfo";
 import { Slider, Tooltip } from "@heroui/react";
 import { Users } from "lucide-react";
 import type React from "react";
+import TokenInfo from "@/components/TokenInfo";
 import type { EnrollmentEntryResponse } from "~/codegen/ArenaCompetitionEnrollment.types";
 import { calculateMinMembers } from "~/helpers/EnrollmentHelpers";
 import EnrollmentStatusDisplay from "./EnrollmentStatusDisplay";

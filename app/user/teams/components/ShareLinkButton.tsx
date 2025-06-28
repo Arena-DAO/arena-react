@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, addToast } from "@heroui/react"; // Your UI library
+import { addToast, Button } from "@heroui/react"; // Your UI library
 import { Share } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
