@@ -29,6 +29,7 @@ import {
 	Shield,
 	Users,
 } from "lucide-react";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -328,9 +329,11 @@ const CreateTeamEnrollment = () => {
 												{field.value && (
 													<div className="flex justify-center">
 														<div className="h-24 w-24 rounded-xl border-2 border-default-200 bg-default-50 p-1">
-															<img
+															<Image
 																src={field.value}
 																alt="Team logo preview"
+																width={96}
+																height={96}
 																className="h-full w-full rounded-lg object-cover"
 															/>
 														</div>

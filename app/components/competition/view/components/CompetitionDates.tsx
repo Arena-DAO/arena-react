@@ -25,7 +25,7 @@ const CompetitionDates: React.FC<CompetitionDatesProps> = React.memo(
 				{deadlineBefore && (
 					<DateInput
 						label="Registration Deadline"
-						value={registrationDeadline as any}
+						value={registrationDeadline}
 						isReadOnly
 						variant="bordered"
 					/>
@@ -33,14 +33,14 @@ const CompetitionDates: React.FC<CompetitionDatesProps> = React.memo(
 				{expirationDate ? (
 					<DateRangePicker
 						label="Competition Date"
-						value={{ start: competitionDate as any, end: expirationDate as any }}
+						value={{ start: competitionDate, end: expirationDate }}
 						isReadOnly
 						variant="bordered"
 					/>
 				) : (
 					<DateInput
 						label="Competition Date"
-						value={competitionDate as any}
+						value={competitionDate}
 						isReadOnly
 						variant="bordered"
 					/>

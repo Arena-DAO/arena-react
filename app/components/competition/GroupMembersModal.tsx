@@ -202,18 +202,16 @@ const GroupMembers: React.FC<GroupMemberProps> = ({ groupContract, enrollmentId 
 												placeholder="Enter seed"
 											/>
 										</TableCell>
-										{enrollmentId ? (
-											<TableCell>
+										<TableCell>
+											{enrollmentId ? (
 												<Checkbox
 													isSelected={selectedMembers.has(member.addr)}
 													onValueChange={(isSelected) =>
 														handleCheckboxChange(member.addr, isSelected)
 													}
 												/>
-											</TableCell>
-										) : (
-											<></>
-										)}
+											) : null}
+										</TableCell>
 									</TableRow>
 								))}
 							</TableBody>
