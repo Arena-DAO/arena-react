@@ -24,7 +24,7 @@ import { useCosmWasmClient } from "~/hooks/useCosmWamClient";
 import { useEnv } from "~/hooks/useEnv";
 import Bracket from "./components/Bracket";
 
-const ViewWager = () => {
+const ViewTournament = () => {
 	const env = useEnv();
 	const { data: cosmWasmClient } = useCosmWasmClient();
 	const { address } = useChain(env.CHAIN);
@@ -129,4 +129,4 @@ const ViewWager = () => {
 	);
 };
 
-export default ViewWager;
+export default ViewTournament;
