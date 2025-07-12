@@ -8,12 +8,12 @@ const Layout = ({ children }: PropsWithChildren) => {
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<head>
-				<title>Arena DAO - Premier Web3 Competition Platform</title>
+				<title>Arena DAO - Empowering Communities to Compete</title>
 				<meta charSet="UTF-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<meta
 					name="description"
-					content="Join the future of competitive gaming on Arena DAO. Create tournaments, leagues, and wagers with smart contracts, DAO governance, and instant payouts. Fair, transparent, and decentralized."
+					content="Empower your community with Arena DAO's tournament platform. Create grassroots competitions, local leagues, and community wagers with transparent governance and instant payouts."
 				/>
 				<meta
 					name="keywords"

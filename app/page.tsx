@@ -69,7 +69,7 @@ const HomePage = () => {
 						ARENA DAO
 					</h1>
 					<p className="mx-auto mb-8 max-w-3xl font-medium text-foreground/90 text-xl md:text-2xl">
-						The premier Web3 competition platform. Compete in tournaments, leagues, and wagers with
+						Empowering communities to compete. Build tournaments, organize leagues, and create wagers with
 						complete transparency and instant payouts.
 					</p>
 
